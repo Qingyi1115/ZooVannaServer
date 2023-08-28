@@ -4,9 +4,10 @@ import bodyParser from 'body-parser';
 import cookieParser from 'cookie-parser';
 import compression from 'compression';
 import cors from 'cors';
-import {isAuthenticated} from './middlewares/index'
 
-import router from './router';
+// import router from './router';
+import userRoutes from "./router/user"
+import { authMiddleware } from './middlewares/authMiddleware';
 
 const app = express();
 
@@ -24,5 +25,5 @@ server.listen(8080, () => {
   console.log('Server running on http://localhost:8080/');
 });
 
-app.use(isAuthenticated)
-app.use('/', router());
+// app.use(authMiddleware);
+app.use('/api/user/', userRoutes);

@@ -1,10 +1,10 @@
-import express from "express";
+// import express from "express";
 
-import login from './login';
+// import login from './login';
 
-const router = express.Router();
+// const router = express.Router();
 
-export default (): express.Router => {
-    login(router)
-    return router;
-}
+// export default (): express.Router => {
+//     login(router)
+//     return router;
+// }
