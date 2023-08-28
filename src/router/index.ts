@@ -1,7 +1,10 @@
-import express from "express";
+// import express from "express";
 
-const router = express.Router();
+// import login from './login';
 
-export default (): express.Router => {
-    return router;
-}
+// const router = express.Router();
+
+// export default (): express.Router => {
+//     login(router)
+//     return router;
+// }
