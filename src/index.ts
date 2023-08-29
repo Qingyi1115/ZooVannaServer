@@ -10,6 +10,8 @@ import mysql from "mysql2";
 import 'dotenv/config';
 
 // import router from './router';
+// import userRoutes from "./router/user"
+import { authMiddleware } from './middlewares/authMiddleware';
 
 const app = express();
 
@@ -48,12 +50,4 @@ app.get("/", (req: Request, res: Response) => {
 });
 
 
-// app.get('/createdb', (req, res) => {
-//   let sql = 'CREATE DATABASE test002'
-//   db.query(sql, err => {
-//     if(err) {
-//       throw err;
-//     }
-//     res.send("Database Created");
-//   })
-// });
+// app.use('/', router());
