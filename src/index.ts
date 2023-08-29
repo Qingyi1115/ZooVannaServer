@@ -10,7 +10,7 @@ import mysql from "mysql2";
 import 'dotenv/config';
 
 // import router from './router';
-// import userRoutes from "./router/user"
+import userRoutes from "./routes/user"
 import { authMiddleware } from './middlewares/authMiddleware';
 
 const app = express();
@@ -50,4 +50,4 @@ app.get("/", (req: Request, res: Response) => {
 });
 
 
-// app.use('/', router());
+app.use('/api/user/', userRoutes);
