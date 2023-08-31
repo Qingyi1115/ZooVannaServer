@@ -24,16 +24,11 @@ app.use(cookieParser());
 app.use(bodyParser.json());
 
 const db = mysql.createConnection({
-  // host: 'localhost',
-  // user:'root',
-  // password: '',
-    host: process.env.MYSQL_HOST,
-    user: process.env.MYSQL_USER,
-    password: process.env.MYSQL_PASSWORD,
-    database: process.env.MYSQL_DB,
-    // port:3306,
-    // database: "employees",
-    // port:3306,
+  host: process.env.MYSQL_HOST || "localhost",
+  user: process.env.MYSQL_USER || "root",
+  password: process.env.MYSQL_PASSWORD || "",
+  database: process.env.MYSQL_DB || "zoovanna",
+  port: parseInt(process.env.MYSQL_DB_PORT || "3306"),
     // multipleStatements: true
 })
 
