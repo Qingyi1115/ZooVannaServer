@@ -1,6 +1,6 @@
 require("dotenv").config();
 
-import express, {Express, Request, Response}  from 'express';
+import express, { Express, Request, Response } from 'express';
 import http from 'http';
 import bodyParser from 'body-parser';
 import cookieParser from 'cookie-parser';
@@ -29,7 +29,7 @@ const db = mysql.createConnection({
   password: process.env.MYSQL_PASSWORD || "",
   database: process.env.MYSQL_DB || "zoovanna",
   port: parseInt(process.env.MYSQL_DB_PORT || "3306"),
-    // multipleStatements: true
+  // multipleStatements: true
 })
 
 const server = http.createServer(app);
@@ -40,8 +40,14 @@ server.listen(port, () => {
   console.log(`Server running on http://localhost:${port}/`);
 });
 
+app.use((req, res, next) => {
+  console.log(req.path, req.method);
+  // console.log(req.body);
+  next();
+});
+
 app.get("/", (req: Request, res: Response) => {
-    res.send("HELLO)s");
+  res.send("HELLO)s");
 });
 
 
