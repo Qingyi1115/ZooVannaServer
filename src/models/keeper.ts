@@ -11,9 +11,9 @@ import {KeeperType} from './enumerated';
 class Keeper extends Model<InferAttributes<Keeper>, InferCreationAttributes<Keeper>> {
     declare keeperType: KeeperType;
 
-    declare employee: NonAttribute<Employee>;
-    declare juniors: NonAttribute<Keeper> | null; // Not required
-    declare leader: NonAttribute<Keeper> | null;
+    declare employee?: Employee;
+    declare juniors?: Keeper[] | null; // Not required
+    declare leader?: Keeper | null;
 
     declare getEmployee: BelongsToGetAssociationMixin<Employee>;
     declare setEmployee: BelongsToSetAssociationMixin<Employee, number>;

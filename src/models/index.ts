@@ -7,8 +7,8 @@ import {KeeperType} from './enumerated';
 
 export const seedDatabase = async () => {
     // Create relationships
-    const Keeper_Employee = Keeper.belongsTo(Employee, {onDelete: "CASCADE", onUpdate: "CASCADE"});
-    const Employee_Keeper = Employee.hasOne(Keeper, {onDelete: "CASCADE", onUpdate: "CASCADE"});
+    const Keeper_Employee = Keeper.belongsTo(Employee, {foreignKey:"employeeId", onDelete: "CASCADE", onUpdate: "CASCADE"});
+    const Employee_Keeper = Employee.hasOne(Keeper, {as:"keeper", foreignKey:"employeeId", onDelete: "CASCADE", onUpdate: "CASCADE"});
 
     const Keeper_Juniors = Keeper.hasMany(Keeper, {foreignKey: "leaderId", as: "juniors", onDelete: "CASCADE", onUpdate: "CASCADE"});
     const Keeper_Leader = Keeper.belongsTo(Keeper, {foreignKey: "leaderId", as: "leader", onDelete: "CASCADE", onUpdate: "CASCADE"});
@@ -52,6 +52,7 @@ export const seedDatabase = async () => {
         employeeSalt:"NaAg",
         employeeDoorAccessCode:"234567",
         employeeEducation:"PHD in not sleeping",
+         // @ts-ignore
         keeper:{
           keeperType: KeeperType.KEEPER
         }
@@ -64,6 +65,7 @@ export const seedDatabase = async () => {
         employeeSalt:"NaH",
         employeeDoorAccessCode:"345678",
         employeeEducation:"PHD in not breathing",
+         // @ts-ignore
         keeper:{
           keeperType: KeeperType.KEEPER
         }

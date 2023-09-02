@@ -1,10 +1,10 @@
 
-import {DataTypes, Model, CreationOptional, InferAttributes, InferCreationAttributes,
+import {DataTypes, Model, CreationOptional, InferAttributes, InferCreationAttributes, NonAttribute,
     HasOneGetAssociationMixin, HasOneSetAssociationMixin} from "Sequelize";
 import {conn} from '../db';
 import {Keeper} from './keeper';
 
-class Employee extends Model<InferAttributes<Model>, InferCreationAttributes<Model>> {
+class Employee extends Model<InferAttributes<Employee>, InferCreationAttributes<Employee>> {
     declare employeeId: CreationOptional<number>;
     declare employeeName: string;
     declare employeeAddress:string;
@@ -14,7 +14,7 @@ class Employee extends Model<InferAttributes<Model>, InferCreationAttributes<Mod
     declare employeeDoorAccessCode: string;
     declare employeeEducation: string;
 
-    declare keeper: Keeper | null;
+    declare keeper?: Keeper | null;
 
     declare getKeeper: HasOneGetAssociationMixin<Keeper>;
     declare setKeeper: HasOneSetAssociationMixin<Keeper, number>;
