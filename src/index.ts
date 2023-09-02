@@ -8,7 +8,6 @@ import compression from 'compression';
 import cors from 'cors';
 import 'dotenv/config';
 
-// import router from './router';
 import userRoutes from './routes/user'
 import {seedDatabase} from './models/index' 
 import {conn} from './db';

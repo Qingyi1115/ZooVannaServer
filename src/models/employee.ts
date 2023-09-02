@@ -1,6 +1,8 @@
 
-import {DataTypes, Model, CreationOptional, InferAttributes, InferCreationAttributes} from "Sequelize";
+import {DataTypes, Model, CreationOptional, InferAttributes, InferCreationAttributes,
+    HasOneGetAssociationMixin, HasOneSetAssociationMixin} from "Sequelize";
 import {conn} from '../db';
+import {Keeper} from './keeper';
 
 class Employee extends Model<InferAttributes<Model>, InferCreationAttributes<Model>> {
     declare employeeId: CreationOptional<number>;
@@ -11,6 +13,11 @@ class Employee extends Model<InferAttributes<Model>, InferCreationAttributes<Mod
     declare employeeSalt: string;
     declare employeeDoorAccessCode: string;
     declare employeeEducation: string;
+
+    declare keeper: Keeper | null;
+
+    declare getKeeper: HasOneGetAssociationMixin<Keeper>;
+    declare setKeeper: HasOneSetAssociationMixin<Keeper, number>;
 
     static getTotalEmployees(){ // Example for static class functions
         return Employee.count()
@@ -72,7 +79,7 @@ Employee.init({
     createdAt: true,
     updatedAt: 'updateTimestamp',
     sequelize: conn, // We need to pass the connection instance
-    modelName: 'Employee' // We need to choose the model name
+    modelName: 'employee' // We need to choose the model name
 });
 
 export {Employee};
