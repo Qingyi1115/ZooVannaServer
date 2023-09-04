@@ -1,5 +1,5 @@
 
-import {DataTypes, Model, InferAttributes, InferCreationAttributes, NonAttribute, 
+import {DataTypes, Model, InferAttributes, InferCreationAttributes,
     HasManySetAssociationsMixin, HasManyGetAssociationsMixin,
     HasOneSetAssociationMixin, HasOneGetAssociationMixin,
     BelongsToGetAssociationMixin, BelongsToSetAssociationMixin} from "Sequelize";

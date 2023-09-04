@@ -1,8 +1,11 @@
 
-import {DataTypes, Model, CreationOptional, InferAttributes, InferCreationAttributes, NonAttribute,
+import {DataTypes, Model, CreationOptional, InferAttributes, InferCreationAttributes, NonAttribute, 
     HasOneGetAssociationMixin, HasOneSetAssociationMixin} from "Sequelize";
 import {conn} from '../db';
 import {Keeper} from './keeper';
+import {PlanningStaff} from './planningStaff';
+
+function uppercaseFirst(str:string){return `${str[0].toUpperCase()}${str.substr(1)}`};
 
 class Employee extends Model<InferAttributes<Employee>, InferCreationAttributes<Employee>> {
     declare employeeId: CreationOptional<number>;
@@ -13,14 +16,39 @@ class Employee extends Model<InferAttributes<Employee>, InferCreationAttributes<
     declare employeeSalt: string;
     declare employeeDoorAccessCode: string;
     declare employeeEducation: string;
+    declare role?: string;
 
     declare keeper?: Keeper | null;
+    declare planningStaff?: PlanningStaff | null;
 
     declare getKeeper: HasOneGetAssociationMixin<Keeper>;
     declare setKeeper: HasOneSetAssociationMixin<Keeper, number>;
 
+    declare getPlanningStaff: HasOneGetAssociationMixin<PlanningStaff>;
+    declare setPlanningStaff: HasOneSetAssociationMixin<PlanningStaff, number>;
+
     static getTotalEmployees(){ // Example for static class functions
         return Employee.count()
+    }
+
+    public async getRole(){
+        if (!this.role) {
+            let keeper = await this.getKeeper();
+            if (keeper){
+                this.role = "keeper";
+                return keeper;
+            }
+            let planningStaff = await this.getPlanningStaff();
+            if (planningStaff){
+                this.role = "planningStaff";
+                return planningStaff;
+            }
+            return null;
+        }else{
+            // As we can see this method will save the role and in the future only call required method in the future, saving some time
+            const mixinMethodName = `get${uppercaseFirst(this.role)}`;
+            return (this as any)[mixinMethodName]();
+        }
     }
 
     public setName(name: string){ // Example to define instance functions
@@ -72,6 +100,9 @@ Employee.init({
     employeeEducation: {
         type: DataTypes.STRING,
         allowNull: false
+    },
+    role:{
+        type: DataTypes.STRING
     }
 }, {
     freezeTableName: true,

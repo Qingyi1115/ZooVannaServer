@@ -9,10 +9,10 @@ import cors from 'cors';
 import 'dotenv/config';
 
 import userRoutes from './routes/user'
-import {seedDatabase} from './models/index' 
+import {seedDatabase, createDatabase} from './models/index' 
 import {conn} from './db';
 
-
+const truthy = ["TRUE","true", "True", "1"]
 const app = express();
 
 app.use(cors({
@@ -31,8 +31,15 @@ server.listen(port, async () => {
   console.log(`Server running on http://localhost:${port}/`);
   await conn.authenticate();
   console.log("Database connected!")
-  await seedDatabase();
-  console.log("Database built!")
+
+  if (truthy.includes(process.env.RESET_DB || "")){
+    await createDatabase({forced: true});
+    console.log("Database built!")
+    await seedDatabase();
+    console.log("Database seeded!")
+  }else{
+    console.log("Database left untouched!")
+  }
 });
 
 app.get("/", (req: Request, res: Response) => {

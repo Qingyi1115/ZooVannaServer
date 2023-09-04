@@ -3,5 +3,10 @@ enum KeeperType {
   KEEPER = "KEEPER"
 }
 
+enum PlannerType {
+  NUTRITIONIST = "NUTRITIONIST",
+  CURATOR = "CURATOR"
+}
 
-export {KeeperType};
+
+export {KeeperType, PlannerType};
