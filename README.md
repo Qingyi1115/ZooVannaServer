@@ -100,27 +100,27 @@ In the case of inheritance, we have opted for polymorphism, where a single call 
 This is not easily done with following the sequelize tutorial in js. Because we are using Typescript which compiler does not see runtime attributes!
 However here is the solution, we implement our own way to do this. 
 
-<!-- In this instance function, we will retrieve all the roles possible and attempt to save the role that we find exist, then we will return the class instance of the role -->
-    public async getRole(){
-        if (!this.role) {
-            let keeper = await this.getKeeper();
-            if (keeper){
-                this.role = "keeper";
-                return keeper;
+        <!-- In this instance function, we will retrieve all the roles possible and attempt to save the role that we find exist, then we will return the class instance of the role -->
+        public async getRole(){
+            if (!this.role) {
+                let keeper = await this.getKeeper();
+                if (keeper){
+                    this.role = "keeper";
+                    return keeper;
+                }
+                let planningStaff = await this.getPlanningStaff();
+                if (planningStaff){
+                    this.role = "planningStaff";
+                    return planningStaff;
+                }
+                return null;
+            }else{
+                <!-- As we can see this method will save the role and in the future only call required method in the future, saving some time -->
+                const mixinMethodName = `get${uppercaseFirst(this.role)}`;
+                // @ts-ignore <!--I have removed this ignore function with another one, but as you can see typescript hates anything that doesn't have strictly defined types and attributes-->
+                return this[mixinMethodName]();
             }
-            let planningStaff = await this.getPlanningStaff();
-            if (planningStaff){
-                this.role = "planningStaff";
-                return planningStaff;
-            }
-            return null;
-        }else{
-            <!-- As we can see this method will save the role and in the future only call required method in the future, saving some time -->
-            const mixinMethodName = `get${uppercaseFirst(this.role)}`;
-            // @ts-ignore <!--I have removed this ignore function with another one, but as you can see typescript hates anything that doesn't have strictly defined types and attributes-->
-            return this[mixinMethodName]();
         }
-    }
 
 Thank you for reading this tutorial that teaches you how bad sequelize is. Please use a java framework like springboot that supports better ORM like hibernate in the future. Thanks! - Sincerely your tech lead.
 
