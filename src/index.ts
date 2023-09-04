@@ -1,6 +1,6 @@
 require("dotenv").config();
 
-import express, {Express, Request, Response}  from 'express';
+import express, { Express, Request, Response } from 'express';
 import http from 'http';
 import bodyParser from 'body-parser';
 import cookieParser from 'cookie-parser';
@@ -42,8 +42,14 @@ server.listen(port, async () => {
   }
 });
 
+app.use((req, res, next) => {
+  console.log(req.path, req.method);
+  // console.log(req.body);
+  next();
+});
+
 app.get("/", (req: Request, res: Response) => {
-    res.send("HELLO)s");
+  res.send("HELLO)s");
 });
 
 
