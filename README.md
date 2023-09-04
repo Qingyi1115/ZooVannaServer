@@ -26,45 +26,47 @@ import {DataTypes, Model, InferAttributes, InferCreationAttributes, HasOneGetAss
 import {conn} from '../db';
 
 1. Create the model with the example below. You should declare attributes, functions and relationship names.
-    class EntityModel extends Model<EntityModel<EntityModel>, InferCreationAttributes<EntityModel>> {
-        <!-- Attributes -->
-        declare attribute: <enum | string | number>;
 
-        <!-- Relationships to other models -->
-        declare relationship?: <AnotherEntityModel>;
+        class EntityModel extends Model<EntityModel<EntityModel>, InferCreationAttributes<EntityModel>> {
+            <!-- Attributes -->
+            declare attribute: <enum | string | number>;
 
-        <!-- Relationships to other models getter and setters (other mixin also possible example create : HasOneCreateAssociationMixin or in has many relationship add or remove looks like this HasManyRemoveAssociationMixin) -->
-        declare getRelationship: BelongsToGetAssociationMixin<AnotherEntityModel>;
-        declare setRelationship: BelongsToSetAssociationMixin<AnotherEntityModel, number>;
+            <!-- Relationships to other models -->
+            declare relationship?: <AnotherEntityModel>;
 
-        <!-- Other standard instance methods -->
-    }
+            <!-- Relationships to other models getter and setters (other mixin also possible example create : HasOneCreateAssociationMixin or in has many relationship add or remove looks like this HasManyRemoveAssociationMixin) -->
+            declare getRelationship: BelongsToGetAssociationMixin<AnotherEntityModel>;
+            declare setRelationship: BelongsToSetAssociationMixin<AnotherEntityModel, number>;
+
+            <!-- Other standard instance methods -->
+        }
 
 2. Create the table using the model. This requires your db connection to specify where (account/server/schema) to create the tables to. 
 You will only need to define attributes and not relationships here. 
 As relationships require multiple model classes, it will be added to index in the next step!
 
-    EntityModel.init({
-        <!-- Add attributes and define column settings such as datatype and column constraints -->
-        attribute: {
-            type: DataTypes.BIGINT,
-            autoIncrement: true,
-            primaryKey: true
-        },
-        attribute_2: {
-            type: DataTypes.STRING,
-        },
-    }, {
-        <!-- Define additional table settings -->
-        freezeTableName: true,
-        timestamps: true,
-        createdAt: true,
-        updatedAt: 'updateTimestamp',
-        sequelize: conn, // We need to pass the connection instance
-        modelName: 'Table_Name' // We need to choose the model name
-    });
-<!-- Export your model -->
-export {EntityModel};
+        EntityModel.init({
+            <!-- Add attributes and define column settings such as datatype and column constraints -->
+            attribute: {
+                type: DataTypes.BIGINT,
+                autoIncrement: true,
+                primaryKey: true
+            },
+            attribute_2: {
+                type: DataTypes.STRING,
+            },
+        }, {
+            <!-- Define additional table settings -->
+            freezeTableName: true,
+            timestamps: true,
+            createdAt: true,
+            updatedAt: 'updateTimestamp',
+            sequelize: conn, // We need to pass the connection instance
+            modelName: 'Table_Name' // We need to choose the model name
+        });
+
+        <!-- Export your model -->
+        export {EntityModel};
 
 3. Now that you have set the main data columns and table names, we will deal with foreign keys for relationships in database. I hope you remember your database module, and IS2103 relationship types.
 In src/models/index.ts, we will want to append relationships in the createDatabase function!
