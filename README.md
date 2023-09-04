@@ -11,9 +11,12 @@
 3. Adding environmental vars
     create file ./.env (github ignore keep ur personal info here)
     follow the format to populate .env, the following setting is compulsory, but others are optional (assuming you did not change any default setting when installing sql)
+
         MYSQL_PASSWORD=your_password
         RESET_DB=True/TRUE/true/1 (false otherwise)
+
     Other optional env are (with their default values if not stated):
+
         MYSQL_HOST=localhost
         MYSQL_USER=root
         MYSQL_DB=zoovanna (depends on step 2 schema name)
@@ -27,7 +30,7 @@ import {conn} from '../db';
 
 1. Create the model with the example below. You should declare attributes, functions and relationship names.
 
-        class EntityModel extends Model<EntityModel<EntityModel>, InferCreationAttributes<EntityModel>> {
+        class EntityModel extends Model<InferAttributes<EntityModel>, InferCreationAttributes<EntityModel>> {
             <!-- Attributes -->
             declare attribute: <enum | string | number>;
 
