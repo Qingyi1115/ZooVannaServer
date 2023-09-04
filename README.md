@@ -25,6 +25,7 @@
 
 ## Creating entities
 0. Import required resources and other entities for example:
+
 import {DataTypes, Model, InferAttributes, InferCreationAttributes, HasOneGetAssociationMixin, HasOneSetAssociationMixin} from "Sequelize";
 import {conn} from '../db';
 
