@@ -1,7 +1,7 @@
 # Our Dev Steps
 
 ## Setup
-1. Installing packages (express, mysql2, dotenv, sequelize)
+1. Installing packages (express, mysql2, dotenv, sequelize, jsonwebtoken)
     npm install <package>
 
 2. Installing mysql/workbench and getting my database
