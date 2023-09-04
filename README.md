@@ -87,11 +87,12 @@ We know for sure we will create a foreign key from one table to the other table,
 This is where aliasing comes in, we will add the "as" attribute to define the name of the relationship. 
 
 Relationships should come in pairs. Example: 
-Module.hasMany(People, addCascadeOptions({foreignKey: "StudentModuleId", as: "students"}));
-People.belongsTo(Module, addCascadeOptions({foreignKey: "StudentModuleId", as: "learning"}));
 
-Module.hasMany(People, addCascadeOptions({foreignKey: "ProfModuleId", as: "professor"}));
-People.belongsTo(Module, addCascadeOptions({foreignKey: "ProfModuleId", as: "teaching"}));
+        Module.hasMany(People, addCascadeOptions({foreignKey: "StudentModuleId", as: "students"}));
+        People.belongsTo(Module, addCascadeOptions({foreignKey: "StudentModuleId", as: "learning"}));
+
+        Module.hasMany(People, addCascadeOptions({foreignKey: "ProfModuleId", as: "professor"}));
+        People.belongsTo(Module, addCascadeOptions({foreignKey: "ProfModuleId", as: "teaching"}));
 
 Note: many to many relationships has not been implemented as of now. A new table will be required.
 
