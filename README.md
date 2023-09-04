@@ -26,8 +26,8 @@
 ## Creating entities
 0. Import required resources and other entities for example:
 
-    import {DataTypes, Model, InferAttributes, InferCreationAttributes, HasOneGetAssociationMixin, HasOneSetAssociationMixin} from "Sequelize";
-    import {conn} from '../db';
+        import {DataTypes, Model, InferAttributes, InferCreationAttributes, HasOneGetAssociationMixin, HasOneSetAssociationMixin} from "Sequelize";
+        import {conn} from '../db';
 
 1. Create the model with the example below. You should declare attributes, functions and relationship names.
 
