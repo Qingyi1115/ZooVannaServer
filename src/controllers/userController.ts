@@ -3,8 +3,10 @@ import { Request, Response } from "express";
 import jwt from 'jsonwebtoken';
 import {Employee} from '../models/employee';
 import {ValidationError} from "Sequelize";
+import crypto from "crypto";
 
-import { secretKey, hash } from "../helpers/extremelyProtected";
+export function hash(string:string) {return crypto.createHash('sha256').update(string).digest('hex');}
+
 
 const createToken = (email: string) => {
     const SECRET_KEY = process.env.SECRET_KEY;
