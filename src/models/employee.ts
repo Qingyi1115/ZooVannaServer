@@ -4,7 +4,10 @@ import {DataTypes, Model, CreationOptional, InferAttributes, InferCreationAttrib
 import {conn} from '../db';
 import {Keeper} from './keeper';
 import {PlanningStaff} from './planningStaff';
-import { AccountManager } from "./accountManager";
+import {GeneralStaff} from './generalStaff';
+import crypto from "crypto";
+
+function hash(string:string):string {return crypto.createHash('sha256').update(string).digest('hex');}
 
 function uppercaseFirst(str:string){return `${str[0].toUpperCase()}${str.substr(1)}`};
 
@@ -20,11 +23,11 @@ class Employee extends Model<InferAttributes<Employee>, InferCreationAttributes<
     declare employeeSalt: string;
     declare employeeDoorAccessCode: string;
     declare employeeEducation: string;
-    declare role?: string;
-
+    declare hasAdminPrivileges: boolean;
+    
     declare keeper?: Keeper | null;
     declare planningStaff?: PlanningStaff | null;
-    declare accountManager?: AccountManager | null;
+    declare generalStaff?: GeneralStaff | null;
 
     declare getKeeper: HasOneGetAssociationMixin<Keeper>;
     declare setKeeper: HasOneSetAssociationMixin<Keeper, number>;
@@ -32,48 +35,31 @@ class Employee extends Model<InferAttributes<Employee>, InferCreationAttributes<
     declare getPlanningStaff: HasOneGetAssociationMixin<PlanningStaff>;
     declare setPlanningStaff: HasOneSetAssociationMixin<PlanningStaff, number>;
 
-    declare getAccountManager: HasOneGetAssociationMixin<AccountManager>;
-    declare setAccountManager: HasOneSetAssociationMixin<AccountManager, number>;
+    declare getGeneralStaff: HasOneGetAssociationMixin<GeneralStaff>;
+    declare setGeneralStaff: HasOneSetAssociationMixin<GeneralStaff, number>;
 
     static getTotalEmployees(){ // Example for static class functions
         return Employee.count();
     }
 
+    public testPassword(password:string){
+        return !hash(password + this.employeeSalt).localeCompare(this.employeePasswordHash)
+    }
+
+    static generateEmployeeSalt(){
+        return (Math.random() + 1).toString(36).substring(7);
+    }
+
+    static getHash(password:string, salt:string){
+        return hash(password + salt);
+    }
+
     static async generateNewDoorAccessCode(){
         let accessCode = convertString(Math.floor(Math.random() * 999999));
-        while ((await Employee.findOne({where{employeeDoorAccessCode:accessCode}})) is not null){
+        while ((await Employee.findOne({where:{employeeDoorAccessCode:accessCode}})) != null){
             accessCode = convertString(Math.floor(Math.random() * 999999));
         }
         return accessCode;
-    }
-
-    public async getRole(){
-        if (!this.role) {
-            let keeper = await this.getKeeper();
-            if (keeper){
-                this.role = "keeper";
-                return keeper;
-            }
-            let planningStaff = await this.getPlanningStaff();
-            if (planningStaff){
-                this.role = "planningStaff";
-                return planningStaff;
-            }
-            let accountManager = await this.getAccountManager();
-            if (accountManager){
-                this.role = "accountManager";
-                return accountManager;
-            }
-            return null;
-        }else{
-            // As we can see this method will save the role and in the future only call required method in the future, saving some time
-            const mixinMethodName = `get${uppercaseFirst(this.role)}`;
-            return (this as any)[mixinMethodName]();
-        }
-    }
-
-    public setName(name: string){ // Example to define instance functions
-        this.employeeName = name;
     }
 
     public toJSON() { 
@@ -126,8 +112,9 @@ Employee.init({
         type: DataTypes.STRING,
         allowNull: false
     },
-    role:{
-        type: DataTypes.STRING
+    hasAdminPrivileges:{
+        type: DataTypes.BOOLEAN,
+        allowNull: false
     }
 }, {
     freezeTableName: true,

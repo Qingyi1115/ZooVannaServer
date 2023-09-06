@@ -1,6 +1,6 @@
 
 import {DataTypes, Model, CreationOptional, InferAttributes, InferCreationAttributes, NonAttribute, 
-    HasManyGetAssociationMixin, HasManySetAssociationMixin} from "Sequelize";
+    HasManyGetAssociationsMixin, HasManySetAssociationsMixin} from "Sequelize";
 import {conn} from '../db';
 import {Sensor} from './sensor';
 
@@ -16,8 +16,8 @@ class Facility extends Model<InferAttributes<Facility>, InferCreationAttributes<
 
     declare sensors?: [Sensor] | null;
 
-    declare getSensors: HasManyGetAssociationMixin<Sensor>;
-    declare setSensors: HasManySetAssociationMixin<Sensor, number>;
+    declare getSensors: HasManyGetAssociationsMixin<Sensor>;
+    declare setSensors: HasManySetAssociationsMixin<Sensor, number>;
 
     public async getFacilityDetail(){
         if (!this.facilityDetail) {
@@ -31,7 +31,7 @@ class Facility extends Model<InferAttributes<Facility>, InferCreationAttributes<
         //         this.role = "planningStaff";
         //         return planningStaff;
         //     }
-        //     return null;
+            return null;
         }else{
             // As we can see this method will save the role and in the future only call required method in the future, saving some time
             const mixinMethodName = `get${uppercaseFirst(this.facilityDetail)}`;
@@ -42,7 +42,7 @@ class Facility extends Model<InferAttributes<Facility>, InferCreationAttributes<
     public toJSON() { 
         // Can control default values returned rather than manually populating json, removing secrets
         // Similar idea albert more useful when compared to java's toString
-        // return {...this.get(), employeePasswordHash: undefined, employeeSalt: undefined}
+        return this.get() //{...this.get(), employeePasswordHash: undefined, employeeSalt: undefined}
     }
 }
 
