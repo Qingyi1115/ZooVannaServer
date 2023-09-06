@@ -72,7 +72,6 @@ Employee.init({
         type: DataTypes.STRING,
         allowNull: false,
         unique: true
-        
     },
     employeeAddress: {
         type: DataTypes.STRING,

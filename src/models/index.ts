@@ -3,6 +3,10 @@ import {conn} from '../db';
 import {Employee} from './employee';
 import {Keeper} from './keeper';
 import {PlanningStaff} from './planningStaff';
+import {AccountManager} from './accountManager';
+import {Facility} from './facility';
+import {Sensor} from './sensor';
+import {GeneralStaff} from './generalStaff';
 import {KeeperType, PlannerType} from './enumerated';
 
 function addCascadeOptions(options:object) {
@@ -12,15 +16,24 @@ function addCascadeOptions(options:object) {
 
 export const createDatabase = async (options:any) => {
   // Create relationships
-  Keeper.belongsTo(Employee, addCascadeOptions({foreignKey:"employeeId"}));
   Employee.hasOne(Keeper, addCascadeOptions({foreignKey:"employeeId"}));
+  Keeper.belongsTo(Employee, addCascadeOptions({foreignKey:"employeeId"}));
 
-  PlanningStaff.belongsTo(Employee, addCascadeOptions({foreignKey:"employeeId2"}));
-  Employee.hasOne(PlanningStaff, addCascadeOptions({foreignKey:"employeeId2"}));
+  Employee.hasOne(PlanningStaff, addCascadeOptions({foreignKey:"employeeId"}));
+  PlanningStaff.belongsTo(Employee, addCascadeOptions({foreignKey:"employeeId"}));
 
   Keeper.hasMany(Keeper, addCascadeOptions({foreignKey: "leaderId", as: "juniors"}));
   Keeper.belongsTo(Keeper, addCascadeOptions({foreignKey: "leaderId", as: "leader"}));
   
+  Employee.hasOne(GeneralStaff, addCascadeOptions({foreignKey:"employeeId"}));
+  GeneralStaff.belongsTo(Employee, addCascadeOptions({foreignKey:"employeeId"}));
+
+  Employee.hasOne(AccountManager, addCascadeOptions({foreignKey:"employeeId"}));
+  AccountManager.belongsTo(Employee, addCascadeOptions({foreignKey:"employeeId"}));
+
+  Facility.hasMany(Sensor, addCascadeOptions({foreignKey:"facilityId"}));
+  Sensor.belongsTo(Facility, addCascadeOptions({foreignKey:"facilityId"}));
+
   // Create tables
   if (options["forced"]){
     await conn.sync({force: options.forced})

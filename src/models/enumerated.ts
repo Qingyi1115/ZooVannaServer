@@ -8,5 +8,18 @@ enum PlannerType {
   CURATOR = "CURATOR"
 }
 
+enum GeneralStaffType {
+  MAINTENANCE = "MAINTENANCE",
+  OPERATE = "OPERATE"
+}
 
-export {KeeperType, PlannerType};
+enum SensorType{
+  TEMPERATURE = "TEMPERATURE",
+  LIGHT = "LIGHT", 
+  HUMIDITY = "HUMIDITY",
+  SOUND = "SOUND",
+  MOTION = "MOTION",
+  HUMAN = "HUMAN"
+}
+
+export {KeeperType, PlannerType, GeneralStaffType, SensorType};
