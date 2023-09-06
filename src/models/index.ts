@@ -52,6 +52,7 @@ export const tutorial = async () => {
     let marry = await Employee.create({
       employeeName:"marry", 
       employeeAddress:"Singapore Kent Ridge LT19",
+      employeeEmail:"marry@gmail.com",
       employeePhoneNumber: "911",
       employeePasswordHash:"fake_hash", 
       employeeSalt:"NaCl",
@@ -80,6 +81,7 @@ export const tutorial = async () => {
       {
         employeeName:"john", 
         employeeAddress:"Singapore Kent Ridge LT17",
+        employeeEmail:"john@gmail.com",
         employeePhoneNumber: "912",
         employeePasswordHash:"fake_hash_john", 
         employeeSalt:"NaAg",
@@ -93,6 +95,7 @@ export const tutorial = async () => {
       {
         employeeName:"bob", 
         employeeAddress:"Singapore Kent Ridge LT16",
+        employeeEmail:"bob@gmail.com",
         employeePhoneNumber: "913",
         employeePasswordHash:"fake_hash_bob", 
         employeeSalt:"NaH",
@@ -140,6 +143,7 @@ export const tutorial = async () => {
     {
       employeeName:"planner1", 
       employeeAddress:"Singapore Kent Ridge LT28",
+      employeeEmail:"planner1@gmail.com",
       employeePhoneNumber: "999",
       employeePasswordHash:"fake_hash_planner1", 
       employeeSalt:"H2",

@@ -4,12 +4,16 @@ import {DataTypes, Model, CreationOptional, InferAttributes, InferCreationAttrib
 import {conn} from '../db';
 import {Keeper} from './keeper';
 import {PlanningStaff} from './planningStaff';
+import { AccountManager } from "./accountManager";
 
 function uppercaseFirst(str:string){return `${str[0].toUpperCase()}${str.substr(1)}`};
+
+function convertString(doorAccessCode:number):string{return ('0'.repeat(6-doorAccessCode.toString().length)) + doorAccessCode.toString()}
 
 class Employee extends Model<InferAttributes<Employee>, InferCreationAttributes<Employee>> {
     declare employeeId: CreationOptional<number>;
     declare employeeName: string;
+    declare employeeEmail: string;
     declare employeeAddress:string;
     declare employeePhoneNumber: string;
     declare employeePasswordHash: string;
@@ -20,6 +24,7 @@ class Employee extends Model<InferAttributes<Employee>, InferCreationAttributes<
 
     declare keeper?: Keeper | null;
     declare planningStaff?: PlanningStaff | null;
+    declare accountManager?: AccountManager | null;
 
     declare getKeeper: HasOneGetAssociationMixin<Keeper>;
     declare setKeeper: HasOneSetAssociationMixin<Keeper, number>;
@@ -27,8 +32,19 @@ class Employee extends Model<InferAttributes<Employee>, InferCreationAttributes<
     declare getPlanningStaff: HasOneGetAssociationMixin<PlanningStaff>;
     declare setPlanningStaff: HasOneSetAssociationMixin<PlanningStaff, number>;
 
+    declare getAccountManager: HasOneGetAssociationMixin<AccountManager>;
+    declare setAccountManager: HasOneSetAssociationMixin<AccountManager, number>;
+
     static getTotalEmployees(){ // Example for static class functions
-        return Employee.count()
+        return Employee.count();
+    }
+
+    static async generateNewDoorAccessCode(){
+        let accessCode = convertString(Math.floor(Math.random() * 999999));
+        while ((await Employee.findOne({where{employeeDoorAccessCode:accessCode}})) is not null){
+            accessCode = convertString(Math.floor(Math.random() * 999999));
+        }
+        return accessCode;
     }
 
     public async getRole(){
@@ -42,6 +58,11 @@ class Employee extends Model<InferAttributes<Employee>, InferCreationAttributes<
             if (planningStaff){
                 this.role = "planningStaff";
                 return planningStaff;
+            }
+            let accountManager = await this.getAccountManager();
+            if (accountManager){
+                this.role = "accountManager";
+                return accountManager;
             }
             return null;
         }else{
@@ -69,6 +90,11 @@ Employee.init({
         primaryKey: true
     },
     employeeName: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        unique: true
+    },
+    employeeEmail: {
         type: DataTypes.STRING,
         allowNull: false,
         unique: true

@@ -1,6 +1,8 @@
 import express from 'express';
 import { Request, Response } from "express";
 import jwt from 'jsonwebtoken';
+import {Employee} from '../models/employee';
+import { AccountManager } from 'models/accountManager';
 
 import { secretKey, hash } from "../helpers/extremelyProtected";
 
@@ -38,6 +40,39 @@ export const login = async (req: Request, res: Response) => {
 
             res.status(200).json({ email, token });
         }
+    } catch (error: any) {
+        res.status(400).json({ error: error.message });
+    }
+}
+
+export const createUser = async (req: Request, res: Response) => {
+    try {
+        const { email } = req.jwtPayload
+
+        const employee =  await Employee.findOne({where:{eomployeeEmail:email}})
+
+        if ((await employee.getRole()).localeCompare("AccountManager")) {
+            return res.status(403).json({error: "Access Denied! Account managers only!"});
+        }
+
+        const { employeeName, employeeAddress, employeeEmail, employeePhoneNumber, employeeEducation } = req.body
+
+        const random_password = (Math.random() + 1).toString(36).substring(7) + (Math.random() + 1).toString(36).substring(7);
+        const random_salt = (Math.random() + 1).toString(36).substring(7);
+        
+        let marry = await Employee.create({
+            employeeName: employeeName, 
+            employeeAddress: employeeAddress,
+            employeeEmail: employeeEmail,
+            employeePhoneNumber: employeePhoneNumber,
+            employeePasswordHash: hash(random_password + random_salt), 
+            employeeSalt:random_salt,
+            employeeDoorAccessCode: Employee.generateNewDoorAccessCode(),
+            employeeEducation: employeeEducation,
+        });
+
+        return res.status(200).json({password:random_password})
+
     } catch (error: any) {
         res.status(400).json({ error: error.message });
     }
