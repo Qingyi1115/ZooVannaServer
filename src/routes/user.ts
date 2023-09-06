@@ -13,6 +13,6 @@ router.post("/login", login);
 
 router.use(authMiddleware)
 
-router.put("/createUser", createUser);
+router.post("/createUser", createUser);
 
 export default router;
