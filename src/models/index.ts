@@ -54,7 +54,7 @@ export const tutorial = async () => {
       employeeSalt: "NaCl",
       employeeDoorAccessCode:"123456",
       employeeEducation:"PHD in not eating",
-      hasAdminPrivileges: false
+      hasAdminPrivileges: true
     });
     console.log(marry.toJSON())
     console.log("marry's actuall secret hash: ", marry.employeePasswordHash)
