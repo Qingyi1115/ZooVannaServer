@@ -1,8 +1,12 @@
 
 import {DataTypes, Model, CreationOptional, InferAttributes, InferCreationAttributes, NonAttribute, 
-    HasManyGetAssociationsMixin, HasManySetAssociationsMixin} from "Sequelize";
+    HasManyGetAssociationsMixin, HasManySetAssociationsMixin,
+    HasOneGetAssociationMixin, HasOneSetAssociationMixin} from "Sequelize";
 import {conn} from '../db';
 import {Sensor} from './sensor';
+import{InHouse} from'./inHouse';
+import { ThirdParty } from "./thirdParty";
+import { AnimalClinic } from "./animalClinics";
 
 function uppercaseFirst(str:string){return `${str[0].toUpperCase()}${str.substr(1)}`};
 
@@ -14,10 +18,22 @@ class Facility extends Model<InferAttributes<Facility>, InferCreationAttributes<
 
     declare facilityDetail?: string;
 
-    declare sensors?: [Sensor] | null;
+    declare sensors?: Sensor[];
+    declare inHouse?: InHouse;
+    declare thirdParty?: ThirdParty;
+    declare animalClinic?: AnimalClinic;
 
     declare getSensors: HasManyGetAssociationsMixin<Sensor>;
     declare setSensors: HasManySetAssociationsMixin<Sensor, number>;
+    
+    declare getInHouse: HasOneGetAssociationMixin<InHouse>;
+    declare setInHouse: HasOneSetAssociationMixin<InHouse, number>;
+
+    declare getThirdParty: HasOneGetAssociationMixin<ThirdParty>;
+    declare setThirdParty: HasOneSetAssociationMixin<ThirdParty, number>;
+
+    declare getAnimalClinic: HasOneGetAssociationMixin<AnimalClinic>;
+    declare setAnimalClinic: HasOneSetAssociationMixin<AnimalClinic, number>;
 
     public async getFacilityDetail(){
         if (!this.facilityDetail) {

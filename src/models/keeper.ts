@@ -5,24 +5,17 @@ import {DataTypes, Model, InferAttributes, InferCreationAttributes,
     BelongsToGetAssociationMixin, BelongsToSetAssociationMixin} from "Sequelize";
 import {conn} from '../db';
 import {Employee} from './employee';
-import {KeeperType} from './enumerated';
+import {KeeperType, Specialization} from './enumerated';
 
 
 class Keeper extends Model<InferAttributes<Keeper>, InferCreationAttributes<Keeper>> {
     declare keeperType: KeeperType;
+    declare specialization: Specialization;
 
     declare employee?: Employee;
-    declare juniors?: Keeper[] | null; // Not required
-    declare leader?: Keeper | null;
 
     declare getEmployee: BelongsToGetAssociationMixin<Employee>;
     declare setEmployee: BelongsToSetAssociationMixin<Employee, number>;
-
-    declare getJuniors: HasManyGetAssociationsMixin<Keeper>;
-    declare setJuniors: HasManySetAssociationsMixin<Keeper, number>;
-
-    declare getLeader: HasOneGetAssociationMixin<Keeper>;
-    declare setLeader: HasOneSetAssociationMixin<Keeper, number>;
 
     // public toJSON() { 
     //     // Can control default values returned rather than manually populating json, removing secrets
@@ -35,6 +28,11 @@ Keeper.init({
     keeperType: {
         type:   DataTypes.ENUM,
         values: Object.values(KeeperType),
+        allowNull: false
+    },
+    specialization: {
+        type:   DataTypes.ENUM,
+        values: Object.values(Specialization),
         allowNull: false
     },
 }, {

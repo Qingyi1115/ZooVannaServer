@@ -3,11 +3,12 @@ import {DataTypes, Model, InferAttributes, InferCreationAttributes,
     BelongsToGetAssociationMixin, BelongsToSetAssociationMixin} from "Sequelize";
 import {conn} from '../db';
 import {Employee} from './employee';
-import {PlannerType} from './enumerated';
+import {PlannerType, Specialization} from './enumerated';
 
 
 class PlanningStaff extends Model<InferAttributes<PlanningStaff>, InferCreationAttributes<PlanningStaff>> {
     declare plannerType: PlannerType;
+    declare specialization: Specialization;
 
     declare employee?: Employee;
 
@@ -19,6 +20,11 @@ PlanningStaff.init({
     plannerType: {
         type:   DataTypes.ENUM,
         values: Object.values(PlannerType),
+        allowNull: false
+    },
+    specialization: {
+        type:   DataTypes.ENUM,
+        values: Object.values(Specialization),
         allowNull: false
     },
 }, {

@@ -4,15 +4,24 @@ import {DataTypes, Model, InferAttributes, InferCreationAttributes,
 import {conn} from '../db';
 import {Employee} from './employee';
 import {GeneralStaffType} from './enumerated';
+import { InHouse } from "./inHouse";
 
 
 class GeneralStaff extends Model<InferAttributes<GeneralStaff>, InferCreationAttributes<GeneralStaff>> {
     declare generalStaffType: GeneralStaffType;
 
     declare employee?: Employee;
+    declare maintainedFacility?: InHouse;
+    declare operatedFacility?: InHouse;
 
     declare getEmployee: BelongsToGetAssociationMixin<Employee>;
     declare setEmployee: BelongsToSetAssociationMixin<Employee, number>;
+
+    declare getMaintainedFacility: BelongsToGetAssociationMixin<InHouse>;
+    declare setMaintainedFacility: BelongsToSetAssociationMixin<InHouse, number>;
+
+    declare getOperatedFacility: BelongsToGetAssociationMixin<InHouse>;
+    declare setOperatedFacility: BelongsToSetAssociationMixin<InHouse, number>;
 }
 
 GeneralStaff.init({

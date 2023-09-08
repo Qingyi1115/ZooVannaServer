@@ -1,17 +1,20 @@
 //  Import models
-import {conn} from '../db';
-import {Employee} from './employee';
-import {Keeper} from './keeper';
-import {PlanningStaff} from './planningStaff';
-import {Facility} from './facility';
-import {Sensor} from './sensor';
-import {GeneralStaff} from './generalStaff';
-import {KeeperType, PlannerType, GeneralStaffType} from './enumerated';
+import { conn } from '../db';
+import { Employee } from './employee';
+import { Keeper } from './keeper';
+import { PlanningStaff } from './planningStaff';
+import { Facility } from './facility';
+import { Sensor } from './sensor';
+import { GeneralStaff } from './generalStaff';
+import { InHouse } from './inHouse';
+import { KeeperType, PlannerType, GeneralStaffType, Specialization } from './enumerated';
+import { ThirdParty } from './thirdParty';
+import { AnimalClinic } from './animalClinics';
+import { MedicalSupply } from './medicalSupply';
 
 function addCascadeOptions(options:object) {
   return {...options, onDelete: "CASCADE", onUpdate: "CASCADE"};
 };
-
 
 export const createDatabase = async (options:any) => {
   // Create relationships
@@ -21,22 +24,39 @@ export const createDatabase = async (options:any) => {
   Employee.hasOne(PlanningStaff, addCascadeOptions({foreignKey:"employeeId"}));
   PlanningStaff.belongsTo(Employee, addCascadeOptions({foreignKey:"employeeId"}));
 
-  Keeper.hasMany(Keeper, addCascadeOptions({foreignKey: "leaderId", as: "juniors"}));
-  Keeper.belongsTo(Keeper, addCascadeOptions({foreignKey: "leaderId", as: "leader"}));
-  
   Employee.hasOne(GeneralStaff, addCascadeOptions({foreignKey:"employeeId"}));
   GeneralStaff.belongsTo(Employee, addCascadeOptions({foreignKey:"employeeId"}));
 
   Facility.hasMany(Sensor, addCascadeOptions({foreignKey:"facilityId"}));
   Sensor.belongsTo(Facility, addCascadeOptions({foreignKey:"facilityId"}));
 
+  Facility.hasOne(InHouse, addCascadeOptions({foreignKey:"facilityId"}));
+  InHouse.belongsTo(Facility, addCascadeOptions({foreignKey:"facilityId"}));
+
+  InHouse.hasMany(GeneralStaff,addCascadeOptions({foreignKey:"maintainedFacilityId", as:"maintenanceStaff"}));
+  GeneralStaff.belongsTo(InHouse, addCascadeOptions({foreignKey:"maintainedFacilityId", as:"maintainedFacility"}));
+
+  InHouse.hasMany(GeneralStaff,addCascadeOptions({foreignKey:"operatedFacilityId", as:"operationStaff"}));
+  GeneralStaff.belongsTo(InHouse, addCascadeOptions({foreignKey:"operatedFacilityId", as:"operatedFacility"}));
+
+  InHouse.hasOne(InHouse, addCascadeOptions({foreignKey:"previousTramStopId", as:"nextTramStop"}));
+  InHouse.belongsTo(InHouse,addCascadeOptions({foreignKey:"previousTramStopId", as:"previousTramStop"}));
+
+  Facility.hasOne(ThirdParty, addCascadeOptions({foreignKey:"FacilityId"}))
+  ThirdParty.belongsTo(Facility, addCascadeOptions({foreignKey:"FacilityId"}))
+  
+  Facility.hasOne(AnimalClinic, addCascadeOptions({foreignKey:"FacilityId"}))
+  AnimalClinic.belongsTo(Facility, addCascadeOptions({foreignKey:"FacilityId"}))
+  
+  MedicalSupply.hasMany(AnimalClinic, addCascadeOptions({foreignKey:"AnimalClinicId"}))
+  AnimalClinic.belongsTo(MedicalSupply, addCascadeOptions({foreignKey:"AnimalClinicId"}))
+  
   // Create tables
   if (options["forced"]){
     await conn.sync({force: options.forced})
   }else{
     await conn.sync()
   }
-  
 }
 
 export const seedDatabase = async () => {
@@ -61,6 +81,7 @@ export const tutorial = async () => {
 
     let marryKeeper = await Keeper.create({
       keeperType: KeeperType.SENIOR_KEEPER,
+      specialization: Specialization.AMPHIBIAN
     });
 
     console.log(marryKeeper.toJSON())
@@ -87,7 +108,8 @@ export const tutorial = async () => {
         hasAdminPrivileges: false,
          // @ts-ignore
         keeper:{
-          keeperType: KeeperType.KEEPER
+          keeperType: KeeperType.KEEPER,
+          specialization: Specialization.AMPHIBIAN
         }
       },
       {
@@ -102,7 +124,8 @@ export const tutorial = async () => {
         hasAdminPrivileges: false,
          // @ts-ignore
         keeper:{
-          keeperType: KeeperType.KEEPER
+          keeperType: KeeperType.KEEPER,
+          specialization: Specialization.AMPHIBIAN
         }
       },
     ], {
@@ -121,16 +144,9 @@ export const tutorial = async () => {
     const johnKeeper = await minions[0].getKeeper();
     const bobKeeper = await minions[1].getKeeper();
     
-    // johnKeeper.setLeader(marryKeeper))
-    // bobKeeper.setLeader(marryKeeper))
-    await marryKeeper.setJuniors([johnKeeper, bobKeeper]);
 
     const senior = (await Keeper.findOne({where:{keeperType:KeeperType.SENIOR_KEEPER}}));
     console.log("senior", senior?.get());
-
-    const juniors =  (await senior?.getJuniors())?.map(a => a.get());
-    console.log("Juniors ",juniors);
-
 
     console.log("-------------KEEPERS--------------------");
     (await Keeper.findAll({include:{ all: true, nested: true }})).forEach(a => console.log(JSON.stringify(a, null, 4)));
@@ -151,7 +167,8 @@ export const tutorial = async () => {
       hasAdminPrivileges: false,
       // @ts-ignore
       planningStaff: {
-        plannerType : PlannerType.CURATOR
+        plannerType : PlannerType.CURATOR,
+        specialization: Specialization.AMPHIBIAN
       }
     }, {
       include:{
