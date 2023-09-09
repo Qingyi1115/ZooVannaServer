@@ -33,7 +33,7 @@ export const createUser = async (req: Request, res: Response) => {
             return res.status(400).json({error:"Missing information!"})
         }
 
-        let generatedOneTimePassword, newEmployee = createNewUser(employeeName, employeeAddress, employeeEmail, employeePhoneNumber, employeeEducation, (hasAdminPrivileges as string).toLocaleUpperCase() == "TRUE", role, roleJson);
+        let generatedOneTimePassword, newEmployee = await createNewUser(employeeName, employeeAddress, employeeEmail, employeePhoneNumber, employeeEducation, (hasAdminPrivileges as string).toLocaleUpperCase() == "TRUE", role, roleJson);
 
         return res.status(200).json({password:generatedOneTimePassword, created: newEmployee})
 

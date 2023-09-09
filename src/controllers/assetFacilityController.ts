@@ -20,9 +20,9 @@ export async function createFacility(req: Request, res: Response) {
             return res.status(400).json({error:"Missing information!"})
         }
 
-        let facility = createNewFacility(facilityName, xCoordinate, yCoordinate, facilityDetail, facilityDetailJson);
+        let facility = await createNewFacility(facilityName, xCoordinate, yCoordinate, facilityDetail, facilityDetailJson);
 
-        return res.status(200).json({facility: facility})
+        return res.status(200).json({facility:  facility.toJSON()})
     } catch (error: any) {
         res.status(400).json({ error: error.message });
     }
