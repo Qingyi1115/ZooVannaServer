@@ -47,7 +47,8 @@ class InHouse extends Model<InferAttributes<InHouse>, InferCreationAttributes<In
 
 InHouse.init({
     lastMaintained: {
-        type: DataTypes.DATE
+        type: DataTypes.DATE,
+        defaultValue: DataTypes.NOW,
     },
     isPaid: {
         type: DataTypes.BOOLEAN,

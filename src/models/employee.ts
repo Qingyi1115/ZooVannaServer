@@ -43,7 +43,7 @@ class Employee extends Model<InferAttributes<Employee>, InferCreationAttributes<
     }
 
     public testPassword(password:string){
-        return !hash(password + this.employeeSalt).localeCompare(this.employeePasswordHash)
+        return !hash(password + this.employeeSalt).localeCompare(this.employeePasswordHash);
     }
 
     static generateEmployeeSalt(){

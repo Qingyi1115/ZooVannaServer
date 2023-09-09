@@ -7,7 +7,7 @@ import { Facility } from './facility';
 import { Sensor } from './sensor';
 import { GeneralStaff } from './generalStaff';
 import { InHouse } from './inHouse';
-import { KeeperType, PlannerType, GeneralStaffType, Specialization } from './enumerated';
+import { KeeperType, PlannerType, GeneralStaffType, Specialization, SensorType, FacilityType } from './enumerated';
 import { ThirdParty } from './thirdParty';
 import { AnimalClinic } from './animalClinics';
 import { MedicalSupply } from './medicalSupply';
@@ -62,6 +62,8 @@ export const createDatabase = async (options:any) => {
 export const seedDatabase = async () => {
   // Fake data goes here
   await tutorial()
+
+
 }
 
 export const tutorial = async () => {
@@ -155,54 +157,89 @@ export const tutorial = async () => {
     
     
     let planner1 = await Employee.create(
-    {
-      employeeName:"planner1", 
-      employeeAddress:"Singapore Kent Ridge LT28",
-      employeeEmail:"planner1@gmail.com",
-      employeePhoneNumber: "999",
-      employeePasswordHash: Employee.getHash("planner1_password", "H2"), 
-      employeeSalt:"H2",
-      employeeDoorAccessCode:"987654",
-      employeeEducation:"PHD in not waking up",
-      hasAdminPrivileges: false,
-      // @ts-ignore
-      planningStaff: {
-        plannerType : PlannerType.CURATOR,
-        specialization: Specialization.AMPHIBIAN
-      }
-    }, {
-      include:{
-        association : "planningStaff"
-      }
-    }
-  );
-  console.log(planner1.toJSON());
-  console.log((await planner1.getPlanningStaff()).toJSON());
+        {
+            employeeName:"planner1", 
+            employeeAddress:"Singapore Kent Ridge LT28",
+            employeeEmail:"planner1@gmail.com",
+            employeePhoneNumber: "999",
+            employeePasswordHash: Employee.getHash("planner1_password", "H2"), 
+            employeeSalt:"H2",
+            employeeDoorAccessCode:"987654",
+            employeeEducation:"PHD in not waking up",
+            hasAdminPrivileges: false,
+            // @ts-ignore
+            planningStaff: {
+                plannerType : PlannerType.CURATOR,
+                specialization: Specialization.AMPHIBIAN
+            }
+        }, {
+            include:{
+                association : "planningStaff"
+            }
+        }
+    );
+    console.log(planner1.toJSON());
+    console.log((await planner1.getPlanningStaff()).toJSON());
 
   
-  let manager = await Employee.create(
-  {
-    employeeName:"manager1", 
-    employeeAddress:"Singapore Kent Ridge LT14",
-    employeeEmail:"manager1@gmail.com",
-    employeePhoneNumber: "000",
-    employeePasswordHash: Employee.getHash("manager1_password", "H3"), 
-    employeeSalt:"H3",
-    employeeDoorAccessCode:"222222",
-    employeeEducation:"Math Major",
-    hasAdminPrivileges: true,
-    // @ts-ignore
-    generalStaff: {
-      generalStaffType : GeneralStaffType.MAINTENANCE
-    }
-  }, {
-    include:{
-      association : "generalStaff"
-    }
-  }
-);
-console.log((await manager.getGeneralStaff()).toJSON());
-manager.employeeName = "manager_new_name";
-await manager.save();
-console.log(manager.toJSON());
+    let manager = await Employee.create({
+        employeeName:"manager1", 
+        employeeAddress:"Singapore Kent Ridge LT14",
+        employeeEmail:"manager1@gmail.com",
+        employeePhoneNumber: "000",
+        employeePasswordHash: Employee.getHash("manager1_password", "H3"), 
+        employeeSalt:"H3",
+        employeeDoorAccessCode:"222222",
+        employeeEducation:"Math Major",
+        hasAdminPrivileges: true,
+        // @ts-ignore
+        generalStaff: {
+            generalStaffType : GeneralStaffType.MAINTENANCE
+        }
+    }, {
+        include:{
+            association : "generalStaff"
+        }
+    });
+    console.log((await manager.getGeneralStaff()).toJSON());
+    manager.employeeName = "manager_new_name";
+    await manager.save();
+    console.log(manager.toJSON());
+    
+    let facility1 = await Facility.create({
+        facilityName: "facility1",
+        xCoordinate:123456,
+        yCoordinate: 654321,
+        facilityDetail: "actually a toilet",
+        sensors: [
+            {
+                sensorReadings: [1.2, 2.3, 3.4],
+                dateOfActivation: new Date(),
+                dateOfLastMaintained: new Date(),
+                sensorType: SensorType.HUMIDITY,
+            } as any,{
+                sensorReadings: [27.2, 27.3, 27.4],
+                dateOfActivation: new Date(),
+                dateOfLastMaintained: new Date(),
+                sensorType: SensorType.TEMPERATURE,
+            }
+        ],
+        inHouse: {
+            lastMaintained: new Date(),
+            isPaid: false,
+            maxAccommodationSize: 5,
+            hasAirCon: false,
+            facilityType: FacilityType.PARKING,
+        } as any
+    },{
+        include:[{
+            association : "sensors"
+        },{
+            association: "inHouse"
+        }]
+    });
+    (await Facility.findAll({include:{ all: true, nested: true }})).forEach(a => console.log(JSON.stringify(a, null, 4)));
+    // console.log(await facility1.getSensors())
+
+
 }

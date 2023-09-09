@@ -5,7 +5,8 @@ enum KeeperType {
 
 enum PlannerType {
   NUTRITIONIST = "NUTRITIONIST",
-  CURATOR = "CURATOR"
+  CURATOR = "CURATOR",
+  OPERATIONS_MANAGER = "OPERATIONS_MANAGER"
 }
 
 enum GeneralStaffType {

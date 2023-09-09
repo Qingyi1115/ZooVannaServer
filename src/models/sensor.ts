@@ -6,7 +6,7 @@ import {Facility} from './facility';
 
 class Sensor extends Model<InferAttributes<Sensor>, InferCreationAttributes<Sensor>> {
     declare sensorId: number;
-    declare sensorReadings: [number];
+    declare sensorReadings: number[] | string;
     declare dateOfActivation: Date;
     declare dateOfLastMaintained: Date;
     declare sensorType: SensorType;
@@ -24,11 +24,14 @@ Sensor.init({
         primaryKey: true
     },
     sensorReadings: {
-        type: DataTypes.ARRAY(DataTypes.DECIMAL), 
-        defaultValue: []
+        type: DataTypes.STRING(5000),
+        set(val) {
+            this.setDataValue("sensorReadings", JSON.stringify(val ?? ""));
+        },
     },
     dateOfActivation: {
         type: DataTypes.DATE,
+        defaultValue: DataTypes.NOW,
     },
     dateOfLastMaintained: {
         type: DataTypes.DATE,
@@ -44,7 +47,16 @@ Sensor.init({
     createdAt: true,
     updatedAt: 'updateTimestamp',
     sequelize: conn, // We need to pass the connection instance
-    modelName: 'generalStaff' // We need to choose the model name
+    modelName: 'sensor' // We need to choose the model name
+});
+
+Sensor.addHook("afterFind", findResult => {
+    if (!Array.isArray(findResult)) findResult = [findResult as any];
+    for (const instance of findResult) {
+        if (instance.sensorReadings instanceof String) {
+        instance.setDataValue("sensorReadings", JSON.parse(instance.sensorReadings));
+        }
+    }
 });
 
 export {Sensor};

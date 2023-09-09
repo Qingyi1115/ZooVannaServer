@@ -39,7 +39,7 @@ AnimalClinic.init({
     createdAt: true,
     updatedAt: 'updateTimestamp',
     sequelize: conn, // We need to pass the connection instance
-    modelName: 'inHouse' // We need to choose the model name
+    modelName: 'animalClinic' // We need to choose the model name
 });
 
 export {AnimalClinic};
