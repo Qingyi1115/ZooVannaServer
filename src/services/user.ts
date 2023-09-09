@@ -27,7 +27,7 @@ export async function createNewUser(employeeName: string, employeeAddress:string
           }
         }
       );
-      return [randomPassword, newEmployee];
+      return [randomPassword, newEmployee.toJSON()];
     } catch (error: any) {
       throw validationErrorHandler(error);
     }
