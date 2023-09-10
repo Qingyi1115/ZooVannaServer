@@ -37,22 +37,24 @@ class Facility extends Model<InferAttributes<Facility>, InferCreationAttributes<
 
     public async getFacilityDetail(){
         if (!this.facilityDetail) {
-        //     let keeper = await this.getKeeper();
-        //     if (keeper){
-        //         this.role = "keeper";
-        //         return keeper;
-        //     }
-        //     let planningStaff = await this.getPlanningStaff();
-        //     if (planningStaff){
-        //         this.role = "planningStaff";
-        //         return planningStaff;
-        //     }
-            return null;
-        }else{
-            // As we can see this method will save the role and in the future only call required method in the future, saving some time
-            const mixinMethodName = `get${uppercaseFirst(this.facilityDetail)}`;
-            return (this as any)[mixinMethodName]();
+            let inHouse = await this.getInHouse();
+            if (inHouse){
+                this.facilityDetail = "inHouse";
+                return inHouse;
+            }
+            let thirdParty = await this.getThirdParty();
+            if (thirdParty){
+                this.facilityDetail = "thirdParty";
+                return thirdParty;
+            }
+            let animalClinic = await this.getAnimalClinic();
+            if (animalClinic){
+                this.facilityDetail = "animalClinic";
+                return animalClinic;
+            }
         }
+        const mixinMethodName = `get${uppercaseFirst(this.facilityDetail ?? "")}`;
+        return (this as any)[mixinMethodName]();
     }
     
     public toJSON() { 

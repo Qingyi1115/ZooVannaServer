@@ -11,14 +11,14 @@ class GeneralStaff extends Model<InferAttributes<GeneralStaff>, InferCreationAtt
     declare generalStaffType: GeneralStaffType;
 
     declare employee?: Employee;
-    declare maintainedFacility?: InHouse;
+    declare maintainedFacilities?: InHouse[];
     declare operatedFacility?: InHouse;
 
     declare getEmployee: BelongsToGetAssociationMixin<Employee>;
     declare setEmployee: BelongsToSetAssociationMixin<Employee, number>;
 
-    declare getMaintainedFacility: BelongsToGetAssociationMixin<InHouse>;
-    declare setMaintainedFacility: BelongsToSetAssociationMixin<InHouse, number>;
+    declare getMaintainedFacilities: BelongsToGetAssociationMixin<InHouse[]>;
+    declare setMaintainedFacilities: BelongsToSetAssociationMixin<InHouse[], number>;
 
     declare getOperatedFacility: BelongsToGetAssociationMixin<InHouse>;
     declare setOperatedFacility: BelongsToSetAssociationMixin<InHouse, number>;

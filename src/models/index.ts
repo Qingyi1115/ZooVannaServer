@@ -11,6 +11,7 @@ import { KeeperType, PlannerType, GeneralStaffType, Specialization, SensorType, 
 import { ThirdParty } from './thirdParty';
 import { AnimalClinic } from './animalClinics';
 import { MedicalSupply } from './medicalSupply';
+import { FacilityLog } from './faciltiyLog';
 
 function addCascadeOptions(options:object) {
   return {...options, onDelete: "CASCADE", onUpdate: "CASCADE"};
@@ -33,14 +34,17 @@ export const createDatabase = async (options:any) => {
   Facility.hasOne(InHouse, addCascadeOptions({foreignKey:"facilityId"}));
   InHouse.belongsTo(Facility, addCascadeOptions({foreignKey:"facilityId"}));
 
-  InHouse.hasMany(GeneralStaff,addCascadeOptions({foreignKey:"maintainedFacilityId", as:"maintenanceStaff"}));
-  GeneralStaff.belongsTo(InHouse, addCascadeOptions({foreignKey:"maintainedFacilityId", as:"maintainedFacility"}));
+  InHouse.belongsToMany(GeneralStaff,{foreignKey:"maintainedFacilityId", through:"generalStaff_inHouse", as:"maintenanceStaffs"});
+  GeneralStaff.belongsToMany(InHouse, {foreignKey:"maintainedFacilityId", through:"generalStaff_inHouse", as:"maintainedFacilities"});
 
-  InHouse.hasMany(GeneralStaff,addCascadeOptions({foreignKey:"operatedFacilityId", as:"operationStaff"}));
+  InHouse.hasMany(GeneralStaff,addCascadeOptions({foreignKey:"operatedFacilityId", as:"operationStaffs"}));
   GeneralStaff.belongsTo(InHouse, addCascadeOptions({foreignKey:"operatedFacilityId", as:"operatedFacility"}));
 
   InHouse.hasOne(InHouse, addCascadeOptions({foreignKey:"previousTramStopId", as:"nextTramStop"}));
   InHouse.belongsTo(InHouse,addCascadeOptions({foreignKey:"previousTramStopId", as:"previousTramStop"}));
+
+  InHouse.hasMany(FacilityLog, addCascadeOptions({foreignKey:"inHouseId"}));
+  FacilityLog.belongsTo(InHouse,addCascadeOptions({foreignKey:"inHouseId"}));
 
   Facility.hasOne(ThirdParty, addCascadeOptions({foreignKey:"FacilityId"}))
   ThirdParty.belongsTo(Facility, addCascadeOptions({foreignKey:"FacilityId"}))
@@ -210,7 +214,6 @@ export const tutorial = async () => {
         facilityName: "facility1",
         xCoordinate:123456,
         yCoordinate: 654321,
-        facilityDetail: "actually a toilet",
         sensors: [
             {
                 sensorReadings: [1.2, 2.3, 3.4],
@@ -238,8 +241,12 @@ export const tutorial = async () => {
             association: "inHouse"
         }]
     });
-    (await Facility.findAll({include:{ all: true, nested: true }})).forEach(a => console.log(JSON.stringify(a, null, 4)));
     // console.log(await facility1.getSensors())
+
+    let maintenanceStaff = await manager.getGeneralStaff();
+    await maintenanceStaff.setMaintainedFacilities([await facility1.getInHouse()]);
+    (await Facility.findAll({include:{ all: true, nested: true }})).forEach(a => console.log(JSON.stringify(a, null, 4)));
+    console.log(await (await (await Facility.findOne())?.getFacilityDetail())?.getMaintenanceStaffs());
 
 
 }

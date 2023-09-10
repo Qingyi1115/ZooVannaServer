@@ -7,6 +7,7 @@ import {conn} from '../db';
 import { Facility } from "./facility";
 import { FacilityType } from './enumerated';
 import { GeneralStaff } from "./generalStaff";
+import { FacilityLog } from "./faciltiyLog";
 
 class InHouse extends Model<InferAttributes<InHouse>, InferCreationAttributes<InHouse>> {
     declare lastMaintained: Date;
@@ -18,8 +19,9 @@ class InHouse extends Model<InferAttributes<InHouse>, InferCreationAttributes<In
     declare facility?: Facility;
     declare previousTramStop?: InHouse;
     declare nextTramStop?: InHouse;
-    declare maintenanceStaff?: GeneralStaff;
-    declare operationStaff?: GeneralStaff;
+    declare maintenanceStaffs?: GeneralStaff;
+    declare operationStaffs?: GeneralStaff;
+    declare facilityLogs?: FacilityLog;
     
     declare getFacility: BelongsToGetAssociationMixin<Facility>;
     declare setFacility: BelongsToSetAssociationMixin<Facility, number>;
@@ -30,11 +32,14 @@ class InHouse extends Model<InferAttributes<InHouse>, InferCreationAttributes<In
     declare getNextTramStop: HasOneGetAssociationMixin<InHouse>;
     declare setNextTramStop: HasOneSetAssociationMixin<InHouse, number>;
 
-    declare getMaintenanceStaff: HasManyGetAssociationsMixin<GeneralStaff>;
-    declare setMaintenanceStaff: HasManySetAssociationsMixin<GeneralStaff, number>;
+    declare getMaintenanceStaffs: HasManyGetAssociationsMixin<GeneralStaff[]>;
+    declare setMaintenanceStaffs: HasManySetAssociationsMixin<GeneralStaff[], number>;
 
-    declare getOperationStaff: HasManyGetAssociationsMixin<GeneralStaff>;
-    declare setOperationStaff: HasManySetAssociationsMixin<GeneralStaff, number>;
+    declare getOperationStaffs: HasManyGetAssociationsMixin<GeneralStaff[]>;
+    declare setOperationStaffs: HasManySetAssociationsMixin<GeneralStaff[], number>;
+    
+    declare getFacilityLogs: HasManyGetAssociationsMixin<FacilityLog[]>;
+    declare setFacilityLogs: HasManySetAssociationsMixin<FacilityLog[], number>;
 
 
 
