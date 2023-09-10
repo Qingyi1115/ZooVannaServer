@@ -41,8 +41,6 @@ class InHouse extends Model<InferAttributes<InHouse>, InferCreationAttributes<In
     declare getFacilityLogs: HasManyGetAssociationsMixin<FacilityLog[]>;
     declare setFacilityLogs: HasManySetAssociationsMixin<FacilityLog[], number>;
 
-
-
     // public toJSON() { 
     //     // Can control default values returned rather than manually populating json, removing secrets
     //     // Similar idea albert more useful when compared to java's toString

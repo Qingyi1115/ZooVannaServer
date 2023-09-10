@@ -1,8 +1,6 @@
 import { Request, Response } from "express";
 import { createToken } from '../helpers/security';
 import { createNewUser, employeeLogin, findEmployeeByEmail } from "../services/user";
-import { validationErrorHandler } from "../helpers/errorHandler";
-
 
 export const login = async (req: Request, res: Response) => {
     try {

@@ -9,6 +9,7 @@ import cors from 'cors';
 import 'dotenv/config';
 
 import userRoutes from './routes/user'
+import assetFacilityRoutes from './routes/assetFacility'
 import {seedDatabase, createDatabase} from './models/index' 
 import {conn} from './db';
 
@@ -53,3 +54,4 @@ app.get("/", (req: Request, res: Response) => {
 
 
 app.use('/api/user/', userRoutes);
+app.use('/api/assetFacility/', assetFacilityRoutes);

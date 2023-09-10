@@ -11,12 +11,24 @@ export async function createNewFacility(facilityName:string, xCoordinate:number,
     newFacility[facilityDetail] = facilityDetailJson;
 
     try{
-        return await Facility.create(newFacility,{
+        return Facility.create(newFacility,{
             include:[{
                 association : facilityDetail
             }]
         });
     } catch (error: any) {
-      throw validationErrorHandler(error);
+        throw validationErrorHandler(error);
     }
 }
+
+export async function getFacilityById(facilityId:number) {
+
+    try{
+        return Facility.findOne({
+            where:{"facilityId":facilityId}
+        });
+    } catch (error: any) {
+        throw validationErrorHandler(error);
+    }
+}
+

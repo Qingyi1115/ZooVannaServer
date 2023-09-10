@@ -6,7 +6,7 @@ export function validationErrorHandler(error:any){
         error.errors.forEach(element => {
             msgs.push(element.message)
         });
-        return {error: msgs };
+        return {message: msgs };
     }
     return error;
 }

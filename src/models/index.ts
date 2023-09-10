@@ -187,24 +187,45 @@ export const tutorial = async () => {
 
   
     let manager = await Employee.create({
-        employeeName:"manager1", 
-        employeeAddress:"Singapore Kent Ridge LT14",
-        employeeEmail:"manager1@gmail.com",
-        employeePhoneNumber: "000",
-        employeePasswordHash: Employee.getHash("manager1_password", "H3"), 
-        employeeSalt:"H3",
-        employeeDoorAccessCode:"222222",
-        employeeEducation:"Math Major",
-        hasAdminPrivileges: true,
-        // @ts-ignore
-        generalStaff: {
-            generalStaffType : GeneralStaffType.MAINTENANCE
-        }
-    }, {
-        include:{
-            association : "generalStaff"
-        }
-    });
+      employeeName:"manager1", 
+      employeeAddress:"Singapore Kent Ridge LT14",
+      employeeEmail:"manager1@gmail.com",
+      employeePhoneNumber: "000",
+      employeePasswordHash: Employee.getHash("manager1_password", "H3"), 
+      employeeSalt:"H3",
+      employeeDoorAccessCode:"222222",
+      employeeEducation:"Math Major",
+      hasAdminPrivileges: true,
+      // @ts-ignore
+      generalStaff: {
+          generalStaffType : GeneralStaffType.MAINTENANCE
+      }
+  }, {
+      include:{
+          association : "generalStaff"
+      }
+  });
+  
+  let manager2 = await Employee.create({
+      employeeName:"manager2", 
+      employeeAddress:"Singapore Kent Ridge LT12",
+      employeeEmail:"manager2@gmail.com",
+      employeePhoneNumber: "001",
+      employeePasswordHash: Employee.getHash("manager2_password", "SiO2"), 
+      employeeSalt:"SiO2",
+      employeeDoorAccessCode:"222223",
+      employeeEducation:"Another Math Major",
+      hasAdminPrivileges: true,
+      // @ts-ignore
+      planningStaff: {
+        plannerType : PlannerType.OPERATIONS_MANAGER,
+        specialization: Specialization.REPTILE
+      }
+  }, {
+      include:{
+          association : "planningStaff"
+      }
+  });
     console.log((await manager.getGeneralStaff()).toJSON());
     manager.employeeName = "manager_new_name";
     await manager.save();
