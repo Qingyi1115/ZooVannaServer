@@ -34,7 +34,7 @@ export async function getFacilityById(facilityId:number) {
     }
 }
 
-export async function addSensorByFacilityId(facilityId:number, sensorType: SensorType, sensorName: string) : Sensor {
+export async function addSensorByFacilityId(facilityId:number, sensorType: SensorType, sensorName: string) : Promise<Sensor> {
 
     try{
         const facility = await Facility.findOne({where:{"facilityId":facilityId}});
