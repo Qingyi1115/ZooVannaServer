@@ -7,6 +7,7 @@ import {Facility} from './facility';
 class Sensor extends Model<InferAttributes<Sensor>, InferCreationAttributes<Sensor>> {
     declare sensorId: number;
     declare sensorReadings: number[] | string;
+    declare sensorName: string;
     declare dateOfActivation: Date;
     declare dateOfLastMaintained: Date;
     declare sensorType: SensorType;
@@ -32,6 +33,10 @@ Sensor.init({
     dateOfActivation: {
         type: DataTypes.DATE,
         defaultValue: DataTypes.NOW,
+    },
+    sensorName: {
+        type: DataTypes.STRING,
+        allowNull: false
     },
     dateOfLastMaintained: {
         type: DataTypes.DATE,

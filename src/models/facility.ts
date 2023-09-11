@@ -1,6 +1,6 @@
 
 import {DataTypes, Model, CreationOptional, InferAttributes, InferCreationAttributes, NonAttribute, 
-    HasManyGetAssociationsMixin, HasManySetAssociationsMixin,
+    HasManyGetAssociationsMixin, HasManySetAssociationsMixin, HasManyAddAssociationMixin,
     HasOneGetAssociationMixin, HasOneSetAssociationMixin} from "Sequelize";
 import {conn} from '../db';
 import {Sensor} from './sensor';
@@ -25,6 +25,7 @@ class Facility extends Model<InferAttributes<Facility>, InferCreationAttributes<
 
     declare getSensors: HasManyGetAssociationsMixin<Sensor>;
     declare setSensors: HasManySetAssociationsMixin<Sensor, number>;
+    declare addSensor: HasManyAddAssociationMixin<Sensor, number>;
     
     declare getInHouse: HasOneGetAssociationMixin<InHouse>;
     declare setInHouse: HasOneSetAssociationMixin<InHouse, number>;
