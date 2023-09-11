@@ -59,4 +59,31 @@ enum MedicalSupplyType{
   PPE="PPE"
 }
 
-export {KeeperType, PlannerType, GeneralStaffType, SensorType, FacilityType, Specialization, MedicalSupplyType};
+enum ConservationStatus{
+  DATA_DEFICIENT = "DATA_DEFICIENT",
+  DOMESTICATED = "DOMESTICATED",
+  LEAST_CONCERN = "LEAST_CONCERN",
+  NEAR_THREATENED = "NEAR_THREATENED",
+  VULNERABLE= "VULNERABLE",
+  ENDANGERED= "ENDANGERED",
+  CRITICALLY_ENDANGERED = "CRITICALLY_ENDANGERED",
+  EXTINCT_IN_WILD= "EXTINCT_IN_WILD"
+}
+
+enum Continent{
+  AFRICA = "AFRICA",
+  ASIA="ASIA",
+  EUROPE= "EUROPE",
+  NORTH_AMERICA ="NORTH_AMERICA",
+  SOUTH_OR_CENTRAL_AMERICA= "SOUTH_OR_CENTRAL_AMERICA",
+  OCEANIA="OCEANIA"
+}
+
+enum GroupSexualDynamic{
+  MONOGAMOUS="MONOGAMOUS",
+  PROMISCUOUS="PROMISCUOUS",
+  POLYGYNOUS="POLYGYNOUS",
+  POLYANDROUS="POLYANDROUS"
+}
+
+export {KeeperType, PlannerType, GeneralStaffType, SensorType, FacilityType, Specialization, MedicalSupplyType, ConservationStatus, Continent, GroupSexualDynamic};
