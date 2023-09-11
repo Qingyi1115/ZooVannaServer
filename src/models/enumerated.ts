@@ -86,4 +86,42 @@ enum GroupSexualDynamic{
   POLYANDROUS="POLYANDROUS"
 }
 
-export {KeeperType, PlannerType, GeneralStaffType, SensorType, FacilityType, Specialization, MedicalSupplyType, ConservationStatus, Continent, GroupSexualDynamic};
+enum PresentationContainer {}
+enum PresentationMethod{}
+enum PresentationLocation{}
+enum AnimalGrowthState{}
+
+enum AnimalSex{
+  MALE="MALE",
+  FEMALE="FEMALE",
+  UNKNOWN="UNKNOWN",
+  ASEXUAL="ASEXUAL"
+}
+
+enum AcquisitionMethod{
+  INFANT="INFANT",
+  JUVENILE="JUVENILE",
+  ADOLESCENT="ADOLESCENT",
+  ADULT="ADULT",
+  ELDER="ELDER"
+}
+
+enum AnimalGrowthStage{
+  CAPTIVE_BRED="CAPTIVE_BRED",
+  WILD_CAPTURED="WILD_CAPTURED",
+  TRANSFERRED_IN="TRANSFERRED_IN"
+}
+
+enum AnimalStatusType{}
+
+enum Biome{
+  AQUATIC="AQUATIC",
+  DESERT="DESERT",
+  GRASSLAND="GRASSLAND",
+  TAIGA="TAIGA",
+  TEMPERATE="TEMPERATE",
+  TROPICAL="TROPICAL",
+  TUNDRA="TUNDRA"
+}
+
+export {KeeperType, PlannerType, GeneralStaffType, SensorType, FacilityType, Specialization, MedicalSupplyType, ConservationStatus, Continent, GroupSexualDynamic, PresentationContainer, PresentationMethod, PresentationLocation, AnimalGrowthState, AnimalSex, AcquisitionMethod, AnimalGrowthStage, AnimalStatusType, Biome};

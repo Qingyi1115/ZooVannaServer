@@ -19,9 +19,9 @@ class InHouse extends Model<InferAttributes<InHouse>, InferCreationAttributes<In
     declare facility?: Facility;
     declare previousTramStop?: InHouse;
     declare nextTramStop?: InHouse;
-    declare maintenanceStaffs?: GeneralStaff;
-    declare operationStaffs?: GeneralStaff;
-    declare facilityLogs?: FacilityLog;
+    declare maintenanceStaffs?: GeneralStaff[];
+    declare operationStaffs?: GeneralStaff[];
+    declare facilityLogs?: FacilityLog[];
     
     declare getFacility: BelongsToGetAssociationMixin<Facility>;
     declare setFacility: BelongsToSetAssociationMixin<Facility, number>;

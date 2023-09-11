@@ -38,7 +38,7 @@ export async function addSensorToFacility(req: Request, res: Response) {
         
         if (!((await employee.getPlanningStaff())?.plannerType == PlannerType.OPERATIONS_MANAGER)) return res.status(403).json({error: "Access Denied! Operation managers only!"});
 
-        const { facilityId, sensorType, sensorName} = req.body
+        const { facilityId, sensorType, sensorName } = req.body
 
         if ([facilityId, sensorType, sensorName].includes(undefined)){
             return res.status(400).json({error:"Missing information!"})

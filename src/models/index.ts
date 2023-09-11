@@ -12,6 +12,15 @@ import { ThirdParty } from './thirdParty';
 import { AnimalClinic } from './animalClinics';
 import { MedicalSupply } from './medicalSupply';
 import { FacilityLog } from './faciltiyLog';
+import { SpeciesDietNeed } from './speciesDietNeed';
+import { Species } from './species';
+import { SpeciesEnclosureNeed } from './speciesEnclosureNeed';
+import { Animal } from './animal';
+import { TerrainDistribution } from './terrainDistribution';
+import { Enclosure } from './enclosure';
+import { BarrierType } from './barrierType';
+import { Plantation } from './plantation';
+import { AnimalLog } from './animalLog';
 
 function addCascadeOptions(options:object) {
   return {...options, onDelete: "CASCADE", onUpdate: "CASCADE"};
@@ -46,14 +55,50 @@ export const createDatabase = async (options:any) => {
   InHouse.hasMany(FacilityLog, addCascadeOptions({foreignKey:"inHouseId"}));
   FacilityLog.belongsTo(InHouse,addCascadeOptions({foreignKey:"inHouseId"}));
 
-  Facility.hasOne(ThirdParty, addCascadeOptions({foreignKey:"FacilityId"}))
-  ThirdParty.belongsTo(Facility, addCascadeOptions({foreignKey:"FacilityId"}))
+  Facility.hasOne(ThirdParty, addCascadeOptions({foreignKey:"FacilityId"}));
+  ThirdParty.belongsTo(Facility, addCascadeOptions({foreignKey:"FacilityId"}));
   
-  Facility.hasOne(AnimalClinic, addCascadeOptions({foreignKey:"FacilityId"}))
-  AnimalClinic.belongsTo(Facility, addCascadeOptions({foreignKey:"FacilityId"}))
+  Facility.hasOne(AnimalClinic, addCascadeOptions({foreignKey:"FacilityId"}));
+  AnimalClinic.belongsTo(Facility, addCascadeOptions({foreignKey:"FacilityId"}));
   
-  MedicalSupply.hasMany(AnimalClinic, addCascadeOptions({foreignKey:"AnimalClinicId"}))
-  AnimalClinic.belongsTo(MedicalSupply, addCascadeOptions({foreignKey:"AnimalClinicId"}))
+  MedicalSupply.hasMany(AnimalClinic, addCascadeOptions({foreignKey:"AnimalClinicId"}));
+  AnimalClinic.belongsTo(MedicalSupply, addCascadeOptions({foreignKey:"AnimalClinicId"}));
+  
+  SpeciesDietNeed.hasMany(Species, addCascadeOptions({foreignKey:"speciesDietNeedId"}));
+  Species.belongsTo(SpeciesDietNeed, addCascadeOptions({foreignKey:"speciesDietNeedId"}));
+  
+  SpeciesEnclosureNeed.hasMany(Species, addCascadeOptions({foreignKey:"speciesEnclosureNeedId"}));
+  Species.belongsTo(SpeciesEnclosureNeed, addCascadeOptions({foreignKey:"speciesEnclosureNeedId"}));
+
+  Species.hasMany(Animal, addCascadeOptions({foreignKey:"speciesId"}));
+  Animal.belongsTo(Species, addCascadeOptions({foreignKey:"speciesId"}));
+
+  Animal.belongsToMany(Animal,{foreignKey:"parentId", through:"parent_child", as:"parent"});
+  Animal.belongsToMany(Animal, {foreignKey:"childId", through:"parent_child", as:"children"});
+
+  Animal.hasMany(AnimalLog, addCascadeOptions({foreignKey:"animalId"}));
+  AnimalLog.belongsTo(Animal, addCascadeOptions({foreignKey:"animalId"}));
+
+  AnimalClinic.hasMany(Animal, addCascadeOptions({foreignKey:"animalClinicId"}));
+  Animal.belongsTo(AnimalClinic, addCascadeOptions({foreignKey:"animalClinicId"}));
+
+  TerrainDistribution.hasMany(SpeciesEnclosureNeed, addCascadeOptions({foreignKey:"terrainDistributionId"}));
+  SpeciesEnclosureNeed.belongsTo(TerrainDistribution, addCascadeOptions({foreignKey:"terrainDistributionId"}));
+
+  TerrainDistribution.hasMany(Enclosure, addCascadeOptions({foreignKey:"terrainDistributionId"}));
+  Enclosure.belongsTo(TerrainDistribution, addCascadeOptions({foreignKey:"terrainDistributionId"}));
+  
+  Enclosure.hasMany(Animal, addCascadeOptions({foreignKey:"enclosureId"}));
+  Animal.belongsTo(Enclosure, addCascadeOptions({foreignKey:"enclosureId"}));
+
+  Enclosure.hasOne(BarrierType, addCascadeOptions({foreignKey:"enclosureId"}));
+  BarrierType.belongsTo(Enclosure, addCascadeOptions({foreignKey:"enclosureId"}));
+  
+  Enclosure.hasOne(BarrierType, addCascadeOptions({foreignKey:"enclosureId"}));
+  BarrierType.belongsTo(Enclosure, addCascadeOptions({foreignKey:"enclosureId"}));
+  
+  Enclosure.hasOne(Plantation, addCascadeOptions({foreignKey:"enclosureId"}));
+  Plantation.belongsTo(Enclosure, addCascadeOptions({foreignKey:"enclosureId"}));
   
   // Create tables
   if (options["forced"]){
@@ -66,7 +111,6 @@ export const createDatabase = async (options:any) => {
 export const seedDatabase = async () => {
   // Fake data goes here
   await tutorial()
-
 
 }
 

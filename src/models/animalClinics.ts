@@ -1,11 +1,12 @@
 
 import {DataTypes, Model, InferAttributes, InferCreationAttributes,
     BelongsToGetAssociationMixin, BelongsToSetAssociationMixin,
-    HasOneGetAssociationMixin, HasOneSetAssociationMixin} from "Sequelize";
+    HasManySetAssociationsMixin, HasManyGetAssociationsMixin, HasManyAddAssociationMixin} from "Sequelize";
 import {conn} from '../db';
 import { Facility } from "./facility";
 import { Specialization } from './enumerated';
 import { MedicalSupply } from "./medicalSupply";
+import { Animal } from "./animal";
 
 
 class AnimalClinic extends Model<InferAttributes<AnimalClinic>, InferCreationAttributes<AnimalClinic>> {
@@ -13,12 +14,17 @@ class AnimalClinic extends Model<InferAttributes<AnimalClinic>, InferCreationAtt
     
     declare facility?: Facility;
     declare medicalSupply?: MedicalSupply;
+    declare animals? : Animal[];
     
     declare getFacility: BelongsToGetAssociationMixin<Facility>;
     declare setFacility: BelongsToSetAssociationMixin<Facility, number>;
 
     declare getMedicalSupply: BelongsToGetAssociationMixin<MedicalSupply>;
     declare setMedicalSupply: BelongsToSetAssociationMixin<MedicalSupply, number>;
+    
+    declare getAnimals: HasManyGetAssociationsMixin<Animal[]>;
+    declare addAnimal: HasManyAddAssociationMixin<Animal[], number>;
+    declare setAnimals: HasManySetAssociationsMixin<Animal[], number>;
 
     // public toJSON() { 
     //     // Can control default values returned rather than manually populating json, removing secrets

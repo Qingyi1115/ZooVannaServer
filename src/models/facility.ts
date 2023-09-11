@@ -7,8 +7,7 @@ import {Sensor} from './sensor';
 import{InHouse} from'./inHouse';
 import { ThirdParty } from "./thirdParty";
 import { AnimalClinic } from "./animalClinics";
-
-function uppercaseFirst(str:string){return `${str[0].toUpperCase()}${str.substr(1)}`};
+import { uppercaseFirst } from "../helpers/others";
 
 class Facility extends Model<InferAttributes<Facility>, InferCreationAttributes<Facility>> {
     declare facilityId: CreationOptional<number>;

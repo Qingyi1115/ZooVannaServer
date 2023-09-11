@@ -2,7 +2,9 @@
 import {DataTypes, Model, InferAttributes, InferCreationAttributes,
     BelongsToGetAssociationMixin, BelongsToSetAssociationMixin} from "Sequelize";
 import {conn} from '../db';
-import {GeneralStaffType, ConservationStatus, Continent, GroupSexualDynamic} from './enumerated';
+import {ConservationStatus, Continent, GroupSexualDynamic} from './enumerated';
+import { SpeciesDietNeed } from "./speciesDietNeed";
+import { SpeciesEnclosureNeed } from "./speciesEnclosureNeed";
 
 class Species extends Model<InferAttributes<Species>, InferCreationAttributes<Species>> {
     declare speciesId: number;
@@ -24,11 +26,16 @@ class Species extends Model<InferAttributes<Species>, InferCreationAttributes<Sp
     declare groupSexualDynamic: GroupSexualDynamic;
     declare isBigHabitatSpecies: Boolean;
     declare imageUrl: string;
+    declare generalDietPreference: string;
 
-    // declare employee?: Employee;
+    declare speciesDietNeed?: SpeciesDietNeed;
+    declare speciesEnclosureNeed?: SpeciesEnclosureNeed;
+    
+    declare getSpeciesDietNeed: BelongsToGetAssociationMixin<SpeciesDietNeed>;
+    declare setSpeciesDietNeed: BelongsToSetAssociationMixin<SpeciesDietNeed, number>;
 
-    // declare getEmployee: BelongsToGetAssociationMixin<Employee>;
-    // declare setEmployee: BelongsToSetAssociationMixin<Employee, number>;
+    declare getSpeciesEnclosureNeed: BelongsToGetAssociationMixin<SpeciesEnclosureNeed>;
+    declare setSpeciesEnclosureNeed: BelongsToSetAssociationMixin<SpeciesEnclosureNeed, number>;
 }
 
 Species.init({
@@ -109,6 +116,10 @@ Species.init({
             allowNull: false
         },
         imageUrl: {
+            type: DataTypes.STRING,
+            allowNull: false
+        },
+        generalDietPreference: {
             type: DataTypes.STRING,
             allowNull: false
         },
