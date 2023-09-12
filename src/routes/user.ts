@@ -1,7 +1,7 @@
 import express from "express";
 
 // Controller functions
-import { login, createUser } from "../controllers/userController";
+import { login, createEmployee, retrieveEmployeeAccountDetails, updateEmployeeAccount, retrieveAllEmployeeDetails } from "../controllers/userController";
 import { authMiddleware } from "../middlewares/authMiddleware";
 
 const router = express.Router();
@@ -13,6 +13,10 @@ router.post("/login", login);
 
 router.use(authMiddleware)
 
-router.post("/createUser", createUser);
+router.put("/createEmployee", createEmployee);
+router.put("/retrieveEmployeeAccountDetails", retrieveEmployeeAccountDetails);
+router.put("/updateEmployeeAccount", updateEmployeeAccount);
+router.put("/retrieveAllEmployeeDetails", retrieveAllEmployeeDetails);
+router.put("/createEmployee", createEmployee);
 
 export default router;

@@ -24,6 +24,7 @@ class Employee extends Model<InferAttributes<Employee>, InferCreationAttributes<
     declare employeeDoorAccessCode: string;
     declare employeeEducation: string;
     declare hasAdminPrivileges: boolean;
+    declare dateOfResignation: Date | null;
     
     declare keeper?: Keeper | null;
     declare planningStaff?: PlanningStaff | null;
@@ -44,6 +45,12 @@ class Employee extends Model<InferAttributes<Employee>, InferCreationAttributes<
 
     public testPassword(password:string){
         return !hash(password + this.employeeSalt).localeCompare(this.employeePasswordHash);
+    }
+
+    public updatePassword(password:string){
+        this.employeePasswordHash = hash(password + this.employeeSalt);
+        this.save();
+        return this;
     }
 
     static generateEmployeeSalt(){
@@ -115,6 +122,9 @@ Employee.init({
     hasAdminPrivileges:{
         type: DataTypes.BOOLEAN,
         allowNull: false
+    },
+    dateOfResignation:{
+        type: DataTypes.DATE
     }
 }, {
     freezeTableName: true,

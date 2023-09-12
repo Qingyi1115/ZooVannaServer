@@ -8,7 +8,7 @@ const router = express.Router();
 
 router.use(authMiddleware)
 
-router.post("/createFacility", createFacility);
+router.put("/createFacility", createFacility);
 router.post("/updateFacility", updateFacility);
 router.put("/addSensor", addSensorToFacility);
 

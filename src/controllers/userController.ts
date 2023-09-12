@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { createToken } from '../helpers/security';
-import { createNewUser, employeeLogin, findEmployeeByEmail } from "../services/user";
+import { createNewEmployee, employeeLogin, findEmployeeByEmail } from "../services/user";
 
 export const login = async (req: Request, res: Response) => {
     try {
@@ -17,7 +17,7 @@ export const login = async (req: Request, res: Response) => {
     }
 }
 
-export const createUser = async (req: Request, res: Response) => {
+export const createEmployee = async (req: Request, res: Response) => {
     try {
         const { email } = (req as any).locals.jwtPayload
         const employee =  await findEmployeeByEmail(email);
@@ -31,7 +31,7 @@ export const createUser = async (req: Request, res: Response) => {
             return res.status(400).json({error:"Missing information!"})
         }
 
-        let generatedOneTimePassword, newEmployee = await createNewUser(employeeName, employeeAddress, employeeEmail, employeePhoneNumber, employeeEducation, (hasAdminPrivileges as string).toLocaleUpperCase() == "TRUE", role, roleJson);
+        let generatedOneTimePassword, newEmployee = await createNewEmployee(employeeName, employeeAddress, employeeEmail, employeePhoneNumber, employeeEducation, (hasAdminPrivileges as string).toLocaleUpperCase() == "TRUE", role, roleJson);
 
         return res.status(200).json({password:generatedOneTimePassword, created: newEmployee})
 
@@ -40,3 +40,7 @@ export const createUser = async (req: Request, res: Response) => {
         return res.status(400).json({ error: error.message });
     }
 }
+
+export const retrieveEmployeeAccountDetails = async (req: Request, res: Response) => {}
+export const updateEmployeeAccount = async (req: Request, res: Response) => {}
+export const retrieveAllEmployeeDetails = async (req: Request, res: Response) => {}

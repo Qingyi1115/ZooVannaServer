@@ -3,7 +3,7 @@ import { hash } from "../helpers/security";
 import { Employee } from "../models/employee";
 
 
-export async function createNewUser(employeeName: string, employeeAddress:string, employeeEmail:string, employeePhoneNumber:string, employeeEducation:string, hasAdminPrivileges:Boolean, role:string, roleJson:any) {
+export async function createNewEmployee(employeeName: string, employeeAddress:string, employeeEmail:string, employeePhoneNumber:string, employeeEducation:string, hasAdminPrivileges:Boolean, role:string, roleJson:any) {
 
     const randomPassword = (Math.random() + 1).toString(36).substring(7) + (Math.random() + 1).toString(36).substring(7);
     const randomSalt = (Math.random() + 1).toString(36).substring(7);
