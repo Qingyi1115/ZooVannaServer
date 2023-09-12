@@ -21,6 +21,7 @@ import { Enclosure } from './enclosure';
 import { BarrierType } from './barrierType';
 import { Plantation } from './plantation';
 import { AnimalLog } from './animalLog';
+import { Event } from './event';
 
 function addCascadeOptions(options:object) {
   return {...options, onDelete: "CASCADE", onUpdate: "CASCADE"};
@@ -102,6 +103,24 @@ export const createDatabase = async (options:any) => {
   
   Enclosure.hasOne(Plantation, addCascadeOptions({foreignKey:"enclosureId"}));
   Plantation.belongsTo(Enclosure, addCascadeOptions({foreignKey:"enclosureId"}));
+
+  PlanningStaff.hasMany(Event, addCascadeOptions({foreignKey:"planningStaffId"}));
+  Event.belongsTo(PlanningStaff, addCascadeOptions({foreignKey:"planningStaffId"}));
+  
+  Keeper.belongsToMany(Event,{foreignKey:"keeperId", through:"responsibleFor", as:"keepers"});
+  Event.belongsToMany(Keeper, {foreignKey:"eventId", through:"responsibleFor", as:"events"});
+
+  Enclosure.hasMany(Event, addCascadeOptions({foreignKey:"enclosureId"}));
+  Event.belongsTo(Enclosure, addCascadeOptions({foreignKey:"enclosureId"}));
+
+  Animal.hasMany(Event, addCascadeOptions({foreignKey:"animalId"}));
+  Event.belongsTo(Animal, addCascadeOptions({foreignKey:"animalId"}));
+
+  InHouse.hasMany(Event, addCascadeOptions({foreignKey:"inHouseId"}));
+  Event.belongsTo(InHouse, addCascadeOptions({foreignKey:"inHouseId"}));
+
+  AnimalClinic.hasMany(Event, addCascadeOptions({foreignKey:"animalClinicId"}));
+  Event.belongsTo(AnimalClinic, addCascadeOptions({foreignKey:"animalClinicId"}));
   
   // Create tables
   if (options["forced"]){

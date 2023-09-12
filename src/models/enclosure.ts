@@ -8,7 +8,6 @@ import {DataTypes, Model, InferAttributes, InferCreationAttributes,
         HasOneGetAssociationMixin,
         HasOneSetAssociationMixin} from "Sequelize";
 import {conn} from '../db';
-import { Species } from "./species";
 import { TerrainDistribution } from "./terrainDistribution";
 import { Animal } from "./animal";
 import { BarrierType } from "./barrierType";
@@ -34,6 +33,7 @@ class Enclosure extends Model<InferAttributes<Enclosure>, InferCreationAttribute
     declare animals?: Animal;
     declare barrierType?: BarrierType;
     declare plantation?: Plantation;
+    declare events?: Event[];
 
     declare getTerrainDistribution: BelongsToManyGetAssociationsMixin<TerrainDistribution>;
     declare setTerrainDistribution: BelongsToSetAssociationMixin<TerrainDistribution, number>;
@@ -44,7 +44,10 @@ class Enclosure extends Model<InferAttributes<Enclosure>, InferCreationAttribute
     
     declare getPlantation: HasOneGetAssociationMixin<Plantation>;
     declare setPlantation: HasOneSetAssociationMixin<Plantation, number>;
-
+    
+    declare getEvents: HasManyGetAssociationsMixin<Event[]>;
+    declare addEvents: HasManyAddAssociationMixin<Event, number>;
+    declare setEvents: HasManySetAssociationsMixin<Event[], number>;
 }
 
 Enclosure.init({

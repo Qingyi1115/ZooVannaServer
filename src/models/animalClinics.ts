@@ -15,6 +15,7 @@ class AnimalClinic extends Model<InferAttributes<AnimalClinic>, InferCreationAtt
     declare facility?: Facility;
     declare medicalSupply?: MedicalSupply;
     declare animals? : Animal[];
+    declare events?: Event[];
     
     declare getFacility: BelongsToGetAssociationMixin<Facility>;
     declare setFacility: BelongsToSetAssociationMixin<Facility, number>;
@@ -25,6 +26,10 @@ class AnimalClinic extends Model<InferAttributes<AnimalClinic>, InferCreationAtt
     declare getAnimals: HasManyGetAssociationsMixin<Animal[]>;
     declare addAnimal: HasManyAddAssociationMixin<Animal[], number>;
     declare setAnimals: HasManySetAssociationsMixin<Animal[], number>;
+    
+    declare getEvents: HasManyGetAssociationsMixin<Event[]>;
+    declare addEvents: HasManyAddAssociationMixin<Event, number>;
+    declare setEvents: HasManySetAssociationsMixin<Event[], number>;
 
     // public toJSON() { 
     //     // Can control default values returned rather than manually populating json, removing secrets

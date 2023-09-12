@@ -124,4 +124,21 @@ enum Biome{
   TUNDRA="TUNDRA"
 }
 
-export {KeeperType, PlannerType, GeneralStaffType, SensorType, FacilityType, Specialization, MedicalSupplyType, ConservationStatus, Continent, GroupSexualDynamic, PresentationContainer, PresentationMethod, PresentationLocation, AnimalGrowthState, AnimalSex, AcquisitionMethod, AnimalGrowthStage, AnimalStatusType, Biome};
+enum EventType{
+  SHOW="SHOW",
+  CUSTOMER_FEEDING="CUSTOMER_FEEDING",
+  TALK="TALK",
+  ANIMAL_BIRTHDAY="ANIMAL_BIRTHDAY",
+  EMPLOYEE_FEEDING="EMPLOYEE_FEEDING",
+  ENRICHMENT="ENRICHMENT",
+  OBSERVATION="OBSERVATION",
+  ANIMAL_CHECKUP="ANIMAL_CHECKUP"
+}
+
+enum EventTimingType{
+  MORNING="MORNING",
+  AFTERNOON="AFTERNOON", 
+  EVENING="EVENING",
+}
+
+export {KeeperType, PlannerType, GeneralStaffType, SensorType, FacilityType, Specialization, MedicalSupplyType, ConservationStatus, Continent, GroupSexualDynamic, PresentationContainer, PresentationMethod, PresentationLocation, AnimalGrowthState, AnimalSex, AcquisitionMethod, AnimalGrowthStage, AnimalStatusType, Biome, EventType, EventTimingType};

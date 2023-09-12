@@ -1,6 +1,6 @@
 
 import {DataTypes, Model, InferAttributes, InferCreationAttributes,
-    BelongsToGetAssociationMixin, BelongsToSetAssociationMixin} from "Sequelize";
+    BelongsToGetAssociationMixin, BelongsToSetAssociationMixin, HasManyGetAssociationsMixin, HasManySetAssociationsMixin, HasManyAddAssociationMixin} from "Sequelize";
 import {conn} from '../db';
 import {Employee} from './employee';
 import {PlannerType, Specialization} from './enumerated';
@@ -11,9 +11,14 @@ class PlanningStaff extends Model<InferAttributes<PlanningStaff>, InferCreationA
     declare specialization: Specialization;
 
     declare employee?: Employee;
+    declare events?: Event[];
 
     declare getEmployee: BelongsToGetAssociationMixin<Employee>;
     declare setEmployee: BelongsToSetAssociationMixin<Employee, number>;
+
+    declare getEvents: HasManyGetAssociationsMixin<Event[]>;
+    declare addEvents: HasManyAddAssociationMixin<Event, number>;
+    declare setEvents: HasManySetAssociationsMixin<Event[], number>;
 }
 
 PlanningStaff.init({

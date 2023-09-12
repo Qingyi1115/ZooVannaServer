@@ -38,6 +38,7 @@ class Animal extends Model<InferAttributes<Animal>, InferCreationAttributes<Anim
     declare animalClinic?: AnimalClinic;
     declare enclosure?: Enclosure;
     declare animalLog?: AnimalLog;
+    declare events?: Event[];
     
     declare getSpecies: BelongsToGetAssociationMixin<Species>;
     declare setSpecies: BelongsToSetAssociationMixin<Species, number>;
@@ -58,6 +59,10 @@ class Animal extends Model<InferAttributes<Animal>, InferCreationAttributes<Anim
     declare getAnimalLogs: HasManyGetAssociationsMixin<AnimalLog>;
     declare addAnimalLog: HasManyAddAssociationMixin<AnimalLog, number>;
     declare setAnimalLogs: HasManySetAssociationsMixin<AnimalLog, number>;
+
+    declare getEvents: HasManyGetAssociationsMixin<Event[]>;
+    declare addEvents: HasManyAddAssociationMixin<Event, number>;
+    declare setEvents: HasManySetAssociationsMixin<Event[], number>;
 
     public getAge():number{
         return new Date(Date.now() - this.dateOfBirth.getTime()).getFullYear() - 1970;

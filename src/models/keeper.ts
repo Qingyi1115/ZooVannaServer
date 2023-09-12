@@ -1,8 +1,8 @@
 
 import {DataTypes, Model, InferAttributes, InferCreationAttributes,
-    HasManySetAssociationsMixin, HasManyGetAssociationsMixin,
-    HasOneSetAssociationMixin, HasOneGetAssociationMixin,
-    BelongsToGetAssociationMixin, BelongsToSetAssociationMixin} from "Sequelize";
+    BelongsToGetAssociationMixin, BelongsToSetAssociationMixin, 
+    BelongsToManyGetAssociationsMixin, BelongsToManyAddAssociationMixin, 
+    BelongsToManySetAssociationsMixin} from "Sequelize";
 import {conn} from '../db';
 import {Employee} from './employee';
 import {KeeperType, Specialization} from './enumerated';
@@ -13,9 +13,14 @@ class Keeper extends Model<InferAttributes<Keeper>, InferCreationAttributes<Keep
     declare specialization: Specialization;
 
     declare employee?: Employee;
+    declare events?: Event[];
 
     declare getEmployee: BelongsToGetAssociationMixin<Employee>;
     declare setEmployee: BelongsToSetAssociationMixin<Employee, number>;
+
+    declare getEvents: BelongsToManyGetAssociationsMixin<Event[]>;
+    declare addEvent: BelongsToManyAddAssociationMixin<Event,number>;
+    declare setEvents: BelongsToManySetAssociationsMixin<Event[], number>;
 
     // public toJSON() { 
     //     // Can control default values returned rather than manually populating json, removing secrets
