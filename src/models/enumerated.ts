@@ -86,10 +86,10 @@ enum GroupSexualDynamic{
   POLYANDROUS="POLYANDROUS"
 }
 
-enum PresentationContainer {}
-enum PresentationMethod{}
-enum PresentationLocation{}
-enum AnimalGrowthState{}
+enum PresentationContainer {TEST="TEST"}
+enum PresentationMethod{TEST="TEST"}
+enum PresentationLocation{TEST="TEST"}
+enum AnimalGrowthState{TEST="TEST"}
 
 enum AnimalSex{
   MALE="MALE",
@@ -112,7 +112,7 @@ enum AnimalGrowthStage{
   TRANSFERRED_IN="TRANSFERRED_IN"
 }
 
-enum AnimalStatusType{}
+enum AnimalStatusType{TEST="TEST"}
 
 enum Biome{
   AQUATIC="AQUATIC",

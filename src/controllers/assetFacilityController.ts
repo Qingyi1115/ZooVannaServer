@@ -2,8 +2,8 @@ import { Request, Response } from "express";
 import { findEmployeeByEmail } from "../services/user";
 import { PlannerType } from "../models/enumerated";
 import { addSensorByFacilityId, createNewFacility, getFacilityById } from "../services/assetFacility";
-import { Facility } from "models/facility";
-import { Sensor } from "models/sensor";
+import { Facility } from "../models/facility";
+import { Sensor } from "../models/sensor";
 
 export async function createFacility(req: Request, res: Response) {
     

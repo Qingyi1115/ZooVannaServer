@@ -201,8 +201,8 @@ export const tutorial = async () => {
     const senior = (await Keeper.findOne({where:{keeperType:KeeperType.SENIOR_KEEPER}}));
     console.log("senior", senior?.get());
 
-    console.log("-------------KEEPERS--------------------");
-    (await Keeper.findAll({include:{ all: true, nested: true }})).forEach(a => console.log(JSON.stringify(a, null, 4)));
+    // console.log("-------------KEEPERS--------------------");
+    // (await Keeper.findAll({include:{ all: true, nested: true }})).forEach(a => console.log(JSON.stringify(a, null, 4)));
     // (await Keeper.findAll({include:[Employee, "juniors"]})).forEach(a => console.log(a.toJSON()));
 
     
@@ -284,11 +284,13 @@ export const tutorial = async () => {
         yCoordinate: 654321,
         sensors: [
             {
+                sensorName: "A01",
                 sensorReadings: [1.2, 2.3, 3.4],
                 dateOfActivation: new Date(),
                 dateOfLastMaintained: new Date(),
                 sensorType: SensorType.HUMIDITY,
             } as any,{
+                sensorName: "A02",
                 sensorReadings: [27.2, 27.3, 27.4],
                 dateOfActivation: new Date(),
                 dateOfLastMaintained: new Date(),
@@ -313,7 +315,7 @@ export const tutorial = async () => {
 
     let maintenanceStaff = await manager.getGeneralStaff();
     await maintenanceStaff.setMaintainedFacilities([await facility1.getInHouse()]);
-    (await Facility.findAll({include:{ all: true, nested: true }})).forEach(a => console.log(JSON.stringify(a, null, 4)));
+    (await Facility.findAll()).forEach(a => console.log(JSON.stringify(a, null, 4)));
     console.log(await (await (await Facility.findOne())?.getFacilityDetail())?.getMaintenanceStaffs());
 
 

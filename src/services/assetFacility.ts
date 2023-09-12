@@ -1,7 +1,7 @@
-import { SensorType } from "models/enumerated";
+import { SensorType } from "../models/enumerated";
 import { validationErrorHandler } from "../helpers/errorHandler";
 import { Facility } from "../models/facility";
-import { Sensor } from "models/sensor";
+import { Sensor } from "../models/sensor";
 
 
 export async function createNewFacility(facilityName:string, xCoordinate:number, yCoordinate:number, facilityDetail:string, facilityDetailJson:any) {
