@@ -1,9 +1,9 @@
 
 import {DataTypes, Model, InferAttributes, InferCreationAttributes,
-    HasManySetAssociationsMixin, HasManyGetAssociationsMixin} from "Sequelize";
+    HasManySetAssociationsMixin, HasManyGetAssociationsMixin, BelongsToGetAssociationMixin, BelongsToSetAssociationMixin} from "Sequelize";
 import {conn} from '../db';
-import {PresentationContainer, PresentationMethod, PresentationLocation, AnimalGrowthState} from './enumerated';
 import { Species } from "./species";
+import { TerrainDistribution } from "./terrainDistribution";
 
 class SpeciesEnclosureNeed extends Model<InferAttributes<SpeciesEnclosureNeed>, InferCreationAttributes<SpeciesEnclosureNeed>> {
     declare speciesEnclosureNeedId: number;
@@ -18,9 +18,17 @@ class SpeciesEnclosureNeed extends Model<InferAttributes<SpeciesEnclosureNeed>, 
     declare plantationCoveragePercent: number;
 
     declare species?: Species;
+    declare terrainDistributionMin?: TerrainDistribution;
+    declare terrainDistributionMax?: TerrainDistribution;
 
     declare getSpecies: HasManyGetAssociationsMixin<Species>;
     declare setSpecies: HasManySetAssociationsMixin<Species, number>;
+
+    declare getTerrainDistributionMin: BelongsToGetAssociationMixin<TerrainDistribution>;
+    declare setTerrainDistributionMin: BelongsToSetAssociationMixin<TerrainDistribution, number>;
+
+    declare getTerrainDistributionMax: BelongsToGetAssociationMixin<TerrainDistribution>;
+    declare setTerrainDistributionMax: BelongsToSetAssociationMixin<TerrainDistribution, number>;
 }
 
 SpeciesEnclosureNeed.init({

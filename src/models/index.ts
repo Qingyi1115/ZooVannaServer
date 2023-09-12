@@ -73,7 +73,7 @@ export const createDatabase = async (options:any) => {
   Species.hasMany(Animal, addCascadeOptions({foreignKey:"speciesId"}));
   Animal.belongsTo(Species, addCascadeOptions({foreignKey:"speciesId"}));
 
-  Animal.belongsToMany(Animal,{foreignKey:"parentId", through:"parent_child", as:"parent"});
+  Animal.belongsToMany(Animal,{foreignKey:"parentId", through:"parent_child", as:"parents"});
   Animal.belongsToMany(Animal, {foreignKey:"childId", through:"parent_child", as:"children"});
 
   Animal.hasMany(AnimalLog, addCascadeOptions({foreignKey:"animalId"}));
@@ -82,8 +82,11 @@ export const createDatabase = async (options:any) => {
   AnimalClinic.hasMany(Animal, addCascadeOptions({foreignKey:"animalClinicId"}));
   Animal.belongsTo(AnimalClinic, addCascadeOptions({foreignKey:"animalClinicId"}));
 
-  TerrainDistribution.hasMany(SpeciesEnclosureNeed, addCascadeOptions({foreignKey:"terrainDistributionId"}));
-  SpeciesEnclosureNeed.belongsTo(TerrainDistribution, addCascadeOptions({foreignKey:"terrainDistributionId"}));
+  TerrainDistribution.hasMany(SpeciesEnclosureNeed, addCascadeOptions({foreignKey:"terrainDistributionId", as : "speciesEnclosureNeedMins"}));
+  SpeciesEnclosureNeed.belongsTo(TerrainDistribution, addCascadeOptions({foreignKey:"terrainDistributionId", as :"terrainDistributionMins"}));
+
+  TerrainDistribution.hasMany(SpeciesEnclosureNeed, addCascadeOptions({foreignKey:"terrainDistributionId", as :"speciesEnclosureNeedMaxs"}));
+  SpeciesEnclosureNeed.belongsTo(TerrainDistribution, addCascadeOptions({foreignKey:"terrainDistributionId", as :"terrainDistributionMaxs"}));
 
   TerrainDistribution.hasMany(Enclosure, addCascadeOptions({foreignKey:"terrainDistributionId"}));
   Enclosure.belongsTo(TerrainDistribution, addCascadeOptions({foreignKey:"terrainDistributionId"}));

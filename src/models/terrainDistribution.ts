@@ -14,11 +14,15 @@ class TerrainDistribution extends Model<InferAttributes<TerrainDistribution>, In
     declare snowPercent: number;
     declare soilPercent: number;
 
-    declare speciesEnclosureNeed?: SpeciesEnclosureNeed;
+    declare speciesEnclosureNeedMins?: SpeciesEnclosureNeed;
+    declare speciesEnclosureNeedMaxs?: SpeciesEnclosureNeed;
     declare enclosure?: Enclosure;
 
-    declare getSpecies: HasManyGetAssociationsMixin<SpeciesEnclosureNeed>;
-    declare setSpecies: HasManySetAssociationsMixin<SpeciesEnclosureNeed, number>;
+    declare getSpeciesEnclosureNeedMins: HasManyGetAssociationsMixin<SpeciesEnclosureNeed>;
+    declare setSpeciesEnclosureNeedMins: HasManySetAssociationsMixin<SpeciesEnclosureNeed, number>;
+
+    declare getSpeciesEnclosureNeedMaxs: HasManyGetAssociationsMixin<SpeciesEnclosureNeed>;
+    declare setSpeciesEnclosureNeedMaxs: HasManySetAssociationsMixin<SpeciesEnclosureNeed, number>;
 
     declare getEnclosure: HasManyGetAssociationsMixin<Enclosure>;
     declare setEnclosure: HasManySetAssociationsMixin<Enclosure, number>;
