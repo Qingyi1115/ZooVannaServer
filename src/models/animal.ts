@@ -33,7 +33,7 @@ class Animal extends Model<InferAttributes<Animal>, InferCreationAttributes<Anim
     declare location? : string;
 
     declare species?: Species;
-    declare parent?: Animal[];
+    declare parents?: Animal[];
     declare children?: Animal[];
     declare animalClinic?: AnimalClinic;
     declare enclosure?: Enclosure;
@@ -46,6 +46,7 @@ class Animal extends Model<InferAttributes<Animal>, InferCreationAttributes<Anim
     declare setParents: HasManySetAssociationsMixin<Animal, number>;
 
     declare getChildren: HasManyGetAssociationsMixin<Animal>;
+    declare addChildren: HasManyAddAssociationMixin<Animal, number>;
     declare setChildren: HasManySetAssociationsMixin<Animal, number>;
 
     declare getAnimalClinic: BelongsToGetAssociationMixin<AnimalClinic>;
