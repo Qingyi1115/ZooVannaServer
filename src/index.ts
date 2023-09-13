@@ -1,26 +1,28 @@
 require("dotenv").config();
 
-import express, { Express, Request, Response } from 'express';
-import http from 'http';
-import bodyParser from 'body-parser';
-import cookieParser from 'cookie-parser';
-import compression from 'compression';
-import cors from 'cors';
+import express, { Express, Request, Response } from "express";
+import http from "http";
+import bodyParser from "body-parser";
+import cookieParser from "cookie-parser";
+import compression from "compression";
+import cors from "cors";
 // import multer, { FileFilterCallback } from 'multer';
-import 'dotenv/config';
+import "dotenv/config";
 
-import userRoutes from './routes/user'
-import assetFacilityRoutes from './routes/assetFacility'
-import speciesRoutes from './routes/species'
-import { seedDatabase, createDatabase } from './models/index'
-import { conn } from './db';
+import userRoutes from "./routes/user";
+import assetFacilityRoutes from "./routes/assetFacility";
+import speciesRoutes from "./routes/species";
+import { seedDatabase, createDatabase } from "./models/index";
+import { conn } from "./db";
 
-const truthy = ["TRUE", "true", "True", "1"]
+const truthy = ["TRUE", "true", "True", "1"];
 const app = express();
 
-app.use(cors({
-  credentials: true,
-}));
+app.use(
+  cors({
+    credentials: true,
+  }),
+);
 
 app.use(compression());
 app.use(cookieParser());
@@ -33,15 +35,15 @@ const port = 3000;
 server.listen(port, async () => {
   console.log(`Server running on http://localhost:${port}/`);
   await conn.authenticate();
-  console.log("Database connected!")
+  console.log("Database connected!");
 
   if (truthy.includes(process.env.RESET_DB || "")) {
     await createDatabase({ forced: true });
-    console.log("Database built!")
+    console.log("Database built!");
     await seedDatabase();
-    console.log("Database seeded!")
+    console.log("Database seeded!");
   } else {
-    console.log("Database left untouched!")
+    console.log("Database left untouched!");
   }
 });
 
@@ -54,7 +56,6 @@ app.get("/", (req: Request, res: Response) => {
   res.send("HELLO)s");
 });
 
-
-app.use('/api/user/', userRoutes);
-app.use('/api/assetFacility/', assetFacilityRoutes);
-app.use('/api/species', speciesRoutes);
+app.use("/api/user/", userRoutes);
+app.use("/api/assetFacility/", assetFacilityRoutes);
+app.use("/api/species", speciesRoutes);

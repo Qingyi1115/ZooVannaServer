@@ -6,13 +6,6 @@ import { createNewSpecies } from "../services/species";
 
 export async function createSpecies(req: Request, res: Response) {
     try {
-        console.log("create species in controller")
-        // console.log(req)
-        // console.log("--")
-        console.log(req.body)
-        console.log("-----")
-        console.log(req.file)
-        console.log("---")
         // const { email } = (req as any).locals.jwtPayload
         // const employee = await findEmployeeByEmail(email);
 
@@ -20,16 +13,70 @@ export async function createSpecies(req: Request, res: Response) {
         //     return res.status(403).json({error: "Access Denied! Operation managers only!"});
         // }
 
-        const newBody = req.body
+        const {
+            commonName,
+            scientificName,
+            aliasName,
+            conservationStatus,
+            domain,
+            kingdom,
+            phylum,
+            speciesClass,
+            order,
+            family,
+            genus,
+            nativeContinent,
+            selectedBiomes,
+            groupSexualDynamic,
+            habitatOrExhibit,
+            generalDietPreference,
+        } = req.body;
 
-        // if ([facilityName, xCoordinate, yCoordinate, facilityDetail, facilityDetailJson].includes(undefined)) {
-        //     console.log("Missing field(s): ", { facilityName, xCoordinate, yCoordinate, facilityDetail, facilityDetailJson })
-        //     return res.status(400).json({ error: "Missing information!" })
+        // if (
+        //     [
+        //         commonName,
+        //         scientificName,
+        //         aliasName,
+        //         conservationStatus,
+        //         domain,
+        //         kingdom,
+        //         phylum,
+        //         speciesClass,
+        //         order,
+        //         family,
+        //         genus,
+        //         nativeContinent,
+        //         selectedBiomes,
+        //         groupSexualDynamic,
+        //         habitatOrExhibit,
+        //         generalDietPreference,
+        //     ].includes(undefined)
+        // ) {
+        //     console.log("Missing field(s): ", {
+        //         commonName,
+        //         scientificName,
+        //         aliasName,
+        //         conservationStatus,
+        //         domain,
+        //         kingdom,
+        //         phylum,
+        //         speciesClass,
+        //         order,
+        //         family,
+        //         genus,
+        //         nativeContinent,
+        //         selectedBiomes,
+        //         groupSexualDynamic,
+        //         habitatOrExhibit,
+        //         generalDietPreference,
+        //     });
+        //     return res.status(400).json({ error: "Missing information!" });
         // }
 
-        let species = await createNewSpecies(newBody, req);
+        // have to pass in req for image uploading
+        let species = await createNewSpecies(req);
 
-        return res.status(200).json({ species })
+        return res.status(200).json({ species });
     } catch (error: any) {
         res.status(400).json({ error: error.message });
     }
