@@ -5,6 +5,7 @@ import {
   InferCreationAttributes,
   BelongsToGetAssociationMixin,
   BelongsToSetAssociationMixin,
+  INTEGER,
 } from "Sequelize";
 import { conn } from "../db";
 import {
@@ -33,10 +34,10 @@ class Species extends Model<
   declare family: string;
   declare genus: string;
   declare nativeContinent: Continent;
-  declare nativeBiome: string;
+  declare nativeBiomes: string;
   declare educationalDescription: string;
   declare groupSexualDynamic: GroupSexualDynamic;
-  declare isBigHabitatSpecies: Boolean;
+  declare habitatOrExhibit: string;
   declare imageUrl: string;
   declare generalDietPreference: string;
 
@@ -54,6 +55,17 @@ class Species extends Model<
     SpeciesEnclosureNeed,
     number
   >;
+
+  static async getNextSpeciesCode() {
+    try {
+      const maxId: number = await this.max('speciesId');
+      const nextId = (maxId || 0) + 1;
+      return `SPE${String(nextId).padStart(3, '0')}`;
+    } catch (error) {
+      console.error('Error generating species code:', error);
+      throw error; // Optionally, re-throw the error for further handling
+    }
+  }
 }
 
 Species.init(
@@ -117,7 +129,7 @@ Species.init(
       values: Object.values(Continent),
       allowNull: false,
     },
-    nativeBiome: {
+    nativeBiomes: {
       type: DataTypes.STRING,
       allowNull: false,
     },
@@ -130,8 +142,8 @@ Species.init(
       values: Object.values(GroupSexualDynamic),
       allowNull: false,
     },
-    isBigHabitatSpecies: {
-      type: DataTypes.BOOLEAN,
+    habitatOrExhibit: {
+      type: DataTypes.STRING,
       allowNull: false,
     },
     imageUrl: {
