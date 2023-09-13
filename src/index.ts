@@ -6,14 +6,16 @@ import bodyParser from 'body-parser';
 import cookieParser from 'cookie-parser';
 import compression from 'compression';
 import cors from 'cors';
+// import multer, { FileFilterCallback } from 'multer';
 import 'dotenv/config';
 
 import userRoutes from './routes/user'
 import assetFacilityRoutes from './routes/assetFacility'
-import {seedDatabase, createDatabase} from './models/index' 
-import {conn} from './db';
+import speciesRoutes from './routes/species'
+import { seedDatabase, createDatabase } from './models/index'
+import { conn } from './db';
 
-const truthy = ["TRUE","true", "True", "1"]
+const truthy = ["TRUE", "true", "True", "1"]
 const app = express();
 
 app.use(cors({
@@ -33,12 +35,12 @@ server.listen(port, async () => {
   await conn.authenticate();
   console.log("Database connected!")
 
-  if (truthy.includes(process.env.RESET_DB || "")){
-    await createDatabase({forced: true});
+  if (truthy.includes(process.env.RESET_DB || "")) {
+    await createDatabase({ forced: true });
     console.log("Database built!")
     await seedDatabase();
     console.log("Database seeded!")
-  }else{
+  } else {
     console.log("Database left untouched!")
   }
 });
@@ -55,3 +57,4 @@ app.get("/", (req: Request, res: Response) => {
 
 app.use('/api/user/', userRoutes);
 app.use('/api/assetFacility/', assetFacilityRoutes);
+app.use('/api/species', speciesRoutes);
