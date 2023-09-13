@@ -2,11 +2,15 @@ import express from "express";
 
 // Controller functions
 import { authMiddleware } from "../middlewares/authMiddleware";
-import { addSensorToFacility, createFacility, updateFacility } from "../controllers/assetFacilityController";
+import {
+  addSensorToFacility,
+  createFacility,
+  updateFacility,
+} from "../controllers/assetFacilityController";
 
 const router = express.Router();
 
-router.use(authMiddleware)
+router.use(authMiddleware);
 
 router.put("/createFacility", createFacility);
 router.post("/updateFacility", updateFacility);

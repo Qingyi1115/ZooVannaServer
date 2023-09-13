@@ -1,32 +1,32 @@
 enum KeeperType {
   SENIOR_KEEPER = "SENIOR_KEEPER",
-  KEEPER = "KEEPER"
+  KEEPER = "KEEPER",
 }
 
 enum PlannerType {
   NUTRITIONIST = "NUTRITIONIST",
   CURATOR = "CURATOR",
-  OPERATIONS_MANAGER = "OPERATIONS_MANAGER"
+  OPERATIONS_MANAGER = "OPERATIONS_MANAGER",
 }
 
 enum GeneralStaffType {
   MAINTENANCE = "MAINTENANCE",
-  OPERATE = "OPERATE"
+  OPERATE = "OPERATE",
 }
 
-enum SensorType{
+enum SensorType {
   TEMPERATURE = "TEMPERATURE",
-  LIGHT = "LIGHT", 
+  LIGHT = "LIGHT",
   HUMIDITY = "HUMIDITY",
   SOUND = "SOUND",
   MOTION = "MOTION",
-  HUMAN = "HUMAN"
+  HUMAN = "HUMAN",
 }
 
-enum FacilityType{
+enum FacilityType {
   INFORMATION_CENTRE = "INFORMATION_CENTRE",
-  ZOO_DIRECTORY = "ZOO_DIRECTORY", 
-  AMPHITHEATRE = "AMPHITHEATRE", 
+  ZOO_DIRECTORY = "ZOO_DIRECTORY",
+  AMPHITHEATRE = "AMPHITHEATRE",
   GAZEBO = "GAZEBO",
   AED = "AED",
   RESTROOM = "RESTROOM",
@@ -35,110 +35,142 @@ enum FacilityType{
   BENCHES = "BENCHES",
   PLAYGROUND = "PLAYGROUND",
   TRAMSTOP = "TRAMSTOP",
-  PARKING = "PARKING"
+  PARKING = "PARKING",
 }
 
-enum Specialization{
-  MAMMAL="MAMMAL",
+enum Specialization {
+  MAMMAL = "MAMMAL",
   BIRD = "BIRD",
-  FISH= "FISH",
+  FISH = "FISH",
   REPTILE = "REPTILE",
-  AMPHIBIAN= "AMPHIBIAN"
+  AMPHIBIAN = "AMPHIBIAN",
 }
 
-enum MedicalSupplyType{
-  FIRST_AID="FIRST_AID",
-  MEDICATION="MEDICATION",
-  DIAGNOSTIC_TOOL="DIAGNOSTIC_TOOL",
-  SURGICAL_TOOL="SURGICAL_TOOL",
-  FLUID_ADMINISTRATION="FLUID_ADMINISTRATION",
-  DENTAL="DENTAL",
-  EMERGENCY="EMERGENCY",
-  FEEDING_TUBE_AND_SYRINGES="FEEDING_TUBE_AND_SYRINGES",
-  LABORATORY="LABORATORY",
-  PPE="PPE"
+enum MedicalSupplyType {
+  FIRST_AID = "FIRST_AID",
+  MEDICATION = "MEDICATION",
+  DIAGNOSTIC_TOOL = "DIAGNOSTIC_TOOL",
+  SURGICAL_TOOL = "SURGICAL_TOOL",
+  FLUID_ADMINISTRATION = "FLUID_ADMINISTRATION",
+  DENTAL = "DENTAL",
+  EMERGENCY = "EMERGENCY",
+  FEEDING_TUBE_AND_SYRINGES = "FEEDING_TUBE_AND_SYRINGES",
+  LABORATORY = "LABORATORY",
+  PPE = "PPE",
 }
 
-enum ConservationStatus{
+enum ConservationStatus {
   DATA_DEFICIENT = "DATA_DEFICIENT",
   DOMESTICATED = "DOMESTICATED",
   LEAST_CONCERN = "LEAST_CONCERN",
   NEAR_THREATENED = "NEAR_THREATENED",
-  VULNERABLE= "VULNERABLE",
-  ENDANGERED= "ENDANGERED",
+  VULNERABLE = "VULNERABLE",
+  ENDANGERED = "ENDANGERED",
   CRITICALLY_ENDANGERED = "CRITICALLY_ENDANGERED",
-  EXTINCT_IN_WILD= "EXTINCT_IN_WILD"
+  EXTINCT_IN_WILD = "EXTINCT_IN_WILD",
 }
 
-enum Continent{
+enum Continent {
   AFRICA = "AFRICA",
-  ASIA="ASIA",
-  EUROPE= "EUROPE",
-  NORTH_AMERICA ="NORTH_AMERICA",
-  SOUTH_OR_CENTRAL_AMERICA= "SOUTH_OR_CENTRAL_AMERICA",
-  OCEANIA="OCEANIA"
+  ASIA = "ASIA",
+  EUROPE = "EUROPE",
+  NORTH_AMERICA = "NORTH_AMERICA",
+  SOUTH_OR_CENTRAL_AMERICA = "SOUTH_OR_CENTRAL_AMERICA",
+  OCEANIA = "OCEANIA",
 }
 
-enum GroupSexualDynamic{
-  MONOGAMOUS="MONOGAMOUS",
-  PROMISCUOUS="PROMISCUOUS",
-  POLYGYNOUS="POLYGYNOUS",
-  POLYANDROUS="POLYANDROUS"
+enum GroupSexualDynamic {
+  MONOGAMOUS = "MONOGAMOUS",
+  PROMISCUOUS = "PROMISCUOUS",
+  POLYGYNOUS = "POLYGYNOUS",
+  POLYANDROUS = "POLYANDROUS",
 }
 
-enum PresentationContainer {TEST="TEST"}
-enum PresentationMethod{TEST="TEST"}
-enum PresentationLocation{TEST="TEST"}
-enum AnimalGrowthState{TEST="TEST"}
-
-enum AnimalSex{
-  MALE="MALE",
-  FEMALE="FEMALE",
-  UNKNOWN="UNKNOWN",
-  ASEXUAL="ASEXUAL"
+enum PresentationContainer {
+  TEST = "TEST",
+}
+enum PresentationMethod {
+  TEST = "TEST",
+}
+enum PresentationLocation {
+  TEST = "TEST",
+}
+enum AnimalGrowthState {
+  TEST = "TEST",
 }
 
-enum AcquisitionMethod{
-  INFANT="INFANT",
-  JUVENILE="JUVENILE",
-  ADOLESCENT="ADOLESCENT",
-  ADULT="ADULT",
-  ELDER="ELDER"
+enum AnimalSex {
+  MALE = "MALE",
+  FEMALE = "FEMALE",
+  UNKNOWN = "UNKNOWN",
+  ASEXUAL = "ASEXUAL",
 }
 
-enum AnimalGrowthStage{
-  CAPTIVE_BRED="CAPTIVE_BRED",
-  WILD_CAPTURED="WILD_CAPTURED",
-  TRANSFERRED_IN="TRANSFERRED_IN"
+enum AcquisitionMethod {
+  INFANT = "INFANT",
+  JUVENILE = "JUVENILE",
+  ADOLESCENT = "ADOLESCENT",
+  ADULT = "ADULT",
+  ELDER = "ELDER",
 }
 
-enum AnimalStatusType{TEST="TEST"}
-
-enum Biome{
-  AQUATIC="AQUATIC",
-  DESERT="DESERT",
-  GRASSLAND="GRASSLAND",
-  TAIGA="TAIGA",
-  TEMPERATE="TEMPERATE",
-  TROPICAL="TROPICAL",
-  TUNDRA="TUNDRA"
+enum AnimalGrowthStage {
+  CAPTIVE_BRED = "CAPTIVE_BRED",
+  WILD_CAPTURED = "WILD_CAPTURED",
+  TRANSFERRED_IN = "TRANSFERRED_IN",
 }
 
-enum EventType{
-  SHOW="SHOW",
-  CUSTOMER_FEEDING="CUSTOMER_FEEDING",
-  TALK="TALK",
-  ANIMAL_BIRTHDAY="ANIMAL_BIRTHDAY",
-  EMPLOYEE_FEEDING="EMPLOYEE_FEEDING",
-  ENRICHMENT="ENRICHMENT",
-  OBSERVATION="OBSERVATION",
-  ANIMAL_CHECKUP="ANIMAL_CHECKUP"
+enum AnimalStatusType {
+  TEST = "TEST",
 }
 
-enum EventTimingType{
-  MORNING="MORNING",
-  AFTERNOON="AFTERNOON", 
-  EVENING="EVENING",
+enum Biome {
+  AQUATIC = "AQUATIC",
+  DESERT = "DESERT",
+  GRASSLAND = "GRASSLAND",
+  TAIGA = "TAIGA",
+  TEMPERATE = "TEMPERATE",
+  TROPICAL = "TROPICAL",
+  TUNDRA = "TUNDRA",
 }
 
-export {KeeperType, PlannerType, GeneralStaffType, SensorType, FacilityType, Specialization, MedicalSupplyType, ConservationStatus, Continent, GroupSexualDynamic, PresentationContainer, PresentationMethod, PresentationLocation, AnimalGrowthState, AnimalSex, AcquisitionMethod, AnimalGrowthStage, AnimalStatusType, Biome, EventType, EventTimingType};
+enum EventType {
+  SHOW = "SHOW",
+  CUSTOMER_FEEDING = "CUSTOMER_FEEDING",
+  TALK = "TALK",
+  ANIMAL_BIRTHDAY = "ANIMAL_BIRTHDAY",
+  EMPLOYEE_FEEDING = "EMPLOYEE_FEEDING",
+  ENRICHMENT = "ENRICHMENT",
+  OBSERVATION = "OBSERVATION",
+  ANIMAL_CHECKUP = "ANIMAL_CHECKUP",
+}
+
+enum EventTimingType {
+  MORNING = "MORNING",
+  AFTERNOON = "AFTERNOON",
+  EVENING = "EVENING",
+}
+
+export {
+  KeeperType,
+  PlannerType,
+  GeneralStaffType,
+  SensorType,
+  FacilityType,
+  Specialization,
+  MedicalSupplyType,
+  ConservationStatus,
+  Continent,
+  GroupSexualDynamic,
+  PresentationContainer,
+  PresentationMethod,
+  PresentationLocation,
+  AnimalGrowthState,
+  AnimalSex,
+  AcquisitionMethod,
+  AnimalGrowthStage,
+  AnimalStatusType,
+  Biome,
+  EventType,
+  EventTimingType,
+};
