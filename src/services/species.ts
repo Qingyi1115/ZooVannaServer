@@ -13,6 +13,7 @@ export async function createNewSpecies(commonName: string,
     order: string,
     family: string,
     genus: string,
+    educationalDescription: string,
     nativeContinent: string,
     selectedBiomes: string,
     groupSexualDynamic: string,
@@ -33,7 +34,7 @@ export async function createNewSpecies(commonName: string,
         order: order,
         family: family,
         genus: genus,
-        educationalDescription: "lol go to school kid",
+        educationalDescription: educationalDescription,
         nativeContinent: nativeContinent,
         nativeBiomes: selectedBiomes,
         groupSexualDynamic: groupSexualDynamic,
@@ -46,10 +47,7 @@ export async function createNewSpecies(commonName: string,
 
     try {
         return Species.create(newSpecies)
-        // return newSpecies;
     } catch (error: any) {
         throw validationErrorHandler(error);
-        // console.log("error!");
-        // console.log(error);
     }
 }
