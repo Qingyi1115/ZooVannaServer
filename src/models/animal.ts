@@ -73,11 +73,13 @@ class Animal extends Model<
   declare getEvents: HasManyGetAssociationsMixin<Event[]>;
   declare addEvents: HasManyAddAssociationMixin<Event, number>;
   declare setEvents: HasManySetAssociationsMixin<Event[], number>;
+  declare age?: number;
 
   public getAge(): number {
-    return (
-      new Date(Date.now() - this.dateOfBirth.getTime()).getFullYear() - 1970
-    );
+    if (!this.age){
+      this.age = new Date(Date.now() - this.dateOfBirth.getTime()).getFullYear() - 1970;
+    }
+    return this.age
   }
 
   public async getLocation() {
