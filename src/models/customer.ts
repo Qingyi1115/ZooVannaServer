@@ -4,10 +4,14 @@ import {
     CreationOptional,
     InferAttributes,
     InferCreationAttributes,
+    HasManyGetAssociationsMixin,
+    HasManySetAssociationsMixin,
+    HasManyAddAssociationMixin,
   } from "Sequelize";
   import { conn } from "../db";
   import crypto from "crypto";
 import { Country } from "./enumerated";
+import { Order } from "./order";
   
   function hash(string: string): string {
     return crypto.createHash("sha256").update(string).digest("hex");
@@ -40,10 +44,11 @@ import { Country } from "./enumerated";
     declare address: string;
     declare nationality: Country;
   
-    // declare keeper?: Keeper | null;
+    declare orders?: Order[];
   
-    // declare getKeeper: HasOneGetAssociationMixin<Keeper>;
-    // declare setKeeper: HasOneSetAssociationMixin<Keeper, number>;
+    declare getOrders: HasManyGetAssociationsMixin<Order[]>;
+    declare addOrders: HasManyAddAssociationMixin<Order, number>;
+    declare setOrders: HasManySetAssociationsMixin<Order[], number>;
   
     static getTotalCustomer() {
       // Example for static class functions

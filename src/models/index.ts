@@ -29,6 +29,11 @@ import { BarrierType } from "./barrierType";
 import { Plantation } from "./plantation";
 import { AnimalLog } from "./animalLog";
 import { Event } from "./event";
+import { Listing } from "./listing";
+import { LineItem } from "./lineItem";
+import { Promotion } from "./promotion";
+import { Order } from "./order";
+import { Customer } from "./customer";
 
 function addCascadeOptions(options: object) {
   return { ...options, onDelete: "CASCADE", onUpdate: "CASCADE" };
@@ -281,6 +286,18 @@ export const createDatabase = async (options: any) => {
     AnimalClinic,
     addCascadeOptions({ foreignKey: "animalClinicId" }),
   );
+  
+  Listing.hasMany(LineItem, addCascadeOptions({ foreignKey: "listingId" }));
+  LineItem.belongsTo(Listing, addCascadeOptions({ foreignKey: "listingId" }));
+
+  Promotion.hasMany(Order, addCascadeOptions({ foreignKey: "promotionId" }));
+  Order.belongsTo(Promotion, addCascadeOptions({ foreignKey: "promotionId" }));
+
+  Customer.hasMany(Order, addCascadeOptions({ foreignKey: "customerId" }));
+  Order.belongsTo(Customer, addCascadeOptions({ foreignKey: "customerId" }));
+
+  LineItem.hasMany(Order, addCascadeOptions({ foreignKey: "orderId" }));
+  Order.belongsTo(LineItem, addCascadeOptions({ foreignKey: "orderId" }));
 
   // Create tables
   if (options["forced"]) {

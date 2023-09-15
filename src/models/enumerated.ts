@@ -403,6 +403,35 @@ enum Country{
   Zimbabwe = 'ZW',
 }
 
+enum ListingType{
+  LOCAL_ADULT_ONETIME="LOCAL_ADULT_ONETIME",
+  LOCAL_STUDENT_ONETIME="LOCAL_STUDENT_ONETIME",
+  LOCAL_SENIOR_ONETIME="LOCAL_SENIOR_ONETIME",
+  FOREIGNER_ONETIME="FOREIGNER_ONETIME",
+  ANNUALPASS="ANNUALPASS"
+}
+
+enum ListingStatus{
+  ACTIVE="ACTIVE",
+  DISCONTINUED="DISCONTINUED"
+}
+
+enum PaymentStatus{
+  SUCCESSFUL="SUCCESSFUL",
+  FAILED="FAILED"
+}
+
+enum PaymentType{
+  VISA="VISA",
+  MASTERCARD="MASTERCARD",
+  PAYNOW="PAYNOW"
+}
+
+enum OrderStatus{
+  ACTIVE="ACTIVE",
+  COMPLETED="COMPLETED"
+}
+
 export {
   KeeperType,
   PlannerType,
@@ -425,5 +454,10 @@ export {
   Biome,
   EventType,
   EventTimingType,
-  Country
+  Country,
+  ListingType,
+  ListingStatus,
+  PaymentStatus,
+  PaymentType,
+  OrderStatus
 };
