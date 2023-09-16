@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import { Species } from "models/species";
 
-import { createNewEmployee, findEmployeeByEmail } from "../services/user";
+import { createNewEmployee, findEmployeeByEmail } from "../services/employee";
 import { createNewSpecies } from "../services/species";
 
 import { handleFileUpload } from "../helpers/multerProcessFile";

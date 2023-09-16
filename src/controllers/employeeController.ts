@@ -4,7 +4,7 @@ import {
   createNewEmployee,
   employeeLogin,
   findEmployeeByEmail,
-} from "../services/user";
+} from "../services/employee";
 
 export const login = async (req: Request, res: Response) => {
   try {

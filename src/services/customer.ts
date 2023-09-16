@@ -1,3 +1,4 @@
+import { Country } from "models/enumerated";
 import { validationErrorHandler } from "../helpers/errorHandler";
 import { hash } from "../helpers/security";
 import { Customer } from "../models/customer";
@@ -10,7 +11,7 @@ export async function createNewCustomer(
   customerContactNo: string,
   customerBirthday: Date,
   customerAddress: string,
-  customerNationality: string
+  customerNationality: Country
 ) {
   const randomPassword =
     (Math.random() + 1).toString(36).substring(7) +

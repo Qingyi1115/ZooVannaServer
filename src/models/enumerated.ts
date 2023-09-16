@@ -114,6 +114,22 @@ enum AcquisitionMethod {
   ELDER = "ELDER",
 }
 
+enum AnimalFeedCategory {
+  RED_MEAT = "RED_MEAT",
+  WHITE_MEAT = "WHITE_MEAT",
+  FISH = "FISH",
+  INSECTS = "INSECTS",
+  HAY = "HAY",
+  VEGETABLES = "VEGETABLES",
+  FRUITS = "FRUITS",
+  GRAINS = "GRAINS",
+  BROWSE = "BROWSE",
+  PELLETS = "PELLETS",
+  NECTAR = "NECTAR",
+  SUPPLEMENTS = "SUPPLEMENTS",
+  OTHERS = "OTHERS"
+}
+
 enum AnimalGrowthStage {
   CAPTIVE_BRED = "CAPTIVE_BRED",
   WILD_CAPTURED = "WILD_CAPTURED",
@@ -151,7 +167,7 @@ enum EventTimingType {
   EVENING = "EVENING",
 }
 
-enum Country{
+enum Country {
   Afghanistan = 'AF',
   AlandIslands = 'AX',
   Albania = 'AL',
@@ -403,39 +419,39 @@ enum Country{
   Zimbabwe = 'ZW',
 }
 
-enum ListingType{
-  LOCAL_ADULT_ONETIME="LOCAL_ADULT_ONETIME",
-  LOCAL_STUDENT_ONETIME="LOCAL_STUDENT_ONETIME",
-  LOCAL_SENIOR_ONETIME="LOCAL_SENIOR_ONETIME",
-  FOREIGNER_ONETIME="FOREIGNER_ONETIME",
-  ANNUALPASS="ANNUALPASS"
+enum ListingType {
+  LOCAL_ADULT_ONETIME = "LOCAL_ADULT_ONETIME",
+  LOCAL_STUDENT_ONETIME = "LOCAL_STUDENT_ONETIME",
+  LOCAL_SENIOR_ONETIME = "LOCAL_SENIOR_ONETIME",
+  FOREIGNER_ONETIME = "FOREIGNER_ONETIME",
+  ANNUALPASS = "ANNUALPASS"
 }
 
-enum ListingStatus{
-  ACTIVE="ACTIVE",
-  DISCONTINUED="DISCONTINUED"
+enum ListingStatus {
+  ACTIVE = "ACTIVE",
+  DISCONTINUED = "DISCONTINUED"
 }
 
-enum PaymentStatus{
-  SUCCESSFUL="SUCCESSFUL",
-  FAILED="FAILED"
+enum PaymentStatus {
+  SUCCESSFUL = "SUCCESSFUL",
+  FAILED = "FAILED"
 }
 
-enum PaymentType{
-  VISA="VISA",
-  MASTERCARD="MASTERCARD",
-  PAYNOW="PAYNOW"
+enum PaymentType {
+  VISA = "VISA",
+  MASTERCARD = "MASTERCARD",
+  PAYNOW = "PAYNOW"
 }
 
-enum OrderStatus{
-  ACTIVE="ACTIVE",
-  COMPLETED="COMPLETED"
+enum OrderStatus {
+  ACTIVE = "ACTIVE",
+  COMPLETED = "COMPLETED"
 }
 
-enum EnclosureStatus{
-  ACTIVE="ACTIVE",
-  CLOSED="CLOSED",
-  CONSTRUCTING="CONSTRUCTING"
+enum EnclosureStatus {
+  ACTIVE = "ACTIVE",
+  CLOSED = "CLOSED",
+  CONSTRUCTING = "CONSTRUCTING"
 }
 
 export {
@@ -452,6 +468,7 @@ export {
   PresentationContainer,
   PresentationMethod,
   PresentationLocation,
+  AnimalFeedCategory,
   AnimalGrowthState,
   AnimalSex,
   AcquisitionMethod,
