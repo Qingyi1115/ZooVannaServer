@@ -32,7 +32,7 @@ import { Event } from "./event";
 import { Listing } from "./listing";
 import { LineItem } from "./lineItem";
 import { Promotion } from "./promotion";
-import { Order } from "./order";
+import { CustomerOrder } from "./customerOrder";
 import { Customer } from "./customer";
 import { HubProcessor } from "./hubProcessor";
 import { CustomerReportLog } from "./customerReportLog";
@@ -299,14 +299,14 @@ export const createDatabase = async (options: any) => {
   Listing.hasMany(LineItem, addCascadeOptions({ foreignKey: "listingId" }));
   LineItem.belongsTo(Listing, addCascadeOptions({ foreignKey: "listingId" }));
 
-  Promotion.hasMany(Order, addCascadeOptions({ foreignKey: "promotionId" }));
-  Order.belongsTo(Promotion, addCascadeOptions({ foreignKey: "promotionId" }));
+  Promotion.hasMany(CustomerOrder, addCascadeOptions({ foreignKey: "promotionId" }));
+  CustomerOrder.belongsTo(Promotion, addCascadeOptions({ foreignKey: "promotionId" }));
 
-  Customer.hasMany(Order, addCascadeOptions({ foreignKey: "customerId" }));
-  Order.belongsTo(Customer, addCascadeOptions({ foreignKey: "customerId" }));
+  Customer.hasMany(CustomerOrder, addCascadeOptions({ foreignKey: "customerId" }));
+  CustomerOrder.belongsTo(Customer, addCascadeOptions({ foreignKey: "customerId" }));
 
-  LineItem.hasMany(Order, addCascadeOptions({ foreignKey: "orderId" }));
-  Order.belongsTo(LineItem, addCascadeOptions({ foreignKey: "orderId" }));
+  LineItem.hasMany(CustomerOrder, addCascadeOptions({ foreignKey: "orderId" }));
+  CustomerOrder.belongsTo(LineItem, addCascadeOptions({ foreignKey: "orderId" }));
 
   ThirdParty.hasMany(CustomerReportLog, addCascadeOptions({ foreignKey: "thirdPartyId" }));
   CustomerReportLog.belongsTo(ThirdParty, addCascadeOptions({ foreignKey: "thirdPartyId" }));

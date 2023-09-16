@@ -9,7 +9,7 @@ import {
     HasManyAddAssociationMixin,
   } from "Sequelize";
   import { conn } from "../db";
-import { Order } from "./order";
+import { CustomerOrder } from "./customerOrder";
   
   class Promotion extends Model<
     InferAttributes<Promotion>,
@@ -23,11 +23,11 @@ import { Order } from "./order";
     declare minimumSpending: number;
     declare promotionCode: string;
   
-    declare orders?: Order[];
+    declare customerOrder?: CustomerOrder[];
   
-    declare getOrders: HasManyGetAssociationsMixin<Order>;
-    declare addOrders: HasManyAddAssociationMixin<Order, number>;
-    declare setOrders: HasManySetAssociationsMixin<Order, number>;
+    declare getCustomerOrders: HasManyGetAssociationsMixin<CustomerOrder>;
+    declare addCustomerOrder: HasManyAddAssociationMixin<CustomerOrder, number>;
+    declare setCustomerOrders: HasManySetAssociationsMixin<CustomerOrder, number>;
 }
   
 Promotion.init({

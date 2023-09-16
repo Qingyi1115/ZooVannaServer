@@ -11,7 +11,7 @@ import {
   import { conn } from "../db";
   import crypto from "crypto";
 import { Country } from "./enumerated";
-import { Order } from "./order";
+import { CustomerOrder } from "./customerOrder";
   
   function hash(string: string): string {
     return crypto.createHash("sha256").update(string).digest("hex");
@@ -44,11 +44,11 @@ import { Order } from "./order";
     declare address: string;
     declare nationality: Country;
   
-    declare orders?: Order[];
+    declare customerOrder?: CustomerOrder[];
   
-    declare getOrders: HasManyGetAssociationsMixin<Order[]>;
-    declare addOrders: HasManyAddAssociationMixin<Order, number>;
-    declare setOrders: HasManySetAssociationsMixin<Order[], number>;
+    declare getCustomerOrders: HasManyGetAssociationsMixin<CustomerOrder[]>;
+    declare addCustomerOrder: HasManyAddAssociationMixin<CustomerOrder, number>;
+    declare setCustomerOrders: HasManySetAssociationsMixin<CustomerOrder[], number>;
   
     static getTotalCustomer() {
       // Example for static class functions
