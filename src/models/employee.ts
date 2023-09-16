@@ -4,7 +4,6 @@ import {
   CreationOptional,
   InferAttributes,
   InferCreationAttributes,
-  NonAttribute,
   HasOneGetAssociationMixin,
   HasOneSetAssociationMixin,
 } from "Sequelize";

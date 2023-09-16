@@ -5,26 +5,36 @@ import {
   InferCreationAttributes,
   BelongsToGetAssociationMixin,
   BelongsToSetAssociationMixin,
+  HasManyAddAssociationMixin,
+  HasManySetAssociationsMixin,
+  HasManyGetAssociationsMixin,
 } from "Sequelize";
 import { conn } from "../db";
 import { SensorType } from "./enumerated";
-import { Facility } from "./facility";
+import { HubProcessor } from "./hubProcessor";
+import { SensorReading } from "./sensorReading";
 
 class Sensor extends Model<
   InferAttributes<Sensor>,
   InferCreationAttributes<Sensor>
 > {
   declare sensorId: number;
-  declare sensorReadings: number[] | string;
+  // declare sensorReadings: number[] | string;
   declare sensorName: string;
   declare dateOfActivation: Date;
   declare dateOfLastMaintained: Date;
   declare sensorType: SensorType;
 
-  declare facility?: Facility;
+  declare hubProcessor?: HubProcessor;
+  declare sensorReading? :SensorReading;
 
-  declare getFacility: BelongsToGetAssociationMixin<Facility>;
-  declare setFacility: BelongsToSetAssociationMixin<Facility, number>;
+  declare getHubProcessor: BelongsToGetAssociationMixin<HubProcessor>;
+  declare setHubProcessor: BelongsToSetAssociationMixin<HubProcessor, number>;
+
+  declare getSensorReadings: HasManyGetAssociationsMixin<SensorReading[]>;
+  declare addSensorReading: HasManyAddAssociationMixin<SensorReading, number>;
+  declare setSensorReadings: HasManySetAssociationsMixin<SensorReading[], number>;
+
 }
 
 Sensor.init(
@@ -34,12 +44,12 @@ Sensor.init(
       autoIncrement: true,
       primaryKey: true,
     },
-    sensorReadings: {
-      type: DataTypes.STRING(5000),
-      set(val) {
-        this.setDataValue("sensorReadings", JSON.stringify(val ?? ""));
-      },
-    },
+    // sensorReadings: {
+    //   type: DataTypes.STRING(5000),
+    //   set(val) {
+    //     this.setDataValue("sensorReadings", JSON.stringify(val ?? ""));
+    //   },
+    // },
     dateOfActivation: {
       type: DataTypes.DATE,
       defaultValue: DataTypes.NOW,
@@ -67,16 +77,16 @@ Sensor.init(
   },
 );
 
-Sensor.addHook("afterFind", (findResult) => {
-  if (!Array.isArray(findResult)) findResult = [findResult as any];
-  for (const instance of findResult) {
-    if (instance.sensorReadings instanceof String) {
-      instance.setDataValue(
-        "sensorReadings",
-        JSON.parse(instance.sensorReadings),
-      );
-    }
-  }
-});
+// Sensor.addHook("afterFind", (findResult) => {
+//   if (!Array.isArray(findResult)) findResult = [findResult as any];
+//   for (const instance of findResult) {
+//     if (instance.sensorReadings instanceof String) {
+//       instance.setDataValue(
+//         "sensorReadings",
+//         JSON.parse(instance.sensorReadings),
+//       );
+//     }
+//   }
+// });
 
 export { Sensor };

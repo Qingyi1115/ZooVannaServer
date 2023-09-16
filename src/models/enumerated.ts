@@ -10,8 +10,8 @@ enum PlannerType {
 }
 
 enum GeneralStaffType {
-  MAINTENANCE = "MAINTENANCE",
-  OPERATE = "OPERATE",
+  ZOO_MAINTENANCE = "ZOO_MAINTENANCE",
+  ZOO_OPERATIONS = "ZOO_OPERATIONS",
 }
 
 enum SensorType {
@@ -432,6 +432,12 @@ enum OrderStatus{
   COMPLETED="COMPLETED"
 }
 
+enum EnclosureStatus{
+  ACTIVE="ACTIVE",
+  CLOSED="CLOSED",
+  CONSTRUCTING="CONSTRUCTING"
+}
+
 export {
   KeeperType,
   PlannerType,
@@ -459,5 +465,6 @@ export {
   ListingStatus,
   PaymentStatus,
   PaymentType,
-  OrderStatus
+  OrderStatus,
+  EnclosureStatus
 };

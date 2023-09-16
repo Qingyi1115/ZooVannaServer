@@ -34,6 +34,9 @@ import { LineItem } from "./lineItem";
 import { Promotion } from "./promotion";
 import { Order } from "./order";
 import { Customer } from "./customer";
+import { HubProcessor } from "./hubProcessor";
+import { CustomerReportLog } from "./customerReportLog";
+import { SensorReading } from "./sensorReading";
 
 function addCascadeOptions(options: object) {
   return { ...options, onDelete: "CASCADE", onUpdate: "CASCADE" };
@@ -62,8 +65,14 @@ export const createDatabase = async (options: any) => {
     addCascadeOptions({ foreignKey: "employeeId" }),
   );
 
-  Facility.hasMany(Sensor, addCascadeOptions({ foreignKey: "facilityId" }));
-  Sensor.belongsTo(Facility, addCascadeOptions({ foreignKey: "facilityId" }));
+  Facility.hasMany(HubProcessor, addCascadeOptions({ foreignKey: "facilityId" }));
+  HubProcessor.belongsTo(Facility, addCascadeOptions({ foreignKey: "facilityId" }));
+
+  HubProcessor.hasMany(Sensor, addCascadeOptions({ foreignKey: "hubProcessorId" }));
+  Sensor.belongsTo(HubProcessor, addCascadeOptions({ foreignKey: "hubProcessorId" }));
+
+  Sensor.hasMany(SensorReading, addCascadeOptions({ foreignKey: "sensorId" }));
+  SensorReading.belongsTo(Sensor, addCascadeOptions({ foreignKey: "sensorId" }));
 
   Facility.hasOne(InHouse, addCascadeOptions({ foreignKey: "facilityId" }));
   InHouse.belongsTo(Facility, addCascadeOptions({ foreignKey: "facilityId" }));
@@ -299,6 +308,12 @@ export const createDatabase = async (options: any) => {
   LineItem.hasMany(Order, addCascadeOptions({ foreignKey: "orderId" }));
   Order.belongsTo(LineItem, addCascadeOptions({ foreignKey: "orderId" }));
 
+  ThirdParty.hasMany(CustomerReportLog, addCascadeOptions({ foreignKey: "thirdPartyId" }));
+  CustomerReportLog.belongsTo(ThirdParty, addCascadeOptions({ foreignKey: "thirdPartyId" }));
+
+  InHouse.hasMany(CustomerReportLog, addCascadeOptions({ foreignKey: "inHouseId" }));
+  CustomerReportLog.belongsTo(InHouse, addCascadeOptions({ foreignKey: "inHouseId" }));
+
   // Create tables
   if (options["forced"]) {
     await conn.sync({ force: options.forced });
@@ -443,7 +458,7 @@ export const tutorial = async () => {
       hasAdminPrivileges: true,
       // @ts-ignore
       generalStaff: {
-        generalStaffType: GeneralStaffType.MAINTENANCE,
+        generalStaffType: GeneralStaffType.ZOO_MAINTENANCE,
       },
     },
     {
@@ -486,7 +501,7 @@ export const tutorial = async () => {
       facilityName: "facility1",
       xCoordinate: 123456,
       yCoordinate: 654321,
-      sensors: [
+      hubProcessors: [
         {
           sensorName: "A01",
           sensorReadings: [1.2, 2.3, 3.4],
@@ -494,13 +509,6 @@ export const tutorial = async () => {
           dateOfLastMaintained: new Date(),
           sensorType: SensorType.HUMIDITY,
         } as any,
-        {
-          sensorName: "A02",
-          sensorReadings: [27.2, 27.3, 27.4],
-          dateOfActivation: new Date(),
-          dateOfLastMaintained: new Date(),
-          sensorType: SensorType.TEMPERATURE,
-        },
       ],
       inHouse: {
         lastMaintained: new Date(),

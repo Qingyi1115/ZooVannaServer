@@ -16,6 +16,7 @@ import { TerrainDistribution } from "./terrainDistribution";
 import { Animal } from "./animal";
 import { BarrierType } from "./barrierType";
 import { Plantation } from "./plantation";
+import { EnclosureStatus } from "./enumerated";
 
 class Enclosure extends Model<
   InferAttributes<Enclosure>,
@@ -35,6 +36,7 @@ class Enclosure extends Model<
   declare acceptableTempMax: number;
   declare acceptableHumidityMin: number;
   declare acceptableHumidityMax: number;
+  declare enclosureStatus: EnclosureStatus;
 
   declare terrainDistribution?: TerrainDistribution;
   declare animals?: Animal;
@@ -104,11 +106,11 @@ Enclosure.init(
       allowNull: false,
     },
     acceptableTempMin: {
-      type: DataTypes.INTEGER,
+      type: DataTypes.DOUBLE,
       allowNull: false,
     },
     acceptableTempMax: {
-      type: DataTypes.INTEGER,
+      type: DataTypes.DOUBLE,
       allowNull: false,
     },
     acceptableHumidityMin: {
@@ -118,6 +120,11 @@ Enclosure.init(
     acceptableHumidityMax: {
       type: DataTypes.INTEGER,
       allowNull: false,
+    },
+    enclosureStatus: {
+        type:   DataTypes.ENUM,
+        values: Object.values(EnclosureStatus),
+        allowNull: false
     },
   },
   {

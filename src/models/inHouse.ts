@@ -16,6 +16,7 @@ import { Facility } from "./facility";
 import { FacilityType } from "./enumerated";
 import { GeneralStaff } from "./generalStaff";
 import { FacilityLog } from "./faciltiyLog";
+import { CustomerReportLog } from "./customerReportLog";
 
 class InHouse extends Model<
   InferAttributes<InHouse>,
@@ -34,6 +35,7 @@ class InHouse extends Model<
   declare operationStaffs?: GeneralStaff[];
   declare facilityLogs?: FacilityLog[];
   declare events?: Event[];
+  declare customerReportLogs?:CustomerReportLog[];
 
   declare getFacility: BelongsToGetAssociationMixin<Facility>;
   declare setFacility: BelongsToSetAssociationMixin<Facility, number>;
@@ -45,16 +47,10 @@ class InHouse extends Model<
   declare setNextTramStop: HasOneSetAssociationMixin<InHouse, number>;
 
   declare getMaintenanceStaffs: HasManyGetAssociationsMixin<GeneralStaff[]>;
-  declare setMaintenanceStaffs: HasManySetAssociationsMixin<
-    GeneralStaff[],
-    number
-  >;
+  declare setMaintenanceStaffs: HasManySetAssociationsMixin<GeneralStaff[], number>;
 
   declare getOperationStaffs: HasManyGetAssociationsMixin<GeneralStaff[]>;
-  declare setOperationStaffs: HasManySetAssociationsMixin<
-    GeneralStaff[],
-    number
-  >;
+  declare setOperationStaffs: HasManySetAssociationsMixin<GeneralStaff[],number>;
 
   declare getFacilityLogs: HasManyGetAssociationsMixin<FacilityLog[]>;
   declare setFacilityLogs: HasManySetAssociationsMixin<FacilityLog[], number>;
@@ -62,6 +58,10 @@ class InHouse extends Model<
   declare getEvents: HasManyGetAssociationsMixin<Event[]>;
   declare addEvents: HasManyAddAssociationMixin<Event, number>;
   declare setEvents: HasManySetAssociationsMixin<Event[], number>;
+  
+  declare getCustomerReportLogs: HasManyGetAssociationsMixin<CustomerReportLog[]>;
+  declare addCustomerReportLog: HasManyAddAssociationMixin<CustomerReportLog, number>;
+  declare setCustomerReportLogs: HasManySetAssociationsMixin<CustomerReportLog[], number>;
 
   // public toJSON() {
   //     // Can control default values returned rather than manually populating json, removing secrets
