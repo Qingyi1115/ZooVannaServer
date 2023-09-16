@@ -503,11 +503,8 @@ export const tutorial = async () => {
       yCoordinate: 654321,
       hubProcessors: [
         {
-          sensorName: "A01",
-          sensorReadings: [1.2, 2.3, 3.4],
-          dateOfActivation: new Date(),
-          dateOfLastMaintained: new Date(),
-          sensorType: SensorType.HUMIDITY,
+          processorName: "A01",
+          ipAddressName: "172.1.2.19",
         } as any,
       ],
       inHouse: {
@@ -521,7 +518,7 @@ export const tutorial = async () => {
     {
       include: [
         {
-          association: "sensors",
+          association: "hubProcessors",
         },
         {
           association: "inHouse",
