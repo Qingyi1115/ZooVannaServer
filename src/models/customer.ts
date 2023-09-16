@@ -21,11 +21,6 @@ import { CustomerOrder } from "./customerOrder";
     return `${str[0].toUpperCase()}${str.substr(1)}`;
   }
   
-  function convertString(doorAccessCode: number): string {
-    return (
-      "0".repeat(6 - doorAccessCode.toString().length) + doorAccessCode.toString()
-    );
-  }
   
   class Customer extends Model<
     InferAttributes<Customer>,
@@ -36,13 +31,13 @@ import { CustomerOrder } from "./customerOrder";
     declare customerUsername: string;
     declare customerPasswordHash: string;
     declare customerSalt: string;
-    declare firstName: string;
-    declare lastName: string;
-    declare email: string;
-    declare contactNo: string;
-    declare birthday: Date;
-    declare address: string;
-    declare nationality: Country;
+    declare customerFirstName: string;
+    declare customerLastName: string;
+    declare customerEmail: string;
+    declare customerContactNo: string;
+    declare customerBirthday: Date;
+    declare customerAddress: string;
+    declare customerNationality: Country;
   
     declare customerOrder?: CustomerOrder[];
   
@@ -106,32 +101,32 @@ import { CustomerOrder } from "./customerOrder";
         type: DataTypes.STRING,
         allowNull: false,
       },
-      firstName: {
+      customerFirstName: {
         type: DataTypes.STRING,
         allowNull: false,
       },
-      lastName: {
+      customerLastName: {
         type: DataTypes.STRING,
         allowNull: false,
       },
-      email: {
+      customerEmail: {
         type: DataTypes.STRING,
         allowNull: false,
         unique: true,
       },
-      contactNo: {
+      customerContactNo: {
         type: DataTypes.STRING,
         allowNull: false,
       },
-      birthday: {
+      customerBirthday: {
         type: DataTypes.DATE,
         allowNull: false,
       },
-      address: {
+      customerAddress: {
         type: DataTypes.STRING,
         allowNull: false,
       },
-      nationality:{
+      customerNationality:{
         type: DataTypes.ENUM,
         values: Object.values(Country),
         allowNull: false,
