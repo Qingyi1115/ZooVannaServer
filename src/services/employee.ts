@@ -2,11 +2,15 @@ import { Console } from "console";
 import { validationErrorHandler } from "../helpers/errorHandler";
 import { hash } from "../helpers/security";
 import { Employee } from "../models/employee";
+import { Token } from "../models/token";
 import {
   CreationOptional,
   literal
 } from "Sequelize";
+import * as nodemailer from 'nodemailer';
+import { v4 as uuidv4 } from 'uuid';
 
+//Account Manager
 export async function createNewEmployee(
   employeeName: string,
   employeeAddress: string,
@@ -52,14 +56,47 @@ export async function resetPassword(
   let result = await Employee.findOne({
     where: {employeeId: employeeId},
   });
-
-  const randomPassword =
-    (Math.random() + 1).toString(36).substring(7) +
-    (Math.random() + 1).toString(36).substring(7);
-
+  
   if(result) {
-    result.updatePassword(randomPassword);
-    return randomPassword;
+    const token = uuidv4();
+
+    const resetTokens: any = {
+      token: token,
+      email: result.employeeEmail,
+      createdAt: Date.now(),
+      expiresAt: Date.now() + 3600000, //expires in one hour
+    };
+
+    try {
+      Token.create(resetTokens);
+
+      const transporter = nodemailer.createTransport({
+        service: 'gmail',
+        auth: {
+          user: process.env.EMAIL_USERNAME,
+          pass: process.env.EMAIL_PASSWORD,
+        },
+      });
+
+      const mailOptions = {
+        from: process.env.EMAIL_USERNAME,
+        to: result.employeeEmail,
+        subject: 'Reset Password',
+        text: 'Click the link below to reset your password: ',
+        html: '<a href="http://localhost:3000/ResetPassword/${token}">Reset Password</a>',
+      };
+
+      transporter.sendMail(mailOptions, (error, info) => {
+        if (error) {
+          console.error('Error sending email:', error);
+        } else {
+          console.log('Email sent:', info.response);
+        }
+      });
+    }
+    catch (error: any) {
+      throw validationErrorHandler(error);
+    }
   }
   throw { error: "Employee does not exist"};
 }

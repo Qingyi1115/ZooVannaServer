@@ -183,8 +183,8 @@ export const resetPasswords = async (
 
     const {employeeId} = req.params;
 
-    let result = await resetPassword(Number(employeeId));
-    return res.status(200).json({password: result});
+    await resetPassword(Number(employeeId));
+    return res.status(200).json({message: "Email for reset password has been sent"});
   }
   catch (error: any) {
     return res.status(400).json({error: error.message});
