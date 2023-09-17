@@ -12,10 +12,11 @@ export async function createNewCustomer(
   birthday: Date,
   address: string,
   nationality: Country,
-  profileUrl?: string,
 ) {
+  console.log("Customer service triggered");
   // hash the customer password with random salt
   const randomSalt = (Math.random() + 1).toString(36).substring(7);
+  // const birthday = new Date(birthdayJSON);
 
   const customer_details: any = {
     passwordHash: hash(customerPassword + randomSalt),
@@ -27,7 +28,6 @@ export async function createNewCustomer(
     birthday: birthday,
     address: address,
     nationality: nationality,
-    profileUrl: profileUrl,
   };
   try {
     let newCustomer = await Customer.create(customer_details);

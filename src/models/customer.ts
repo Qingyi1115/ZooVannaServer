@@ -35,7 +35,6 @@ class Customer extends Model<
   declare birthday: Date;
   declare address: string;
   declare nationality: Country;
-  declare profileUrl: string;
 
   declare orders?: CustomerOrder[];
 
@@ -121,10 +120,6 @@ Customer.init(
       type: DataTypes.ENUM,
       values: Object.values(Country),
       allowNull: false,
-    },
-    profileUrl: {
-      type: DataTypes.STRING,
-      allowNull: true,
     },
   },
   {
