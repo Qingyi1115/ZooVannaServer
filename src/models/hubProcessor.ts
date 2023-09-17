@@ -21,7 +21,7 @@ class HubProcessor extends Model<
 > {
   declare hubProcessorId: CreationOptional<number>;
   declare processorName : string;
-  declare ipAddressName: string ;
+  declare ipAddressName: string | null;
   declare lastDataUpdate: Date | null;
   declare hubSecret: string | null;
   declare hubStatus : HubStatus;
@@ -35,6 +35,20 @@ class HubProcessor extends Model<
   declare getSensors: HasManyGetAssociationsMixin<Sensor[]>;
   declare addSensor: HasManyAddAssociationMixin<Sensor, number>;
   declare setSensors: HasManySetAssociationsMixin<Sensor[], number>;
+
+  public generateHubSecret() {
+    this.hubSecret = (Math.random() + 1).toString(36).substring(7) + (Math.random() + 1).toString(36).substring(7);
+    return this.hubSecret;
+  }
+  
+  public toJSON() {
+    // Can control default values returned rather than manually populating json, removing secrets
+    // Similar idea albert more useful when compared to java's toString
+    return {
+      ...this.get(),
+      hubSecret: undefined,
+    };
+  }
 }
 
 HubProcessor.init(
@@ -47,10 +61,10 @@ HubProcessor.init(
     processorName: {
       type: DataTypes.STRING,
       allowNull: false,
+      unique:true
     },
     ipAddressName: {
-      type: DataTypes.STRING,
-      allowNull: false,
+      type: DataTypes.STRING
     },
     lastDataUpdate: {
       type: DataTypes.DATE

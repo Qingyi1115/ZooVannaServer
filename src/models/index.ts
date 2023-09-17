@@ -13,6 +13,7 @@ import {
   GeneralStaffType,
   Specialization,
   FacilityType,
+  HubStatus,
 } from "./enumerated";
 import { ThirdParty } from "./thirdParty";
 import { AnimalClinic } from "./animalClinics";
@@ -504,6 +505,7 @@ export const tutorial = async () => {
         {
           processorName: "A01",
           ipAddressName: "172.1.2.19",
+          hubStatus: HubStatus.CONNECTED
         } as any,
       ],
       inHouse: {

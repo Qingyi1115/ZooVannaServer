@@ -5,7 +5,9 @@ import {
   addHubProcessorByFacilityId,
   addSensorByHubProcessorId,
   createNewFacility,
+  getAuthorizationForCameraById,
   getFacilityById,
+  initializeHubProcessor,
 } from "../services/assetFacility";
 import { Facility } from "../models/facility";
 import { Sensor } from "../models/sensor";
@@ -83,16 +85,15 @@ export async function addHubToFacility(req: Request, res: Response) {
         .status(403)
         .json({ error: "Access Denied! Operation managers only!" });
 
-    const { facilityId, processorName, ipAddressName } = req.body;
+    const { facilityId, processorName } = req.body;
 
-    if ([facilityId, processorName, ipAddressName].includes(undefined)) {
+    if ([facilityId, processorName ].includes(undefined)) {
       return res.status(400).json({ error: "Missing information!" });
     }
 
     let hubProcessor: HubProcessor = await addHubProcessorByFacilityId(
       Number(facilityId),
       processorName,
-      ipAddressName,
     );
 
     return res.status(200).json({ facility: hubProcessor.toJSON() });
@@ -198,6 +199,51 @@ export async function updateFacility(req: Request, res: Response) {
     }
     await p1;
     return res.status(200).json({ facility: facility.toJSON() });
+  } catch (error: any) {
+    res.status(400).json({ error: error.message });
+  }
+}
+
+export async function initializeHub(req: Request, res: Response) {
+  try {
+    const {processorName} = req.body;
+    // const {processorName} = req.body;
+
+    let ipaddress = req.socket.remoteAddress || "127.0.0.1";
+    ipaddress = ipaddress=="::1" ? "127.0.0.1" : ipaddress
+    
+    return res.status(200).json({ token: await initializeHubProcessor(processorName, ipaddress) });
+  } catch (error: any) {
+    res.status(400).json({ error: error.message });
+  }
+}
+
+export async function getAuthorizationForCamera(req: Request, res: Response) {
+  try {
+    const { email } = (req as any).locals.jwtPayload;
+    const employee = await findEmployeeByEmail(email);
+
+    if (
+      !(
+        (await employee.getPlanningStaff())?.plannerType ==
+        PlannerType.OPERATIONS_MANAGER
+      )
+    )
+      return res
+        .status(403)
+        .json({ error: "Access Denied! Operation managers only!" });
+
+    const { sensorId } = req.body;
+
+    if (sensorId === undefined ) {
+      return res.status(400).json({ error: "Missing information!" });
+    }
+
+    return res.status(200).json(
+      await getAuthorizationForCameraById(
+        sensorId,
+        String(employee.employeeId),
+    ));
   } catch (error: any) {
     res.status(400).json({ error: error.message });
   }

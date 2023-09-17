@@ -1,8 +1,9 @@
-import { SensorType } from "../models/enumerated";
+import { HubStatus, SensorType } from "../models/enumerated";
 import { validationErrorHandler } from "../helpers/errorHandler";
 import { Facility } from "../models/facility";
 import { Sensor } from "../models/sensor";
 import { HubProcessor } from "../models/hubProcessor";
+import { hash } from "../helpers/security";
 
 export async function createNewFacility(
   facilityName: string,
@@ -43,8 +44,7 @@ export async function getFacilityById(facilityId: number) {
 
 export async function addHubProcessorByFacilityId(
   facilityId: number,
-  processorName: string,
-  ipAddressName: string,
+  processorName: string
 ): Promise<HubProcessor> {
   try {
     const facility = await Facility.findOne({
@@ -54,7 +54,8 @@ export async function addHubProcessorByFacilityId(
 
     const newHub = await HubProcessor.create({
       processorName: processorName,
-      ipAddressName: ipAddressName,
+      // hubStatus: HubStatus.PENDING,
+      hubStatus: HubStatus.CONNECTED
     } as any);
 
     await facility.addHubProcessor(newHub);
@@ -74,6 +75,7 @@ export async function addSensorByHubProcessorId(
       where: { hubProcessorId: hubProcessorId },
     });
     if (!hubProcessor) throw { message: "Unable to find hubProcessorId " + hubProcessor };
+    if (hubProcessor.hubStatus != HubStatus.CONNECTED) throw { message: "Hub not connected!" };
 
     const newSensor = await Sensor.create({
       sensorName: sensorName,
@@ -82,6 +84,57 @@ export async function addSensorByHubProcessorId(
 
     await hubProcessor.addSensor(newSensor);
     return newSensor;
+  } catch (error: any) {
+    throw validationErrorHandler(error);
+  }
+}
+
+export async function initializeHubProcessor(
+  processorName: string,
+  ipAddress: string
+): Promise<string> {
+  try {
+    const hubProcessor = await HubProcessor.findOne({
+      where: { processorName:processorName },
+    });
+    if (!hubProcessor) throw { message: "Unable to find hubProcessorId " + hubProcessor };
+    if (hubProcessor.hubStatus != HubStatus.PENDING) throw { message: "Hub has alreadly been initizlized!" };
+
+    const newtoken = hubProcessor.generateHubSecret();
+    hubProcessor.lastDataUpdate = new Date();
+    hubProcessor.hubStatus = HubStatus.CONNECTED;
+    hubProcessor.ipAddressName = ipAddress;
+    hubProcessor.save();
+
+    return newtoken;
+  } catch (error: any) {
+    throw validationErrorHandler(error);
+  }
+}
+
+export async function getAuthorizationForCameraById(
+  cameraId: number,
+  userId:string,
+) {
+  try {
+    const sensor = await Sensor.findOne({
+      where: { sensorId:cameraId },
+    });
+    if (!sensor) throw { message: "Unable to find Camera Id " + cameraId };
+    if (sensor.sensorType != SensorType.CAMERA) throw { message: "Not a camera!" };
+
+    const hub = await sensor.getHubProcessor();
+    if (hub.hubStatus == HubStatus.PENDING) throw { message: "Hub has not initialized!" };
+
+    const currentDT = Date.now().toString();
+
+    return {
+      userId: userId,
+      hubId: hub.hubProcessorId,
+      date: currentDT,
+      ipAddressName: hub.ipAddressName,
+      signature: hash(userId + hub.hubProcessorId.toString() + currentDT + hub.hubSecret)
+    };
   } catch (error: any) {
     throw validationErrorHandler(error);
   }
