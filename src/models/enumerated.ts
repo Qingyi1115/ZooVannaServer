@@ -454,24 +454,6 @@ enum EnclosureStatus {
   CONSTRUCTING = "CONSTRUCTING"
 }
 
-enum AnimalFeedCategory{
-  RED_MEAT="RED_MEAT",
-  WHITE_MEAT="WHITE_MEAT",
-  FISH="FISH",
-  INSECTS="INSECTS",
-
-  HAY="HAY",
-  VEGETABLES="VEGETABLES",
-  FRUITS="FRUITS",
-  GRAINS="GRAINS",
-  BROWSE="BROWSE",
-
-  PELLETS="PELLETS",
-  NECTAR="NECTAR",
-  SUPPLEMENTS="SUPPLEMENTS",
-  OTHERS="OTHERS"
-}
-
 export {
   KeeperType,
   PlannerType,
@@ -501,6 +483,5 @@ export {
   PaymentStatus,
   PaymentType,
   OrderStatus,
-  EnclosureStatus,
-  AnimalFeedCategory
+  EnclosureStatus
 };
