@@ -9,7 +9,7 @@ import { handleFileUpload } from "../helpers/multerProcessFile";
 export async function getAllSpecies(req: Request, res: Response) {
 
     const allSpecies = await SpeciesService.getAllSpecies();
-    return res.status(200).json({ allSpecies });
+    return res.status(200).json(allSpecies);
 }
 
 export async function createSpecies(req: Request, res: Response) {
