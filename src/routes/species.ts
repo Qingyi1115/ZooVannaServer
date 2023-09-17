@@ -8,9 +8,9 @@ const router = express.Router();
 router.use(authMiddleware);
 
 router.get("/getallspecies", getAllSpecies);
-router.get("/getspecies", getSpeciesByCode);
+router.get("/getspecies/:speciesCode", getSpeciesByCode);
 router.post("/createnewspecies", createSpecies);
 router.post("/updatespecies", updateSpecies);
-router.post("/deletespecies", deleteSpeciesByCode);
+router.post("/deletespecies/:speciesCode", deleteSpeciesByCode);
 
 export default router;
