@@ -4,11 +4,10 @@ import express from "express";
 import {
   login,
   createEmployee,
-  retrieveEmployeeAccountDetails,
+  retrieveEmployee,
   updateEmployeeAccount,
-  retrieveAllEmployeeDetails,
   setAccountManager,
-  allEmployees
+  retrieveAllEmployees
 } from "../controllers/employeeController";
 import { authMiddleware } from "../middlewares/authMiddleware";
 
@@ -21,12 +20,11 @@ router.post("/login", login);
 
 router.use(authMiddleware);
 
-router.put("/createEmployee", createEmployee);
-router.put("/retrieveEmployeeAccountDetails", retrieveEmployeeAccountDetails);
+router.post("/createEmployee", createEmployee);
+router.get("/retrieveEmployee/:employeeId", retrieveEmployee);
 router.put("/updateEmployeeAccount", updateEmployeeAccount);
-router.put("/retrieveAllEmployeeDetails", retrieveAllEmployeeDetails);
-router.put("/createEmployee", createEmployee);
+router.post("/createEmployee", createEmployee);
 router.put("/setAccountManager", setAccountManager);
-router.put("/allEmployees", allEmployees);
+router.get("/retrieveAllEmployees", retrieveAllEmployees);
 
 export default router;

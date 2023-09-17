@@ -80,6 +80,13 @@ class Employee extends Model<
     return this;
   }
 
+  public disableAccount() {
+    this.dateOfResignation = new Date();
+    this.save();
+    console.log("Employee account has been disabled");
+    return this.dateOfResignation;
+  }
+
   static generateEmployeeSalt() {
     return (Math.random() + 1).toString(36).substring(7);
   }
