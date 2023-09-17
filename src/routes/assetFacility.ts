@@ -6,10 +6,13 @@ import {
   addHubToFacility,
   createFacility,
   updateFacility,
-  addSensorToHub
+  addSensorToHub,
+  initializeHub
 } from "../controllers/assetFacilityController";
 
 const router = express.Router();
+
+router.put("/initializeHub", initializeHub);
 
 router.use(authMiddleware);
 
