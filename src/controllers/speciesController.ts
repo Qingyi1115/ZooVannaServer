@@ -1,10 +1,31 @@
 import { Request, Response } from "express";
 import { Species } from "models/species";
 
+
 import { createNewEmployee, findEmployeeByEmail } from "../services/employee";
-import { createNewSpecies } from "../services/species";
+import * as SpeciesService from "../services/species";
 
 import { handleFileUpload } from "../helpers/multerProcessFile";
+
+export async function getAllSpecies(req: Request, res: Response) {
+
+    try{
+        const allSpecies = await SpeciesService.getAllSpecies();
+        return res.status(200).json(allSpecies);
+    } catch (error: any) {
+        res.status(400).json({ error: error.message });
+    }
+}
+
+export async function getSpeciesByCode(req: Request, res: Response) {
+
+    // try{
+    //     const species = await SpeciesService.getSpeciesByCodFromDB();
+    //     return res.status(200).json(species);
+    // } catch (error: any) {
+    //     res.status(400).json({ error: error.message });
+    // }
+}
 
 export async function createSpecies(req: Request, res: Response) {
     try {
@@ -18,7 +39,7 @@ export async function createSpecies(req: Request, res: Response) {
 
         const imageUrl = await handleFileUpload(
             req,
-            "D:/capstoneUploads/species",
+            process.env.IMG_URL_ROOT! + "species" , //"D:/capstoneUploads/species",
         );
         const {
             commonName,
@@ -84,7 +105,7 @@ export async function createSpecies(req: Request, res: Response) {
         }
 
         // have to pass in req for image uploading
-        let species = await createNewSpecies(commonName,
+        let species = await SpeciesService.createNewSpecies(commonName,
             scientificName,
             aliasName,
             conservationStatus,
@@ -108,3 +129,4 @@ export async function createSpecies(req: Request, res: Response) {
         res.status(400).json({ error: error.message });
     }
 }
+

@@ -4,8 +4,8 @@ enum KeeperType {
 }
 
 enum PlannerType {
-  SALES = "SALES",
   CURATOR = "CURATOR",
+  SALES = "SALES",
   MARKETING="MARKETING",
   OPERATIONS_MANAGER='OPERATIONS_MANAGER',
   CUSTOMER_OPERATIONS='CUSTOMER_OPERATIONS'
@@ -22,7 +22,7 @@ enum SensorType {
   HUMIDITY = "HUMIDITY",
   SOUND = "SOUND",
   MOTION = "MOTION",
-  HUMAN = "HUMAN",
+  CAMERA = "CAMERA",
 }
 
 enum FacilityType {
@@ -457,7 +457,7 @@ enum EnclosureStatus {
 
 enum HubStatus{
   PENDING="PENDING",
-  UNCONNECTED="UNCONNECTED",
+  DISCONNECTED="DISCONNECTED",
   CONNECTED="CONNECTED"
 }
 
