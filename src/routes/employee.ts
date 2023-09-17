@@ -7,7 +7,9 @@ import {
   retrieveEmployee,
   updateEmployeeAccount,
   setAccountManager,
-  retrieveAllEmployees
+  retrieveAllEmployees,
+  resetPasswords,
+  disableEmployee
 } from "../controllers/employeeController";
 import { authMiddleware } from "../middlewares/authMiddleware";
 
@@ -26,5 +28,7 @@ router.put("/updateEmployeeAccount", updateEmployeeAccount);
 router.post("/createEmployee", createEmployee);
 router.put("/setAccountManager", setAccountManager);
 router.get("/retrieveAllEmployees", retrieveAllEmployees);
+router.put("/resetPassword/:employeeId", resetPasswords );
+router.put("/disableEmployee/:employeeId", disableEmployee);
 
 export default router;

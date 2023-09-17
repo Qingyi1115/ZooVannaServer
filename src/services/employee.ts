@@ -61,7 +61,7 @@ export async function resetPassword(
     result.updatePassword(randomPassword);
     return randomPassword;
   }
-  throw {error: "Employee does not exist"};
+  throw { error: "Employee does not exist"};
 }
 
 export async function findEmployeeByEmail(employeeEmail: string) {
