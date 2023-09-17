@@ -12,6 +12,7 @@ export async function createNewCustomer(
   birthday: Date,
   address: string,
   nationality: Country,
+  profileUrl?: string,
 ) {
   // hash the customer password with random salt
   const randomSalt = (Math.random() + 1).toString(36).substring(7);
@@ -26,6 +27,7 @@ export async function createNewCustomer(
     birthday: birthday,
     address: address,
     nationality: nationality,
+    profileUrl: profileUrl,
   };
   try {
     let newCustomer = await Customer.create(customer_details);
