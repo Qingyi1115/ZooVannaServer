@@ -1,6 +1,9 @@
 import { validationErrorHandler } from "../helpers/errorHandler";
 import { hash } from "../helpers/security";
 import { Employee } from "../models/employee";
+import {
+  CreationOptional
+} from "Sequelize";
 
 export async function createNewEmployee(
   employeeName: string,
@@ -51,6 +54,20 @@ export async function findEmployeeByEmail(employeeEmail: string) {
   throw { error: "Invalid email!" };
 }
 
+export async function findEmployeeById(employeeId: CreationOptional<number>) {
+  let result = await Employee.findOne({
+    where: { employeeId: employeeId},
+  });
+
+  if(result) {
+    if(result.dateOfResignation == null) {
+      return result;
+    }
+    throw { error: "Employee has been disabled"};
+  }
+  throw {error: "Employee does not exist"};
+}
+
 export async function employeeLogin(
   employeeEmail: string,
   password: string,
@@ -58,4 +75,33 @@ export async function employeeLogin(
   return !!(
     await Employee.findOne({ where: { employeeEmail: employeeEmail } })
   )?.testPassword(password);
+}
+
+export async function setAsAccountManager(
+  employeeId: CreationOptional<number>
+) {
+  let employee = await Employee.findOne({
+    where: {employeeId: employeeId},
+  });
+
+  if(employee) {
+    if(!employee.isAccountManager) {
+      if(employee.dateOfResignation == null) {
+        return employee.setAsAccountManager();
+      }
+      throw {
+        error: "Employee has been disabled"
+      };
+    }
+    throw {
+      error: "Employee is already Account Manager"
+    };
+  }
+  throw {
+    error: "Employee does not exist"
+  };
+}
+
+export async function getAllEmployees() {
+  return Employee.findAll({where: {dateOfResignation : null}});
 }

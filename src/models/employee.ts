@@ -62,6 +62,12 @@ class Employee extends Model<
     return Employee.count();
   }
 
+  public setAsAccountManager() {
+    this.isAccountManager = true;
+    this.save();
+    return this;
+  }
+
   public testPassword(password: string) {
     return !hash(password + this.employeeSalt).localeCompare(
       this.employeePasswordHash,
