@@ -21,7 +21,7 @@ enum SensorType {
   HUMIDITY = "HUMIDITY",
   SOUND = "SOUND",
   MOTION = "MOTION",
-  HUMAN = "HUMAN",
+  CAMERA = "CAMERA",
 }
 
 enum FacilityType {
@@ -456,7 +456,7 @@ enum EnclosureStatus {
 
 enum HubStatus{
   PENDING="PENDING",
-  UNCONNECTED="UNCONNECTED",
+  DISCONNECTED="DISCONNECTED",
   CONNECTED="CONNECTED"
 }
 

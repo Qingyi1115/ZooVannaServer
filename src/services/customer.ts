@@ -1,46 +1,45 @@
-import { Country } from "models/enumerated";
 import { validationErrorHandler } from "../helpers/errorHandler";
 import { hash } from "../helpers/security";
 import { Customer } from "../models/customer";
+import { Country } from "../models/enumerated";
 
 export async function createNewCustomer(
-  customerUsername: string,
-  customerFirstName: string,
-  customerLastName: string,
-  customerEmail: string,
-  customerContactNo: string,
-  customerBirthday: Date,
-  customerAddress: string,
-  customerNationality: Country
+  customerPassword: string,
+  firstName: string,
+  lastName: string,
+  email: string,
+  contactNo: string,
+  birthday: Date,
+  address: string,
+  nationality: Country,
+  profileUrl?: string,
 ) {
-  const randomPassword =
-    (Math.random() + 1).toString(36).substring(7) +
-    (Math.random() + 1).toString(36).substring(7);
+  // hash the customer password with random salt
   const randomSalt = (Math.random() + 1).toString(36).substring(7);
 
   const customer_details: any = {
-    customerUsername: customerUsername,
-    customerFirstName: customerFirstName,
-    customerLastName: customerLastName,
-    customerEmail: customerEmail,
-    customerContactNo: customerContactNo,
-    customerBirthday: customerBirthday,
-    customerAddress: customerAddress,
-    customerNationality: customerNationality,
-    customerPasswordHash: hash(randomPassword + randomSalt),
-    customerSalt: randomSalt,
+    passwordHash: hash(customerPassword + randomSalt),
+    salt: randomSalt,
+    firstName: firstName,
+    lastName: lastName,
+    email: email,
+    contactNo: contactNo,
+    birthday: birthday,
+    address: address,
+    nationality: nationality,
+    profileUrl: profileUrl,
   };
   try {
     let newCustomer = await Customer.create(customer_details);
-    return [randomPassword, newCustomer.toJSON()];
+    return [newCustomer.toJSON()];
   } catch (error: any) {
     throw validationErrorHandler(error);
   }
 }
 
-export async function findCustomerByEmail(customerEmail: string) {
+export async function findCustomerByEmail(email: string) {
   let result = await Customer.findOne({
-    where: { customerEmail: customerEmail },
+    where: { email: email },
   });
   if (result) {
     return result;
@@ -49,19 +48,10 @@ export async function findCustomerByEmail(customerEmail: string) {
 }
 
 export async function customerLogin(
-  customerEmail: string,
+  email: string,
   password: string,
 ): Promise<boolean> {
-  return !!(
-    await Customer.findOne({ where: { customerEmail: customerEmail } })
-  )?.testPassword(password);
-}
-
-export async function customerLoginWithUsername(
-  customerUsername: string,
-  password: string,
-): Promise<boolean> {
-  return !!(
-    await Customer.findOne({ where: { customerUsername: customerUsername } })
-  )?.testPassword(password);
+  return !!(await Customer.findOne({ where: { email: email } }))?.testPassword(
+    password,
+  );
 }
