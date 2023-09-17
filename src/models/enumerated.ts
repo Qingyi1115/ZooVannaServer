@@ -4,8 +4,8 @@ enum KeeperType {
 }
 
 enum PlannerType {
-  SALES = "SALES",
   CURATOR = "CURATOR",
+  SALES = "SALES",
   MARKETING="MARKETING",
   OPERATIONS_MANAGER = "OPERATIONS_MANAGER",
 }
