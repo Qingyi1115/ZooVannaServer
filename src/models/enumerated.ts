@@ -454,6 +454,12 @@ enum EnclosureStatus {
   CONSTRUCTING = "CONSTRUCTING"
 }
 
+enum HubStatus{
+  PENDING="PENDING",
+  UNCONNECTED="UNCONNECTED",
+  CONNECTED="CONNECTED"
+}
+
 export {
   KeeperType,
   PlannerType,
@@ -483,5 +489,6 @@ export {
   PaymentStatus,
   PaymentType,
   OrderStatus,
-  EnclosureStatus
+  EnclosureStatus,
+  HubStatus
 };
