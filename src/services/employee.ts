@@ -8,7 +8,7 @@ export async function createNewEmployee(
   employeeEmail: string,
   employeePhoneNumber: string,
   employeeEducation: string,
-  hasAdminPrivileges: Boolean,
+  isAccountManager: Boolean,
   role: string,
   roleJson: any,
 ) {
@@ -26,7 +26,7 @@ export async function createNewEmployee(
     employeeSalt: randomSalt,
     employeeDoorAccessCode: await Employee.generateNewDoorAccessCode(),
     employeeEducation: employeeEducation,
-    hasAdminPrivileges: hasAdminPrivileges,
+    isAccountManager: isAccountManager,
   };
   employee_details[role] = roleJson;
   try {

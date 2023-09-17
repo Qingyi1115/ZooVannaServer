@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { findEmployeeByEmail } from "../services/user";
+import { findEmployeeByEmail } from "../services/employee";
 import { PlannerType } from "../models/enumerated";
 import {
   addHubProcessorByFacilityId,

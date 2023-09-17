@@ -12,7 +12,6 @@ import {
   PlannerType,
   GeneralStaffType,
   Specialization,
-  SensorType,
   FacilityType,
 } from "./enumerated";
 import { ThirdParty } from "./thirdParty";
@@ -337,7 +336,7 @@ export const tutorial = async () => {
     employeeSalt: "NaCl",
     employeeDoorAccessCode: "123456",
     employeeEducation: "PHD in not eating",
-    hasAdminPrivileges: true,
+    isAccountManager: true,
   });
   console.log(marry.toJSON());
   console.log("marry's actuall secret hash: ", marry.employeePasswordHash);
@@ -371,7 +370,7 @@ export const tutorial = async () => {
         employeeSalt: "NaAg",
         employeeDoorAccessCode: "234567",
         employeeEducation: "PHD in not sleeping",
-        hasAdminPrivileges: false,
+        isAccountManager: false,
         // @ts-ignore
         keeper: {
           keeperType: KeeperType.KEEPER,
@@ -387,7 +386,7 @@ export const tutorial = async () => {
         employeeSalt: "NaH",
         employeeDoorAccessCode: "345678",
         employeeEducation: "PHD in not breathing",
-        hasAdminPrivileges: false,
+        isAccountManager: false,
         // @ts-ignore
         keeper: {
           keeperType: KeeperType.KEEPER,
@@ -429,7 +428,7 @@ export const tutorial = async () => {
       employeeSalt: "H2",
       employeeDoorAccessCode: "987654",
       employeeEducation: "PHD in not waking up",
-      hasAdminPrivileges: false,
+      isAccountManager: false,
       // @ts-ignore
       planningStaff: {
         plannerType: PlannerType.CURATOR,
@@ -455,7 +454,7 @@ export const tutorial = async () => {
       employeeSalt: "H3",
       employeeDoorAccessCode: "222222",
       employeeEducation: "Math Major",
-      hasAdminPrivileges: true,
+      isAccountManager: true,
       // @ts-ignore
       generalStaff: {
         generalStaffType: GeneralStaffType.ZOO_MAINTENANCE,
@@ -478,7 +477,7 @@ export const tutorial = async () => {
       employeeSalt: "SiO2",
       employeeDoorAccessCode: "222223",
       employeeEducation: "Another Math Major",
-      hasAdminPrivileges: true,
+      isAccountManager: true,
       // @ts-ignore
       planningStaff: {
         plannerType: PlannerType.OPERATIONS_MANAGER,

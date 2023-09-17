@@ -7,7 +7,7 @@ import {
   retrieveEmployeeAccountDetails,
   updateEmployeeAccount,
   retrieveAllEmployeeDetails,
-} from "../controllers/userController";
+} from "../controllers/employeeController";
 import { authMiddleware } from "../middlewares/authMiddleware";
 
 const router = express.Router();
