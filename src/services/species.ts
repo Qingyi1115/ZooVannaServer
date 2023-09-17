@@ -2,13 +2,23 @@ import { Request } from "express";
 import { validationErrorHandler } from "../helpers/errorHandler";
 import { Species } from "../models/species";
 
-export async function getAllSpecies() {
+export async function getAllSpecies() { 
     try {
         const allSpecies = await Species.findAll();
         return allSpecies;
     } catch (error: any) {
         throw validationErrorHandler(error);
     }
+}
+
+export async function getSpeciesByCode(speciesCode: string) { 
+    let result = await Species.findOne({
+        where: { speciesCode: speciesCode },
+    });
+    if (result) {
+        return result;
+    }
+    throw { error: "Invalid Species Code!" };
 }
 
 export async function createNewSpecies(commonName: string,
