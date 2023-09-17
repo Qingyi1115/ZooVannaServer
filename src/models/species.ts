@@ -78,10 +78,12 @@ Species.init(
     speciesCode: {
       type: DataTypes.STRING,
       allowNull: false,
+      unique: true,
     },
     commonName: {
       type: DataTypes.STRING,
       allowNull: false,
+      unique: true,
     },
     scientificName: {
       type: DataTypes.STRING,
