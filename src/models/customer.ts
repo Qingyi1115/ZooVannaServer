@@ -33,7 +33,6 @@ import { Order } from "./order";
   > {
 
     declare customerId: CreationOptional<number>;
-    declare customerUsername: string;
     declare customerPasswordHash: string;
     declare customerSalt: string;
     declare firstName: string;
@@ -92,11 +91,6 @@ import { Order } from "./order";
         type: DataTypes.BIGINT,
         autoIncrement: true,
         primaryKey: true,
-      },
-      customerUsername: {
-        type: DataTypes.STRING,
-        allowNull: false,
-        unique: true,
       },
       customerPasswordHash: {
         type: DataTypes.STRING,
