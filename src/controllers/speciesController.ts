@@ -9,8 +9,12 @@ import { handleFileUpload } from "../helpers/multerProcessFile";
 
 export async function getAllSpecies(req: Request, res: Response) {
 
-    const allSpecies = await SpeciesService.getAllSpecies();
-    return res.status(200).json(allSpecies);
+    try{
+        const allSpecies = await SpeciesService.getAllSpecies();
+        return res.status(200).json(allSpecies);
+    } catch (error: any) {
+        res.status(400).json({ error: error.message });
+    }
 }
 
 export async function createSpecies(req: Request, res: Response) {
@@ -25,7 +29,7 @@ export async function createSpecies(req: Request, res: Response) {
 
         const imageUrl = await handleFileUpload(
             req,
-            "D:/capstoneUploads/species",
+            process.env.IMG_URL_Species! + "species" , //"D:/capstoneUploads/species",
         );
         const {
             commonName,
