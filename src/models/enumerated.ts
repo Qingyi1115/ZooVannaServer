@@ -4,8 +4,9 @@ enum KeeperType {
 }
 
 enum PlannerType {
-  NUTRITIONIST = "NUTRITIONIST",
+  SALES = "SALES",
   CURATOR = "CURATOR",
+  MARKETING="MARKETING",
   OPERATIONS_MANAGER = "OPERATIONS_MANAGER",
 }
 
@@ -154,7 +155,6 @@ enum EventType {
   SHOW = "SHOW",
   CUSTOMER_FEEDING = "CUSTOMER_FEEDING",
   TALK = "TALK",
-  ANIMAL_BIRTHDAY = "ANIMAL_BIRTHDAY",
   EMPLOYEE_FEEDING = "EMPLOYEE_FEEDING",
   ENRICHMENT = "ENRICHMENT",
   OBSERVATION = "OBSERVATION",
@@ -454,6 +454,24 @@ enum EnclosureStatus {
   CONSTRUCTING = "CONSTRUCTING"
 }
 
+enum AnimalFeedCategory{
+  RED_MEAT="RED_MEAT",
+  WHITE_MEAT="WHITE_MEAT",
+  FISH="FISH",
+  INSECTS="INSECTS",
+
+  HAY="HAY",
+  VEGETABLES="VEGETABLES",
+  FRUITS="FRUITS",
+  GRAINS="GRAINS",
+  BROWSE="BROWSE",
+
+  PELLETS="PELLETS",
+  NECTAR="NECTAR",
+  SUPPLEMENTS="SUPPLEMENTS",
+  OTHERS="OTHERS"
+}
+
 export {
   KeeperType,
   PlannerType,
@@ -483,5 +501,6 @@ export {
   PaymentStatus,
   PaymentType,
   OrderStatus,
-  EnclosureStatus
+  EnclosureStatus,
+  AnimalFeedCategory
 };

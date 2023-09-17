@@ -1,8 +1,9 @@
 import {
-  DataTypes,
-  Model,
-  InferAttributes,
-  InferCreationAttributes,
+    DataTypes,
+    Model,
+    CreationOptional,
+    InferAttributes,
+    InferCreationAttributes,
 } from "Sequelize";
 import { conn } from "../db";
 
@@ -10,32 +11,26 @@ class EnrichmentItem extends Model<
   InferAttributes<EnrichmentItem>,
   InferCreationAttributes<EnrichmentItem>
 > {
-  declare enrichmentItemId: number;
-  declare enrichmentItemName: string;
+  declare enrichmentItemId: CreationOptional<number>;
+  declare endirhmentItemName: string;
   declare enrichmentItemImageUrl: string;
-  
-  // public toJSON() {
-  //     // Can control default values returned rather than manually populating json, removing secrets
-  //     // Similar idea albert more useful when compared to java's toString
-  //     return {...this.get(), EmployeeEmployeeId: undefined}
-  // }
 }
 
 EnrichmentItem.init(
   {
-    enrichmentItemId: {
+      enrichmentItemId: {
       type: DataTypes.BIGINT,
       autoIncrement: true,
       primaryKey: true,
     },
-    enrichmentItemName: {
+    endirhmentItemName: {
       type: DataTypes.STRING,
       allowNull: false,
     },
     enrichmentItemImageUrl: {
       type: DataTypes.STRING,
       allowNull: false,
-    }
+    },
   },
   {
     freezeTableName: true,
@@ -48,3 +43,4 @@ EnrichmentItem.init(
 );
 
 export { EnrichmentItem };
+

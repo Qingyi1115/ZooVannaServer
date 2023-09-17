@@ -26,6 +26,7 @@ class SpeciesEnclosureNeed extends Model<
   declare acceptableHumidityMax: number;
   declare recommendedStandOffBarrierDistMetres: number;
   declare plantationCoveragePercent: number;
+  declare standoffBarrierDist: number;
 
   declare species?: Species;
   declare terrainDistributionMin?: TerrainDistribution;
@@ -86,6 +87,10 @@ SpeciesEnclosureNeed.init(
       allowNull: false,
     },
     plantationCoveragePercent: {
+      type: DataTypes.DOUBLE,
+      allowNull: false,
+    },
+    standoffBarrierDist: {
       type: DataTypes.DOUBLE,
       allowNull: false,
     },
