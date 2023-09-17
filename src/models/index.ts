@@ -14,6 +14,9 @@ import {
   Specialization,
   FacilityType,
   HubStatus,
+  ConservationStatus,
+  Continent,
+  GroupSexualDynamic,
 } from "./enumerated";
 import { ThirdParty } from "./thirdParty";
 import { AnimalClinic } from "./animalClinics";
@@ -325,6 +328,7 @@ export const createDatabase = async (options: any) => {
 export const seedDatabase = async () => {
   // Fake data goes here
   await tutorial();
+  await speciesSeed();
 };
 
 export const tutorial = async () => {
@@ -542,3 +546,29 @@ export const tutorial = async () => {
     )?.getMaintenanceStaffs(),
   );
 };
+
+export const speciesSeed = async () => {
+  let pandaTemplate = {
+    speciesCode: await Species.getNextSpeciesCode(),
+    commonName: "Giant Panda",
+    scientificName: "Ailuropoda Melanoleuca",
+    aliasName: "Panda Bear, Panda",
+    conservationStatus: ConservationStatus.VULNERABLE,
+    domain: "Eukaryota",
+    kingdom: "Animalia",
+    phylum: "Chordata",
+    speciesClass: "Mammalia",
+    order: "Carnivora",
+    family: "Ursidae",
+    genus: "Ailuropoda",
+    educationalDescription: "The giant panda (Ailuropoda melanoleuca),...",
+    nativeContinent: Continent.ASIA,
+    nativeBiomes: "Temperate Forests",
+    groupSexualDynamic: GroupSexualDynamic.POLYANDROUS,
+    habitatOrExhibit: "Southwest China",
+    generalDietPreference: "Bamboo?? LOL what to put",
+    imageUrl: "Fake_URL_Here"
+  } as any;
+  let panda1 = await Species.create(pandaTemplate);
+  console.log(panda1.toJSON());
+}

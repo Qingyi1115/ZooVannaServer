@@ -21,7 +21,8 @@ export async function getSpeciesByCode(speciesCode: string) {
     throw { error: "Invalid Species Code!" };
 }
 
-export async function createNewSpecies(commonName: string,
+export async function createNewSpecies(
+    commonName: string,
     scientificName: string,
     aliasName: string,
     conservationStatus: string,
@@ -34,7 +35,7 @@ export async function createNewSpecies(commonName: string,
     genus: string,
     educationalDescription: string,
     nativeContinent: string,
-    selectedBiomes: string,
+    nativeBiomes: string,
     groupSexualDynamic: string,
     habitatOrExhibit: string,
     generalDietPreference: string,
@@ -55,7 +56,7 @@ export async function createNewSpecies(commonName: string,
         genus: genus,
         educationalDescription: educationalDescription,
         nativeContinent: nativeContinent,
-        nativeBiomes: selectedBiomes,
+        nativeBiomes: nativeBiomes,
         groupSexualDynamic: groupSexualDynamic,
         habitatOrExhibit: habitatOrExhibit,
         generalDietPreference: generalDietPreference,
