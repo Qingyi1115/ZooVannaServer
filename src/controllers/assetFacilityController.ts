@@ -12,6 +12,9 @@ import {
 import { Facility } from "../models/facility";
 import { Sensor } from "../models/sensor";
 import { HubProcessor } from "../models/hubProcessor";
+import { handleFileUpload } from "../helpers/multerProcessFile";
+import * as AnimalFeedService from "../services/animalFeed";
+import * as EnrichmentItemService from "../services/enrichmentItem";
 
 export async function createFacility(req: Request, res: Response) {
   try {
@@ -87,7 +90,7 @@ export async function addHubToFacility(req: Request, res: Response) {
 
     const { facilityId, processorName } = req.body;
 
-    if ([facilityId, processorName ].includes(undefined)) {
+    if ([facilityId, processorName].includes(undefined)) {
       return res.status(400).json({ error: "Missing information!" });
     }
 
@@ -206,12 +209,12 @@ export async function updateFacility(req: Request, res: Response) {
 
 export async function initializeHub(req: Request, res: Response) {
   try {
-    const {processorName} = req.body;
+    const { processorName } = req.body;
     // const {processorName} = req.body;
 
     let ipaddress = req.socket.remoteAddress || "127.0.0.1";
-    ipaddress = ipaddress=="::1" ? "127.0.0.1" : ipaddress
-    
+    ipaddress = ipaddress == "::1" ? "127.0.0.1" : ipaddress
+
     return res.status(200).json({ token: await initializeHubProcessor(processorName, ipaddress) });
   } catch (error: any) {
     res.status(400).json({ error: error.message });
@@ -235,7 +238,7 @@ export async function getAuthorizationForCamera(req: Request, res: Response) {
 
     const { sensorId } = req.body;
 
-    if (sensorId === undefined ) {
+    if (sensorId === undefined) {
       return res.status(400).json({ error: "Missing information!" });
     }
 
@@ -243,7 +246,248 @@ export async function getAuthorizationForCamera(req: Request, res: Response) {
       await getAuthorizationForCameraById(
         sensorId,
         String(employee.employeeId),
-    ));
+      ));
+  } catch (error: any) {
+    res.status(400).json({ error: error.message });
+  }
+}
+
+//Asset functions
+export async function createNewAnimalFeed(req: Request, res: Response) {
+  try {
+    const imageUrl = await handleFileUpload(
+      req,
+      process.env.IMG_URL_ROOT! + "animalFeed", //"D:/capstoneUploads/animalFeed",
+    );
+    const {
+      animalFeedName,
+      animalFeedImageUrl,
+      animalFeedCategory
+    } = req.body;
+
+    if (
+      [
+        animalFeedName,
+        animalFeedImageUrl,
+        animalFeedCategory
+      ].includes(undefined)
+    ) {
+      console.log("Missing field(s): ", {
+        animalFeedName,
+        animalFeedImageUrl,
+        animalFeedCategory
+      });
+      return res.status(400).json({ error: "Missing information!" });
+    }
+
+    let animalFeed = await AnimalFeedService.createNewAnimalFeed(
+      animalFeedName,
+      animalFeedImageUrl,
+      animalFeedCategory
+    );
+
+    return res.status(200).json({ animalFeed: animalFeed.toJSON() });
+  } catch (error: any) {
+    res.status(400).json({ error: error.message });
+  }
+}
+
+export async function getAllAnimalFeed(req: Request, res: Response) {
+  try {
+    const allAnimalFeed = await AnimalFeedService.getAllAnimalFeed();
+    return res.status(200).json(allAnimalFeed);
+  } catch (error: any) {
+    res.status(400).json({ error: error.message });
+  }
+}
+
+export async function getAnimalFeedByName(req: Request, res: Response) {
+  const { animalFeedName } = req.params;
+
+  if (animalFeedName == undefined) {
+    console.log("Missing field(s): ", {
+      animalFeedName,
+    });
+    return res.status(400).json({ error: "Missing information!" });
+  }
+
+  try {
+    const animalFeed = await AnimalFeedService.getAnimalFeedByName(animalFeedName);
+    return res.status(200).json(animalFeed);
+  } catch (error: any) {
+    res.status(400).json({ error: error.message });
+  }
+}
+
+export async function updateAnimalFeed(req: Request, res: Response) {
+  try {
+    const imageUrl = await handleFileUpload(
+      req,
+      process.env.IMG_URL_ROOT! + "animalFeed", //"D:/capstoneUploads/animalFeed",
+    );
+    const {
+      animalFeedName,
+      animalFeedImageUrl,
+      animalFeedCategory
+    } = req.body;
+
+    if (
+      [
+        animalFeedName,
+        animalFeedImageUrl,
+        animalFeedCategory
+      ].includes(undefined)
+    ) {
+      console.log("Missing field(s): ", {
+        animalFeedName,
+        animalFeedImageUrl,
+        animalFeedCategory
+      });
+      return res.status(400).json({ error: "Missing information!" });
+    }
+
+    // have to pass in req for image uploading
+    let animalFeed = await AnimalFeedService.updateAnimalFeed(
+      animalFeedName,
+      animalFeedImageUrl,
+      animalFeedCategory
+    );
+
+    return res.status(200).json({ animalFeed });
+  } catch (error: any) {
+    res.status(400).json({ error: error.message });
+  }
+}
+
+export async function deleteAnimalFeedByName(req: Request, res: Response) {
+  const { animalFeedName } = req.params;
+
+  if (animalFeedName == undefined) {
+    console.log("Missing field(s): ", {
+      animalFeedName,
+    });
+    return res.status(400).json({ error: "Missing information!" });
+  }
+
+  try {
+    const animalFeed = await AnimalFeedService.deleteAnimalFeedByName(animalFeedName);
+    return res.status(200).json(animalFeed);
+  } catch (error: any) {
+    res.status(400).json({ error: error.message });
+  }
+}
+
+export async function createNewEnrichmentItem(req: Request, res: Response) {
+  try {
+    const imageUrl = await handleFileUpload(
+      req,
+      process.env.IMG_URL_ROOT! + "enrichmentItem", //"D:/capstoneUploads/enrichmentItem",
+    );
+    const {
+      enrichmentItemName,
+      enrichmentItemImageUrl
+    } = req.body;
+
+    if (
+      [
+        enrichmentItemName,
+        enrichmentItemImageUrl
+      ].includes(undefined)
+    ) {
+      console.log("Missing field(s): ", {
+        enrichmentItemName,
+        enrichmentItemImageUrl
+      });
+      return res.status(400).json({ error: "Missing information!" });
+    }
+
+    let enrichmentItem = await EnrichmentItemService.createNewEnrichmentItem(
+      enrichmentItemName,
+      enrichmentItemImageUrl
+    );
+
+    return res.status(200).json({ enrichmentItem: enrichmentItem.toJSON() });
+  } catch (error: any) {
+    res.status(400).json({ error: error.message });
+  }
+}
+
+export async function getAllEnrichmentItem(req: Request, res: Response) {
+  try {
+    const allEnrichmentItem = await EnrichmentItemService.getAllEnrichmentItem();
+    return res.status(200).json(allEnrichmentItem);
+  } catch (error: any) {
+    res.status(400).json({ error: error.message });
+  }
+}
+
+export async function getEnrichmentItemByName(req: Request, res: Response) {
+  const { enrichmentItemName } = req.params;
+
+  if (enrichmentItemName == undefined) {
+    console.log("Missing field(s): ", {
+      enrichmentItemName,
+    });
+    return res.status(400).json({ error: "Missing information!" });
+  }
+
+  try {
+    const enrichmentItem = await EnrichmentItemService.getEnrichmentItemByName(enrichmentItemName);
+    return res.status(200).json(enrichmentItem);
+  } catch (error: any) {
+    res.status(400).json({ error: error.message });
+  }
+}
+
+export async function updateEnrichmentItem(req: Request, res: Response) {
+  try {
+    const imageUrl = await handleFileUpload(
+      req,
+      process.env.IMG_URL_ROOT! + "enrichmentItem", //"D:/capstoneUploads/enrichmentItem",
+    );
+    const {
+      enrichmentItemName,
+      enrichmentItemImageUrl
+    } = req.body;
+
+    if (
+      [
+        enrichmentItemName,
+        enrichmentItemImageUrl
+      ].includes(undefined)
+    ) {
+      console.log("Missing field(s): ", {
+        enrichmentItemName,
+        enrichmentItemImageUrl
+      });
+      return res.status(400).json({ error: "Missing information!" });
+    }
+
+    // have to pass in req for image uploading
+    let enrichmentItem = await EnrichmentItemService.updateEnrichmentItem(
+      enrichmentItemName,
+      enrichmentItemImageUrl
+    );
+
+    return res.status(200).json({ enrichmentItem });
+  } catch (error: any) {
+    res.status(400).json({ error: error.message });
+  }
+}
+
+export async function deleteEnrichmentItemByName(req: Request, res: Response) {
+  const { enrichmentItemName } = req.params;
+
+  if (enrichmentItemName == undefined) {
+    console.log("Missing field(s): ", {
+      enrichmentItemName,
+    });
+    return res.status(400).json({ error: "Missing information!" });
+  }
+
+  try {
+    const enrichmentItem = await EnrichmentItemService.deleteEnrichmentItemByName(enrichmentItemName);
+    return res.status(200).json(enrichmentItem);
   } catch (error: any) {
     res.status(400).json({ error: error.message });
   }
