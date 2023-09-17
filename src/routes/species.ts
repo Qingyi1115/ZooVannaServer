@@ -10,7 +10,7 @@ router.use(authMiddleware);
 router.get("/getallspecies", getAllSpecies);
 router.get("/getspecies/:speciesCode", getSpeciesByCode);
 router.post("/createnewspecies", createSpecies);
-router.post("/updatespecies", updateSpecies);
-router.post("/deletespecies/:speciesCode", deleteSpeciesByCode);
+router.put("/updatespecies", updateSpecies);
+router.delete("/deletespecies/:speciesCode", deleteSpeciesByCode);
 
 export default router;
