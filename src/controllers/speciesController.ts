@@ -136,3 +136,122 @@ export async function createSpecies(req: Request, res: Response) {
     res.status(400).json({ error: error.message });
   }
 }
+
+export async function updateSpecies(req: Request, res: Response) {
+  try {
+    const imageUrl = await handleFileUpload(
+      req,
+      process.env.IMG_URL_ROOT! + "species", //"D:/capstoneUploads/species",
+    );
+    const {
+      speciesCode,
+      commonName,
+      scientificName,
+      aliasName,
+      conservationStatus,
+      domain,
+      kingdom,
+      phylum,
+      speciesClass,
+      order,
+      family,
+      genus,
+      educationalDescription,
+      nativeContinent,
+      selectedBiomes,
+      groupSexualDynamic,
+      habitatOrExhibit,
+      generalDietPreference,
+    } = req.body;
+
+    if (
+      [
+        speciesCode,
+        commonName,
+        scientificName,
+        aliasName,
+        conservationStatus,
+        domain,
+        kingdom,
+        phylum,
+        speciesClass,
+        order,
+        family,
+        genus,
+        educationalDescription,
+        nativeContinent,
+        selectedBiomes,
+        groupSexualDynamic,
+        habitatOrExhibit,
+        generalDietPreference,
+      ].includes(undefined)
+    ) {
+      console.log("Missing field(s): ", {
+        speciesCode,
+        commonName,
+        scientificName,
+        aliasName,
+        conservationStatus,
+        domain,
+        kingdom,
+        phylum,
+        speciesClass,
+        order,
+        family,
+        genus,
+        educationalDescription,
+        nativeContinent,
+        selectedBiomes,
+        groupSexualDynamic,
+        habitatOrExhibit,
+        generalDietPreference,
+      });
+      return res.status(400).json({ error: "Missing information!" });
+    }
+
+    // have to pass in req for image uploading
+    let species = await SpeciesService.updateSpecies(
+      speciesCode,
+      commonName,
+      scientificName,
+      aliasName,
+      conservationStatus,
+      domain,
+      kingdom,
+      phylum,
+      speciesClass,
+      order,
+      family,
+      genus,
+      educationalDescription,
+      nativeContinent,
+      selectedBiomes,
+      groupSexualDynamic,
+      habitatOrExhibit,
+      generalDietPreference,
+      imageUrl,
+    );
+
+    return res.status(200).json({ species });
+  } catch (error: any) {
+    res.status(400).json({ error: error.message });
+  }
+}
+
+export async function deleteSpeciesByCode(req: Request, res: Response) {
+  const { speciesCode } = req.body;
+
+  if ([speciesCode].includes(undefined)) {
+    console.log("Missing field(s): ", {
+      speciesCode,
+    });
+    return res.status(400).json({ error: "Missing information!" });
+  }
+
+  try {
+    const species = await SpeciesService.deleteSpeciesByCode(speciesCode);
+    return res.status(200).json(species);
+  } catch (error: any) {
+    res.status(400).json({ error: error.message });
+  }
+}

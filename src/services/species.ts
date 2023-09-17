@@ -70,3 +70,67 @@ export async function createNewSpecies(commonName: string,
         throw validationErrorHandler(error);
     }
 }
+
+export async function updateSpecies(
+    speciesCode: string,
+    commonName: string,
+    scientificName: string,
+    aliasName: string,
+    conservationStatus: string,
+    domain: string,
+    kingdom: string,
+    phylum: string,
+    speciesClass: string,
+    order: string,
+    family: string,
+    genus: string,
+    educationalDescription: string,
+    nativeContinent: string,
+    selectedBiomes: string,
+    groupSexualDynamic: string,
+    habitatOrExhibit: string,
+    generalDietPreference: string,
+    imageUrl: string) {
+
+    let updatedSpecies = {
+        speciesCode: speciesCode,
+        commonName: commonName,
+        scientificName: scientificName,
+        aliasName: aliasName,
+        conservationStatus: conservationStatus,
+        domain: domain,
+        kingdom: kingdom,
+        phylum: phylum,
+        speciesClass: speciesClass,
+        order: order,
+        family: family,
+        genus: genus,
+        educationalDescription: educationalDescription,
+        nativeContinent: nativeContinent,
+        nativeBiomes: selectedBiomes,
+        groupSexualDynamic: groupSexualDynamic,
+        habitatOrExhibit: habitatOrExhibit,
+        generalDietPreference: generalDietPreference,
+        imageUrl: imageUrl,
+    } as any;
+
+    console.log(updatedSpecies)
+
+    try {
+        let species = await Species.update(updatedSpecies, {
+            where: { speciesCode: speciesCode },
+        });
+    } catch (error: any) {
+        throw validationErrorHandler(error);
+    }
+}
+
+export async function deleteSpeciesByCode(speciesCode: string) { 
+    let result = await Species.destroy({
+        where: { speciesCode: speciesCode },
+    });
+    if (result) {
+        return result;
+    }
+    throw { error: "Invalid Species Code!" };
+}
