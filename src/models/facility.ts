@@ -17,6 +17,7 @@ import { InHouse } from "./inHouse";
 import { ThirdParty } from "./thirdParty";
 import { AnimalClinic } from "./animalClinics";
 import { uppercaseFirst } from "../helpers/others";
+import { HubProcessor } from "./hubProcessor";
 
 class Facility extends Model<
   InferAttributes<Facility>,
@@ -29,14 +30,14 @@ class Facility extends Model<
 
   declare facilityDetail?: string;
 
-  declare sensors?: Sensor[];
+  declare hubProcessors?: HubProcessor[];
   declare inHouse?: InHouse;
   declare thirdParty?: ThirdParty;
   declare animalClinic?: AnimalClinic;
 
-  declare getSensors: HasManyGetAssociationsMixin<Sensor>;
-  declare setSensors: HasManySetAssociationsMixin<Sensor, number>;
-  declare addSensor: HasManyAddAssociationMixin<Sensor, number>;
+  declare getHubProcessors: HasManyGetAssociationsMixin<HubProcessor[]>;
+  declare addHubProcessor: HasManyAddAssociationMixin<HubProcessor, number>;
+  declare setHubProcessors: HasManySetAssociationsMixin<HubProcessor[], number>;
 
   declare getInHouse: HasOneGetAssociationMixin<InHouse>;
   declare setInHouse: HasOneSetAssociationMixin<InHouse, number>;

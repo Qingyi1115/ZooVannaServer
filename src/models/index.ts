@@ -12,7 +12,6 @@ import {
   PlannerType,
   GeneralStaffType,
   Specialization,
-  SensorType,
   FacilityType,
 } from "./enumerated";
 import { ThirdParty } from "./thirdParty";
@@ -32,8 +31,11 @@ import { Event } from "./event";
 import { Listing } from "./listing";
 import { LineItem } from "./lineItem";
 import { Promotion } from "./promotion";
-import { Order } from "./order";
+import { CustomerOrder } from "./customerOrder";
 import { Customer } from "./customer";
+import { HubProcessor } from "./hubProcessor";
+import { CustomerReportLog } from "./customerReportLog";
+import { SensorReading } from "./sensorReading";
 
 function addCascadeOptions(options: object) {
   return { ...options, onDelete: "CASCADE", onUpdate: "CASCADE" };
@@ -62,8 +64,14 @@ export const createDatabase = async (options: any) => {
     addCascadeOptions({ foreignKey: "employeeId" }),
   );
 
-  Facility.hasMany(Sensor, addCascadeOptions({ foreignKey: "facilityId" }));
-  Sensor.belongsTo(Facility, addCascadeOptions({ foreignKey: "facilityId" }));
+  Facility.hasMany(HubProcessor, addCascadeOptions({ foreignKey: "facilityId" }));
+  HubProcessor.belongsTo(Facility, addCascadeOptions({ foreignKey: "facilityId" }));
+
+  HubProcessor.hasMany(Sensor, addCascadeOptions({ foreignKey: "hubProcessorId" }));
+  Sensor.belongsTo(HubProcessor, addCascadeOptions({ foreignKey: "hubProcessorId" }));
+
+  Sensor.hasMany(SensorReading, addCascadeOptions({ foreignKey: "sensorId" }));
+  SensorReading.belongsTo(Sensor, addCascadeOptions({ foreignKey: "sensorId" }));
 
   Facility.hasOne(InHouse, addCascadeOptions({ foreignKey: "facilityId" }));
   InHouse.belongsTo(Facility, addCascadeOptions({ foreignKey: "facilityId" }));
@@ -290,14 +298,20 @@ export const createDatabase = async (options: any) => {
   Listing.hasMany(LineItem, addCascadeOptions({ foreignKey: "listingId" }));
   LineItem.belongsTo(Listing, addCascadeOptions({ foreignKey: "listingId" }));
 
-  Promotion.hasMany(Order, addCascadeOptions({ foreignKey: "promotionId" }));
-  Order.belongsTo(Promotion, addCascadeOptions({ foreignKey: "promotionId" }));
+  Promotion.hasMany(CustomerOrder, addCascadeOptions({ foreignKey: "promotionId" }));
+  CustomerOrder.belongsTo(Promotion, addCascadeOptions({ foreignKey: "promotionId" }));
 
-  Customer.hasMany(Order, addCascadeOptions({ foreignKey: "customerId" }));
-  Order.belongsTo(Customer, addCascadeOptions({ foreignKey: "customerId" }));
+  Customer.hasMany(CustomerOrder, addCascadeOptions({ foreignKey: "customerId" }));
+  CustomerOrder.belongsTo(Customer, addCascadeOptions({ foreignKey: "customerId" }));
 
-  LineItem.hasMany(Order, addCascadeOptions({ foreignKey: "orderId" }));
-  Order.belongsTo(LineItem, addCascadeOptions({ foreignKey: "orderId" }));
+  LineItem.hasMany(CustomerOrder, addCascadeOptions({ foreignKey: "orderId" }));
+  CustomerOrder.belongsTo(LineItem, addCascadeOptions({ foreignKey: "orderId" }));
+
+  ThirdParty.hasMany(CustomerReportLog, addCascadeOptions({ foreignKey: "thirdPartyId" }));
+  CustomerReportLog.belongsTo(ThirdParty, addCascadeOptions({ foreignKey: "thirdPartyId" }));
+
+  InHouse.hasMany(CustomerReportLog, addCascadeOptions({ foreignKey: "inHouseId" }));
+  CustomerReportLog.belongsTo(InHouse, addCascadeOptions({ foreignKey: "inHouseId" }));
 
   // Create tables
   if (options["forced"]) {
@@ -322,7 +336,7 @@ export const tutorial = async () => {
     employeeSalt: "NaCl",
     employeeDoorAccessCode: "123456",
     employeeEducation: "PHD in not eating",
-    hasAdminPrivileges: true,
+    isAccountManager: true,
   });
   console.log(marry.toJSON());
   console.log("marry's actuall secret hash: ", marry.employeePasswordHash);
@@ -356,7 +370,7 @@ export const tutorial = async () => {
         employeeSalt: "NaAg",
         employeeDoorAccessCode: "234567",
         employeeEducation: "PHD in not sleeping",
-        hasAdminPrivileges: false,
+        isAccountManager: false,
         // @ts-ignore
         keeper: {
           keeperType: KeeperType.KEEPER,
@@ -372,7 +386,7 @@ export const tutorial = async () => {
         employeeSalt: "NaH",
         employeeDoorAccessCode: "345678",
         employeeEducation: "PHD in not breathing",
-        hasAdminPrivileges: false,
+        isAccountManager: false,
         // @ts-ignore
         keeper: {
           keeperType: KeeperType.KEEPER,
@@ -414,7 +428,7 @@ export const tutorial = async () => {
       employeeSalt: "H2",
       employeeDoorAccessCode: "987654",
       employeeEducation: "PHD in not waking up",
-      hasAdminPrivileges: false,
+      isAccountManager: false,
       // @ts-ignore
       planningStaff: {
         plannerType: PlannerType.CURATOR,
@@ -440,10 +454,10 @@ export const tutorial = async () => {
       employeeSalt: "H3",
       employeeDoorAccessCode: "222222",
       employeeEducation: "Math Major",
-      hasAdminPrivileges: true,
+      isAccountManager: true,
       // @ts-ignore
       generalStaff: {
-        generalStaffType: GeneralStaffType.MAINTENANCE,
+        generalStaffType: GeneralStaffType.ZOO_MAINTENANCE,
       },
     },
     {
@@ -463,7 +477,7 @@ export const tutorial = async () => {
       employeeSalt: "SiO2",
       employeeDoorAccessCode: "222223",
       employeeEducation: "Another Math Major",
-      hasAdminPrivileges: true,
+      isAccountManager: true,
       // @ts-ignore
       planningStaff: {
         plannerType: PlannerType.OPERATIONS_MANAGER,
@@ -486,21 +500,11 @@ export const tutorial = async () => {
       facilityName: "facility1",
       xCoordinate: 123456,
       yCoordinate: 654321,
-      sensors: [
+      hubProcessors: [
         {
-          sensorName: "A01",
-          sensorReadings: [1.2, 2.3, 3.4],
-          dateOfActivation: new Date(),
-          dateOfLastMaintained: new Date(),
-          sensorType: SensorType.HUMIDITY,
+          processorName: "A01",
+          ipAddressName: "172.1.2.19",
         } as any,
-        {
-          sensorName: "A02",
-          sensorReadings: [27.2, 27.3, 27.4],
-          dateOfActivation: new Date(),
-          dateOfLastMaintained: new Date(),
-          sensorType: SensorType.TEMPERATURE,
-        },
       ],
       inHouse: {
         lastMaintained: new Date(),
@@ -513,7 +517,7 @@ export const tutorial = async () => {
     {
       include: [
         {
-          association: "sensors",
+          association: "hubProcessors",
         },
         {
           association: "inHouse",

@@ -1,13 +1,15 @@
 import { Request, Response } from "express";
-import { findEmployeeByEmail } from "../services/user";
+import { findEmployeeByEmail } from "../services/employee";
 import { PlannerType } from "../models/enumerated";
 import {
-  addSensorByFacilityId,
+  addHubProcessorByFacilityId,
+  addSensorByHubProcessorId,
   createNewFacility,
   getFacilityById,
 } from "../services/assetFacility";
 import { Facility } from "../models/facility";
 import { Sensor } from "../models/sensor";
+import { HubProcessor } from "../models/hubProcessor";
 
 export async function createFacility(req: Request, res: Response) {
   try {
@@ -66,7 +68,7 @@ export async function createFacility(req: Request, res: Response) {
   }
 }
 
-export async function addSensorToFacility(req: Request, res: Response) {
+export async function addHubToFacility(req: Request, res: Response) {
   try {
     const { email } = (req as any).locals.jwtPayload;
     const employee = await findEmployeeByEmail(email);
@@ -81,14 +83,47 @@ export async function addSensorToFacility(req: Request, res: Response) {
         .status(403)
         .json({ error: "Access Denied! Operation managers only!" });
 
-    const { facilityId, sensorType, sensorName } = req.body;
+    const { facilityId, processorName, ipAddressName } = req.body;
 
-    if ([facilityId, sensorType, sensorName].includes(undefined)) {
+    if ([facilityId, processorName, ipAddressName].includes(undefined)) {
       return res.status(400).json({ error: "Missing information!" });
     }
 
-    let sensor: Sensor = await addSensorByFacilityId(
+    let hubProcessor: HubProcessor = await addHubProcessorByFacilityId(
       Number(facilityId),
+      processorName,
+      ipAddressName,
+    );
+
+    return res.status(200).json({ facility: hubProcessor.toJSON() });
+  } catch (error: any) {
+    res.status(400).json({ error: error.message });
+  }
+}
+
+export async function addSensorToHub(req: Request, res: Response) {
+  try {
+    const { email } = (req as any).locals.jwtPayload;
+    const employee = await findEmployeeByEmail(email);
+
+    if (
+      !(
+        (await employee.getPlanningStaff())?.plannerType ==
+        PlannerType.OPERATIONS_MANAGER
+      )
+    )
+      return res
+        .status(403)
+        .json({ error: "Access Denied! Operation managers only!" });
+
+    const { hubProcessorId, sensorType, sensorName } = req.body;
+
+    if ([hubProcessorId, sensorType, sensorName].includes(undefined)) {
+      return res.status(400).json({ error: "Missing information!" });
+    }
+
+    let sensor: Sensor = await addSensorByHubProcessorId(
+      Number(hubProcessorId),
       sensorType,
       sensorName,
     );

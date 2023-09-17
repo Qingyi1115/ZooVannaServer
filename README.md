@@ -2,7 +2,7 @@
 
 ## Setup
 
-1.  Installing packages (express, mysql2, dotenv, sequelize, jsonwebtoken)
+1.  Installing packages (express, mysql2, dotenv, sequelize, jsonwebtoken, multer)
     npm install <package>
 
 2.  Installing mysql/workbench and getting my database

@@ -3,9 +3,10 @@ import express from "express";
 // Controller functions
 import { authMiddleware } from "../middlewares/authMiddleware";
 import {
-  addSensorToFacility,
+  addHubToFacility,
   createFacility,
   updateFacility,
+  addSensorToHub
 } from "../controllers/assetFacilityController";
 
 const router = express.Router();
@@ -14,6 +15,7 @@ router.use(authMiddleware);
 
 router.put("/createFacility", createFacility);
 router.post("/updateFacility", updateFacility);
-router.put("/addSensor", addSensorToFacility);
+router.put("/addHub", addHubToFacility);
+router.put("/addSensor", addSensorToHub);
 
 export default router;

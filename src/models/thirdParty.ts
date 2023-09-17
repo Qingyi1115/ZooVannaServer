@@ -5,10 +5,14 @@ import {
   InferCreationAttributes,
   BelongsToGetAssociationMixin,
   BelongsToSetAssociationMixin,
+  HasManyGetAssociationsMixin,
+  HasManyAddAssociationMixin,
+  HasManySetAssociationsMixin,
 } from "Sequelize";
 import { conn } from "../db";
 import { FacilityType } from "./enumerated";
 import { Facility } from "./facility";
+import { CustomerReportLog } from "./customerReportLog";
 
 class ThirdParty extends Model<
   InferAttributes<ThirdParty>,
@@ -21,9 +25,14 @@ class ThirdParty extends Model<
   declare hasAirCon: boolean;
 
   declare facility?: Facility;
+  declare CustomerReportLog?: CustomerReportLog[];
 
   declare getFacility: BelongsToGetAssociationMixin<Facility>;
   declare setFacility: BelongsToSetAssociationMixin<Facility, number>;
+
+  declare getCustomerReportLogs: HasManyGetAssociationsMixin<CustomerReportLog[]>;
+  declare addCustomerReportLog: HasManyAddAssociationMixin<CustomerReportLog, number>;
+  declare setCustomerReportLogs: HasManySetAssociationsMixin<CustomerReportLog[], number>;
 }
 ThirdParty.init(
   {

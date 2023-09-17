@@ -9,7 +9,7 @@ import {
   } from "Sequelize";
   import { conn } from "../db";
 import { PaymentStatus, PaymentType } from "./enumerated";
-import { Order } from "./order";
+import { CustomerOrder } from "./customerOrder";
   
   class Payment extends Model<
     InferAttributes<Payment>,
@@ -23,10 +23,10 @@ import { Order } from "./order";
     declare transactionId: string;
     declare description: string;
     
-    declare order?: Order;
+    declare customerOrder?: CustomerOrder;
   
-    declare getOrder: BelongsToGetAssociationMixin<Order>;
-    declare setOrder: BelongsToSetAssociationMixin<Order, number>;
+    declare getCustomerOrder: BelongsToGetAssociationMixin<CustomerOrder>;
+    declare setCustomerOrder: BelongsToSetAssociationMixin<CustomerOrder, number>;
   
 }
   

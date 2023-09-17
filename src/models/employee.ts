@@ -4,7 +4,6 @@ import {
   CreationOptional,
   InferAttributes,
   InferCreationAttributes,
-  NonAttribute,
   HasOneGetAssociationMixin,
   HasOneSetAssociationMixin,
 } from "Sequelize";
@@ -41,8 +40,9 @@ class Employee extends Model<
   declare employeeSalt: string;
   declare employeeDoorAccessCode: string;
   declare employeeEducation: string;
-  declare hasAdminPrivileges: boolean;
+  declare isAccountManager: boolean;
   declare dateOfResignation: Date | null;
+  declare employeeProfileURL: string | null;
 
   declare keeper?: Keeper | null;
   declare planningStaff?: PlanningStaff | null;
@@ -149,12 +149,15 @@ Employee.init(
       type: DataTypes.STRING,
       allowNull: false,
     },
-    hasAdminPrivileges: {
+    isAccountManager: {
       type: DataTypes.BOOLEAN,
       allowNull: false,
     },
     dateOfResignation: {
       type: DataTypes.DATE,
+    },
+    employeeProfileURL: {
+      type: DataTypes.STRING,
     },
   },
   {

@@ -9,7 +9,8 @@ import cors from "cors";
 // import multer, { FileFilterCallback } from 'multer';
 import "dotenv/config";
 
-import userRoutes from "./routes/user";
+import employeeRoutes from "./routes/employee";
+import customerRoutes from "./routes/customer";
 import assetFacilityRoutes from "./routes/assetFacility";
 import speciesRoutes from "./routes/species";
 import { seedDatabase, createDatabase } from "./models/index";
@@ -56,6 +57,7 @@ app.get("/", (req: Request, res: Response) => {
   res.send("HELLO)s");
 });
 
-app.use("/api/user/", userRoutes);
+app.use("/api/employee/", employeeRoutes);
+app.use("/api/customer/", customerRoutes);
 app.use("/api/assetFacility/", assetFacilityRoutes);
 app.use("/api/species", speciesRoutes);

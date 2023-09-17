@@ -4,7 +4,7 @@ import {
   createNewEmployee,
   employeeLogin,
   findEmployeeByEmail,
-} from "../services/user";
+} from "../services/employee";
 
 export const login = async (req: Request, res: Response) => {
   try {
@@ -26,7 +26,7 @@ export const createEmployee = async (req: Request, res: Response) => {
     const { email } = (req as any).locals.jwtPayload;
     const employee = await findEmployeeByEmail(email);
 
-    if (!employee.hasAdminPrivileges) {
+    if (!employee.isAccountManager) {
       return res
         .status(403)
         .json({ error: "Access Denied! Account managers only!" });
@@ -37,7 +37,7 @@ export const createEmployee = async (req: Request, res: Response) => {
       employeeEmail,
       employeePhoneNumber,
       employeeEducation,
-      hasAdminPrivileges,
+      isAccountManager,
       role,
       roleJson,
     } = req.body;
@@ -48,7 +48,7 @@ export const createEmployee = async (req: Request, res: Response) => {
         employeeEmail,
         employeePhoneNumber,
         employeeEducation,
-        hasAdminPrivileges,
+        isAccountManager,
         role,
         roleJson,
       ].includes(undefined)
@@ -59,7 +59,7 @@ export const createEmployee = async (req: Request, res: Response) => {
         employeeEmail,
         employeePhoneNumber,
         employeeEducation,
-        hasAdminPrivileges,
+        isAccountManager,
         role,
         roleJson,
       });
@@ -73,7 +73,7 @@ export const createEmployee = async (req: Request, res: Response) => {
         employeeEmail,
         employeePhoneNumber,
         employeeEducation,
-        (hasAdminPrivileges as string).toLocaleUpperCase() == "TRUE",
+        (isAccountManager as string).toLocaleUpperCase() == "TRUE",
         role,
         roleJson,
       );

@@ -9,7 +9,7 @@ import {
   } from "Sequelize";
   import { conn } from "../db";
 import { Listing } from "./listing";
-import { Order } from "./order";
+import { CustomerOrder } from "./customerOrder";
   
   class LineItem extends Model<
     InferAttributes<LineItem>,
@@ -22,13 +22,13 @@ import { Order } from "./order";
     declare subTotal: number;
   
     declare listing?: Listing;
-    declare order?: Order;
+    declare customerOrder?: CustomerOrder;
   
     declare getListing: BelongsToGetAssociationMixin<Listing>;
     declare setListing: BelongsToSetAssociationMixin<Listing, number>;
 
-    declare getOrder: BelongsToGetAssociationMixin<Order>;
-    declare setOrder: BelongsToSetAssociationMixin<Order, number>;
+    declare getCustomerOrder: BelongsToGetAssociationMixin<CustomerOrder>;
+    declare setCustomerOrder: BelongsToSetAssociationMixin<CustomerOrder, number>;
   }
   
   LineItem.init(

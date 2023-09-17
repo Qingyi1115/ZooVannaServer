@@ -1,10 +1,17 @@
 import { Request, Response } from "express";
 import { Species } from "models/species";
 
-import { createNewEmployee, findEmployeeByEmail } from "../services/user";
-import { createNewSpecies } from "../services/species";
+
+import { createNewEmployee, findEmployeeByEmail } from "../services/employee";
+import * as SpeciesService from "../services/species";
 
 import { handleFileUpload } from "../helpers/multerProcessFile";
+
+export async function getAllSpecies(req: Request, res: Response) {
+
+    const allSpecies = await SpeciesService.getAllSpecies();
+    return res.status(200).json(allSpecies);
+}
 
 export async function createSpecies(req: Request, res: Response) {
     try {
@@ -84,7 +91,7 @@ export async function createSpecies(req: Request, res: Response) {
         }
 
         // have to pass in req for image uploading
-        let species = await createNewSpecies(commonName,
+        let species = await SpeciesService.createNewSpecies(commonName,
             scientificName,
             aliasName,
             conservationStatus,
@@ -108,3 +115,4 @@ export async function createSpecies(req: Request, res: Response) {
         res.status(400).json({ error: error.message });
     }
 }
+

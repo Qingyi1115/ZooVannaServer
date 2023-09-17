@@ -17,11 +17,11 @@ import { Payment } from "./payment";
 import { Customer } from "./customer";
 import { LineItem } from "./lineItem";
   
-  class Order extends Model<
-    InferAttributes<Order>,
-    InferCreationAttributes<Order>
+  class CustomerOrder extends Model<
+    InferAttributes<CustomerOrder>,
+    InferCreationAttributes<CustomerOrder>
   > {
-    declare orderId: CreationOptional<number>;
+    declare customerOrderId: CreationOptional<number>;
     declare timeCreated: Date;
     declare totalAmount: number;
     declare status: OrderStatus;
@@ -52,8 +52,8 @@ import { LineItem } from "./lineItem";
 
 }
   
-Order.init({
-    orderId: {
+CustomerOrder.init({
+  customerOrderId: {
         type: DataTypes.BIGINT,
         autoIncrement: true,
         primaryKey: true,
@@ -96,9 +96,9 @@ Order.init({
       createdAt: true,
       updatedAt: "updateTimestamp",
       sequelize: conn, // We need to pass the connection instance
-      modelName: "order", // We need to choose the model name
+      modelName: "customerOrder", // We need to choose the model name
     },
   );
   
-  export { Order };
+  export { CustomerOrder };
   
