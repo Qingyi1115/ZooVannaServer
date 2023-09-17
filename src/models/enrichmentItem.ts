@@ -12,7 +12,7 @@ class EnrichmentItem extends Model<
   InferCreationAttributes<EnrichmentItem>
 > {
   declare enrichmentItemId: CreationOptional<number>;
-  declare endirhmentItemName: string;
+  declare enrichmentItemName: string;
   declare enrichmentItemImageUrl: string;
 }
 
@@ -23,9 +23,10 @@ EnrichmentItem.init(
       autoIncrement: true,
       primaryKey: true,
     },
-    endirhmentItemName: {
+    enrichmentItemName: {
       type: DataTypes.STRING,
       allowNull: false,
+      unique: true
     },
     enrichmentItemImageUrl: {
       type: DataTypes.STRING,
