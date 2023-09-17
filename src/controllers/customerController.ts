@@ -5,10 +5,6 @@ import * as CustomerService from "../services/customer";
 //customer sign up
 export const createCustomer = async (req: Request, res: Response) => {
   try {
-    // console.log("Customer controller triggered");
-    // const { inputEmail } = (req as any).locals.jwtPayload;
-    // const customer = await CustomerService.findCustomerByEmail(inputEmail);
-
     const {
       customerPassword,
       firstName,

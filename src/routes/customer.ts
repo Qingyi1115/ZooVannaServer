@@ -18,7 +18,6 @@ router.post("/createCustomer", createCustomer);
 
 // log in
 router.post("/login", login);
-// router.post("/loginWithUsername", loginWithUsername);
 
 router.use(authMiddleware);
 
