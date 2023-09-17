@@ -26,8 +26,8 @@ class Customer extends Model<
   InferCreationAttributes<Customer>
 > {
   declare customerId: CreationOptional<number>;
-  declare customerPasswordHash: string;
-  declare customerSalt: string;
+  declare passwordHash: string;
+  declare salt: string;
   declare firstName: string;
   declare lastName: string;
   declare email: string;
@@ -35,12 +35,13 @@ class Customer extends Model<
   declare birthday: Date;
   declare address: string;
   declare nationality: Country;
+  declare profileUrl: string;
 
-  declare orders?: Order[];
+  declare orders?: CustomerOrder[];
 
-  declare getOrders: HasManyGetAssociationsMixin<Order[]>;
-  declare addOrders: HasManyAddAssociationMixin<Order, number>;
-  declare setOrders: HasManySetAssociationsMixin<Order[], number>;
+  declare getOrders: HasManyGetAssociationsMixin<CustomerOrder[]>;
+  declare addOrders: HasManyAddAssociationMixin<CustomerOrder, number>;
+  declare setOrders: HasManySetAssociationsMixin<CustomerOrder[], number>;
 
   static getTotalCustomer() {
     // Example for static class functions
@@ -48,13 +49,11 @@ class Customer extends Model<
   }
 
   public testPassword(password: string) {
-    return !hash(password + this.customerSalt).localeCompare(
-      this.customerPasswordHash,
-    );
+    return !hash(password + this.salt).localeCompare(this.passwordHash);
   }
 
   public updatePassword(password: string) {
-    this.customerPasswordHash = hash(password + this.customerSalt);
+    this.passwordHash = hash(password + this.salt);
     this.save();
     return this;
   }
@@ -72,8 +71,8 @@ class Customer extends Model<
     // Similar idea albert more useful when compared to java's toString
     return {
       ...this.get(),
-      customerPasswordHash: undefined,
-      customerSalt: undefined,
+      passwordHash: undefined,
+      salt: undefined,
     };
   }
 }
@@ -85,11 +84,11 @@ Customer.init(
       autoIncrement: true,
       primaryKey: true,
     },
-    customerPasswordHash: {
+    passwordHash: {
       type: DataTypes.STRING,
       allowNull: false,
     },
-    customerSalt: {
+    salt: {
       type: DataTypes.STRING,
       allowNull: false,
     },
@@ -122,6 +121,10 @@ Customer.init(
       type: DataTypes.ENUM,
       values: Object.values(Country),
       allowNull: false,
+    },
+    profileUrl: {
+      type: DataTypes.STRING,
+      allowNull: true,
     },
   },
   {

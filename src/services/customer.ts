@@ -17,8 +17,8 @@ export async function createNewCustomer(
   const randomSalt = (Math.random() + 1).toString(36).substring(7);
 
   const customer_details: any = {
-    customerPasswordHash: hash(customerPassword + randomSalt),
-    customerSalt: randomSalt,
+    passwordHash: hash(customerPassword + randomSalt),
+    salt: randomSalt,
     firstName: firstName,
     lastName: lastName,
     email: email,
@@ -28,7 +28,6 @@ export async function createNewCustomer(
     nationality: nationality,
   };
   try {
-    //not sure from here onwards
     let newCustomer = await Customer.create(customer_details);
     return [newCustomer.toJSON()];
   } catch (error: any) {
