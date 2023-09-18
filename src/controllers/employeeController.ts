@@ -8,7 +8,8 @@ import {
   setAsAccountManager,
   getEmployee,
   resetPassword,
-  disableEmployeeAccount
+  disableEmployeeAccount,
+  setPassword
 } from "../services/employee";
 
 export const login = async (req: Request, res: Response) => {
@@ -215,3 +216,17 @@ export const disableEmployee = async (
   }
 }
 
+export const resetForgottenPassword = async (
+  req: Request,
+  res: Response,
+) => {
+  try {
+    const {token, password} = req.body;
+
+    let result = await setPassword(token, password);
+    return res.status(200).json({employee: result});
+  }
+  catch (error: any) {
+    return res.status(400).json({error: error.message});
+  }
+}

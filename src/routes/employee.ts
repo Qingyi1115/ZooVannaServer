@@ -9,7 +9,8 @@ import {
   setAccountManager,
   retrieveAllEmployees,
   resetPasswords,
-  disableEmployee
+  disableEmployee,
+  resetForgottenPassword
 } from "../controllers/employeeController";
 import { authMiddleware } from "../middlewares/authMiddleware";
 
@@ -30,5 +31,7 @@ router.put("/setAccountManager", setAccountManager);
 router.get("/retrieveAllEmployees", retrieveAllEmployees);
 router.put("/resetPassword/:employeeId", resetPasswords );
 router.put("/disableEmployee/:employeeId", disableEmployee);
+
+router.put("resetForgottenPassword/:token", resetForgottenPassword);
 
 export default router;
