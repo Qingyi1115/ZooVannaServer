@@ -32,16 +32,16 @@ router.put("/addHub", addHubToFacility);
 router.put("/addSensor", addSensorToHub);
 
 //Assets
-router.put("/createNewAnimalFeed", createNewAnimalFeed);
+router.post("/createNewAnimalFeed", createNewAnimalFeed);
 router.get("/getAllAnimalFeed", getAllAnimalFeed);
 router.get("/getAnimalFeed/:animalFeedName", getAnimalFeedByName);
-router.post("/updateAnimalFeed", updateAnimalFeed);
-router.post("/deleteAnimalFeed/:animalFeedName", deleteAnimalFeedByName);
+router.put("/updateAnimalFeed", updateAnimalFeed);
+router.delete("/deleteAnimalFeed/:animalFeedName", deleteAnimalFeedByName);
 
-router.put("/createNewEnrichmentItem", createNewEnrichmentItem);
+router.post("/createNewEnrichmentItem", createNewEnrichmentItem);
 router.get("/getAllEnrichmentItem", getAllEnrichmentItem);
 router.get("/getEnrichmentItem/:enrichmentItemName", getEnrichmentItemByName);
-router.post("/updateEnrichmentItem", updateEnrichmentItem);
-router.post("/deleteEnrichmentItem/:enrichmentItemName", deleteEnrichmentItemByName);
+router.put("/updateEnrichmentItem", updateEnrichmentItem);
+router.delete("/deleteEnrichmentItem/:enrichmentItemName", deleteEnrichmentItemByName);
 
 export default router;
