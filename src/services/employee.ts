@@ -238,12 +238,16 @@ export async function setPassword(
     if(employee) {
       if(employee.dateOfResignation == null) {
         if(realToken.expiresAt.getTime() <= Date.now()) {
+          realToken.destroy();
           return employee.updatePassword(password);
         } 
+        realToken.destroy();
         throw {error: "Token has expired"};
       }
+      realToken.destroy();
       throw {error: "Employee has been disabled"};
     }
+    realToken.destroy();
     throw{error: "Employee does not exist"};
   }
   
