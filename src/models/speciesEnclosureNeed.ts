@@ -5,18 +5,16 @@ import {
   InferCreationAttributes,
   HasManySetAssociationsMixin,
   HasManyGetAssociationsMixin,
-  BelongsToGetAssociationMixin,
-  BelongsToSetAssociationMixin,
+  CreationOptional,
 } from "Sequelize";
 import { conn } from "../db";
 import { Species } from "./species";
-import { TerrainDistribution } from "./terrainDistribution";
 
 class SpeciesEnclosureNeed extends Model<
   InferAttributes<SpeciesEnclosureNeed>,
   InferCreationAttributes<SpeciesEnclosureNeed>
 > {
-  declare speciesEnclosureNeedId: number;
+  declare speciesEnclosureNeedId: CreationOptional<number>;
   declare smallExhibitHeightRequired: number; // nullable
   declare minLandAreaRequired: number;
   declare minWaterAreaRequired: number;
@@ -25,27 +23,25 @@ class SpeciesEnclosureNeed extends Model<
   declare acceptableHumidityMin: number;
   declare acceptableHumidityMax: number;
   declare recommendedStandOffBarrierDistMetres: number;
-  declare plantationCoveragePercent: number;
-  declare standoffBarrierDist: number;
+  declare plantationCoveragePercentMin: number;
+  declare plantationCoveragePercentMax: number;
+  declare longGrassPercentMin : number;
+  declare longGrassPercentMax : number;
+  declare shortGrassPercentMin : number;
+  declare shortGrassPercentMax : number;
+  declare rockPercentMinMax : number;
+  declare rockPercentMax : number;
+  declare sandPercentMin : number;
+  declare sandPercentMax : number;
+  declare snowPercentMin : number;
+  declare snowPercentMax : number;
+  declare soilPercenMin : number;
+  declare soilPercenMax : number;
 
   declare species?: Species;
-  declare terrainDistributionMin?: TerrainDistribution;
-  declare terrainDistributionMax?: TerrainDistribution;
 
   declare getSpecies: HasManyGetAssociationsMixin<Species>;
   declare setSpecies: HasManySetAssociationsMixin<Species, number>;
-
-  declare getTerrainDistributionMin: BelongsToGetAssociationMixin<TerrainDistribution>;
-  declare setTerrainDistributionMin: BelongsToSetAssociationMixin<
-    TerrainDistribution,
-    number
-  >;
-
-  declare getTerrainDistributionMax: BelongsToGetAssociationMixin<TerrainDistribution>;
-  declare setTerrainDistributionMax: BelongsToSetAssociationMixin<
-    TerrainDistribution,
-    number
-  >;
 }
 
 SpeciesEnclosureNeed.init(
@@ -86,12 +82,60 @@ SpeciesEnclosureNeed.init(
       type: DataTypes.DOUBLE,
       allowNull: false,
     },
-    plantationCoveragePercent: {
+    plantationCoveragePercentMin: {
       type: DataTypes.DOUBLE,
       allowNull: false,
     },
-    standoffBarrierDist: {
+    plantationCoveragePercentMax: {
       type: DataTypes.DOUBLE,
+      allowNull: false,
+    },
+    longGrassPercentMin: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+    },
+    longGrassPercentMax: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+    },
+    shortGrassPercentMin: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+    },
+    shortGrassPercentMax: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+    },
+    rockPercentMinMax: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+    },
+    rockPercentMax: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+    },
+    sandPercentMin: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+    },
+    sandPercentMax: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+    },
+    snowPercentMin: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+    },
+    snowPercentMax: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+    },
+    soilPercenMin: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+    },
+    soilPercenMax: {
+      type: DataTypes.INTEGER,
       allowNull: false,
     },
   },

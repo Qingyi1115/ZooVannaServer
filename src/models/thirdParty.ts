@@ -8,6 +8,7 @@ import {
   HasManyGetAssociationsMixin,
   HasManyAddAssociationMixin,
   HasManySetAssociationsMixin,
+  HasManyRemoveAssociationMixin,
 } from "Sequelize";
 import { conn } from "../db";
 import { FacilityType } from "./enumerated";
@@ -33,6 +34,7 @@ class ThirdParty extends Model<
   declare getCustomerReportLogs: HasManyGetAssociationsMixin<CustomerReportLog[]>;
   declare addCustomerReportLog: HasManyAddAssociationMixin<CustomerReportLog, number>;
   declare setCustomerReportLogs: HasManySetAssociationsMixin<CustomerReportLog[], number>;
+  declare removeCustomerReportLog: HasManyRemoveAssociationMixin<CustomerReportLog, number>;
 }
 ThirdParty.init(
   {

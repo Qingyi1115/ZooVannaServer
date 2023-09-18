@@ -34,6 +34,7 @@ class Keeper extends Model<
   declare getEvents: BelongsToManyGetAssociationsMixin<Event[]>;
   declare addEvent: BelongsToManyAddAssociationMixin<Event, number>;
   declare setEvents: BelongsToManySetAssociationsMixin<Event[], number>;
+  declare removeEvent: BelongsToManyRemoveAssociationMixin<Event, number>;
 
   declare getEnclosures: BelongsToManyGetAssociationsMixin<Enclosure[]>;
   declare addEnclosure: BelongsToManyAddAssociationMixin<Enclosure, number>;

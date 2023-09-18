@@ -133,9 +133,11 @@ enum AnimalFeedCategory {
 }
 
 enum AnimalGrowthStage {
-  CAPTIVE_BRED = "CAPTIVE_BRED",
-  WILD_CAPTURED = "WILD_CAPTURED",
-  TRANSFERRED_IN = "TRANSFERRED_IN",
+  INFANT="INFANT",
+  JUVENILE="JUVENILE",
+  ADOLESCENT="ADOLESCENT",
+  ADULT="ADULT",
+  ELDER="ELDER"
 }
 
 enum AnimalStatusType {
@@ -461,6 +463,12 @@ enum HubStatus{
   CONNECTED="CONNECTED"
 }
 
+enum GrowthStage{
+  APE="APE",
+  HUMAN="HUMAN",
+  DEGEN="DEGEN"
+}
+
 export {
   KeeperType,
   PlannerType,
@@ -491,5 +499,6 @@ export {
   PaymentType,
   OrderStatus,
   EnclosureStatus,
-  HubStatus
+  HubStatus,
+  GrowthStage
 };
