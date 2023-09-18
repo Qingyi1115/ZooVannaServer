@@ -28,8 +28,6 @@ router.use(authMiddleware);
 
 router.put("/createFacility", createFacility);
 router.post("/updateFacility", updateFacility);
-router.put("/addHub", addHubToFacility);
-router.put("/addSensor", addSensorToHub);
 
 //Assets
 router.post("/createNewAnimalFeed", createNewAnimalFeed);
@@ -43,5 +41,22 @@ router.get("/getAllEnrichmentItem", getAllEnrichmentItem);
 router.get("/getEnrichmentItem/:enrichmentItemName", getEnrichmentItemByName);
 router.put("/updateEnrichmentItem", updateEnrichmentItem);
 router.delete("/deleteEnrichmentItem/:enrichmentItemName", deleteEnrichmentItemByName);
+
+router.post("/createNewEnrichmentItem", createNewEnrichmentItem);
+router.get("/getAllEnrichmentItem", getAllEnrichmentItem);
+router.get("/getEnrichmentItem/:enrichmentItemName", getEnrichmentItemByName);
+router.put("/updateEnrichmentItem", updateEnrichmentItem);
+router.delete("/deleteEnrichmentItem/:enrichmentItemName", deleteEnrichmentItemByName);
+
+router.put("/addHub", addHubToFacility);
+router.put("/addSensor", addSensorToHub);
+router.get("/getAllHubs", getAllHubs);
+router.get("/getAllSensors", getAllSensors);
+router.put("/updateHub", updateHub);
+router.put("/updateSensor", updateSensor);
+router.delete("/deleteHub/:hubId", deleteHub);
+router.delete("/deleteSensor/:sensorId", deleteSensor);
+
+
 
 export default router;
