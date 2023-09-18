@@ -16,6 +16,7 @@ class GeneralStaff extends Model<
   InferCreationAttributes<GeneralStaff>
 > {
   declare generalStaffType: GeneralStaffType;
+  declare isDisabled: boolean; 
 
   declare employee?: Employee;
   declare maintainedFacilities?: InHouse[];
@@ -39,6 +40,10 @@ GeneralStaff.init(
     generalStaffType: {
       type: DataTypes.ENUM,
       values: Object.values(GeneralStaffType),
+      allowNull: false,
+    },
+    isDisabled: {
+      type: DataTypes.BOOLEAN,
       allowNull: false,
     },
   },
