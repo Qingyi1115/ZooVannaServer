@@ -13,7 +13,6 @@ import {
   HasManyRemoveAssociationMixin,
 } from "Sequelize";
 import { conn } from "../db";
-import { Sensor } from "./sensor";
 import { InHouse } from "./inHouse";
 import { ThirdParty } from "./thirdParty";
 import { AnimalClinic } from "./animalClinics";

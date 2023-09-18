@@ -4,7 +4,6 @@ import { Facility } from "../models/facility";
 import { Sensor } from "../models/sensor";
 import { HubProcessor } from "../models/hubProcessor";
 import { hash } from "../helpers/security";
-import { SensorReading } from "models/sensorReading";
 
 export async function createNewFacility(
   facilityName: string,
@@ -38,6 +37,38 @@ export async function getFacilityById(facilityId: number) {
     return Facility.findOne({
       where: { facilityId: facilityId },
     });
+  } catch (error: any) {
+    throw validationErrorHandler(error);
+  }
+}
+
+export async function updateFacilityByFacilityId(
+  facilityId:number,
+  facilityAttribute: any,
+  facilityDetailJson:any,
+): Promise<HubProcessor> {
+  try {
+    let facility = (await getFacilityById(Number(facilityId))) as any;
+    if (!facility) throw { message: "Unable to find facilityId " + facilityId };
+
+    for (const [field, v] of Object.entries(facilityAttribute)) {
+      facility[field] = v;
+    }
+
+    const p1: Promise<Facility> = facility.save();
+    if (facilityDetailJson !== undefined) {
+      
+      const facilityDetail = await facility.getFacilityDetail();
+      if (facilityDetail === undefined) throw {message: "Unable to find facilityDetail for facilityId " + facilityId,};
+
+      for (const [field, v] of Object.entries(facilityDetailJson)) {
+        facilityDetail[field] = v;
+      }
+      await facilityDetail.save();
+    }
+    await p1;
+    return facility;
+
   } catch (error: any) {
     throw validationErrorHandler(error);
   }

@@ -34,7 +34,7 @@ router.put("/initializeHub", initializeHub);
 router.use(authMiddleware);
 
 router.put("/createFacility", createFacility);
-router.post("/updateFacility", updateFacility);
+router.post("/updateFacility/:facilityId", updateFacility);
 
 //Assets
 router.post("/createNewAnimalFeed", createNewAnimalFeed);

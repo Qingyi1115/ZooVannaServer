@@ -13,6 +13,7 @@ import {
   getFacilityById,
   getSensorReadingBySensorId,
   initializeHubProcessor,
+  updateFacilityByFacilityId,
   updateHubByHubId,
   updateSensorById,
 } from "../services/assetFacility";
@@ -360,9 +361,8 @@ export async function updateFacility(req: Request, res: Response) {
         .status(403)
         .json({ error: "Access Denied! Operation managers only!" });
     }
-
+    const { facilityId } = req.params; 
     const {
-      facilityId,
       facilityName,
       xCoordinate,
       yCoordinate,
@@ -378,37 +378,20 @@ export async function updateFacility(req: Request, res: Response) {
       return res.status(400).json({ error: "Missing information!" });
     }
 
-    let facility = (await getFacilityById(Number(facilityId))) as any;
-
-    if (!facility)
-      return res
-        .status(400)
-        .json({ error: "Unknown facilityId " + facilityId });
+    const facilityAttribute :any = {}
+    
     for (const [field, v] of Object.entries({
       facilityName: facilityName,
-      xCoordinate: xCoordinate,
-      yCoordinate: yCoordinate,
+      xCoordinate: Number(xCoordinate),
+      yCoordinate: Number(yCoordinate)
     })) {
       if (v !== undefined) {
-        facility[field] = v;
+        facilityAttribute[field] = v;
       }
     }
+    const newFacility = await updateFacilityByFacilityId(Number(facilityId), facilityAttribute, facilityDetailJson)
 
-    const p1: Promise<Facility> = facility.save();
-
-    if (facilityDetailJson !== undefined) {
-      const facilityDetail = await facility.getFacilityDetail();
-      if (facilityDetail === undefined)
-        throw {
-          message: "Unable to find facilityDetail for facilityId " + facilityId,
-        };
-      for (const [field, v] of Object.entries(facilityDetailJson)) {
-        facilityDetail[field] = v;
-      }
-      await facilityDetail.save();
-    }
-    await p1;
-    return res.status(200).json({ facility: facility.toJSON() });
+    return res.status(200).json({ facility: newFacility.toJSON() });
   } catch (error: any) {
     res.status(400).json({ error: error.message });
   }
