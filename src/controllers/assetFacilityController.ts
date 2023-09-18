@@ -186,7 +186,7 @@ export async function getSensorReading(req: Request, res: Response) {
 
     const { sensorId } = req.params;
 
-    let sensorReadings : SensorReading[] = await getSensorReadingBySensorId(Number(sensorId));
+    let sensorReadings = await getSensorReadingBySensorId(Number(sensorId))as any[];
 
     sensorReadings.forEach(reading => reading.toJSON())
 

@@ -84,7 +84,7 @@ export async function _getAllSensors(includes: any): Promise<Sensor[]> {
 
 export async function getSensorReadingBySensorId(
   sensorId: number,
-): Promise<SensorReading[]> {
+) {
   try {
     const sensor = await Sensor.findOne({
       where: { sensorId: sensorId },
