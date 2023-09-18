@@ -8,17 +8,20 @@ import {
   HasManyAddAssociationMixin,
   HasManySetAssociationsMixin,
   HasManyGetAssociationsMixin,
+  HasManyRemoveAssociationMixin,
+  CreationOptional,
 } from "Sequelize";
 import { conn } from "../db";
 import { SensorType } from "./enumerated";
 import { HubProcessor } from "./hubProcessor";
 import { SensorReading } from "./sensorReading";
+import { GeneralStaff } from "./generalStaff";
 
 class Sensor extends Model<
   InferAttributes<Sensor>,
   InferCreationAttributes<Sensor>
 > {
-  declare sensorId: number;
+  declare sensorId: CreationOptional<number>;
   // declare sensorReadings: number[] | string;
   declare sensorName: string;
   declare dateOfActivation: Date;
@@ -26,7 +29,8 @@ class Sensor extends Model<
   declare sensorType: SensorType;
 
   declare hubProcessor?: HubProcessor;
-  declare sensorReading? :SensorReading;
+  declare sensorReading? :SensorReading[];
+  declare generalStaff?: GeneralStaff;
 
   declare getHubProcessor: BelongsToGetAssociationMixin<HubProcessor>;
   declare setHubProcessor: BelongsToSetAssociationMixin<HubProcessor, number>;
@@ -34,7 +38,10 @@ class Sensor extends Model<
   declare getSensorReadings: HasManyGetAssociationsMixin<SensorReading[]>;
   declare addSensorReading: HasManyAddAssociationMixin<SensorReading, number>;
   declare setSensorReadings: HasManySetAssociationsMixin<SensorReading[], number>;
+  declare removeSensorReading: HasManyRemoveAssociationMixin<SensorReading, number>;
 
+  declare getGeneralStaff: BelongsToGetAssociationMixin<GeneralStaff>;
+  declare setGeneralStaff: BelongsToSetAssociationMixin<GeneralStaff, number>;
 }
 
 Sensor.init(

@@ -10,6 +10,8 @@ import {
   HasManyAddAssociationMixin,
   HasOneGetAssociationMixin,
   HasOneSetAssociationMixin,
+  HasManyRemoveAssociationMixin,
+  CreationOptional,
 } from "Sequelize";
 import { conn } from "../db";
 import { TerrainDistribution } from "./terrainDistribution";
@@ -17,12 +19,13 @@ import { Animal } from "./animal";
 import { BarrierType } from "./barrierType";
 import { Plantation } from "./plantation";
 import { EnclosureStatus } from "./enumerated";
+import { Facility } from "./facility";
 
 class Enclosure extends Model<
   InferAttributes<Enclosure>,
   InferCreationAttributes<Enclosure>
 > {
-  declare enclosureId: number;
+  declare enclosureId: CreationOptional<number>;
   declare name: string;
   declare length: number;
   declare width: number;
@@ -39,10 +42,11 @@ class Enclosure extends Model<
   declare enclosureStatus: EnclosureStatus;
 
   declare terrainDistribution?: TerrainDistribution;
-  declare animals?: Animal;
+  declare animals?: Animal[];
   declare barrierType?: BarrierType;
   declare plantation?: Plantation;
   declare events?: Event[];
+  declare facility?: Facility;
 
   declare getTerrainDistribution: BelongsToManyGetAssociationsMixin<TerrainDistribution>;
   declare setTerrainDistribution: BelongsToSetAssociationMixin<
@@ -53,13 +57,18 @@ class Enclosure extends Model<
   declare getAnimals: HasManyGetAssociationsMixin<Animal[]>;
   declare addAnimal: HasManyAddAssociationMixin<Animal, number>;
   declare setAnimals: HasManySetAssociationsMixin<Animal[], number>;
+  declare removeAnimal: HasManyRemoveAssociationMixin<Animal, number>;
 
   declare getPlantation: HasOneGetAssociationMixin<Plantation>;
   declare setPlantation: HasOneSetAssociationMixin<Plantation, number>;
 
   declare getEvents: HasManyGetAssociationsMixin<Event[]>;
-  declare addEvents: HasManyAddAssociationMixin<Event, number>;
+  declare addEvent: HasManyAddAssociationMixin<Event, number>;
   declare setEvents: HasManySetAssociationsMixin<Event[], number>;
+  declare removeEvent: HasManyRemoveAssociationMixin<Event, number>;
+
+  declare getFacility: HasOneGetAssociationMixin<Facility>;
+  declare setFacility: HasOneSetAssociationMixin<Facility, number>;
 }
 
 Enclosure.init(

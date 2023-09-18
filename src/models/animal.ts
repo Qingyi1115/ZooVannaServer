@@ -8,6 +8,8 @@ import {
   HasManySetAssociationsMixin,
   HasManyGetAssociationsMixin,
   HasManyAddAssociationMixin,
+  HasManyRemoveAssociationMixin,
+  CreationOptional,
 } from "Sequelize";
 import { conn } from "../db";
 import { AnimalSex, AcquisitionMethod, AnimalGrowthStage } from "./enumerated";
@@ -21,7 +23,7 @@ class Animal extends Model<
   InferAttributes<Animal>,
   InferCreationAttributes<Animal>
 > {
-  declare animalId: number;
+  declare animalId: CreationOptional<number>;
   declare animalCode: string;
   declare houseName: string;
   declare sex: AnimalSex;
@@ -54,11 +56,14 @@ class Animal extends Model<
   declare setSpecies: BelongsToSetAssociationMixin<Species, number>;
 
   declare getParents: HasManyGetAssociationsMixin<Animal>;
+  declare addParent: HasManyAddAssociationMixin<Animal, number>;
   declare setParents: HasManySetAssociationsMixin<Animal, number>;
+  declare removeParent: HasManyRemoveAssociationMixin<Animal,number>;
 
   declare getChildren: HasManyGetAssociationsMixin<Animal>;
   declare addChildren: HasManyAddAssociationMixin<Animal, number>;
   declare setChildren: HasManySetAssociationsMixin<Animal, number>;
+  declare removeChildren: HasManyRemoveAssociationMixin<Animal, number>;
 
   declare getAnimalClinic: BelongsToGetAssociationMixin<AnimalClinic>;
   declare setAnimalClinic: BelongsToSetAssociationMixin<AnimalClinic, number>;
@@ -69,10 +74,12 @@ class Animal extends Model<
   declare getAnimalLogs: HasManyGetAssociationsMixin<AnimalLog>;
   declare addAnimalLog: HasManyAddAssociationMixin<AnimalLog, number>;
   declare setAnimalLogs: HasManySetAssociationsMixin<AnimalLog, number>;
+  declare removeAnimalLog: HasManyRemoveAssociationMixin<AnimalLog, number>;
 
-  declare getEvents: HasManyGetAssociationsMixin<Event[]>;
-  declare addEvents: HasManyAddAssociationMixin<Event, number>;
-  declare setEvents: HasManySetAssociationsMixin<Event[], number>;
+  declare getEvents: HasManyGetAssociationsMixin<Event>;
+  declare addEvent: HasManyAddAssociationMixin<Event, number>;
+  declare setEvents: HasManySetAssociationsMixin<Event, number>;
+  declare removeEvent: HasManyRemoveAssociationMixin<Event, number>;
   declare age?: number;
 
   public getAge(): number {

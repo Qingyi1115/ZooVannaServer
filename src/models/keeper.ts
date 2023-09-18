@@ -8,6 +8,7 @@ import {
   BelongsToManyGetAssociationsMixin,
   BelongsToManyAddAssociationMixin,
   BelongsToManySetAssociationsMixin,
+  BelongsToManyRemoveAssociationMixin,
 } from "Sequelize";
 import { conn } from "../db";
 import { Employee } from "./employee";
@@ -29,6 +30,7 @@ class Keeper extends Model<
   declare getEvents: BelongsToManyGetAssociationsMixin<Event[]>;
   declare addEvent: BelongsToManyAddAssociationMixin<Event, number>;
   declare setEvents: BelongsToManySetAssociationsMixin<Event[], number>;
+  declare removeEvent: BelongsToManyRemoveAssociationMixin<Event, number>;
 
   // public toJSON() {
   //     // Can control default values returned rather than manually populating json, removing secrets

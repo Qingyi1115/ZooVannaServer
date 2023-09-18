@@ -9,6 +9,7 @@ import {
     HasManyGetAssociationsMixin,
     HasManySetAssociationsMixin,
     HasManyAddAssociationMixin,
+    HasManyRemoveAssociationMixin,
   } from "Sequelize";
 import { conn } from "../db";
 import { Facility } from "./facility";
@@ -35,6 +36,7 @@ class HubProcessor extends Model<
   declare getSensors: HasManyGetAssociationsMixin<Sensor[]>;
   declare addSensor: HasManyAddAssociationMixin<Sensor, number>;
   declare setSensors: HasManySetAssociationsMixin<Sensor[], number>;
+  declare removeSensor: HasManyRemoveAssociationMixin<Sensor, number>;
 
   public generateHubSecret() {
     this.hubSecret = (Math.random() + 1).toString(36).substring(7) + (Math.random() + 1).toString(36).substring(7);

@@ -17,7 +17,14 @@ import {
   getAllEnrichmentItem,
   getEnrichmentItemByName,
   updateEnrichmentItem,
-  deleteEnrichmentItemByName
+  deleteEnrichmentItemByName,
+  getAllHubs,
+  getAllSensors,
+  getSensorReading,
+  updateHub,
+  updateSensor,
+  deleteHub,
+  deleteSensor
 } from "../controllers/assetFacilityController";
 
 const router = express.Router();
@@ -52,11 +59,10 @@ router.put("/addHub", addHubToFacility);
 router.put("/addSensor", addSensorToHub);
 router.get("/getAllHubs", getAllHubs);
 router.get("/getAllSensors", getAllSensors);
-router.put("/updateHub", updateHub);
-router.put("/updateSensor", updateSensor);
+router.get("/getSensorReading/:sensorId", getSensorReading);
+router.put("/updateHub/:hubId", updateHub);
+router.put("/updateSensor/:sensorId", updateSensor);
 router.delete("/deleteHub/:hubId", deleteHub);
 router.delete("/deleteSensor/:sensorId", deleteSensor);
-
-
 
 export default router;

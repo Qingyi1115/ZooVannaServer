@@ -8,6 +8,7 @@ import {
   HasManyGetAssociationsMixin,
   HasManySetAssociationsMixin,
   HasManyAddAssociationMixin,
+  HasManyRemoveAssociationMixin,
 } from "Sequelize";
 import { conn } from "../db";
 import { Employee } from "./employee";
@@ -29,6 +30,7 @@ class PlanningStaff extends Model<
   declare getEvents: HasManyGetAssociationsMixin<Event[]>;
   declare addEvents: HasManyAddAssociationMixin<Event, number>;
   declare setEvents: HasManySetAssociationsMixin<Event[], number>;
+  declare removeEvent: HasManyRemoveAssociationMixin<Event, number>;
 }
 
 PlanningStaff.init(
