@@ -136,7 +136,7 @@ Species.init(
       allowNull: false,
     },
     educationalDescription: {
-      type: DataTypes.STRING,
+      type: DataTypes.TEXT,
       allowNull: false,
     },
     groupSexualDynamic: {

@@ -561,7 +561,7 @@ export const speciesSeed = async () => {
     order: "Carnivora",
     family: "Ursidae",
     genus: "Ailuropoda",
-    educationalDescription: "The giant panda (Ailuropoda melanoleuca),...",
+    educationalDescription: "The giant panda (Ailuropoda melanoleuca),...The giant panda (Ailuropoda melanoleuca),...The giant panda (Ailuropoda melanoleuca),...The giant panda (Ailuropoda melanoleuca),...The giant panda (Ailuropoda melanoleuca),...The giant panda (Ailuropoda melanoleuca),...The giant panda (Ailuropoda melanoleuca),...The giant panda (Ailuropoda melanoleuca),...The giant panda (Ailuropoda melanoleuca),...The giant panda (Ailuropoda melanoleuca),...The giant panda (Ailuropoda melanoleuca),...The giant panda (Ailuropoda melanoleuca),...The giant panda (Ailuropoda melanoleuca),...The giant panda (Ailuropoda melanoleuca),...The giant panda (Ailuropoda melanoleuca),...The giant panda (Ailuropoda melanoleuca),...",
     nativeContinent: Continent.ASIA,
     nativeBiomes: "Temperate Forests",
     groupSexualDynamic: GroupSexualDynamic.POLYANDROUS,
