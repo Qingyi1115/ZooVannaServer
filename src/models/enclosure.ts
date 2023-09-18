@@ -12,6 +12,9 @@ import {
   HasOneSetAssociationMixin,
   HasManyRemoveAssociationMixin,
   CreationOptional,
+  BelongsToManyAddAssociationMixin,
+  BelongsToManySetAssociationsMixin,
+  BelongsToManyRemoveAssociationMixin,
 } from "Sequelize";
 import { conn } from "../db";
 import { TerrainDistribution } from "./terrainDistribution";
@@ -20,6 +23,7 @@ import { BarrierType } from "./barrierType";
 import { Plantation } from "./plantation";
 import { EnclosureStatus } from "./enumerated";
 import { Facility } from "./facility";
+import { Keeper } from "./keeper";
 
 class Enclosure extends Model<
   InferAttributes<Enclosure>,
@@ -47,6 +51,7 @@ class Enclosure extends Model<
   declare plantation?: Plantation;
   declare events?: Event[];
   declare facility?: Facility;
+  declare Keeper?: Keeper[];
 
   declare getTerrainDistribution: BelongsToManyGetAssociationsMixin<TerrainDistribution>;
   declare setTerrainDistribution: BelongsToSetAssociationMixin<
@@ -69,6 +74,11 @@ class Enclosure extends Model<
 
   declare getFacility: HasOneGetAssociationMixin<Facility>;
   declare setFacility: HasOneSetAssociationMixin<Facility, number>;
+
+  declare getKeepers: BelongsToManyGetAssociationsMixin<Keeper[]>;
+  declare addKeeper: BelongsToManyAddAssociationMixin<Keeper, number>;
+  declare setKeepers: BelongsToManySetAssociationsMixin<Keeper[], number>;
+  declare removeKeeper: BelongsToManyRemoveAssociationMixin<Keeper, number>;
 }
 
 Enclosure.init(
