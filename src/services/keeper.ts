@@ -46,7 +46,17 @@ export async function removeEnclosure(
         });
 
         if(enclosure) {
-            return await (await employee.getKeeper())?.removeEnclosure(enclosure);  
+            //let publicEvents = await (await employee.getKeeper())?.getPublicEvents();
+            const isFree = false;
+            
+
+
+            if(!isFree) {
+                return await (await employee.getKeeper())?.removeEnclosure(enclosure);
+            } 
+            throw {
+                error: "There is currently event connected to this keeper",
+            }
         }
         throw {error: "Enclosure does not exist"};
     }
