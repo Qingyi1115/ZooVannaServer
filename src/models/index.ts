@@ -361,7 +361,6 @@ export const tutorial = async () => {
         // @ts-ignore
         keeper: {
           keeperType: KeeperType.KEEPER,
-          isDisabled: false,
           specialization: Specialization.AMPHIBIAN,
           isDisabled: false
         },
@@ -379,7 +378,6 @@ export const tutorial = async () => {
         // @ts-ignore
         keeper: {
           keeperType: KeeperType.KEEPER,
-          isDisabled: false,
           specialization: Specialization.AMPHIBIAN,
           isDisabled: false
         },
@@ -423,7 +421,6 @@ export const tutorial = async () => {
       // @ts-ignore
       planningStaff: {
         plannerType: PlannerType.CURATOR,
-        isDisabled: false,
         specialization: Specialization.AMPHIBIAN,
         isDisabled: false,
       },
@@ -475,7 +472,6 @@ export const tutorial = async () => {
       // @ts-ignore
       planningStaff: {
         plannerType: PlannerType.OPERATIONS_MANAGER,
-        isDisabled: false,
         specialization: Specialization.REPTILE,
         isDisabled: false,
       },
