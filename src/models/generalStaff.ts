@@ -50,6 +50,13 @@ class GeneralStaff extends Model<
   
   public toJSON() {
     return this.get();
+
+  public enable() {
+    this.isDisabled = false;
+  }
+
+  public disable() {
+    this.isDisabled = true;
   }
 }
 
@@ -63,6 +70,7 @@ GeneralStaff.init(
     isDisabled: {
       type: DataTypes.BOOLEAN,
       allowNull: false,
+      defaultValue: true,
     },
   },
   {

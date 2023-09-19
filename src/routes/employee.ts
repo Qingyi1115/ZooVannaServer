@@ -3,19 +3,21 @@ import express from "express";
 // Controller functions
 import {
   login,
-  createEmployee,
-  retrieveEmployee,
-  updateEmployeeAccount,
-  setAccountManager,
-  retrieveAllEmployees,
-  resetPasswords,
-  disableEmployee,
-  resetForgottenPassword,
-  unsetAccountManager,
+  createEmployeeController,
+  getEmployeeController,
+  updateEmployeeAccountController,
+  setAccountManagerController,
+  getAllEmployeesController,
+  resetPasswordController,
+  disableEmployeeAccountController,
+  resetForgottenPasswordController,
+  unsetAccountManagerController,
+  enableRoleController,
+  disableRoleController,
 } from "../controllers/employeeController";
 import {
-  addEnclosureToKeeper,
-  removeEnclosureFromKeeper,
+  addEnclosureToKeeperController,
+  removeEnclosureFromKeeperController,
 } from "../controllers/keeperController";
 import { authMiddleware } from "../middlewares/authMiddleware";
 
@@ -28,23 +30,27 @@ router.post("/login", login);
 
 router.use(authMiddleware);
 
-router.post("/createEmployee", createEmployee);
-router.get("/retrieveEmployee/:employeeId", retrieveEmployee);
-router.put("/updateEmployeeAccount", updateEmployeeAccount);
-router.post("/createEmployee", createEmployee);
-router.put("/setAccountManager/:employeeId", setAccountManager);
-router.put("/unsetAccountManager/:employeeId", unsetAccountManager);
+router.post("/createEmployee", createEmployeeController);
+router.get("/getEmployee/:employeeId", getEmployeeController);
+router.put("/updateEmployeeAccount", updateEmployeeAccountController);
+router.post("/createEmployee", createEmployeeController);
+router.put("/setAccountManager/:employeeId", setAccountManagerController);
+router.put("/unsetAccountManager/:employeeId", unsetAccountManagerController);
 
-router.get("/retrieveAllEmployees", retrieveAllEmployees);
-router.put("/resetPassword/:employeeId", resetPasswords );
-router.put("/disableEmployee/:employeeId", disableEmployee);
+router.get("/getAllEmployees", getAllEmployeesController);
+router.put("/resetPassword/:employeeId", resetPasswordController ); //reset password by account manager (sent to employee's email)
+router.put("resetForgottenPassword/:token", resetForgottenPasswordController); //Reset from the employee side using email
+router.put("/disableEmployee/:employeeId", disableEmployeeAccountController);
 
-router.put("resetForgottenPassword/:token", resetForgottenPassword);
+//Enable and disable role (can be Keeper, General Staff or Planning Staff)
+router.put("/getEmployee/:employeeId/enableRole", enableRoleController);
+router.put("/getEmployee/:employeeId/disableRole", disableRoleController);
+
 
 //Update Employee Role Details
-//Update Keeper Role --> Assign more enclosures or delete the enclosures
-router.put("retrieveEmployee/:employeeId/addEnclosure/:enclosureId", addEnclosureToKeeper);
-router.put("retrieveEmployee/:employeeId/removeEnclosure/:enclosureId", removeEnclosureFromKeeper);
+//Update Keeper Role --> Assign more enclosures or delete the enclosures --> for future use if needed
+router.put("getEmployee/:employeeId/addEnclosure/:enclosureId", addEnclosureToKeeperController);
+router.put("getEmployee/:employeeId/removeEnclosure/:enclosureId", removeEnclosureFromKeeperController);
 
 //router.put("/changeSpecializationType/:employeeId", ) --> change specialization type for planning and keeper staff
 

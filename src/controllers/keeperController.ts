@@ -16,7 +16,7 @@ import {
     setPassword
   } from "../services/employee";
 
-export const addEnclosureToKeeper = async (
+export const addEnclosureToKeeperController = async (
 req: Request, 
 res: Response,
 ) => {
@@ -50,7 +50,7 @@ res: Response,
     }
 }
 
-export const removeEnclosureFromKeeper = async (
+export const removeEnclosureFromKeeperController = async (
     req: Request,
     res: Response,
 ) => {
