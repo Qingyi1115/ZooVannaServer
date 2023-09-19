@@ -1,7 +1,8 @@
 import { compareDates } from "./others";
 import getAugumentedDataset from "./holtwinters";
 
-export function predictNextDate(dates:Date[]):Date{
+export function predictNextDate(dates:Date[]):Date|void{
+    if (dates.length <= 1) return;
     let intervals :number[] = []
     for (let i =dates.length -1; i >0 ; i--) {
         intervals.push(

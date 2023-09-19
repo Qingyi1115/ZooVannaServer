@@ -34,7 +34,8 @@ import {
   removeMaintenanceStaffFromFacility,
   assignOperationStaffToFacility,
   removeOperationStaffFromFacility,
-  getFacilityMaintenanceSuggestions
+  getFacilityMaintenanceSuggestions,
+  getSensorMaintenanceSuggestions
 } from "../controllers/assetFacilityController";
 
 const router = express.Router();
@@ -79,6 +80,7 @@ router.delete("/deleteHub/:hubId", deleteHub);
 router.post("/addSensor", addSensorToHub);
 router.get("/getAllSensors", getAllSensors);
 router.get("/getSensorReading/:sensorId", getSensorReading);
+router.get("/getSensorMaintenanceSuggestions", getSensorMaintenanceSuggestions);
 router.get("/assignMaintenanceStaffToSensor/:sensorId", assignMaintenanceStaffToSensor);
 router.get("/removeMaintenanceStaffFromSensor/:sensorId", removeMaintenanceStaffFromSensor);
 router.put("/updateSensor/:sensorId", updateSensor);

@@ -10,6 +10,7 @@ import { InHouse } from "../models/inHouse";
 import { FacilityLog } from "../models/faciltiyLog";
 import { compareDates } from "../helpers/others";
 import { predictNextDate } from "../helpers/predictors";
+import { SensorReading } from "models/sensorReading";
 
 export async function createNewFacility(
   facilityName: string,
@@ -59,9 +60,11 @@ export async function getAllFacilityMaintenanceSuggestions() {
       let inHouse = await (facility as any).getFacilityDetail();
       let logs = await inHouse.getFacilityLogs();
       logs = logs.sort((a:FacilityLog,b:FacilityLog)=> compareDates(a.dateTime, b.dateTime));
+      logs = logs.map( (log: FacilityLog) => log.dateTime);
       (facility as any)["predictedMaintenanceDate"] = predictNextDate(logs.slice(0, Math.max(logs.length, 5)));
     }
     
+    return facilities;
   } catch (error: any) {
     throw validationErrorHandler(error);
   }
@@ -307,6 +310,24 @@ export async function getSensorReadingBySensorId(
     if (!sensor) throw { message: "Unable to find sensorId: " + sensor };
 
     return sensor.getSensorReadings();
+  } catch (error: any) {
+    throw validationErrorHandler(error);
+  }
+}
+
+export async function getAllSensorMaintenanceSuggestions() {
+  try {
+
+    let sensors : Sensor[] = await _getAllSensors(["sensorReading"]);
+    const suggested = []
+
+    for (const sensor in sensors){
+      let logs = (sensor as any).sensorReading;
+      logs = logs.sort((a:SensorReading,b:SensorReading)=> compareDates(a.readingDate, b.readingDate));
+      logs = logs.map((log:SensorReading)=>log.readingDate);
+      (sensor as any)["predictedMaintenanceDate"] = predictNextDate(logs.slice(0, Math.max(logs.length, 5)));
+    }
+    return sensors;
   } catch (error: any) {
     throw validationErrorHandler(error);
   }

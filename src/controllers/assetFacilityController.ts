@@ -15,6 +15,7 @@ import {
   deleteHubById,
   deleteSensorById,
   getAllFacilityMaintenanceSuggestions,
+  getAllSensorMaintenanceSuggestions,
   getAuthorizationForCameraById,
   getFacilityById,
   getSensorReadingBySensorId,
@@ -633,6 +634,28 @@ export async function initializeHub(req: Request, res: Response) {
     ipaddress = ipaddress == "::1" ? "127.0.0.1" : ipaddress
 
     return res.status(200).json({ token: await initializeHubProcessor(processorName, ipaddress) });
+  } catch (error: any) {
+    res.status(400).json({ error: error.message });
+  }
+}
+
+export async function getSensorMaintenanceSuggestions(req: Request, res: Response) {
+  try {
+    const { email } = (req as any).locals.jwtPayload;
+    const employee = await findEmployeeByEmail(email);
+
+    if (
+      !(
+        (await employee.getPlanningStaff())?.plannerType ==
+        PlannerType.OPERATIONS_MANAGER
+      )
+    )
+      return res
+        .status(403)
+        .json({ error: "Access Denied! Operation managers only!" });
+
+    let sensors = getAllSensorMaintenanceSuggestions();
+    return res.status(200).json({ sensors: sensors });
   } catch (error: any) {
     res.status(400).json({ error: error.message });
   }
