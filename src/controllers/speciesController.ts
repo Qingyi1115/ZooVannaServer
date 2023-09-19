@@ -64,6 +64,7 @@ export async function createSpecies(req: Request, res: Response) {
             groupSexualDynamic,
             habitatOrExhibit,
             generalDietPreference,
+            lifeExpectancyYears,
         } = req.body;
 
         if (
@@ -85,6 +86,7 @@ export async function createSpecies(req: Request, res: Response) {
                 groupSexualDynamic,
                 habitatOrExhibit,
                 generalDietPreference,
+                lifeExpectancyYears,
             ].includes(undefined)
         ) {
             console.log("Missing field(s): ", {
@@ -105,6 +107,7 @@ export async function createSpecies(req: Request, res: Response) {
                 groupSexualDynamic,
                 habitatOrExhibit,
                 generalDietPreference,
+                lifeExpectancyYears
             });
             return res.status(400).json({ error: "Missing information!" });
         }
@@ -129,6 +132,7 @@ export async function createSpecies(req: Request, res: Response) {
             habitatOrExhibit,
             generalDietPreference,
             imageUrl,
+            Number(lifeExpectancyYears)
         );
 
         return res.status(200).json({ species });
