@@ -5,6 +5,7 @@ import {
   InferCreationAttributes,
   HasManySetAssociationsMixin,
   HasManyGetAssociationsMixin,
+  CreationOptional,
 } from "Sequelize";
 import { conn } from "../db";
 import { SpeciesEnclosureNeed } from "./speciesEnclosureNeed";
@@ -14,7 +15,7 @@ class TerrainDistribution extends Model<
   InferAttributes<TerrainDistribution>,
   InferCreationAttributes<TerrainDistribution>
 > {
-  declare terrainDistributionId: number;
+  declare terrainDistributionId: CreationOptional<number>;
   declare longGrassPercent: number;
   declare shortGrassPercent: number;
   declare rockPercent: number;
@@ -22,21 +23,7 @@ class TerrainDistribution extends Model<
   declare snowPercent: number;
   declare soilPercent: number;
 
-  declare speciesEnclosureNeedMins?: SpeciesEnclosureNeed;
-  declare speciesEnclosureNeedMaxs?: SpeciesEnclosureNeed;
   declare enclosure?: Enclosure;
-
-  declare getSpeciesEnclosureNeedMins: HasManyGetAssociationsMixin<SpeciesEnclosureNeed>;
-  declare setSpeciesEnclosureNeedMins: HasManySetAssociationsMixin<
-    SpeciesEnclosureNeed,
-    number
-  >;
-
-  declare getSpeciesEnclosureNeedMaxs: HasManyGetAssociationsMixin<SpeciesEnclosureNeed>;
-  declare setSpeciesEnclosureNeedMaxs: HasManySetAssociationsMixin<
-    SpeciesEnclosureNeed,
-    number
-  >;
 
   declare getEnclosure: HasManyGetAssociationsMixin<Enclosure>;
   declare setEnclosure: HasManySetAssociationsMixin<Enclosure, number>;

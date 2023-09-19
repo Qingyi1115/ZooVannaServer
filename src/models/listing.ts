@@ -7,6 +7,7 @@ import {
     HasManyGetAssociationsMixin,
     HasManySetAssociationsMixin,
     HasManyAddAssociationsMixin,
+    HasManyRemoveAssociationMixin,
   } from "Sequelize";
   import { conn } from "../db";
 import { ListingStatus, ListingType } from "./enumerated";
@@ -29,8 +30,9 @@ import { LineItem } from "./lineItem";
     declare lineItems?: LineItem[];
   
     declare getLineItems: HasManyGetAssociationsMixin<LineItem[]>;
-    declare addLineItems: HasManyAddAssociationsMixin<LineItem, number>;
+    declare addLineItem: HasManyAddAssociationsMixin<LineItem, number>;
     declare setLineItems: HasManySetAssociationsMixin<LineItem[], number>;
+    declare removeLineItem: HasManyRemoveAssociationMixin<LineItem, number>;
   }
   
   Listing.init(

@@ -10,6 +10,7 @@ import {
   HasManyAddAssociationMixin,
   HasOneGetAssociationMixin,
   HasOneSetAssociationMixin,
+  HasManyRemoveAssociationMixin,
 } from "Sequelize";
 import { conn } from "../db";
 import { Sensor } from "./sensor";
@@ -18,6 +19,7 @@ import { ThirdParty } from "./thirdParty";
 import { AnimalClinic } from "./animalClinics";
 import { uppercaseFirst } from "../helpers/others";
 import { HubProcessor } from "./hubProcessor";
+import { Enclosure } from "./enclosure";
 
 class Facility extends Model<
   InferAttributes<Facility>,
@@ -27,6 +29,7 @@ class Facility extends Model<
   declare facilityName: string;
   declare xCoordinate: number;
   declare yCoordinate: number;
+  declare isSheltered: boolean;
 
   declare facilityDetail?: string;
 
@@ -34,10 +37,12 @@ class Facility extends Model<
   declare inHouse?: InHouse;
   declare thirdParty?: ThirdParty;
   declare animalClinic?: AnimalClinic;
+  declare enclosure?: Enclosure;
 
   declare getHubProcessors: HasManyGetAssociationsMixin<HubProcessor[]>;
   declare addHubProcessor: HasManyAddAssociationMixin<HubProcessor, number>;
   declare setHubProcessors: HasManySetAssociationsMixin<HubProcessor[], number>;
+  declare removeHubProcessor: HasManyRemoveAssociationMixin<HubProcessor, number>;
 
   declare getInHouse: HasOneGetAssociationMixin<InHouse>;
   declare setInHouse: HasOneSetAssociationMixin<InHouse, number>;
@@ -47,6 +52,9 @@ class Facility extends Model<
 
   declare getAnimalClinic: HasOneGetAssociationMixin<AnimalClinic>;
   declare setAnimalClinic: HasOneSetAssociationMixin<AnimalClinic, number>;
+
+  declare getEnclosure: HasOneGetAssociationMixin<Enclosure>;
+  declare setEnclosure: HasOneSetAssociationMixin<Enclosure, number>;
 
   public async getFacilityDetail() {
     if (!this.facilityDetail) {
@@ -99,6 +107,10 @@ Facility.init(
     },
     facilityDetail: {
       type: DataTypes.STRING,
+    },
+    isSheltered: {
+      type: DataTypes.BOOLEAN,
+      allowNull: false,
     },
   },
   {

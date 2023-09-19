@@ -5,13 +5,14 @@ import {
   InferCreationAttributes,
   HasManySetAssociationsMixin,
   HasManyGetAssociationsMixin,
+  CreationOptional,
 } from "Sequelize";
 import { conn } from "../db";
 import {
   PresentationContainer,
   PresentationMethod,
   PresentationLocation,
-  AnimalGrowthState,
+  AnimalGrowthStage,
 } from "./enumerated";
 import { Species } from "./species";
 
@@ -19,13 +20,13 @@ class SpeciesDietNeed extends Model<
   InferAttributes<SpeciesDietNeed>,
   InferCreationAttributes<SpeciesDietNeed>
 > {
-  declare speciesDietNeedId: number;
+  declare speciesDietNeedId: CreationOptional<number>;
   declare amountPerMealGram: number;
   declare amountPerWeekGram: number;
   declare presentationContainer: PresentationContainer;
   declare presentationMethod: PresentationMethod;
   declare presentationLocation: PresentationLocation;
-  declare animalGrowthState: AnimalGrowthState;
+  declare animalGrowthStage: AnimalGrowthStage;
 
   declare species?: Species;
 
@@ -63,9 +64,9 @@ SpeciesDietNeed.init(
       values: Object.values(PresentationLocation),
       allowNull: false,
     },
-    animalGrowthState: {
+    animalGrowthStage: {
       type: DataTypes.ENUM,
-      values: Object.values(AnimalGrowthState),
+      values: Object.values(AnimalGrowthStage),
       allowNull: false,
     },
   },

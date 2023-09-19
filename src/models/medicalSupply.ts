@@ -5,6 +5,7 @@ import {
   InferCreationAttributes,
   BelongsToGetAssociationMixin,
   BelongsToSetAssociationMixin,
+  CreationOptional,
 } from "Sequelize";
 import { conn } from "../db";
 import { Facility } from "./facility";
@@ -14,7 +15,7 @@ class MedicalSupply extends Model<
   InferAttributes<MedicalSupply>,
   InferCreationAttributes<MedicalSupply>
 > {
-  declare medicalSupplyId: number;
+  declare medicalSupplyId: CreationOptional<number>;
   declare medicalSupplyType: MedicalSupplyType;
   declare medicalSupplyName: string;
 

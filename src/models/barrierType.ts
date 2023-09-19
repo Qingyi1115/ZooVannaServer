@@ -5,6 +5,7 @@ import {
   InferCreationAttributes,
   BelongsToSetAssociationMixin,
   BelongsToGetAssociationMixin,
+  CreationOptional,
 } from "Sequelize";
 import { conn } from "../db";
 import { Enclosure } from "./enclosure";
@@ -13,7 +14,7 @@ class BarrierType extends Model<
   InferAttributes<BarrierType>,
   InferCreationAttributes<BarrierType>
 > {
-  declare barrierTypeId: number;
+  declare barrierTypeId: CreationOptional<number>;
   declare barrierMaterialName: string;
   declare barrierTransparency: number;
   declare climbable: boolean;

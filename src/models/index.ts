@@ -40,6 +40,7 @@ import { Customer } from "./customer";
 import { HubProcessor } from "./hubProcessor";
 import { CustomerReportLog } from "./customerReportLog";
 import { SensorReading } from "./sensorReading";
+import { PhysiologicalReferenceNorms } from "./physiologicalReferenceNorms";
 
 function addCascadeOptions(options: object) {
   return { ...options, onDelete: "CASCADE", onUpdate: "CASCADE" };
@@ -79,6 +80,12 @@ export const createDatabase = async (options: any) => {
 
   Facility.hasOne(InHouse, addCascadeOptions({ foreignKey: "facilityId" }));
   InHouse.belongsTo(Facility, addCascadeOptions({ foreignKey: "facilityId" }));
+
+  Facility.hasOne(Enclosure, addCascadeOptions({ foreignKey: "facilityId" }));
+  Enclosure.belongsTo(Facility, addCascadeOptions({ foreignKey: "facilityId" }));
+
+  PhysiologicalReferenceNorms.hasMany(Species, addCascadeOptions({ foreignKey: "physiologicalRefId" }));
+  Species.belongsTo(PhysiologicalReferenceNorms, addCascadeOptions({ foreignKey: "physiologicalRefId" }));
 
   InHouse.belongsToMany(GeneralStaff, {
     foreignKey: "maintainedFacilityId",
@@ -193,36 +200,6 @@ export const createDatabase = async (options: any) => {
   );
 
   TerrainDistribution.hasMany(
-    SpeciesEnclosureNeed,
-    addCascadeOptions({
-      foreignKey: "terrainDistributionId",
-      as: "speciesEnclosureNeedMins",
-    }),
-  );
-  SpeciesEnclosureNeed.belongsTo(
-    TerrainDistribution,
-    addCascadeOptions({
-      foreignKey: "terrainDistributionId",
-      as: "terrainDistributionMins",
-    }),
-  );
-
-  TerrainDistribution.hasMany(
-    SpeciesEnclosureNeed,
-    addCascadeOptions({
-      foreignKey: "terrainDistributionId",
-      as: "speciesEnclosureNeedMaxs",
-    }),
-  );
-  SpeciesEnclosureNeed.belongsTo(
-    TerrainDistribution,
-    addCascadeOptions({
-      foreignKey: "terrainDistributionId",
-      as: "terrainDistributionMaxs",
-    }),
-  );
-
-  TerrainDistribution.hasMany(
     Enclosure,
     addCascadeOptions({ foreignKey: "terrainDistributionId" }),
   );
@@ -317,6 +294,9 @@ export const createDatabase = async (options: any) => {
   InHouse.hasMany(CustomerReportLog, addCascadeOptions({ foreignKey: "inHouseId" }));
   CustomerReportLog.belongsTo(InHouse, addCascadeOptions({ foreignKey: "inHouseId" }));
 
+  GeneralStaff.hasMany(Sensor, addCascadeOptions({ foreignKey: "generalStaffId" }));
+  Sensor.belongsTo(GeneralStaff, addCascadeOptions({ foreignKey: "generalStaffId" }));
+
   // Create tables
   if (options["forced"]) {
     await conn.sync({ force: options.forced });
@@ -328,7 +308,7 @@ export const createDatabase = async (options: any) => {
 export const seedDatabase = async () => {
   // Fake data goes here
   await tutorial();
-  await speciesSeed();
+  // await speciesSeed();
 };
 
 export const tutorial = async () => {
@@ -349,6 +329,7 @@ export const tutorial = async () => {
   let marryKeeper = await Keeper.create({
     keeperType: KeeperType.SENIOR_KEEPER,
     specialization: Specialization.AMPHIBIAN,
+    isDisabled: false,
   });
 
   console.log(marryKeeper.toJSON());
@@ -379,6 +360,7 @@ export const tutorial = async () => {
         // @ts-ignore
         keeper: {
           keeperType: KeeperType.KEEPER,
+          isDisabled: false,
           specialization: Specialization.AMPHIBIAN,
         },
       },
@@ -395,6 +377,7 @@ export const tutorial = async () => {
         // @ts-ignore
         keeper: {
           keeperType: KeeperType.KEEPER,
+          isDisabled: false,
           specialization: Specialization.AMPHIBIAN,
         },
       },
@@ -420,8 +403,8 @@ export const tutorial = async () => {
   console.log("senior", senior?.get());
 
   // console.log("-------------KEEPERS--------------------");
-  // (await Keeper.findAll({include:{ all: true, nested: true }})).forEach(a => console.log(JSON.stringify(a, null, 4)));
-  // (await Keeper.findAll({include:[Employee, "juniors"]})).forEach(a => console.log(a.toJSON()));
+  // (await Keeper.findAll({include:{ all: true }})).forEach(a => console.log(JSON.stringify(a, null, 4)));
+  // (await Keeper.findAll({include:["employee"]})).forEach(a => console.log(a.toJSON()));
 
   let planner1 = await Employee.create(
     {
@@ -437,6 +420,7 @@ export const tutorial = async () => {
       // @ts-ignore
       planningStaff: {
         plannerType: PlannerType.CURATOR,
+        isDisabled: false,
         specialization: Specialization.AMPHIBIAN,
       },
     },
@@ -463,6 +447,7 @@ export const tutorial = async () => {
       // @ts-ignore
       generalStaff: {
         generalStaffType: GeneralStaffType.ZOO_MAINTENANCE,
+        isDisabled: false,
       },
     },
     {
@@ -486,6 +471,7 @@ export const tutorial = async () => {
       // @ts-ignore
       planningStaff: {
         plannerType: PlannerType.OPERATIONS_MANAGER,
+        isDisabled: false,
         specialization: Specialization.REPTILE,
       },
     },
@@ -505,6 +491,7 @@ export const tutorial = async () => {
       facilityName: "facility1",
       xCoordinate: 123456,
       yCoordinate: 654321,
+      isSheltered: true,
       hubProcessors: [
         {
           processorName: "A01",
@@ -531,8 +518,9 @@ export const tutorial = async () => {
       ],
     },
   );
-  // console.log(await facility1.getSensors())
-
+  console.log(facility1);
+  // facility1.destroy();
+  
   let maintenanceStaff = await manager.getGeneralStaff();
   await maintenanceStaff.setMaintainedFacilities([
     await facility1.getInHouse(),

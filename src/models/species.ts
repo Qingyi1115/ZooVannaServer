@@ -5,22 +5,24 @@ import {
   InferCreationAttributes,
   BelongsToGetAssociationMixin,
   BelongsToSetAssociationMixin,
-  INTEGER,
+  CreationOptional
 } from "Sequelize";
 import { conn } from "../db";
 import {
+  AnimalGrowthStage,
   ConservationStatus,
   Continent,
   GroupSexualDynamic,
 } from "./enumerated";
 import { SpeciesDietNeed } from "./speciesDietNeed";
 import { SpeciesEnclosureNeed } from "./speciesEnclosureNeed";
+import { PhysiologicalReferenceNorms } from "./physiologicalReferenceNorms";
 
 class Species extends Model<
   InferAttributes<Species>,
   InferCreationAttributes<Species>
 > {
-  declare speciesId: number;
+  declare speciesId: CreationOptional<number>;
   declare speciesCode: string;
   declare commonName: string;
   declare scientificName: string;
@@ -41,9 +43,13 @@ class Species extends Model<
   declare habitatOrExhibit: string;
   declare imageUrl: string;
   declare generalDietPreference: string;
+  declare lifeExpentancyYears: number;
+  declare foodRemark: string;
+  declare animalGrowthStage: AnimalGrowthStage;
 
   declare speciesDietNeed?: SpeciesDietNeed;
   declare speciesEnclosureNeed?: SpeciesEnclosureNeed;
+  declare physiologicalReferenceNorms?: PhysiologicalReferenceNorms;
 
   declare getSpeciesDietNeed: BelongsToGetAssociationMixin<SpeciesDietNeed>;
   declare setSpeciesDietNeed: BelongsToSetAssociationMixin<
@@ -54,6 +60,12 @@ class Species extends Model<
   declare getSpeciesEnclosureNeed: BelongsToGetAssociationMixin<SpeciesEnclosureNeed>;
   declare setSpeciesEnclosureNeed: BelongsToSetAssociationMixin<
     SpeciesEnclosureNeed,
+    number
+  >;
+
+  declare getPhysiologicalReferenceNorms: BelongsToGetAssociationMixin<PhysiologicalReferenceNorms>;
+  declare setPhysiologicalReferenceNorms: BelongsToSetAssociationMixin<
+  PhysiologicalReferenceNorms,
     number
   >;
 
@@ -159,6 +171,19 @@ Species.init(
     },
     generalDietPreference: {
       type: DataTypes.STRING,
+      allowNull: false,
+    },
+    lifeExpentancyYears: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+    },
+    foodRemark: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    animalGrowthStage: {
+      type: DataTypes.ENUM,
+      values: Object.values(AnimalGrowthStage),
       allowNull: false,
     },
   },
