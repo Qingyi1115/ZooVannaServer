@@ -41,6 +41,7 @@ import { HubProcessor } from "./hubProcessor";
 import { CustomerReportLog } from "./customerReportLog";
 import { SensorReading } from "./sensorReading";
 import { PhysiologicalReferenceNorms } from "./physiologicalReferenceNorms";
+import * as SpeciesService from "../services/species";
 
 function addCascadeOptions(options: object) {
   return { ...options, onDelete: "CASCADE", onUpdate: "CASCADE" };
@@ -188,14 +189,26 @@ export const createDatabase = async (options: any) => {
     addCascadeOptions({ foreignKey: "speciesDietNeedId" }),
   );
 
-  SpeciesEnclosureNeed.hasMany(
-    Species,
-    addCascadeOptions({ foreignKey: "speciesEnclosureNeedId" }),
-  );
-  Species.belongsTo(
-    SpeciesEnclosureNeed,
-    addCascadeOptions({ foreignKey: "speciesEnclosureNeedId" }),
-  );
+  // SpeciesEnclosureNeed.hasMany(
+  //   Species,
+  //   addCascadeOptions({ foreignKey: "speciesEnclosureNeedId" }),
+  // );
+  // Species.belongsTo(
+  //   SpeciesEnclosureNeed,
+  //   addCascadeOptions({ foreignKey: "speciesEnclosureNeedId" }),
+  // );
+
+  Species.hasOne(SpeciesEnclosureNeed, {
+    // foreignKey: "speciesEnclosureNeedId",
+    onDelete: "CASCADE",
+    // foreignKey: {
+    //   allowNull: false,
+    // },
+  });
+
+  SpeciesEnclosureNeed.belongsTo(Species, {
+    // foreignKey: "speciesId",
+  });
 
   Species.hasMany(Animal, addCascadeOptions({ foreignKey: "speciesId" }));
   Animal.belongsTo(Species, addCascadeOptions({ foreignKey: "speciesId" }));
@@ -593,7 +606,7 @@ export const tutorial = async () => {
 };
 
 export const speciesSeed = async () => {
-  let pandaTemplate = {
+  let panda1Template = {
     speciesCode: await Species.getNextSpeciesCode(),
     commonName: "Giant Panda",
     scientificName: "Ailuropoda Melanoleuca",
@@ -618,6 +631,59 @@ export const speciesSeed = async () => {
     lifeExpectancyYears: 14,
     // foodRemark: "Food remark...",
   } as any;
-  let panda1 = await Species.create(pandaTemplate);
+  let panda1 = await Species.create(panda1Template);
+  console.log(panda1.toJSON());
+
+  //-----
+  // let pandaEnclosureTemplate = {
+  //   speciesCode: "speciesCode",
+  //   smallExhibitHeightRequired,
+  //   minLandAreaRequired,
+  //   minWaterAreaRequired,
+  //   acceptableTempMin,
+  //   acceptableTempMax,
+  //   acceptableHumidityMin,
+  //   acceptableHumidityMax,
+  //   recommendedStandOffBarrierDistMetres,
+  //   plantationCoveragePercentMin,
+  //   plantationCoveragePercentMax,
+  //   longGrassPercentMin,
+  //   longGrassPercentMax,
+  //   shortGrassPercentMin,
+  //   shortGrassPercentMax,
+  //   rockPercentMin,
+  //   rockPercentMax,
+  //   sandPercentMin,
+  //   sandPercentMax,
+  //   snowPercentMin,
+  //   snowPercentMax,
+  //   soilPercenMin,
+  //   soilPercenMax,
+  // } as any;
+  let panda1enclosure = await SpeciesService.createEnclosureNeeds(
+    "SPE001",
+    10,
+    10,
+    10,
+    10,
+    10,
+    10,
+    10,
+    10,
+    10,
+    10,
+    10,
+    10,
+    10,
+    10,
+    10,
+    10,
+    10,
+    10,
+    10,
+    10,
+    10,
+    10,
+  );
   console.log(panda1.toJSON());
 };

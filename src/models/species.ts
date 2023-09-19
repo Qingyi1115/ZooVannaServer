@@ -5,7 +5,9 @@ import {
   InferCreationAttributes,
   BelongsToGetAssociationMixin,
   BelongsToSetAssociationMixin,
-  CreationOptional
+  HasOneGetAssociationMixin,
+  HasOneSetAssociationMixin,
+  CreationOptional,
 } from "Sequelize";
 import { conn } from "../db";
 import {
@@ -45,7 +47,7 @@ class Species extends Model<
   declare generalDietPreference: string;
   declare lifeExpectancyYears: number;
   declare foodRemark: string;
-
+  //--FK
   declare speciesDietNeed?: SpeciesDietNeed;
   declare speciesEnclosureNeed?: SpeciesEnclosureNeed;
   declare physiologicalReferenceNorms?: PhysiologicalReferenceNorms;
@@ -56,8 +58,13 @@ class Species extends Model<
     number
   >;
 
-  declare getSpeciesEnclosureNeed: BelongsToGetAssociationMixin<SpeciesEnclosureNeed>;
-  declare setSpeciesEnclosureNeed: BelongsToSetAssociationMixin<
+  // declare getSpeciesEnclosureNeed: BelongsToGetAssociationMixin<SpeciesEnclosureNeed>;
+  // declare setSpeciesEnclosureNeed: BelongsToSetAssociationMixin<
+  //   SpeciesEnclosureNeed,
+  //   number
+  // >;
+  declare getSpeciesEnclosureNeed: HasOneGetAssociationMixin<SpeciesEnclosureNeed>;
+  declare setSpeciesEnclosureNeed: HasOneSetAssociationMixin<
     SpeciesEnclosureNeed,
     number
   >;
@@ -70,13 +77,17 @@ class Species extends Model<
 
   static async getNextSpeciesCode() {
     try {
-      const maxId: number = await this.max('speciesId');
+      const maxId: number = await this.max("speciesId");
       const nextId = (maxId || 0) + 1;
-      return `SPE${String(nextId).padStart(3, '0')}`;
+      return `SPE${String(nextId).padStart(3, "0")}`;
     } catch (error) {
-      console.error('Error generating species code:', error);
+      console.error("Error generating species code:", error);
       throw error; // Optionally, re-throw the error for further handling
     }
+  }
+
+  public getSpeciesId() {
+    return this.speciesId;
   }
 }
 
@@ -179,7 +190,7 @@ Species.init(
     foodRemark: {
       type: DataTypes.STRING,
       allowNull: true,
-    }
+    },
   },
   {
     freezeTableName: true,
