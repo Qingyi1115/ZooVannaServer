@@ -1,6 +1,7 @@
 import { Request } from "express";
 import { validationErrorHandler } from "../helpers/errorHandler";
 import { Species } from "../models/species";
+import { SpeciesEnclosureNeed } from "../models/speciesEnclosureNeed";
 
 export async function getAllSpecies() {
     try {
@@ -19,6 +20,16 @@ export async function getSpeciesByCode(speciesCode: string) {
         return result;
     }
     throw { error: "Invalid Species Code!" };
+}
+
+export async function getSpeciesIdByCode(speciesCode: string) {
+  let result = await Species.findOne({
+    where: { speciesCode: speciesCode },
+  });
+  if (result) {
+    return result.getSpeciesId();
+  }
+  throw { error: "Invalid Species Code!" };
 }
 
 export async function createNewSpecies(
@@ -159,4 +170,159 @@ export async function deleteSpeciesByCode(speciesCode: string) {
         return result;
     }
     throw { error: "Invalid Species Code!" };
+}
+
+export async function createEnclosureNeeds(
+  speciesCode: string,
+  smallExhibitHeightRequired: number,
+  minLandAreaRequired: number,
+  minWaterAreaRequired: number,
+  acceptableTempMin: number,
+  acceptableTempMax: number,
+  acceptableHumidityMin: number,
+  acceptableHumidityMax: number,
+  recommendedStandOffBarrierDistMetres: number,
+  plantationCoveragePercentMin: number,
+  plantationCoveragePercentMax: number,
+  longGrassPercentMin: number,
+  longGrassPercentMax: number,
+  shortGrassPercentMin: number,
+  shortGrassPercentMax: number,
+  rockPercentMin: number,
+  rockPercentMax: number,
+  sandPercentMin: number,
+  sandPercentMax: number,
+  snowPercentMin: number,
+  snowPercentMax: number,
+  soilPercenMin: number,
+  soilPercenMax: number,
+) {
+  let newEnclosureNeed = {
+    smallExhibitHeightRequired: smallExhibitHeightRequired,
+    minLandAreaRequired: minLandAreaRequired,
+    minWaterAreaRequired: minWaterAreaRequired,
+    acceptableTempMin: acceptableTempMin,
+    acceptableTempMax: acceptableTempMax,
+    acceptableHumidityMin: acceptableHumidityMin,
+    acceptableHumidityMax: acceptableHumidityMax,
+    recommendedStandOffBarrierDistMetres: recommendedStandOffBarrierDistMetres,
+    plantationCoveragePercentMin: plantationCoveragePercentMin,
+    plantationCoveragePercentMax: plantationCoveragePercentMax,
+    longGrassPercentMin: longGrassPercentMin,
+    longGrassPercentMax: longGrassPercentMax,
+    shortGrassPercentMin: shortGrassPercentMin,
+    shortGrassPercentMax: shortGrassPercentMax,
+    rockPercentMin: rockPercentMin,
+    rockPercentMax: rockPercentMax,
+    sandPercentMin: sandPercentMin,
+    sandPercentMax: sandPercentMax,
+    snowPercentMin: snowPercentMin,
+    snowPercentMax: snowPercentMax,
+    soilPercenMin: soilPercenMin,
+    soilPercenMax: soilPercenMax,
+    // species:
+  } as any;
+
+  console.log(newEnclosureNeed);
+
+  try {
+    let speciesEncloure = await SpeciesEnclosureNeed.create(newEnclosureNeed);
+    await (
+      await getSpeciesByCode(speciesCode)
+    ).setSpeciesEnclosureNeed(speciesEncloure);
+
+    return speciesEncloure;
+  } catch (error: any) {
+    console.log(error);
+    throw validationErrorHandler(error);
+  }
+}
+
+export async function getEnclosureNeedsByCode(speciesCode: string) {
+  let result = await Species.findOne({
+    where: { speciesCode: speciesCode },
+    include: SpeciesEnclosureNeed, //eager fetch here!!
+  });
+
+  if (result) {
+    let resultEnclosure = await result.speciesEnclosureNeed;
+    return resultEnclosure;
+  }
+  throw { error: "Invalid Species Code!" };
+}
+
+export async function updateEnclosureNeeds(
+  speciesEnclosureNeedId: number,
+  smallExhibitHeightRequired: number,
+  minLandAreaRequired: number,
+  minWaterAreaRequired: number,
+  acceptableTempMin: number,
+  acceptableTempMax: number,
+  acceptableHumidityMin: number,
+  acceptableHumidityMax: number,
+  recommendedStandOffBarrierDistMetres: number,
+  plantationCoveragePercentMin: number,
+  plantationCoveragePercentMax: number,
+  longGrassPercentMin: number,
+  longGrassPercentMax: number,
+  shortGrassPercentMin: number,
+  shortGrassPercentMax: number,
+  rockPercentMin: number,
+  rockPercentMax: number,
+  sandPercentMin: number,
+  sandPercentMax: number,
+  snowPercentMin: number,
+  snowPercentMax: number,
+  soilPercenMin: number,
+  soilPercenMax: number,
+) {
+  let updatedSpeciesEnclosure = {
+    smallExhibitHeightRequired: smallExhibitHeightRequired,
+    minLandAreaRequired: minLandAreaRequired,
+    minWaterAreaRequired: minWaterAreaRequired,
+    acceptableTempMin: acceptableTempMin,
+    acceptableTempMax: acceptableTempMax,
+    acceptableHumidityMin: acceptableHumidityMin,
+    acceptableHumidityMax: acceptableHumidityMax,
+    recommendedStandOffBarrierDistMetres: recommendedStandOffBarrierDistMetres,
+    plantationCoveragePercentMin: plantationCoveragePercentMin,
+    plantationCoveragePercentMax: plantationCoveragePercentMax,
+    longGrassPercentMin: longGrassPercentMin,
+    longGrassPercentMax: longGrassPercentMax,
+    shortGrassPercentMin: shortGrassPercentMin,
+    shortGrassPercentMax: shortGrassPercentMax,
+    rockPercentMin: rockPercentMin,
+    rockPercentMax: rockPercentMax,
+    sandPercentMin: sandPercentMin,
+    sandPercentMax: sandPercentMax,
+    snowPercentMin: snowPercentMin,
+    snowPercentMax: snowPercentMax,
+    soilPercenMin: soilPercenMin,
+    soilPercenMax: soilPercenMax,
+  } as any;
+
+  console.log(updatedSpeciesEnclosure);
+
+  try {
+    let speciesEnclosure = await SpeciesEnclosureNeed.update(
+      updatedSpeciesEnclosure,
+      {
+        where: { speciesEnclosureNeedId: speciesEnclosureNeedId },
+      },
+    );
+  } catch (error: any) {
+    throw validationErrorHandler(error);
+  }
+}
+
+export async function deleteSpeciesEnclosureNeeds(
+  speciesEnclosureNeedId: string,
+) {
+  let result = await SpeciesEnclosureNeed.destroy({
+    where: { speciesEnclosureNeedId: speciesEnclosureNeedId },
+  });
+  if (result) {
+    return result;
+  }
+  throw { error: "Invalid Species Code!" };
 }
