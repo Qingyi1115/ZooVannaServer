@@ -8,6 +8,7 @@ import {
   HasManySetAssociationsMixin,
   HasManyGetAssociationsMixin,
   HasManyAddAssociationMixin,
+  HasManyRemoveAssociationMixin,
 } from "Sequelize";
 import { conn } from "../db";
 import { Facility } from "./facility";
@@ -33,12 +34,14 @@ class AnimalClinic extends Model<
   declare setMedicalSupply: BelongsToSetAssociationMixin<MedicalSupply, number>;
 
   declare getAnimals: HasManyGetAssociationsMixin<Animal[]>;
-  declare addAnimal: HasManyAddAssociationMixin<Animal[], number>;
+  declare addAnimal: HasManyAddAssociationMixin<Animal, number>;
   declare setAnimals: HasManySetAssociationsMixin<Animal[], number>;
+  declare removeAnimal: HasManyRemoveAssociationMixin<Animal, number>;
 
   declare getEvents: HasManyGetAssociationsMixin<Event[]>;
   declare addEvents: HasManyAddAssociationMixin<Event, number>;
   declare setEvents: HasManySetAssociationsMixin<Event[], number>;
+  declare removeEvent: HasManyRemoveAssociationMixin<Event, number>;
 
   // public toJSON() {
   //     // Can control default values returned rather than manually populating json, removing secrets

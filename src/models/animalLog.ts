@@ -5,6 +5,7 @@ import {
   InferCreationAttributes,
   BelongsToSetAssociationMixin,
   BelongsToGetAssociationMixin,
+  CreationOptional,
 } from "Sequelize";
 import { conn } from "../db";
 import { Animal } from "./animal";
@@ -13,7 +14,7 @@ class AnimalLog extends Model<
   InferAttributes<AnimalLog>,
   InferCreationAttributes<AnimalLog>
 > {
-  declare animalLogId: number;
+  declare animalLogId: CreationOptional<number>;
   declare dateTime: Date;
   declare title: string;
   declare details: string;

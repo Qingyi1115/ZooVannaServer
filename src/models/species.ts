@@ -5,22 +5,24 @@ import {
   InferCreationAttributes,
   BelongsToGetAssociationMixin,
   BelongsToSetAssociationMixin,
-  INTEGER,
+  CreationOptional
 } from "Sequelize";
 import { conn } from "../db";
 import {
+  AnimalGrowthStage,
   ConservationStatus,
   Continent,
   GroupSexualDynamic,
 } from "./enumerated";
 import { SpeciesDietNeed } from "./speciesDietNeed";
 import { SpeciesEnclosureNeed } from "./speciesEnclosureNeed";
+import { PhysiologicalReferenceNorms } from "./physiologicalReferenceNorms";
 
 class Species extends Model<
   InferAttributes<Species>,
   InferCreationAttributes<Species>
 > {
-  declare speciesId: number;
+  declare speciesId: CreationOptional<number>;
   declare speciesCode: string;
   declare commonName: string;
   declare scientificName: string;
@@ -41,9 +43,12 @@ class Species extends Model<
   declare habitatOrExhibit: string;
   declare imageUrl: string;
   declare generalDietPreference: string;
+  declare lifeExpectancyYears: number;
+  declare foodRemark: string;
 
   declare speciesDietNeed?: SpeciesDietNeed;
   declare speciesEnclosureNeed?: SpeciesEnclosureNeed;
+  declare physiologicalReferenceNorms?: PhysiologicalReferenceNorms;
 
   declare getSpeciesDietNeed: BelongsToGetAssociationMixin<SpeciesDietNeed>;
   declare setSpeciesDietNeed: BelongsToSetAssociationMixin<
@@ -54,6 +59,12 @@ class Species extends Model<
   declare getSpeciesEnclosureNeed: BelongsToGetAssociationMixin<SpeciesEnclosureNeed>;
   declare setSpeciesEnclosureNeed: BelongsToSetAssociationMixin<
     SpeciesEnclosureNeed,
+    number
+  >;
+
+  declare getPhysiologicalReferenceNorms: BelongsToGetAssociationMixin<PhysiologicalReferenceNorms>;
+  declare setPhysiologicalReferenceNorms: BelongsToSetAssociationMixin<
+    PhysiologicalReferenceNorms,
     number
   >;
 
@@ -92,7 +103,7 @@ Species.init(
     },
     aliasName: {
       type: DataTypes.STRING,
-      allowNull: false,
+      allowNull: true,
     },
     conservationStatus: {
       type: DataTypes.ENUM,
@@ -161,6 +172,14 @@ Species.init(
       type: DataTypes.STRING,
       allowNull: false,
     },
+    lifeExpectancyYears: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+    },
+    foodRemark: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    }
   },
   {
     freezeTableName: true,
