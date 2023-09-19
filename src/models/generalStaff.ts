@@ -50,6 +50,7 @@ class GeneralStaff extends Model<
   
   public toJSON() {
     return this.get();
+  }
 
   public enable() {
     this.isDisabled = false;
