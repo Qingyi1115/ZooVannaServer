@@ -126,6 +126,26 @@ export async function updateSpecies(
     }
 }
 
+export async function updateSpeciesEduDesc(
+    speciesCode: string,
+    educationalDescription: string,
+) {
+
+    let updatedSpecies = {
+        educationalDescription: educationalDescription,
+    } as any;
+
+    console.log(updatedSpecies)
+
+    try {
+        let species = await Species.update(updatedSpecies, {
+            where: { speciesCode: speciesCode },
+        });
+    } catch (error: any) {
+        throw validationErrorHandler(error);
+    }
+}
+
 export async function deleteSpeciesByCode(speciesCode: string) { 
     let result = await Species.destroy({
         where: { speciesCode: speciesCode },
