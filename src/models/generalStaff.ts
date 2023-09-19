@@ -48,10 +48,22 @@ class GeneralStaff extends Model<
 
   public enable() {
     this.isDisabled = false;
+    this.save();
   }
 
   public disable() {
     this.isDisabled = true;
+    this.save();
+  }
+
+  public setMaintenance() {
+    this.generalStaffType = GeneralStaffType.ZOO_MAINTENANCE;
+    this.save();
+  }
+
+  public setOperations() {
+    this.generalStaffType = GeneralStaffType.ZOO_OPERATIONS;
+    this.save();
   }
 }
 

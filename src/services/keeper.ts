@@ -78,3 +78,35 @@ export async function removeEnclosure(
     }
     throw {error: "Employee does not exist"};
 }
+
+export async function updateKeeperType(
+    employeeId: CreationOptional<number>,
+    roleType: string,
+) {
+    let employee = await Employee.findOne({
+        where: {employeeId: employeeId},
+    })
+
+    if(employee) {
+        if(await employee.getKeeper()) {
+            if(roleType == "KEEPER") {
+                (await employee.getKeeper())?.setKeeper();
+            }
+    
+            else if(roleType == "SENIOR KEEPER") {
+                (await employee.getKeeper())?.setSeniorKeeper();
+            }
+
+            else {
+                throw {error: "Such role type does not exist"};
+            }
+
+        } else {
+            throw {error: "There is no keeper role in this account"};
+        }
+        
+    } else {
+        throw {error: "Employee does not exist"};
+    }
+    
+}

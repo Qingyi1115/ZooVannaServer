@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import {
     updateDetails,
     removeEnclosure,
+    updateKeeperType,
 } from "../services/keeper";
 import {
     createNewEmployee,
@@ -78,6 +79,33 @@ export const removeEnclosureFromKeeperController = async (
             throw {error: "Employee has no keeper role!"};
         } 
         throw {error: "Employee does not exist"};
+    }
+    catch (error: any) {
+        return res.status(400).json({error: error.message});
+    }
+}
+
+export const updateKeeperTypeController = async (
+    req: Request,
+    res: Response,
+) => {
+    try {
+        const { email } = (req as any).locals.jwtPayload;
+        const employee = await findEmployeeByEmail(email);
+
+        if (!employee.isAccountManager) {
+        return res
+            .status(403)
+            .json({ error: "Access Denied! Account managers only!" });
+        }
+
+        const {employeeId} = req.params;
+        const {roleType} = req.body;
+
+        await updateKeeperType(Number(employeeId), roleType);
+
+        return res.status(200).json({message: `The role type for this account has been updated to ${roleType}`});
+
     }
     catch (error: any) {
         return res.status(400).json({error: error.message});

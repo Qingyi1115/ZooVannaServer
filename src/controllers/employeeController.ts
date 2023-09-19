@@ -13,6 +13,8 @@ import {
   unsetAsAccountManager,
   enableRole,
   disableRole,
+  updateGeneralStaffType,
+  updatePlanningStaffType,
 } from "../services/employee";
 
 export const login = async (req: Request, res: Response) => {
@@ -312,3 +314,58 @@ export const disableRoleController = async (
     return res.status(400).json({error: error.message});
   }
 }
+
+export const updateGeneralStaffTypeController = async (
+  req: Request,
+  res: Response,
+) => {
+  try {
+      const { email } = (req as any).locals.jwtPayload;
+      const employee = await findEmployeeByEmail(email);
+
+      if (!employee.isAccountManager) {
+      return res
+          .status(403)
+          .json({ error: "Access Denied! Account managers only!" });
+      }
+
+      const {employeeId} = req.params;
+      const {roleType} = req.body;
+
+      await updateGeneralStaffType(Number(employeeId), roleType);
+
+      return res.status(200).json({message: `The role type for this account has been updated to ${roleType}`});
+
+  }
+  catch (error: any) {
+      return res.status(400).json({error: error.message});
+  }
+}
+
+export const updatePlanningStaffTypeController = async (
+  req: Request,
+  res: Response,
+) => {
+  try {
+      const { email } = (req as any).locals.jwtPayload;
+      const employee = await findEmployeeByEmail(email);
+
+      if (!employee.isAccountManager) {
+      return res
+          .status(403)
+          .json({ error: "Access Denied! Account managers only!" });
+      }
+
+      const {employeeId} = req.params;
+      const {roleType} = req.body;
+
+      await updatePlanningStaffType(Number(employeeId), roleType);
+
+      return res.status(200).json({message: `The role type for this account has been updated to ${roleType}`});
+
+  }
+  catch (error: any) {
+      return res.status(400).json({error: error.message});
+  }
+}
+

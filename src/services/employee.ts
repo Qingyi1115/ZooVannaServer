@@ -390,5 +390,78 @@ export async function disableRole(
   }
 }
 
+export async function updateGeneralStaffType(
+  employeeId: CreationOptional<number>,
+  roleType: string,
+) {
+  let employee = await Employee.findOne({
+    where: {employeeId: employeeId},
+  });
+
+  if(employee) {
+      if(await employee.getGeneralStaff()) {
+          if(roleType == "MAINTENANCE") {
+              (await employee.getGeneralStaff())?.setMaintenance();
+          }
+
+          else if(roleType == "OPERATIONS") {
+              (await employee.getGeneralStaff())?.setOperations();
+          }
+
+          else {
+              throw {error: "Such role type does not exist"};
+          }
+
+      } else {
+          throw {error: "There is no general staff role in this account"};
+      }
+      
+  } else {
+      throw {error: "Employee does not exist"};
+  }
+}
+
+export async function updatePlanningStaffType(
+  employeeId: CreationOptional<number>,
+  roleType: string,
+) {
+  let employee = await Employee.findOne({
+    where: {employeeId: employeeId},
+  });
+
+  if(employee) {
+      if(await employee.getPlanningStaff()) {
+          if(roleType == "CURATOR") {
+            (await employee.getPlanningStaff())?.setCurator();
+          }
+
+          else if(roleType == "SALES") {
+            (await employee.getPlanningStaff())?.setSales();
+          }
+
+          else if(roleType == "MARKETING") {
+            (await employee.getPlanningStaff())?.setMarketing();
+          }
+
+          else if(roleType == "OPERATIONS MANAGER") {
+            (await employee.getPlanningStaff())?.setOperationsManager();
+          }
+
+          else if(roleType == "CUSTOMER OPERATIONS") {
+            (await employee.getPlanningStaff())?.setCustomerOperations();
+          }
+
+          else {
+              throw {error: "Such role type does not exist"};
+          }
+
+      } else {
+          throw {error: "There is no planning staff role in this account"};
+      }
+      
+  } else {
+      throw {error: "Employee does not exist"};
+  }
+}
 
 
