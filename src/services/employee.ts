@@ -2,6 +2,7 @@ import { Console } from "console";
 import { validationErrorHandler } from "../helpers/errorHandler";
 import { hash } from "../helpers/security";
 import { Employee } from "../models/employee";
+import { Keeper } from "../models/keeper";
 import { Token } from "../models/token";
 import {
   CreationOptional,
@@ -9,6 +10,8 @@ import {
 } from "Sequelize";
 import * as nodemailer from 'nodemailer';
 import { v4 as uuidv4 } from 'uuid';
+import { PlanningStaff } from "models/planningStaff";
+import { GeneralStaff } from "models/generalStaff";
 
 //Account Manager
 export async function createNewEmployee(
@@ -288,6 +291,55 @@ export async function setPassword(
   
 }*/
 
+export async function enableRole(
+  employeeId: CreationOptional<number>,
+  role: string,
+  roleJson: any,
+) {
+  let employee = await Employee.findOne({
+    where: {employeeId: employeeId},
+  })
 
+  if(employee) {
+    if (role == "Keeper") {
+      const keeper: any = roleJson;
+
+      await Keeper.create(keeper, {
+        include: {
+          association: role,
+        }
+      });
+    }
+
+    else if (role == "Planning Staff") {
+      const planning: any = roleJson;
+
+      await PlanningStaff.create(planning, {
+        include: {
+          association: role,
+        }
+      });
+    }
+
+    else if( role == "General Staff") {
+      const general: any = roleJson;
+
+      await GeneralStaff.create(general, {
+        include: {
+          association: role,
+        }
+      });
+    }
+
+    else {
+      throw {error: "The role does not exist"};
+    }
+
+  } else {
+    throw {error: "Employee does not exist"};
+  }
+  
+
+}
 
 

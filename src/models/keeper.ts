@@ -14,6 +14,7 @@ import { conn } from "../db";
 import { Employee } from "./employee";
 import { Enclosure } from "./enclosure";
 import { KeeperType, Specialization } from "./enumerated";
+import { Event } from "./event";
 
 class Keeper extends Model<
   InferAttributes<Keeper>,
@@ -70,7 +71,7 @@ Keeper.init(
     isDisabled: {
       type: DataTypes.BOOLEAN,
       allowNull: false,
-    }
+    },
   },
   {
     freezeTableName: true,
