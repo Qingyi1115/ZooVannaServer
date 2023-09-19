@@ -67,12 +67,11 @@ export async function createNewSpecies(
         // foodRemark nullable now
     } as any;
 
-    console.log(newSpecies);
+    // console.log(newSpecies);
 
     try {
-        return Species.create(newSpecies);
+        return await Species.create(newSpecies);
     } catch (error: any) {
-        console.log(error);
         throw validationErrorHandler(error);
     }
 }
