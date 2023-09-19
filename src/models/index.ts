@@ -41,6 +41,7 @@ import { HubProcessor } from "./hubProcessor";
 import { CustomerReportLog } from "./customerReportLog";
 import { SensorReading } from "./sensorReading";
 import { PhysiologicalReferenceNorms } from "./physiologicalReferenceNorms";
+import { predictNextDate } from "../helpers/predictors";
 
 function addCascadeOptions(options: object) {
   return { ...options, onDelete: "CASCADE", onUpdate: "CASCADE" };
@@ -361,6 +362,7 @@ export const tutorial = async () => {
         keeper: {
           keeperType: KeeperType.KEEPER,
           specialization: Specialization.AMPHIBIAN,
+          isDisabled: false
         },
       },
       {
@@ -377,6 +379,7 @@ export const tutorial = async () => {
         keeper: {
           keeperType: KeeperType.KEEPER,
           specialization: Specialization.AMPHIBIAN,
+          isDisabled: false
         },
       },
     ],
@@ -419,6 +422,7 @@ export const tutorial = async () => {
       planningStaff: {
         plannerType: PlannerType.CURATOR,
         specialization: Specialization.AMPHIBIAN,
+        isDisabled: false,
       },
     },
     {
@@ -444,6 +448,7 @@ export const tutorial = async () => {
       // @ts-ignore
       generalStaff: {
         generalStaffType: GeneralStaffType.ZOO_MAINTENANCE,
+        isDisabled: false,
       },
     },
     {
@@ -468,6 +473,7 @@ export const tutorial = async () => {
       planningStaff: {
         plannerType: PlannerType.OPERATIONS_MANAGER,
         specialization: Specialization.REPTILE,
+        isDisabled: false,
       },
     },
     {

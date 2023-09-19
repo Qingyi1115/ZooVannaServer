@@ -35,13 +35,21 @@ class Sensor extends Model<
   declare getHubProcessor: BelongsToGetAssociationMixin<HubProcessor>;
   declare setHubProcessor: BelongsToSetAssociationMixin<HubProcessor, number>;
 
-  declare getSensorReadings: HasManyGetAssociationsMixin<SensorReading[]>;
+  declare getSensorReadings: HasManyGetAssociationsMixin<SensorReading>;
   declare addSensorReading: HasManyAddAssociationMixin<SensorReading, number>;
   declare setSensorReadings: HasManySetAssociationsMixin<SensorReading[], number>;
   declare removeSensorReading: HasManyRemoveAssociationMixin<SensorReading, number>;
 
   declare getGeneralStaff: BelongsToGetAssociationMixin<GeneralStaff>;
   declare setGeneralStaff: BelongsToSetAssociationMixin<GeneralStaff, number>;
+
+  public async toFullJSON(){
+    return {
+      ...this.get(),
+      hubProcessor: (await this.getHubProcessor())?.toJSON(),
+      generalStaff: (await this.getGeneralStaff())?.toJSON(),
+    };
+  }
 }
 
 Sensor.init(
