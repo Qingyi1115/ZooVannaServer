@@ -10,7 +10,8 @@ import { InHouse } from "../models/inHouse";
 import { FacilityLog } from "../models/faciltiyLog";
 import { compareDates } from "../helpers/others";
 import { predictNextDate } from "../helpers/predictors";
-import { SensorReading } from "models/sensorReading";
+import { SensorReading } from "../models/sensorReading";
+import { MaintenanceLog } from "../models/maintenanceLog";
 
 export async function createNewFacility(
   facilityName: string,
@@ -58,7 +59,7 @@ export async function getAllFacilityMaintenanceSuggestions() {
 
     for (const facility in facilities){
       let inHouse = await (facility as any).getFacilityDetail();
-      let logs = await inHouse.getFacilityLogs();
+      let logs = (await inHouse.getFacilityLogs()) || [];
       logs = logs.sort((a:FacilityLog,b:FacilityLog)=> compareDates(a.dateTime, b.dateTime));
       logs = logs.map( (log: FacilityLog) => log.dateTime);
       (facility as any)["predictedMaintenanceDate"] = predictNextDate(logs.slice(0, Math.max(logs.length, 5)));
@@ -319,12 +320,11 @@ export async function getAllSensorMaintenanceSuggestions() {
   try {
 
     let sensors : Sensor[] = await _getAllSensors(["sensorReading"]);
-    const suggested = []
 
     for (const sensor in sensors){
-      let logs = (sensor as any).sensorReading;
-      logs = logs.sort((a:SensorReading,b:SensorReading)=> compareDates(a.readingDate, b.readingDate));
-      logs = logs.map((log:SensorReading)=>log.readingDate);
+      let logs = (await (sensor as any).getMaintenanceLogs()) || [];
+      logs = logs.sort((a:MaintenanceLog,b:MaintenanceLog)=> compareDates(a.dateTime, b.dateTime));
+      logs = logs.map((log:MaintenanceLog)=>log.dateTime);
       (sensor as any)["predictedMaintenanceDate"] = predictNextDate(logs.slice(0, Math.max(logs.length, 5)));
     }
     return sensors;
