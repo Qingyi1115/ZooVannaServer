@@ -58,47 +58,54 @@ export async function resetPassword(
   });
   
   if(result) {
-    const token = uuidv4();
+    if(result.dateOfResignation == null) {
+      const token = uuidv4();
 
-    const resetTokens: any = {
-      token: token,
-      email: result.employeeEmail,
-      createdAt: Date.now(),
-      expiresAt: Date.now() + 3600000, //expires in one hour
-    };
-
-    try {
-      Token.create(resetTokens);
-
-      const transporter = nodemailer.createTransport({
-        service: 'gmail',
-        auth: {
-          user: process.env.EMAIL_USERNAME,
-          pass: process.env.EMAIL_PASSWORD,
-        },
-      });
-
-      const mailOptions = {
-        from: process.env.EMAIL_USERNAME,
-        to: result.employeeEmail,
-        subject: 'Reset Password',
-        text: 'Click the link below to reset your password: ',
-        html: '<a href="http://localhost:3000/ResetPassword/${token}">Reset Password</a>',
+      const resetTokens: any = {
+        token: token,
+        email: result.employeeEmail,
+        createdAt: Date.now(),
+        expiresAt: Date.now() + 600000, //expires in 10 minutes
       };
 
-      transporter.sendMail(mailOptions, (error, info) => {
-        if (error) {
-          console.error('Error sending email:', error);
-        } else {
-          console.log('Email sent:', info.response);
-        }
-      });
+      try {
+        await Token.create(resetTokens);
+
+        const transporter = nodemailer.createTransport({
+          service: 'gmail',
+          auth: {
+            user: process.env.EMAIL_USERNAME,
+            pass: process.env.EMAIL_PASSWORD,
+          },
+        });
+
+        const mailOptions = {
+          from: process.env.EMAIL_USERNAME,
+          to: result.employeeEmail,
+          subject: 'Reset Password',
+          text: 'Click the link below to reset your password: ',
+          html: '<a href="http://localhost:3000/employee/resetForgottenPassword/${token}">Reset Password</a>',
+        };
+
+        transporter.sendMail(mailOptions, (error, info) => {
+          if (error) {
+            console.error('Error sending email:', error);
+          } else {
+            console.log('Email sent:', info.response);
+          }
+        });
+      }
+      catch (error: any) {
+        throw validationErrorHandler(error);
+      }
     }
-    catch (error: any) {
-      throw validationErrorHandler(error);
-    }
+    else {
+      throw {error: "Employee has been disabled"};
+    } 
   }
-  throw { error: "Employee does not exist"};
+  else {
+    throw { error: "Employee does not exist"};
+  }
 }
 
 export async function findEmployeeByEmail(employeeEmail: string) {
@@ -174,12 +181,39 @@ export async function setAsAccountManager(
   };
 }
 
-export async function getAllEmployees() {
+export async function unsetAsAccountManager(
+  employeeId: CreationOptional<number>
+) {
+  let employee = await Employee.findOne({
+    where: {employeeId: employeeId},
+  });
+
+  if(employee) {
+    if(employee.isAccountManager) {
+      if(employee.dateOfResignation == null) {
+        console.log("Employee is now not account manager!");
+        return employee.unsetAsAccountManager();
+      }
+      throw {
+        error: "Employee has been disabled"
+      };
+    }
+    throw {
+      error: "Employee is not Account Manager"
+    };
+  }
+  throw {
+    error: "Employee does not exist"
+  };
+}
+
+export async function getAllEmployees(includes: any): Promise<Employee[]> {
   return Employee.findAll({
     order: [
       [literal('dateOfResignation IS NULL'), "ASC"],
       ["dateOfResignation", "DESC"],
     ],
+    include: includes,
   });
 }
 
@@ -217,5 +251,43 @@ export async function disableEmployeeAccount(
     error: "Employee does not exist"
   };
 }
+
+export async function setPassword(
+  token: string,
+  password: string,
+) {
+  let realToken = await Token.findOne({
+    where: {token: token},
+  });
+
+  if(realToken) {
+    let employee = await Employee.findOne({
+      where: {employeeEmail: realToken.email},
+    });
+
+    if(employee) {
+      if(employee.dateOfResignation == null) {
+        if(realToken.expiresAt.getTime() <= Date.now()) {
+          realToken.destroy();
+          return employee.updatePassword(password);
+        } 
+        realToken.destroy();
+        throw {error: "Token has expired"};
+      }
+      realToken.destroy();
+      throw {error: "Employee has been disabled"};
+    }
+    realToken.destroy();
+    throw{error: "Employee does not exist"};
+  }
+}
+
+/*export async function changeRole(
+  role: string,
+) {
+  
+}*/
+
+
 
 

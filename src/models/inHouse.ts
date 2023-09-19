@@ -10,6 +10,7 @@ import {
   HasManyGetAssociationsMixin,
   HasManySetAssociationsMixin,
   HasManyAddAssociationMixin,
+  HasManyRemoveAssociationMixin,
 } from "Sequelize";
 import { conn } from "../db";
 import { Facility } from "./facility";
@@ -47,21 +48,29 @@ class InHouse extends Model<
   declare setNextTramStop: HasOneSetAssociationMixin<InHouse, number>;
 
   declare getMaintenanceStaffs: HasManyGetAssociationsMixin<GeneralStaff[]>;
+  declare addMaintenanceStaff: HasManyAddAssociationMixin<GeneralStaff, number>;
   declare setMaintenanceStaffs: HasManySetAssociationsMixin<GeneralStaff[], number>;
+  declare removeMaintenanceStaff: HasManyRemoveAssociationMixin<GeneralStaff, number>;
 
   declare getOperationStaffs: HasManyGetAssociationsMixin<GeneralStaff[]>;
+  declare addOperationStaff: HasManyAddAssociationMixin<GeneralStaff,number>;
   declare setOperationStaffs: HasManySetAssociationsMixin<GeneralStaff[],number>;
+  declare removeOperationStaff: HasManyRemoveAssociationMixin<GeneralStaff,number>;
 
   declare getFacilityLogs: HasManyGetAssociationsMixin<FacilityLog[]>;
+  declare addFacilityLog: HasManyAddAssociationMixin<FacilityLog, number>;
   declare setFacilityLogs: HasManySetAssociationsMixin<FacilityLog[], number>;
+  declare removeFacilityLog: HasManyRemoveAssociationMixin<FacilityLog, number>;
 
   declare getEvents: HasManyGetAssociationsMixin<Event[]>;
-  declare addEvents: HasManyAddAssociationMixin<Event, number>;
+  declare addEvent: HasManyAddAssociationMixin<Event, number>;
   declare setEvents: HasManySetAssociationsMixin<Event[], number>;
+  declare removeEvent: HasManyRemoveAssociationMixin<Event, number>;
   
   declare getCustomerReportLogs: HasManyGetAssociationsMixin<CustomerReportLog[]>;
   declare addCustomerReportLog: HasManyAddAssociationMixin<CustomerReportLog, number>;
   declare setCustomerReportLogs: HasManySetAssociationsMixin<CustomerReportLog[], number>;
+  declare removeCustomerReportLog: HasManyRemoveAssociationMixin<CustomerReportLog, number>;
 
   // public toJSON() {
   //     // Can control default values returned rather than manually populating json, removing secrets

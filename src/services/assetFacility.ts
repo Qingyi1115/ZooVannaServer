@@ -4,6 +4,7 @@ import { Facility } from "../models/facility";
 import { Sensor } from "../models/sensor";
 import { HubProcessor } from "../models/hubProcessor";
 import { hash } from "../helpers/security";
+import { SensorReading } from "models/sensorReading";
 
 export async function createNewFacility(
   facilityName: string,
@@ -60,6 +61,109 @@ export async function addHubProcessorByFacilityId(
 
     await facility.addHubProcessor(newHub);
     return newHub;
+  } catch (error: any) {
+    throw validationErrorHandler(error);
+  }
+}
+
+export async function _getAllHubs(includes: any): Promise<HubProcessor[]> {
+  try {
+    return HubProcessor.findAll({include:includes});
+  } catch (error: any) {
+    throw validationErrorHandler(error);
+  }
+}
+
+export async function _getAllSensors(includes: any): Promise<Sensor[]> {
+  try {
+    return Sensor.findAll({include:includes});
+  } catch (error: any) {
+    throw validationErrorHandler(error);
+  }
+}
+
+export async function getSensorReadingBySensorId(
+  sensorId: number,
+) {
+  try {
+    const sensor = await Sensor.findOne({
+      where: { sensorId: sensorId },
+    });
+    if (!sensor) throw { message: "Unable to find sensorId: " + sensor };
+
+    return sensor.getSensorReadings();
+  } catch (error: any) {
+    throw validationErrorHandler(error);
+  }
+}
+
+export async function updateHubByHubId(
+  hubId: number,
+  data:any
+): Promise<HubProcessor> {
+  try {
+    const hubProcessor = await HubProcessor.findOne({
+      where: { hubProcessorId: hubId },
+    }) as any;
+    if (!hubProcessor) throw { message: "Unable to find HubProcessorId: " + hubProcessor };
+
+    for (const [key, value] of Object.entries(data)) {
+      hubProcessor[key] = value;
+    }
+    hubProcessor.save();
+
+    return hubProcessor;
+  } catch (error: any) {
+    throw validationErrorHandler(error);
+  }
+}
+
+export async function updateSensorById(
+  sensorId: number,
+  data:any
+): Promise<HubProcessor> {
+  try {
+    const sensor = await Sensor.findOne({
+      where: { sensorId: sensorId },
+    }) as any;
+    if (!sensor) throw { message: "Unable to find sensorId: " + sensor };
+
+    for (const [key, value] of Object.entries(data)) {
+      sensor[key] = value;
+    }
+    sensor.save();
+
+    return sensor;
+  } catch (error: any) {
+    throw validationErrorHandler(error);
+  }
+}
+
+export async function deleteHubById(
+  hubId: number,
+): Promise<void>{
+  try {
+    const hubProcessor = await HubProcessor.findOne({
+      where: { hubProcessorId: hubId },
+    });
+    if (!hubProcessor) throw { message: "Unable to find HubProcessorId: " + hubProcessor };
+
+    return hubProcessor.destroy();
+  } catch (error: any) {
+    throw validationErrorHandler(error);
+  }
+}
+
+export async function deleteSensorById(
+  sensorId: number,
+): Promise<void>{
+  try {
+    const sensor = await Sensor.findOne({
+      where: { sensorId: sensorId },
+    });
+    if (!sensor) throw { message: "Unable to find sensorId: " + sensor };
+
+    return sensor.destroy();
   } catch (error: any) {
     throw validationErrorHandler(error);
   }

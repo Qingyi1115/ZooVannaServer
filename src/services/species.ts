@@ -2,7 +2,7 @@ import { Request } from "express";
 import { validationErrorHandler } from "../helpers/errorHandler";
 import { Species } from "../models/species";
 
-export async function getAllSpecies() { 
+export async function getAllSpecies() {
     try {
         const allSpecies = await Species.findAll();
         return allSpecies;
@@ -11,7 +11,7 @@ export async function getAllSpecies() {
     }
 }
 
-export async function getSpeciesByCode(speciesCode: string) { 
+export async function getSpeciesByCode(speciesCode: string) {
     let result = await Species.findOne({
         where: { speciesCode: speciesCode },
     });
@@ -39,7 +39,10 @@ export async function createNewSpecies(
     groupSexualDynamic: string,
     habitatOrExhibit: string,
     generalDietPreference: string,
-    imageUrl: string) {
+    imageUrl: string,
+    lifeExpectancyYears: number,
+    // foodRemark: string,
+) {
 
     let newSpecies = {
         speciesCode: await Species.getNextSpeciesCode(),
@@ -61,6 +64,8 @@ export async function createNewSpecies(
         habitatOrExhibit: habitatOrExhibit,
         generalDietPreference: generalDietPreference,
         imageUrl: imageUrl,
+        lifeExpectancyYears,
+        // foodRemark
     } as any;
 
     console.log(newSpecies)
@@ -68,6 +73,7 @@ export async function createNewSpecies(
     try {
         return Species.create(newSpecies)
     } catch (error: any) {
+        console.log(error)
         throw validationErrorHandler(error);
     }
 }
@@ -126,7 +132,7 @@ export async function updateSpecies(
     }
 }
 
-export async function deleteSpeciesByCode(speciesCode: string) { 
+export async function deleteSpeciesByCode(speciesCode: string) {
     let result = await Species.destroy({
         where: { speciesCode: speciesCode },
     });

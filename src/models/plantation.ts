@@ -5,6 +5,7 @@ import {
   InferCreationAttributes,
   BelongsToSetAssociationMixin,
   BelongsToGetAssociationMixin,
+  CreationOptional,
 } from "Sequelize";
 import { conn } from "../db";
 import { Enclosure } from "./enclosure";
@@ -14,7 +15,7 @@ class Plantation extends Model<
   InferAttributes<Plantation>,
   InferCreationAttributes<Plantation>
 > {
-  declare plantationId: number;
+  declare plantationId: CreationOptional<number>;
   declare name: string;
   declare biome: Biome;
 
