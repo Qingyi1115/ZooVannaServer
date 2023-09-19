@@ -32,6 +32,14 @@ class PlanningStaff extends Model<
   declare addEvents: HasManyAddAssociationMixin<Event, number>;
   declare setEvents: HasManySetAssociationsMixin<Event[], number>;
   declare removeEvent: HasManyRemoveAssociationMixin<Event, number>;
+
+  public enable() {
+    this.isDisabled = false;
+  }
+
+  public disable() {
+    this.isDisabled = true;
+  }
 }
 
 PlanningStaff.init(
@@ -49,6 +57,7 @@ PlanningStaff.init(
     isDisabled: {
       type: DataTypes.BOOLEAN,
       allowNull: false,
+      defaultValue: true,
     },
   },
   {

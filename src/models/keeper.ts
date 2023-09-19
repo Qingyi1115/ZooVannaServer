@@ -54,7 +54,16 @@ class Keeper extends Model<
   //     // Similar idea albert more useful when compared to java's toString
   //     return {...this.get(), EmployeeEmployeeId: undefined}
   // }
+
+  public enable() {
+    this.isDisabled = false;
+  }
+
+  public disable() {
+    this.isDisabled = true;
+  }
 }
+
 
 Keeper.init(
   {
@@ -71,6 +80,7 @@ Keeper.init(
     isDisabled: {
       type: DataTypes.BOOLEAN,
       allowNull: false,
+      defaultValue: true,
     },
   },
   {

@@ -45,6 +45,14 @@ class GeneralStaff extends Model<
   declare addSensor: HasManyAddAssociationMixin<Sensor, number>;
   declare setSensors: HasManySetAssociationsMixin<Sensor[], number>;
   declare removeSensor: HasManyRemoveAssociationMixin<Sensor, number>;
+
+  public enable() {
+    this.isDisabled = false;
+  }
+
+  public disable() {
+    this.isDisabled = true;
+  }
 }
 
 GeneralStaff.init(
@@ -57,6 +65,7 @@ GeneralStaff.init(
     isDisabled: {
       type: DataTypes.BOOLEAN,
       allowNull: false,
+      defaultValue: true,
     },
   },
   {
