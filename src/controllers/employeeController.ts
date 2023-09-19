@@ -98,8 +98,6 @@ export const createEmployeeController = async (req: Request, res: Response) => {
   }
 };
 
-export const updateEmployeeAccountController = async (req: Request, res: Response) => {};
-
 export const setAccountManagerController = async (
   req: Request,
   res: Response,
@@ -164,7 +162,7 @@ export const getAllEmployeesController = async (
         .json({ error: "Access Denied! Account managers only!" });
     }
 
-    const {includes } = req.body();
+    const {includes } = req.body;
     const[_includes] = [includes.includes("keeper"), includes.includes("generalStaff"), includes.includes("planningStaff")] 
 
     let result = await getAllEmployees(_includes);
