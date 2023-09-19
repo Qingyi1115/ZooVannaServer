@@ -43,9 +43,8 @@ class Species extends Model<
   declare habitatOrExhibit: string;
   declare imageUrl: string;
   declare generalDietPreference: string;
-  declare lifeExpentancyYears: number;
+  declare lifeExpectancyYears: number;
   declare foodRemark: string;
-  declare animalGrowthStage: AnimalGrowthStage;
 
   declare speciesDietNeed?: SpeciesDietNeed;
   declare speciesEnclosureNeed?: SpeciesEnclosureNeed;
@@ -65,7 +64,7 @@ class Species extends Model<
 
   declare getPhysiologicalReferenceNorms: BelongsToGetAssociationMixin<PhysiologicalReferenceNorms>;
   declare setPhysiologicalReferenceNorms: BelongsToSetAssociationMixin<
-  PhysiologicalReferenceNorms,
+    PhysiologicalReferenceNorms,
     number
   >;
 
@@ -104,7 +103,7 @@ Species.init(
     },
     aliasName: {
       type: DataTypes.STRING,
-      allowNull: false,
+      allowNull: true,
     },
     conservationStatus: {
       type: DataTypes.ENUM,
@@ -173,19 +172,14 @@ Species.init(
       type: DataTypes.STRING,
       allowNull: false,
     },
-    lifeExpentancyYears: {
+    lifeExpectancyYears: {
       type: DataTypes.INTEGER,
       allowNull: false,
     },
     foodRemark: {
       type: DataTypes.STRING,
-      allowNull: false,
-    },
-    animalGrowthStage: {
-      type: DataTypes.ENUM,
-      values: Object.values(AnimalGrowthStage),
-      allowNull: false,
-    },
+      allowNull: true,
+    }
   },
   {
     freezeTableName: true,
