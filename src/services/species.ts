@@ -64,7 +64,7 @@ export async function createNewSpecies(
     generalDietPreference: generalDietPreference,
     imageUrl: imageUrl,
     lifeExpectancyYears,
-    // foodRemark
+    // foodRemark nullable now
   } as any;
 
   console.log(newSpecies);

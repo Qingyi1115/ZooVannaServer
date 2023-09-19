@@ -69,23 +69,47 @@ export const createDatabase = async (options: any) => {
     addCascadeOptions({ foreignKey: "employeeId" }),
   );
 
-  Facility.hasMany(HubProcessor, addCascadeOptions({ foreignKey: "facilityId" }));
-  HubProcessor.belongsTo(Facility, addCascadeOptions({ foreignKey: "facilityId" }));
+  Facility.hasMany(
+    HubProcessor,
+    addCascadeOptions({ foreignKey: "facilityId" }),
+  );
+  HubProcessor.belongsTo(
+    Facility,
+    addCascadeOptions({ foreignKey: "facilityId" }),
+  );
 
-  HubProcessor.hasMany(Sensor, addCascadeOptions({ foreignKey: "hubProcessorId" }));
-  Sensor.belongsTo(HubProcessor, addCascadeOptions({ foreignKey: "hubProcessorId" }));
+  HubProcessor.hasMany(
+    Sensor,
+    addCascadeOptions({ foreignKey: "hubProcessorId" }),
+  );
+  Sensor.belongsTo(
+    HubProcessor,
+    addCascadeOptions({ foreignKey: "hubProcessorId" }),
+  );
 
   Sensor.hasMany(SensorReading, addCascadeOptions({ foreignKey: "sensorId" }));
-  SensorReading.belongsTo(Sensor, addCascadeOptions({ foreignKey: "sensorId" }));
+  SensorReading.belongsTo(
+    Sensor,
+    addCascadeOptions({ foreignKey: "sensorId" }),
+  );
 
   Facility.hasOne(InHouse, addCascadeOptions({ foreignKey: "facilityId" }));
   InHouse.belongsTo(Facility, addCascadeOptions({ foreignKey: "facilityId" }));
 
   Facility.hasOne(Enclosure, addCascadeOptions({ foreignKey: "facilityId" }));
-  Enclosure.belongsTo(Facility, addCascadeOptions({ foreignKey: "facilityId" }));
+  Enclosure.belongsTo(
+    Facility,
+    addCascadeOptions({ foreignKey: "facilityId" }),
+  );
 
-  PhysiologicalReferenceNorms.hasMany(Species, addCascadeOptions({ foreignKey: "physiologicalRefId" }));
-  Species.belongsTo(PhysiologicalReferenceNorms, addCascadeOptions({ foreignKey: "physiologicalRefId" }));
+  PhysiologicalReferenceNorms.hasMany(
+    Species,
+    addCascadeOptions({ foreignKey: "physiologicalRefId" }),
+  );
+  Species.belongsTo(
+    PhysiologicalReferenceNorms,
+    addCascadeOptions({ foreignKey: "physiologicalRefId" }),
+  );
 
   InHouse.belongsToMany(GeneralStaff, {
     foreignKey: "maintainedFacilityId",
@@ -275,27 +299,60 @@ export const createDatabase = async (options: any) => {
     AnimalClinic,
     addCascadeOptions({ foreignKey: "animalClinicId" }),
   );
-  
+
   Listing.hasMany(LineItem, addCascadeOptions({ foreignKey: "listingId" }));
   LineItem.belongsTo(Listing, addCascadeOptions({ foreignKey: "listingId" }));
 
-  Promotion.hasMany(CustomerOrder, addCascadeOptions({ foreignKey: "promotionId" }));
-  CustomerOrder.belongsTo(Promotion, addCascadeOptions({ foreignKey: "promotionId" }));
+  Promotion.hasMany(
+    CustomerOrder,
+    addCascadeOptions({ foreignKey: "promotionId" }),
+  );
+  CustomerOrder.belongsTo(
+    Promotion,
+    addCascadeOptions({ foreignKey: "promotionId" }),
+  );
 
-  Customer.hasMany(CustomerOrder, addCascadeOptions({ foreignKey: "customerId" }));
-  CustomerOrder.belongsTo(Customer, addCascadeOptions({ foreignKey: "customerId" }));
+  Customer.hasMany(
+    CustomerOrder,
+    addCascadeOptions({ foreignKey: "customerId" }),
+  );
+  CustomerOrder.belongsTo(
+    Customer,
+    addCascadeOptions({ foreignKey: "customerId" }),
+  );
 
   LineItem.hasMany(CustomerOrder, addCascadeOptions({ foreignKey: "orderId" }));
-  CustomerOrder.belongsTo(LineItem, addCascadeOptions({ foreignKey: "orderId" }));
+  CustomerOrder.belongsTo(
+    LineItem,
+    addCascadeOptions({ foreignKey: "orderId" }),
+  );
 
-  ThirdParty.hasMany(CustomerReportLog, addCascadeOptions({ foreignKey: "thirdPartyId" }));
-  CustomerReportLog.belongsTo(ThirdParty, addCascadeOptions({ foreignKey: "thirdPartyId" }));
+  ThirdParty.hasMany(
+    CustomerReportLog,
+    addCascadeOptions({ foreignKey: "thirdPartyId" }),
+  );
+  CustomerReportLog.belongsTo(
+    ThirdParty,
+    addCascadeOptions({ foreignKey: "thirdPartyId" }),
+  );
 
-  InHouse.hasMany(CustomerReportLog, addCascadeOptions({ foreignKey: "inHouseId" }));
-  CustomerReportLog.belongsTo(InHouse, addCascadeOptions({ foreignKey: "inHouseId" }));
+  InHouse.hasMany(
+    CustomerReportLog,
+    addCascadeOptions({ foreignKey: "inHouseId" }),
+  );
+  CustomerReportLog.belongsTo(
+    InHouse,
+    addCascadeOptions({ foreignKey: "inHouseId" }),
+  );
 
-  GeneralStaff.hasMany(Sensor, addCascadeOptions({ foreignKey: "generalStaffId" }));
-  Sensor.belongsTo(GeneralStaff, addCascadeOptions({ foreignKey: "generalStaffId" }));
+  GeneralStaff.hasMany(
+    Sensor,
+    addCascadeOptions({ foreignKey: "generalStaffId" }),
+  );
+  Sensor.belongsTo(
+    GeneralStaff,
+    addCascadeOptions({ foreignKey: "generalStaffId" }),
+  );
 
   // Create tables
   if (options["forced"]) {
@@ -308,7 +365,7 @@ export const createDatabase = async (options: any) => {
 export const seedDatabase = async () => {
   // Fake data goes here
   await tutorial();
-  // await speciesSeed();
+  await speciesSeed();
 };
 
 export const tutorial = async () => {
@@ -496,7 +553,7 @@ export const tutorial = async () => {
         {
           processorName: "A01",
           ipAddressName: "172.1.2.19",
-          hubStatus: HubStatus.CONNECTED
+          hubStatus: HubStatus.CONNECTED,
         } as any,
       ],
       inHouse: {
@@ -520,7 +577,7 @@ export const tutorial = async () => {
   );
   console.log(facility1);
   // facility1.destroy();
-  
+
   let maintenanceStaff = await manager.getGeneralStaff();
   await maintenanceStaff.setMaintainedFacilities([
     await facility1.getInHouse(),
@@ -549,14 +606,18 @@ export const speciesSeed = async () => {
     order: "Carnivora",
     family: "Ursidae",
     genus: "Ailuropoda",
-    educationalDescription: "The giant panda (Ailuropoda melanoleuca),...The giant panda (Ailuropoda melanoleuca),...The giant panda (Ailuropoda melanoleuca),...The giant panda (Ailuropoda melanoleuca),...The giant panda (Ailuropoda melanoleuca),...The giant panda (Ailuropoda melanoleuca),...The giant panda (Ailuropoda melanoleuca),...The giant panda (Ailuropoda melanoleuca),...The giant panda (Ailuropoda melanoleuca),...The giant panda (Ailuropoda melanoleuca),...The giant panda (Ailuropoda melanoleuca),...The giant panda (Ailuropoda melanoleuca),...The giant panda (Ailuropoda melanoleuca),...The giant panda (Ailuropoda melanoleuca),...The giant panda (Ailuropoda melanoleuca),...The giant panda (Ailuropoda melanoleuca),...",
+    educationalDescription:
+      "The giant panda (Ailuropoda melanoleuca),...The giant panda (Ailuropoda melanoleuca),...The giant panda (Ailuropoda melanoleuca),...The giant panda (Ailuropoda melanoleuca),...The giant panda (Ailuropoda melanoleuca),...The giant panda (Ailuropoda melanoleuca),...The giant panda (Ailuropoda melanoleuca),...The giant panda (Ailuropoda melanoleuca),...The giant panda (Ailuropoda melanoleuca),...The giant panda (Ailuropoda melanoleuca),...The giant panda (Ailuropoda melanoleuca),...The giant panda (Ailuropoda melanoleuca),...The giant panda (Ailuropoda melanoleuca),...The giant panda (Ailuropoda melanoleuca),...The giant panda (Ailuropoda melanoleuca),...The giant panda (Ailuropoda melanoleuca),...",
+    educationalFunFact: "Fun Fact 001",
     nativeContinent: Continent.ASIA,
     nativeBiomes: "Temperate Forests",
     groupSexualDynamic: GroupSexualDynamic.POLYANDROUS,
     habitatOrExhibit: "Southwest China",
     generalDietPreference: "Bamboo?? LOL what to put",
-    imageUrl: "Fake_URL_Here"
+    imageUrl: "Fake_URL_Here",
+    lifeExpectancyYears: 14,
+    // foodRemark: "Food remark...",
   } as any;
   let panda1 = await Species.create(pandaTemplate);
   console.log(panda1.toJSON());
-}
+};
