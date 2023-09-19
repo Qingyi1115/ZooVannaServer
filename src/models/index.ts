@@ -329,6 +329,7 @@ export const tutorial = async () => {
   let marryKeeper = await Keeper.create({
     keeperType: KeeperType.SENIOR_KEEPER,
     specialization: Specialization.AMPHIBIAN,
+    isDisabled: false,
   });
 
   console.log(marryKeeper.toJSON());

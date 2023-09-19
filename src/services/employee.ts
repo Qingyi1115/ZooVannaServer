@@ -99,10 +99,13 @@ export async function resetPassword(
         throw validationErrorHandler(error);
       }
     }
-    throw {error: "Employee has been disabled"};
-    
+    else {
+      throw {error: "Employee has been disabled"};
+    } 
   }
-  throw { error: "Employee does not exist"};
+  else {
+    throw { error: "Employee does not exist"};
+  }
 }
 
 export async function findEmployeeByEmail(employeeEmail: string) {
@@ -178,12 +181,39 @@ export async function setAsAccountManager(
   };
 }
 
-export async function getAllEmployees() {
+export async function unsetAsAccountManager(
+  employeeId: CreationOptional<number>
+) {
+  let employee = await Employee.findOne({
+    where: {employeeId: employeeId},
+  });
+
+  if(employee) {
+    if(employee.isAccountManager) {
+      if(employee.dateOfResignation == null) {
+        console.log("Employee is now not account manager!");
+        return employee.unsetAsAccountManager();
+      }
+      throw {
+        error: "Employee has been disabled"
+      };
+    }
+    throw {
+      error: "Employee is not Account Manager"
+    };
+  }
+  throw {
+    error: "Employee does not exist"
+  };
+}
+
+export async function getAllEmployees(includes: any): Promise<Employee[]> {
   return Employee.findAll({
     order: [
       [literal('dateOfResignation IS NULL'), "ASC"],
       ["dateOfResignation", "DESC"],
     ],
+    include: includes,
   });
 }
 
@@ -250,7 +280,14 @@ export async function setPassword(
     realToken.destroy();
     throw{error: "Employee does not exist"};
   }
-  
 }
+
+/*export async function changeRole(
+  role: string,
+) {
+  
+}*/
+
+
 
 

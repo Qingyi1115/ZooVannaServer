@@ -20,6 +20,7 @@ class PlanningStaff extends Model<
 > {
   declare plannerType: PlannerType;
   declare specialization: Specialization;
+  declare isDisabled: boolean; 
 
   declare employee?: Employee;
   declare events?: Event[];
@@ -43,6 +44,10 @@ PlanningStaff.init(
     specialization: {
       type: DataTypes.ENUM,
       values: Object.values(Specialization),
+      allowNull: false,
+    },
+    isDisabled: {
+      type: DataTypes.BOOLEAN,
       allowNull: false,
     },
   },

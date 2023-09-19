@@ -9,7 +9,8 @@ import {
   getEmployee,
   resetPassword,
   disableEmployeeAccount,
-  setPassword
+  setPassword,
+  unsetAsAccountManager
 } from "../services/employee";
 
 export const login = async (req: Request, res: Response) => {
@@ -109,15 +110,40 @@ export const setAccountManager = async (
         .json({ error: "Access Denied! Account managers only!" });
     }
 
-    const { employeeId } = req.body;
+    const { employeeId } = req.params;
 
-    let result = await setAsAccountManager(employeeId);
+    let result = await setAsAccountManager(Number(employeeId));
     
-    return res.status(200).json({created: result});
+    return res.status(200).json({set: result});
 } catch (error: any) {
   console.log(error.message);
   return res.status(400).json({error: error.message});
 }
+};
+
+export const unsetAccountManager = async (
+  req: Request,
+  res: Response,
+) => {
+  try {
+    const { email } = (req as any).locals.jwtPayload;
+    const employee = await findEmployeeByEmail(email);
+
+    if (!employee.isAccountManager) {
+      return res
+        .status(403)
+        .json({ error: "Access Denied! Account managers only!" });
+    }
+
+    const { employeeId } = req.params;
+
+    let result = await unsetAsAccountManager(Number(employeeId));
+    
+    return res.status(200).json({unset: result});
+  } catch (error: any) {
+    console.log(error.message);
+    return res.status(400).json({error: error.message});
+  }
 };
 
 export const retrieveAllEmployees = async (
@@ -134,8 +160,11 @@ export const retrieveAllEmployees = async (
         .json({ error: "Access Denied! Account managers only!" });
     }
 
-    let result = await getAllEmployees();
-    return res.status(200).json({list: result});
+    const {includes } = req.body();
+    const[_includes] = [includes.includes("keeper"), includes.includes("generalStaff"), includes.includes("planningStaff")] 
+
+    let result = await getAllEmployees(_includes);
+    return res.status(200).json({employees: result});
 
   } catch (error: any) {
     console.log(error.message);

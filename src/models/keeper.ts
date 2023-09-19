@@ -12,6 +12,7 @@ import {
 } from "Sequelize";
 import { conn } from "../db";
 import { Employee } from "./employee";
+import { Enclosure } from "./enclosure";
 import { KeeperType, Specialization } from "./enumerated";
 
 class Keeper extends Model<
@@ -20,9 +21,12 @@ class Keeper extends Model<
 > {
   declare keeperType: KeeperType;
   declare specialization: Specialization;
+  declare isDisabled: boolean; 
 
   declare employee?: Employee;
   declare events?: Event[];
+  declare enclosures?: Enclosure[];
+
 
   declare getEmployee: BelongsToGetAssociationMixin<Employee>;
   declare setEmployee: BelongsToSetAssociationMixin<Employee, number>;
@@ -31,6 +35,12 @@ class Keeper extends Model<
   declare addEvent: BelongsToManyAddAssociationMixin<Event, number>;
   declare setEvents: BelongsToManySetAssociationsMixin<Event[], number>;
   declare removeEvent: BelongsToManyRemoveAssociationMixin<Event, number>;
+
+  declare getEnclosures: BelongsToManyGetAssociationsMixin<Enclosure[]>;
+  declare addEnclosure: BelongsToManyAddAssociationMixin<Enclosure, number>;
+  declare setEnclosure: BelongsToManySetAssociationsMixin<Enclosure[], number>;
+  declare removeEnclosure: BelongsToManyRemoveAssociationMixin<Enclosure, number>;
+
 
   // public toJSON() {
   //     // Can control default values returned rather than manually populating json, removing secrets
@@ -51,6 +61,10 @@ Keeper.init(
       values: Object.values(Specialization),
       allowNull: false,
     },
+    isDisabled: {
+      type: DataTypes.BOOLEAN,
+      allowNull: false,
+    }
   },
   {
     freezeTableName: true,
