@@ -36,6 +36,7 @@ class Species extends Model<
   declare nativeContinent: Continent;
   declare nativeBiomes: string;
   declare educationalDescription: string;
+  declare educationalFunFact: string;
   declare groupSexualDynamic: GroupSexualDynamic;
   declare habitatOrExhibit: string;
   declare imageUrl: string;
@@ -137,7 +138,11 @@ Species.init(
     },
     educationalDescription: {
       type: DataTypes.TEXT,
-      allowNull: false,
+      allowNull: true,
+    },
+    educationalFunFact: {
+      type: DataTypes.TEXT,
+      allowNull: true,
     },
     groupSexualDynamic: {
       type: DataTypes.ENUM,
