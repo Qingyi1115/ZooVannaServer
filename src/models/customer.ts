@@ -94,19 +94,40 @@ Customer.init(
     firstName: {
       type: DataTypes.STRING,
       allowNull: false,
+      validate: {
+        len: [2, Infinity], // At least 2 characters long
+      },
     },
     lastName: {
       type: DataTypes.STRING,
       allowNull: false,
+      validate: {
+        len: [2, Infinity], // At least 2 characters long
+      },
     },
     email: {
       type: DataTypes.STRING,
       allowNull: false,
       unique: true,
+      validate: {
+        isEmail: true, // Email format validation from Sequelize
+      },
     },
     contactNo: {
       type: DataTypes.STRING,
       allowNull: false,
+      validate: {
+        isContactNumber(value: string) {
+          if (!/^[0-9\s\-\(\)]+$/.test(value)) {
+            throw new Error(
+              "Contact number should only contain digits, spaces, hyphens, or parentheses.",
+            );
+          }
+          if (value.replace(/[\s\-\(\)]/g, "").length < 7) {
+            throw new Error("Contact number should have at least 7 digits.");
+          }
+        },
+      },
     },
     birthday: {
       type: DataTypes.DATE,
@@ -115,6 +136,9 @@ Customer.init(
     address: {
       type: DataTypes.STRING,
       allowNull: false,
+      validate: {
+        len: [5, Infinity], // At least 5 characters long
+      },
     },
     nationality: {
       type: DataTypes.ENUM,
