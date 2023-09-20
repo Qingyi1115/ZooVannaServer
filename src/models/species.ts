@@ -52,16 +52,9 @@ class Species extends Model<
   declare lifeExpectancyYears: number;
   declare foodRemark: string;
   //--FK
-  declare speciesDietNeed?: SpeciesDietNeed;
   declare speciesEnclosureNeed?: SpeciesEnclosureNeed;
-  // declare physiologicalReferenceNorms?: PhysiologicalReferenceNorms;
   declare physiologicalReferenceNorms?: PhysiologicalReferenceNorms[];
-
-  declare getSpeciesDietNeed: BelongsToGetAssociationMixin<SpeciesDietNeed>;
-  declare setSpeciesDietNeed: BelongsToSetAssociationMixin<
-    SpeciesDietNeed,
-    number
-  >;
+  declare speciesDietNeeds?: SpeciesDietNeed[];
 
   // declare getSpeciesEnclosureNeed: BelongsToGetAssociationMixin<SpeciesEnclosureNeed>;
   // declare setSpeciesEnclosureNeed: BelongsToSetAssociationMixin<
@@ -93,6 +86,26 @@ class Species extends Model<
   >;
   declare removePhysiologicalRefNorm: HasManyRemoveAssociationMixin<
     PhysiologicalReferenceNorms,
+    number
+  >;
+
+  // declare getSpeciesDietNeed: BelongsToGetAssociationMixin<SpeciesDietNeed>;
+  // declare setSpeciesDietNeed: BelongsToSetAssociationMixin<
+  //   SpeciesDietNeed,
+  //   number
+  // >;
+
+  declare getSpeciesDietNeed: HasManyGetAssociationsMixin<SpeciesDietNeed[]>;
+  declare addSpeciesDietNeed: HasManyAddAssociationMixin<
+    SpeciesDietNeed,
+    number
+  >;
+  declare setSpeciesDietNeed: HasManySetAssociationsMixin<
+    SpeciesDietNeed[],
+    number
+  >;
+  declare removeSpeciesDietNeed: HasManyRemoveAssociationMixin<
+    SpeciesDietNeed,
     number
   >;
 

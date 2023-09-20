@@ -18,6 +18,10 @@ import {
   Continent,
   GroupSexualDynamic,
   AnimalGrowthStage,
+  PresentationContainer,
+  PresentationLocation,
+  PresentationMethod,
+  AnimalFeedCategory,
 } from "./enumerated";
 import { ThirdParty } from "./thirdParty";
 import { AnimalClinic } from "./animalClinics";
@@ -172,14 +176,14 @@ export const createDatabase = async (options: any) => {
     addCascadeOptions({ foreignKey: "AnimalClinicId" }),
   );
 
-  SpeciesDietNeed.hasMany(
-    Species,
-    addCascadeOptions({ foreignKey: "speciesDietNeedId" }),
-  );
-  Species.belongsTo(
-    SpeciesDietNeed,
-    addCascadeOptions({ foreignKey: "speciesDietNeedId" }),
-  );
+  // SpeciesDietNeed.hasMany(
+  //   Species,
+  //   addCascadeOptions({ foreignKey: "speciesDietNeedId" }),
+  // );
+  // Species.belongsTo(
+  //   SpeciesDietNeed,
+  //   addCascadeOptions({ foreignKey: "speciesDietNeedId" }),
+  // );
 
   // SpeciesEnclosureNeed.hasMany(
   //   Species,
@@ -209,6 +213,9 @@ export const createDatabase = async (options: any) => {
 
   Species.hasMany(PhysiologicalReferenceNorms, { onDelete: "CASCADE" });
   PhysiologicalReferenceNorms.belongsTo(Species);
+
+  Species.hasMany(SpeciesDietNeed, { onDelete: "CASCADE" });
+  SpeciesDietNeed.belongsTo(Species);
 
   Species.hasMany(Animal, addCascadeOptions({ foreignKey: "speciesId" }));
   Animal.belongsTo(Species, addCascadeOptions({ foreignKey: "speciesId" }));
@@ -633,7 +640,7 @@ export const speciesSeed = async () => {
   } as any;
   let panda1 = await Species.create(panda1Template);
   console.log(panda1.toJSON());
-  console.log("=======>>>");
+
   let panda1enclosure = await SpeciesService.createEnclosureNeeds(
     "SPE001",
     10,
@@ -661,7 +668,7 @@ export const speciesSeed = async () => {
   );
   console.log(panda1enclosure.toJSON());
 
-  let panda1phy = await SpeciesService.createPhysiologicalReferenceNorms(
+  let panda1phy1 = await SpeciesService.createPhysiologicalReferenceNorms(
     "SPE001",
     100,
     100,
@@ -670,6 +677,7 @@ export const speciesSeed = async () => {
     100,
     AnimalGrowthStage.INFANT,
   );
+  console.log(panda1phy1.toJSON());
 
   let panda1phy2 = await SpeciesService.createPhysiologicalReferenceNorms(
     "SPE001",
@@ -680,22 +688,29 @@ export const speciesSeed = async () => {
     200,
     AnimalGrowthStage.ADULT,
   );
+  console.log(panda1phy2.toJSON());
 
-  console.log(panda1phy.toJSON());
+  let panda1DietNeed1 = await SpeciesService.createDietNeed(
+    "SPE001",
+    AnimalFeedCategory.FISH,
+    100,
+    1000,
+    PresentationContainer.SILICONE_DISH,
+    PresentationMethod.CHOPPED,
+    PresentationLocation.IN_CONTAINER,
+    AnimalGrowthStage.ADULT,
+  );
+  console.log(panda1DietNeed1.toJSON());
 
-  // let panda1phyTemplate = {
-  //   speciesCode: "SPE001",
-  //   sizeMaleCm: 100,
-  //   sizeFemaleCm: 100,
-  //   weightMaleKg: 100,
-  //   weightFemaleKg: 100,
-  //   ageToGrowthAge: 100,
-  //   growthStage: 100,
-  // } as any;
-  // let panda1phy = await PhysiologicalReferenceNorms.create(panda1phyTemplate);
-  // await(
-  //   await SpeciesService.getSpeciesByCode("SPE001", ""),
-  // ).addPhysiologicalRefNorm(panda1phy);
-
-  // console.log(panda1phy.toJSON());
+  let panda1DietNeed2 = await SpeciesService.createDietNeed(
+    "SPE001",
+    AnimalFeedCategory.HAY,
+    1000,
+    7000,
+    PresentationContainer.HANGING_FEEDERS,
+    PresentationMethod.WHOLE,
+    PresentationLocation.IN_CONTAINER,
+    AnimalGrowthStage.JUVENILE,
+  );
+  console.log(panda1DietNeed2.toJSON());
 };

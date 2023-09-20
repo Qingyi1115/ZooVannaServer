@@ -763,3 +763,160 @@ export async function deletePhysiologicalReferenceNorms(
     res.status(400).json({ error: error.message });
   }
 }
+
+export async function createDietNeed(req: Request, res: Response) {
+  try {
+    const {
+      speciesCode,
+      animalFeedCategory,
+      amountPerMealGram,
+      amountPerWeekGram,
+      presentationContainer,
+      presentationMethod,
+      presentationLocation,
+      growthStage,
+    } = req.body;
+
+    if (
+      [
+        speciesCode,
+        animalFeedCategory,
+        amountPerMealGram,
+        amountPerWeekGram,
+        presentationContainer,
+        presentationMethod,
+        presentationLocation,
+        growthStage,
+      ].includes(undefined)
+    ) {
+      console.log("Missing field(s): ", {
+        speciesCode,
+        animalFeedCategory,
+        amountPerMealGram,
+        amountPerWeekGram,
+        presentationContainer,
+        presentationMethod,
+        presentationLocation,
+        growthStage,
+      });
+      return res.status(400).json({ error: "Missing information!" });
+    }
+
+    // have to pass in req for image uploading
+    let dietNeed = await SpeciesService.createDietNeed(
+      speciesCode,
+      animalFeedCategory,
+      amountPerMealGram,
+      amountPerWeekGram,
+      presentationContainer,
+      presentationMethod,
+      presentationLocation,
+      growthStage,
+    );
+
+    return res.status(200).json({ dietNeed });
+  } catch (error: any) {
+    res.status(400).json({ error: error.message });
+  }
+}
+
+export async function getAllDietNeedbySpeciesCode(req: Request, res: Response) {
+  const { speciesCode } = req.params;
+  try {
+    const allDietNeeds =
+      await SpeciesService.getAllDietNeedbySpeciesCode(speciesCode);
+    return res.status(200).json(allDietNeeds);
+  } catch (error: any) {
+    res.status(400).json({ error: error.message });
+  }
+}
+
+export async function getDietNeedById(req: Request, res: Response) {
+  const { speciesDietNeedId } = req.params;
+  if (speciesDietNeedId == undefined) {
+    console.log("Missing field(s): ", {
+      speciesDietNeedId,
+    });
+    return res.status(400).json({ error: "Missing information!" });
+  }
+  try {
+    const dietNeed = await SpeciesService.getDietNeedById(speciesDietNeedId);
+    return res.status(200).json(dietNeed);
+  } catch (error: any) {
+    res.status(400).json({ error: error.message });
+  }
+}
+
+export async function updateDietNeed(req: Request, res: Response) {
+  try {
+    const {
+      speciesDietNeedId,
+      animalFeedCategory,
+      amountPerMealGram,
+      amountPerWeekGram,
+      presentationContainer,
+      presentationMethod,
+      presentationLocation,
+      growthStage,
+    } = req.body;
+
+    if (
+      [
+        speciesDietNeedId,
+        animalFeedCategory,
+        amountPerMealGram,
+        amountPerWeekGram,
+        presentationContainer,
+        presentationMethod,
+        presentationLocation,
+        growthStage,
+      ].includes(undefined)
+    ) {
+      console.log("Missing field(s): ", {
+        speciesDietNeedId,
+        animalFeedCategory,
+        amountPerMealGram,
+        amountPerWeekGram,
+        presentationContainer,
+        presentationMethod,
+        presentationLocation,
+        growthStage,
+      });
+      return res.status(400).json({ error: "Missing information!" });
+    }
+
+    // have to pass in req for image uploading
+    let dietNeed = await SpeciesService.updateDietNeed(
+      speciesDietNeedId,
+      animalFeedCategory,
+      amountPerMealGram,
+      amountPerWeekGram,
+      presentationContainer,
+      presentationMethod,
+      presentationLocation,
+      growthStage,
+    );
+
+    return res.status(200).json({ dietNeed });
+  } catch (error: any) {
+    res.status(400).json({ error: error.message });
+  }
+}
+
+export async function deleteDietNeed(req: Request, res: Response) {
+  const { speciesDietNeedId } = req.params;
+
+  if (speciesDietNeedId == undefined) {
+    console.log("Missing field(s): ", {
+      speciesDietNeedId,
+    });
+    return res.status(400).json({ error: "Missing information!" });
+  }
+
+  try {
+    const dietNeed = await SpeciesService.deleteDietNeed(speciesDietNeedId);
+    return res.status(200).json(dietNeed);
+  } catch (error: any) {
+    res.status(400).json({ error: error.message });
+  }
+}

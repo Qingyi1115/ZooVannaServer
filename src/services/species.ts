@@ -4,6 +4,7 @@ import { Species } from "../models/species";
 import { SpeciesEnclosureNeed } from "../models/speciesEnclosureNeed";
 import { PhysiologicalReferenceNorms } from "../models/physiologicalReferenceNorms";
 import { AnimalGrowthStage } from "../models/enumerated";
+import { SpeciesDietNeed } from "../models/speciesDietNeed";
 
 export async function getAllSpecies(includes: any) {
   try {
@@ -330,7 +331,6 @@ export async function deleteSpeciesEnclosureNeeds(
   throw { error: "Invalid Species Enclosure Need Id!" };
 }
 
-//createPhysiologicalReferenceNorms
 export async function createPhysiologicalReferenceNorms(
   speciesCode: string,
   sizeMaleCm: number,
@@ -441,4 +441,104 @@ export async function deletePhysiologicalReferenceNorms(
     return result;
   }
   throw { error: "Invalid Physiological Reference Id!" };
+}
+
+//createPhysiologicalReferenceNorms
+export async function createDietNeed(
+  speciesCode: string,
+  animalFeedCategory: string,
+  amountPerMealGram: number,
+  amountPerWeekGram: number,
+  presentationContainer: string,
+  presentationMethod: string,
+  presentationLocation: string,
+  growthStage: string,
+) {
+  let newDietNeed = {
+    animalFeedCategory: animalFeedCategory,
+    amountPerMealGram: amountPerMealGram,
+    amountPerWeekGram: amountPerWeekGram,
+    presentationContainer: presentationContainer,
+    presentationMethod: presentationMethod,
+    presentationLocation: presentationLocation,
+    growthStage: growthStage,
+  } as any;
+
+  console.log(newDietNeed);
+
+  try {
+    let newDietNeedEntry = await SpeciesDietNeed.create(newDietNeed);
+
+    newDietNeedEntry.setSpecies(await getSpeciesByCode(speciesCode, ""));
+
+    return newDietNeedEntry;
+  } catch (error: any) {
+    console.log(error);
+    throw validationErrorHandler(error);
+  }
+}
+
+export async function getAllDietNeedbySpeciesCode(speciesCode: string) {
+  let result = await Species.findOne({
+    where: { speciesCode: speciesCode },
+    include: SpeciesDietNeed, //eager fetch here
+  });
+
+  if (result) {
+    let resultSpeciesDietNeed = await result.speciesDietNeeds;
+    return resultSpeciesDietNeed;
+  }
+  throw { error: "Invalid Species Code!" };
+}
+
+export async function getDietNeedById(speciesDietNeedId: string) {
+  let result = await SpeciesDietNeed.findOne({
+    where: { speciesDietNeedId: speciesDietNeedId },
+  });
+
+  if (result) {
+    return result;
+  }
+  throw { error: "Invalid Species Diet Need Id!" };
+}
+
+export async function updateDietNeed(
+  speciesDietNeedId: number,
+  animalFeedCategory: string,
+  amountPerMealGram: number,
+  amountPerWeekGram: number,
+  presentationContainer: string,
+  presentationMethod: string,
+  presentationLocation: string,
+  growthStage: string,
+) {
+  let updatedDietNeed = {
+    animalFeedCategory: animalFeedCategory,
+    amountPerMealGram: amountPerMealGram,
+    amountPerWeekGram: amountPerWeekGram,
+    presentationContainer: presentationContainer,
+    presentationMethod: presentationMethod,
+    presentationLocation: presentationLocation,
+    growthStage: growthStage,
+  } as any;
+
+  console.log(updatedDietNeed);
+
+  try {
+    await SpeciesDietNeed.update(updatedDietNeed, {
+      where: { speciesDietNeedId: speciesDietNeedId },
+    });
+  } catch (error: any) {
+    throw validationErrorHandler(error);
+  }
+}
+
+export async function deleteDietNeed(speciesDietNeedId: string) {
+  let result = await SpeciesDietNeed.destroy({
+    where: { speciesDietNeedId: speciesDietNeedId },
+  });
+  if (result) {
+    return result;
+  }
+  throw { error: "Invalid Species Diet Need Id!" };
 }

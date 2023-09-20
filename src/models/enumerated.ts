@@ -113,6 +113,7 @@ enum PresentationLocation {
   ROOF = "ROOF",
   BURIED = "BURIED",
   IMPALED = "IMPALED",
+  IN_CONTAINER = "IN_CONTAINER",
 }
 enum AnimalGrowthState {
   TEST = "TEST",
