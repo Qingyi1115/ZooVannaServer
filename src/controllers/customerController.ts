@@ -74,6 +74,25 @@ export const login = async (req: Request, res: Response) => {
   }
 };
 
+export async function deleteCustomer(req: Request, res: Response) {
+  const { customerId } = req.params;
+
+  if (customerId == undefined) {
+    console.log("Missing field(s): ", {
+      customerId,
+    });
+    return res.status(400).json({ error: "Missing information!" });
+  }
+
+  try {
+    const customerIdInt = parseInt(customerId);
+    const customer = await CustomerService.deleteCustomer(customerIdInt);
+    return res.status(200).json(customer);
+  } catch (error: any) {
+    res.status(400).json({ error: error.message });
+  }
+}
+
 export const retrieveCustomerAccountDetails = async (
   req: Request,
   res: Response,

@@ -67,14 +67,14 @@ export async function customerLogin(
   );
 }
 
-export async function deleteCustomer(email: string) {
+export async function deleteCustomer(customerId: number) {
   let result = await Customer.destroy({
-    where: { email: email },
+    where: { customerId: customerId },
   });
   if (result) {
     return result;
   }
-  throw { error: "Email not found!" };
+  throw { error: "Customer not found!" };
 }
 
 //update customer
