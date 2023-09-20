@@ -40,6 +40,7 @@ class Employee extends Model<
   declare employeeSalt: string;
   declare employeeDoorAccessCode: string;
   declare employeeEducation: string;
+  declare employeeBirthDate: Date;
   declare isAccountManager: boolean;
   declare dateOfResignation: Date | null;
   declare employeeProfileURL: string | null;
@@ -166,6 +167,10 @@ Employee.init(
       type: DataTypes.STRING,
       allowNull: false,
       unique: true,
+    },
+    employeeBirthDate: {
+      type: DataTypes.DATE,
+      allowNull: false,
     },
     employeeEducation: {
       type: DataTypes.STRING,

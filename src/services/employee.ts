@@ -20,6 +20,7 @@ export async function createNewEmployee(
   employeeEmail: string,
   employeePhoneNumber: string,
   employeeEducation: string,
+  employeeBirthDate: Date,
   isAccountManager: Boolean,
   role: string,
   roleJson: any,
@@ -37,6 +38,7 @@ export async function createNewEmployee(
     employeePasswordHash: hash(randomPassword + randomSalt),
     employeeSalt: randomSalt,
     employeeDoorAccessCode: await Employee.generateNewDoorAccessCode(),
+    employeeBirthDate: employeeBirthDate,
     employeeEducation: employeeEducation,
     isAccountManager: isAccountManager,
   };
@@ -208,7 +210,7 @@ export async function unsetAsAccountManager(
   };
 }
 
-export async function getAllEmployees(includes: string[] = []): Promise<Employee[]> {
+/*export async function getAllEmployees(includes: string[] = []): Promise<Employee[]> {
   return Employee.findAll({
     order: [
       [literal('dateOfResignation IS NULL'), "ASC"],
@@ -216,6 +218,20 @@ export async function getAllEmployees(includes: string[] = []): Promise<Employee
     ],
     include: includes,
   });
+}*/
+
+export async function getAllEmployees() {
+  return Employee.findAll({
+    order: [
+      [literal(`dateofResignation IS NULL`),"ASC" ],
+      ["dateOfResignation", "DESC"],
+    ],
+    /*include: [
+      {model: Keeper},
+      {model: PlanningStaff},
+      {model: GeneralStaff},
+    ]*/
+  })
 }
 
 export async function getEmployee(

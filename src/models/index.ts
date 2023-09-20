@@ -321,6 +321,7 @@ export const tutorial = async () => {
     employeeSalt: "NaCl",
     employeeDoorAccessCode: "123456",
     employeeEducation: "PHD in not eating",
+    employeeBirthDate: new Date("1992-03-04"),
     isAccountManager: true,
   });
   console.log(marry.toJSON());
@@ -356,6 +357,7 @@ export const tutorial = async () => {
         employeeSalt: "NaAg",
         employeeDoorAccessCode: "234567",
         employeeEducation: "PHD in not sleeping",
+        employeeBirthDate: new Date("2001-09-02"),
         isAccountManager: false,
         // @ts-ignore
         keeper: {
@@ -373,6 +375,7 @@ export const tutorial = async () => {
         employeeSalt: "NaH",
         employeeDoorAccessCode: "345678",
         employeeEducation: "PHD in not breathing",
+        employeeBirthDate: new Date("2001-09-02"),
         isAccountManager: false,
         // @ts-ignore
         keeper: {
@@ -416,6 +419,7 @@ export const tutorial = async () => {
       employeeSalt: "H2",
       employeeDoorAccessCode: "987654",
       employeeEducation: "PHD in not waking up",
+      employeeBirthDate: new Date("2001-09-02"),
       isAccountManager: false,
       // @ts-ignore
       planningStaff: {
@@ -442,6 +446,7 @@ export const tutorial = async () => {
       employeePasswordHash: Employee.getHash("manager1_password", "H3"),
       employeeSalt: "H3",
       employeeDoorAccessCode: "222222",
+      employeeBirthDate: new Date("2001-09-02"),
       employeeEducation: "Math Major",
       isAccountManager: true,
       // @ts-ignore
@@ -467,6 +472,7 @@ export const tutorial = async () => {
       employeeSalt: "SiO2",
       employeeDoorAccessCode: "222223",
       employeeEducation: "Another Math Major",
+      employeeBirthDate: new Date("2001-09-02"),
       isAccountManager: true,
       // @ts-ignore
       planningStaff: {

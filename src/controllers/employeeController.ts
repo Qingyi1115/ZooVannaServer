@@ -47,6 +47,7 @@ export const createEmployeeController = async (req: Request, res: Response) => {
       employeeEmail,
       employeePhoneNumber,
       employeeEducation,
+      employeeBirthDate,
       isAccountManager,
       role,
       roleJson,
@@ -58,6 +59,7 @@ export const createEmployeeController = async (req: Request, res: Response) => {
         employeeEmail,
         employeePhoneNumber,
         employeeEducation,
+        employeeBirthDate,
         isAccountManager,
         role,
         roleJson,
@@ -69,6 +71,7 @@ export const createEmployeeController = async (req: Request, res: Response) => {
         employeeEmail,
         employeePhoneNumber,
         employeeEducation,
+        employeeBirthDate,
         isAccountManager,
         role,
         roleJson,
@@ -83,7 +86,8 @@ export const createEmployeeController = async (req: Request, res: Response) => {
         employeeEmail,
         employeePhoneNumber,
         employeeEducation,
-        (isAccountManager as string).toLocaleUpperCase() == "TRUE",
+        isAccountManager,
+        employeeBirthDate,
         role,
         roleJson,
       );
@@ -163,13 +167,14 @@ export const getAllEmployeesController = async (
         .json({ error: "Access Denied! Account managers only!" });
     }
 
-    const {includes } = req.body;
+    /*const {includes } = req.body;
     const _includes : string[] = []
     for (const role in ["keeper", "generalStaff", "planningStaff"]){
       if (includes.includes(role)) _includes.push(role)
-    }
+    }*/
 
-    let result = await getAllEmployees(_includes);
+    //let result = await getAllEmployees(_includes);
+    let result = await getAllEmployees();
     return res.status(200).json({employees: result});
 
   } catch (error: any) {

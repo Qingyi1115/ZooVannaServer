@@ -37,7 +37,7 @@ router.post("/createEmployee", createEmployeeController);
 router.put("/setAccountManager/:employeeId", setAccountManagerController);
 router.put("/unsetAccountManager/:employeeId", unsetAccountManagerController);
 
-router.post("/getAllEmployees", getAllEmployeesController);
+router.get("/getAllEmployees", getAllEmployeesController);
 router.put("/resetPassword/:employeeId", resetPasswordController ); //reset password by account manager (sent to employee's email)
 router.put("resetForgottenPassword/:token", resetForgottenPasswordController); //Reset from the employee side using email
 router.put("/disableEmployee/:employeeId", disableEmployeeAccountController);
