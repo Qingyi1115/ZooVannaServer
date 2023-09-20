@@ -13,7 +13,7 @@ export async function createNewCustomer(
   address: string,
   nationality: Country,
 ) {
-  console.log("Customer service triggered");
+  // console.log("Customer service triggered");
   // hash the customer password with random salt
   const randomSalt = (Math.random() + 1).toString(36).substring(7);
   // const birthday = new Date(birthdayJSON);
@@ -47,7 +47,7 @@ export async function findCustomerByEmail(email: string) {
   throw { error: "Invalid email!" };
 }
 
-//might have an error for param type
+//might have an error for param type, might be CreationOptional<number>
 export async function findCustomerByCustomerId(customerId: number) {
   let result = await Customer.findOne({
     where: { customerId: customerId },
@@ -104,6 +104,36 @@ export async function updateCustomer(
   try {
     let customer = await Customer.update(updatedCustomer, {
       where: { email: email },
+    });
+  } catch (error: any) {
+    throw validationErrorHandler(error);
+  }
+}
+
+export async function updatePassword(
+  email: string,
+  oldPassword: string,
+  newPassword: string,
+) {
+  let customer = await Customer.findOne({
+    where: { email: email },
+  });
+  if (!customer) {
+    throw { error: "No customer found" };
+  }
+
+  if (hash(oldPassword + customer.salt) !== customer.passwordHash) {
+    throw { error: "Old password is incorrect" };
+  }
+
+  //generate new salt for added security
+  const newSalt = (Math.random() + 1).toString(36).substring(7);
+  customer.salt = newSalt;
+  customer.passwordHash = hash(newPassword + newSalt);
+
+  try {
+    await Customer.update(customer, {
+      where: { customerId: customer.customerId }, //might have error here
     });
   } catch (error: any) {
     throw validationErrorHandler(error);
