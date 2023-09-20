@@ -20,18 +20,21 @@ export async function createNewEnrichmentItem(
     }
 }
 
-export async function getAllEnrichmentItem() { 
+export async function getAllEnrichmentItem(includes: string[] = []) { 
     try {
-        const allEnrichmentItem = await EnrichmentItem.findAll();
+        const allEnrichmentItem = await EnrichmentItem.findAll({
+            include:includes
+        });
         return allEnrichmentItem;
     } catch (error: any) {
         throw validationErrorHandler(error);
     }
 }
 
-export async function getEnrichmentItemByName(enrichmentItemName: string) { 
+export async function getEnrichmentItemByName(enrichmentItemName: string, includes: string[] = []) { 
     let result = await EnrichmentItem.findOne({
         where: { enrichmentItemName: enrichmentItemName },
+        include: includes
     });
     if (result) {
         return result;
