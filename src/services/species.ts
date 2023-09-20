@@ -229,7 +229,7 @@ export async function createEnclosureNeeds(
     try {
         let speciesEncloure = await SpeciesEnclosureNeed.create(newEnclosureNeed);
         await (
-            await getSpeciesByCode(speciesCode, [""])
+            await getSpeciesByCode(speciesCode, "")
         ).setSpeciesEnclosureNeed(speciesEncloure);
 
         return speciesEncloure;
