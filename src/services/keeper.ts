@@ -8,6 +8,11 @@ import {
   CreationOptional,
   literal
 } from "Sequelize";
+import {
+    Event
+} from "../models/event";
+
+
 
 //might need to change implementation
 export async function updateDetails(
@@ -46,12 +51,23 @@ export async function removeEnclosure(
         });
 
         if(enclosure) {
-            //let publicEvents = await (await employee.getKeeper())?.getPublicEvents();
-            const isFree = false;
+            let publicEvents = (await employee.getKeeper())?.publicEvents;
+            let isNotFree = false;
             
+            if(publicEvents) {
+                for(const publicEvent of publicEvents) {
+                    if(await publicEvent.getEnclosure()) {
+                        isNotFree = true;
+                        break;
+                    } 
+                }
+            }
 
+            if(!isNotFree && (await employee.getKeeper())?.internalEvents?.length != 0) {
+                isNotFree = true;
+            }
 
-            if(!isFree) {
+            if(!isNotFree) {
                 return await (await employee.getKeeper())?.removeEnclosure(enclosure);
             } 
             throw {
