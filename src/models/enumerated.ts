@@ -99,15 +99,20 @@ enum PresentationContainer {
   NET = "Net",
 }
 enum PresentationMethod {
-  DANGLING = "DANGLING",
   CHOPPED = "CHOPPED",
   FROEZEN = "FROEZEN",
   MASHED = "MASHED",
   DICED = "DICED",
-  ORIGINAL = "ORIGINAL",
+  WHOLE = "WHOLE",
+  BLENDED = "BLENDED",
+  PUZZLE = "PUZZLE",
 }
 enum PresentationLocation {
   SCATTER = "SCATTER",
+  DANGLING = "DANGLING",
+  ROOF = "ROOF",
+  BURIED = "BURIED",
+  IMPALED = "IMPALED",
 }
 enum AnimalGrowthState {
   TEST = "TEST",
