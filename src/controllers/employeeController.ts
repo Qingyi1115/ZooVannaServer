@@ -256,7 +256,23 @@ export const resetForgottenPasswordController = async (
   res: Response,
 ) => {
   try {
-    const {token, password} = req.body;
+    const {
+      token,
+      password
+    } = req.body;
+
+    if (
+      [
+        token,
+        password
+      ].includes(undefined)
+    ) {
+      console.log("Missing field(s): ", {
+        token,
+        password
+      });
+      return res.status(400).json({ error: "Missing information!" });
+    }
 
     let result = await setPassword(token, password);
     return res.status(200).json({employee: result});

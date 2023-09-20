@@ -29,6 +29,7 @@ const router = express.Router();
 
 // log in
 router.post("/login", login);
+router.put("resetForgottenPassword/:token", resetForgottenPasswordController); //Reset from the employee side using email
 
 router.use(authMiddleware);
 
@@ -39,7 +40,6 @@ router.put("/unsetAccountManager/:employeeId", unsetAccountManagerController);
 
 router.get("/getAllEmployees", getAllEmployeesController);
 router.put("/resetPassword/:employeeId", resetPasswordController ); //reset password by account manager (sent to employee's email)
-router.put("resetForgottenPassword/:token", resetForgottenPasswordController); //Reset from the employee side using email
 router.put("/disableEmployee/:employeeId", disableEmployeeAccountController);
 
 //Enable and disable role (can be Keeper, General Staff or Planning Staff)
