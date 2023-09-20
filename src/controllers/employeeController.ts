@@ -164,7 +164,10 @@ export const getAllEmployeesController = async (
     }
 
     const {includes } = req.body();
-    const[_includes] = [includes.includes("keeper"), includes.includes("generalStaff"), includes.includes("planningStaff")] 
+    const _includes : string[] = []
+    for (const role in ["keeper", "generalStaff", "planningStaff"]){
+      if (includes.includes(role)) _includes.push(role)
+    }
 
     let result = await getAllEmployees(_includes);
     return res.status(200).json({employees: result});
