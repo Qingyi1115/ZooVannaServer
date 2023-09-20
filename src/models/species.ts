@@ -7,6 +7,10 @@ import {
   BelongsToSetAssociationMixin,
   HasOneGetAssociationMixin,
   HasOneSetAssociationMixin,
+  HasManyGetAssociationsMixin,
+  HasManyAddAssociationMixin,
+  HasManySetAssociationsMixin,
+  HasManyRemoveAssociationMixin,
   CreationOptional,
 } from "Sequelize";
 import { conn } from "../db";
@@ -50,7 +54,8 @@ class Species extends Model<
   //--FK
   declare speciesDietNeed?: SpeciesDietNeed;
   declare speciesEnclosureNeed?: SpeciesEnclosureNeed;
-  declare physiologicalReferenceNorms?: PhysiologicalReferenceNorms;
+  // declare physiologicalReferenceNorms?: PhysiologicalReferenceNorms;
+  declare physiologicalReferenceNorms?: PhysiologicalReferenceNorms[];
 
   declare getSpeciesDietNeed: BelongsToGetAssociationMixin<SpeciesDietNeed>;
   declare setSpeciesDietNeed: BelongsToSetAssociationMixin<
@@ -69,8 +74,24 @@ class Species extends Model<
     number
   >;
 
-  declare getPhysiologicalReferenceNorms: BelongsToGetAssociationMixin<PhysiologicalReferenceNorms>;
-  declare setPhysiologicalReferenceNorms: BelongsToSetAssociationMixin<
+  // declare getPhysiologicalReferenceNorms: BelongsToGetAssociationMixin<PhysiologicalReferenceNorms>;
+  // declare setPhysiologicalReferenceNorms: BelongsToSetAssociationMixin<
+  //   PhysiologicalReferenceNorms,
+  //   number
+  // >;
+
+  declare getPhysiologicalRefNorm: HasManyGetAssociationsMixin<
+    PhysiologicalReferenceNorms[]
+  >;
+  declare addPhysiologicalRefNorm: HasManyAddAssociationMixin<
+    PhysiologicalReferenceNorms,
+    number
+  >;
+  declare setPhysiologicalRefNorm: HasManySetAssociationsMixin<
+    PhysiologicalReferenceNorms[],
+    number
+  >;
+  declare removePhysiologicalRefNorm: HasManyRemoveAssociationMixin<
     PhysiologicalReferenceNorms,
     number
   >;

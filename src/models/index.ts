@@ -17,6 +17,7 @@ import {
   ConservationStatus,
   Continent,
   GroupSexualDynamic,
+  AnimalGrowthStage,
 } from "./enumerated";
 import { ThirdParty } from "./thirdParty";
 import { AnimalClinic } from "./animalClinics";
@@ -101,15 +102,6 @@ export const createDatabase = async (options: any) => {
   Enclosure.belongsTo(
     Facility,
     addCascadeOptions({ foreignKey: "facilityId" }),
-  );
-
-  PhysiologicalReferenceNorms.hasMany(
-    Species,
-    addCascadeOptions({ foreignKey: "physiologicalRefId" }),
-  );
-  Species.belongsTo(
-    PhysiologicalReferenceNorms,
-    addCascadeOptions({ foreignKey: "physiologicalRefId" }),
   );
 
   InHouse.belongsToMany(GeneralStaff, {
@@ -201,14 +193,22 @@ export const createDatabase = async (options: any) => {
   Species.hasOne(SpeciesEnclosureNeed, {
     // foreignKey: "speciesEnclosureNeedId",
     onDelete: "CASCADE",
-    // foreignKey: {
-    //   allowNull: false,
-    // },
   });
-
   SpeciesEnclosureNeed.belongsTo(Species, {
     // foreignKey: "speciesId",
   });
+
+  // PhysiologicalReferenceNorms.hasMany(
+  //   Species,
+  //   addCascadeOptions({ foreignKey: "physiologicalRefId" }),
+  // );
+  // Species.belongsTo(
+  //   PhysiologicalReferenceNorms,
+  //   addCascadeOptions({ foreignKey: "physiologicalRefId" }),
+  // );
+
+  Species.hasMany(PhysiologicalReferenceNorms, { onDelete: "CASCADE" });
+  PhysiologicalReferenceNorms.belongsTo(Species);
 
   Species.hasMany(Animal, addCascadeOptions({ foreignKey: "speciesId" }));
   Animal.belongsTo(Species, addCascadeOptions({ foreignKey: "speciesId" }));
@@ -633,33 +633,7 @@ export const speciesSeed = async () => {
   } as any;
   let panda1 = await Species.create(panda1Template);
   console.log(panda1.toJSON());
-
-  //-----
-  // let pandaEnclosureTemplate = {
-  //   speciesCode: "speciesCode",
-  //   smallExhibitHeightRequired,
-  //   minLandAreaRequired,
-  //   minWaterAreaRequired,
-  //   acceptableTempMin,
-  //   acceptableTempMax,
-  //   acceptableHumidityMin,
-  //   acceptableHumidityMax,
-  //   recommendedStandOffBarrierDistMetres,
-  //   plantationCoveragePercentMin,
-  //   plantationCoveragePercentMax,
-  //   longGrassPercentMin,
-  //   longGrassPercentMax,
-  //   shortGrassPercentMin,
-  //   shortGrassPercentMax,
-  //   rockPercentMin,
-  //   rockPercentMax,
-  //   sandPercentMin,
-  //   sandPercentMax,
-  //   snowPercentMin,
-  //   snowPercentMax,
-  //   soilPercenMin,
-  //   soilPercenMax,
-  // } as any;
+  console.log("=======>>>");
   let panda1enclosure = await SpeciesService.createEnclosureNeeds(
     "SPE001",
     10,
@@ -685,5 +659,43 @@ export const speciesSeed = async () => {
     10,
     10,
   );
-  console.log(panda1.toJSON());
+  console.log(panda1enclosure.toJSON());
+
+  let panda1phy = await SpeciesService.createPhysiologicalReferenceNorms(
+    "SPE001",
+    100,
+    100,
+    100,
+    100,
+    100,
+    AnimalGrowthStage.INFANT,
+  );
+
+  let panda1phy2 = await SpeciesService.createPhysiologicalReferenceNorms(
+    "SPE001",
+    200,
+    200,
+    200,
+    200,
+    200,
+    AnimalGrowthStage.ADULT,
+  );
+
+  console.log(panda1phy.toJSON());
+
+  // let panda1phyTemplate = {
+  //   speciesCode: "SPE001",
+  //   sizeMaleCm: 100,
+  //   sizeFemaleCm: 100,
+  //   weightMaleKg: 100,
+  //   weightFemaleKg: 100,
+  //   ageToGrowthAge: 100,
+  //   growthStage: 100,
+  // } as any;
+  // let panda1phy = await PhysiologicalReferenceNorms.create(panda1phyTemplate);
+  // await(
+  //   await SpeciesService.getSpeciesByCode("SPE001", ""),
+  // ).addPhysiologicalRefNorm(panda1phy);
+
+  // console.log(panda1phy.toJSON());
 };

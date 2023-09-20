@@ -12,6 +12,11 @@ import {
   createSpeciesEnclosureNeeds,
   updateSpeciesEnclosureNeeds,
   deleteSpeciesEnclosureNeeds,
+  createPhysiologicalReferenceNorms,
+  getPhysiologicalReferenceNormsById,
+  getAllPhysiologicalReferenceNormsbySpeciesCode,
+  updatePhysiologicalReferenceNorms,
+  deletePhysiologicalReferenceNorms,
 } from "../controllers/speciesController";
 
 const router = express.Router();
@@ -38,6 +43,31 @@ router.put("/updateEnclosureNeeds", updateSpeciesEnclosureNeeds);
 router.delete(
   "/deleteEnclosureNeeds/:speciesEnclosureNeedId",
   deleteSpeciesEnclosureNeeds,
+);
+
+//species Physiological Reference Norms
+router.get(
+  "/getAllPhysiologicalReferenceNormsByCode/:speciesCode",
+  getAllPhysiologicalReferenceNormsbySpeciesCode,
+);
+
+router.get(
+  "/getPhysiologicalReferenceNormsById/:physiologicalRefId",
+  getPhysiologicalReferenceNormsById,
+);
+
+router.post(
+  "/createPhysiologicalReferenceNorms",
+  createPhysiologicalReferenceNorms,
+);
+
+router.put(
+  "/updatePhysiologicalReferenceNorms",
+  updatePhysiologicalReferenceNorms,
+);
+router.delete(
+  "/deletePhysiologicalReferenceNorms/:physiologicalRefId",
+  deletePhysiologicalReferenceNorms,
 );
 
 export default router;
