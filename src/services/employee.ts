@@ -20,6 +20,7 @@ export async function createNewEmployee(
   employeeEmail: string,
   employeePhoneNumber: string,
   employeeEducation: string,
+  employeeBirthDate: Date,
   isAccountManager: Boolean,
   role: string,
   roleJson: any,
@@ -39,6 +40,7 @@ export async function createNewEmployee(
     employeeDoorAccessCode: await Employee.generateNewDoorAccessCode(),
     employeeEducation: employeeEducation,
     isAccountManager: isAccountManager,
+    employeeBirthDate: employeeBirthDate,
   };
   employee_details[role] = roleJson;
   try {
@@ -60,8 +62,11 @@ export async function resetPassword(
     where: {employeeId: employeeId},
   });
   
+  console.log("it is here");
+  console.log(result);
   if(result) {
     if(result.dateOfResignation == null) {
+      console.log("hel");
       const token = uuidv4();
 
       const resetTokens: any = {
@@ -73,6 +78,7 @@ export async function resetPassword(
 
       try {
         await Token.create(resetTokens);
+        console.log("here??");
 
         const transporter = nodemailer.createTransport({
           service: 'gmail',
@@ -87,14 +93,16 @@ export async function resetPassword(
           to: result.employeeEmail,
           subject: 'Reset Password',
           text: 'Click the link below to reset your password: ',
-          html: '<a href="http://localhost:3000/employee/resetForgottenPassword/${token}">Reset Password</a>',
+          html: '<a href="http://localhost:5173/employeeAccount/resetForgottenPassword/${token}">Reset Password</a>',
         };
 
         transporter.sendMail(mailOptions, (error, info) => {
           if (error) {
             console.error('Error sending email:', error);
+            console.log("here?");
           } else {
             console.log('Email sent:', info.response);
+            console.log("hereee");
           }
         });
       }
@@ -211,7 +219,7 @@ export async function unsetAsAccountManager(
 }
 
 export async function getAllEmployees(includes: any): Promise<Employee[]> {
-  return Employee.findAll({
+  return await Employee.findAll({
     order: [
       [literal('dateOfResignation IS NULL'), "ASC"],
       ["dateOfResignation", "DESC"],
