@@ -134,29 +134,60 @@ export async function deleteCustomer(req: Request, res: Response) {
 }
 
 //update customer
-// export async function updateCustomer(req: Request, res: Response) {
-//   try {
-//     const { speciesCode, educationalDescription } = req.body;
+export async function updateCustomer(req: Request, res: Response) {
+  try {
+    const {
+      customerId,
+      firstName,
+      lastName,
+      email,
+      contactNo,
+      birthday,
+      address,
+      nationality,
+    } = req.body;
 
-//     if ([speciesCode, educationalDescription].includes(undefined)) {
-//       console.log("Missing field(s): ", {
-//         speciesCode,
-//         educationalDescription,
-//       });
-//       return res.status(400).json({ error: "Missing information!" });
-//     }
+    if (
+      [
+        customerId,
+        firstName,
+        lastName,
+        email,
+        contactNo,
+        birthday,
+        address,
+        nationality,
+      ].includes(undefined)
+    ) {
+      console.log("Missing field(s): ", {
+        customerId,
+        firstName,
+        lastName,
+        email,
+        contactNo,
+        birthday,
+        address,
+        nationality,
+      });
+      return res.status(400).json({ error: "Missing information!" });
+    }
 
-//     // have to pass in req for image uploading
-//     let species = await SpeciesService.updateSpeciesEduDesc(
-//       speciesCode,
-//       educationalDescription,
-//     );
+    let customer = await CustomerService.updateCustomer(
+      customerId,
+      firstName,
+      lastName,
+      email,
+      contactNo,
+      birthday,
+      address,
+      nationality,
+    );
 
-//     return res.status(200).json({ species });
-//   } catch (error: any) {
-//     res.status(400).json({ error: error.message });
-//   }
-// }
+    return res.status(200).json({ customer });
+  } catch (error: any) {
+    res.status(400).json({ error: error.message });
+  }
+}
 
 export const retrieveCustomerAccountDetails = async (
   req: Request,

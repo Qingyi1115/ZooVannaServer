@@ -82,6 +82,7 @@ export async function deleteCustomer(customerId: number) {
 //update password not included here
 //further improvement: can try using customer id to update instead of email
 export async function updateCustomer(
+  customerId: number,
   firstName: string,
   lastName: string,
   email: string,
@@ -91,6 +92,7 @@ export async function updateCustomer(
   nationality: Country,
 ) {
   let updatedCustomer = {
+    customerId: customerId,
     firstName: firstName,
     lastName: lastName,
     email: email,
@@ -104,7 +106,7 @@ export async function updateCustomer(
 
   try {
     let customer = await Customer.update(updatedCustomer, {
-      where: { email: email },
+      where: { customerId: customerId },
     });
   } catch (error: any) {
     throw validationErrorHandler(error);
@@ -112,12 +114,12 @@ export async function updateCustomer(
 }
 
 export async function updatePassword(
-  email: string,
+  customerId: number,
   oldPassword: string,
   newPassword: string,
 ) {
   let customer = await Customer.findOne({
-    where: { email: email },
+    where: { customerId: customerId },
   });
   if (!customer) {
     throw { error: "No customer found" };
@@ -134,7 +136,7 @@ export async function updatePassword(
 
   try {
     await Customer.update(customer, {
-      where: { customerId: customer.customerId }, //might have error here
+      where: { customerId: customerId }, //might have error here
     });
   } catch (error: any) {
     throw validationErrorHandler(error);
