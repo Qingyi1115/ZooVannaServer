@@ -119,6 +119,9 @@ class Employee extends Model<
     // Similar idea albert more useful when compared to java's toString
     return {
       ...this.get(),
+      keeper: this.keeper?.toJSON(),
+      planningStaff: this.planningStaff?.toJSON(),
+      generalStaff: this.generalStaff?.toJSON(),
       employeePasswordHash: undefined,
       employeeSalt: undefined,
     };

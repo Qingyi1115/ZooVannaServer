@@ -2,18 +2,21 @@ import { Request } from "express";
 import { validationErrorHandler } from "../helpers/errorHandler";
 import { Species } from "../models/species";
 
-export async function getAllSpecies() {
+export async function getAllSpecies(includes: string[] = []) {
     try {
-        const allSpecies = await Species.findAll();
+        const allSpecies = await Species.findAll({
+            include:includes
+        });
         return allSpecies;
     } catch (error: any) {
         throw validationErrorHandler(error);
     }
 }
 
-export async function getSpeciesByCode(speciesCode: string) {
+export async function getSpeciesByCode(speciesCode: string, includes: string[] = []) {
     let result = await Species.findOne({
         where: { speciesCode: speciesCode },
+        include:includes
     });
     if (result) {
         return result;

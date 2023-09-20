@@ -21,11 +21,12 @@ export const login = async (req: Request, res: Response) => {
   try {
     const { email, password } = req.body;
     if (email && password) {
-      if (!(await employeeLogin(email, password))) {
+      const employeeData = await employeeLogin(email, password);
+      if (!employeeData) {
         return res.status(403).json({ error: "Invalid credentials!" });
       }
       const token = createToken(email);
-      res.status(200).json({ email, token });
+      return res.status(200).json({ token, employeeData: employeeData.toJSON() });
     }
   } catch (error: any) {
     res.status(400).json({ error: error.message });
@@ -219,8 +220,12 @@ export const resetPasswordController = async (
 
     const {employeeId} = req.params;
 
-    await resetPassword(Number(employeeId));
-    return res.status(200).json({message: "Email for reset password has been sent"});
+    resetPassword(Number(employeeId), (error:string) =>{
+      res.status(200).json({ message: "Failed to send email!\n" + error });
+    }, () =>{
+      res.status(200).json({message: "Email for reset password has been sent"});
+    }
+    );
   }
   catch (error: any) {
     return res.status(400).json({error: error.message});
@@ -256,7 +261,23 @@ export const resetForgottenPasswordController = async (
   res: Response,
 ) => {
   try {
-    const {token, password} = req.body;
+    const {
+      token,
+      password
+    } = req.body;
+
+    if (
+      [
+        token,
+        password
+      ].includes(undefined)
+    ) {
+      console.log("Missing field(s): ", {
+        token,
+        password
+      });
+      return res.status(400).json({ error: "Missing information!" });
+    }
 
     let result = await setPassword(token, password);
     return res.status(200).json({employee: result});

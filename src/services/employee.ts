@@ -12,6 +12,7 @@ import * as nodemailer from 'nodemailer';
 import { v4 as uuidv4 } from 'uuid';
 import { PlanningStaff } from "../models/planningStaff";
 import { GeneralStaff } from "../models/generalStaff";
+import { Request, Response } from "express";
 
 //Account Manager
 export async function createNewEmployee(
@@ -56,7 +57,9 @@ export async function createNewEmployee(
 }
 
 export async function resetPassword(
-  employeeId: CreationOptional<number>
+  employeeId: CreationOptional<number>,
+  err:Function,
+  success:Function
 ) {
   let result = await Employee.findOne({
     where: {employeeId: employeeId},
@@ -93,16 +96,16 @@ export async function resetPassword(
           to: result.employeeEmail,
           subject: 'Reset Password',
           text: 'Click the link below to reset your password: ',
-          html: '<a href="http://localhost:5173/employeeAccount/resetForgottenPassword/${token}">Reset Password</a>',
+          html: `<a href="http://localhost:5173/employeeAccount/resetForgottenPassword/${token}">Reset Password</a>`,
         };
 
         transporter.sendMail(mailOptions, (error, info) => {
           if (error) {
-            console.error('Error sending email:', error);
-            console.log("here?");
+            console.log({ message: "Failed to send email!\n" + error });
+            err(error);
           } else {
             console.log('Email sent:', info.response);
-            console.log("hereee");
+            success();
           }
         });
       }
@@ -129,9 +132,13 @@ export async function findEmployeeByEmail(employeeEmail: string) {
   throw { error: "Invalid email!" };
 }
 
-export async function findEmployeeById(employeeId: CreationOptional<number>) {
+export async function findEmployeeById(
+  employeeId: CreationOptional<number>,
+  includes: string[] = []
+  ) {
   let result = await Employee.findOne({
     where: { employeeId: employeeId},
+    include: includes
   });
 
   if(result) {
@@ -143,11 +150,14 @@ export async function findEmployeeById(employeeId: CreationOptional<number>) {
 export async function employeeLogin(
   employeeEmail: string,
   password: string,
-): Promise<boolean> {
-  let result = await Employee.findOne({ where: {employeeEmail: employeeEmail}});
+): Promise<Employee> {
+  let result = await Employee.findOne({ 
+    where: {employeeEmail: employeeEmail},
+    include: ["generalStaff", "keeper", "planningStaff"]
+  });
   if(result) {
-    if(result.dateOfResignation == null) {
-      return result.testPassword(password);
+    if(result.dateOfResignation == null && result.testPassword(password)) {
+      return result;
     }
     throw {
       error: "Your account has been disabled!",
@@ -157,15 +167,6 @@ export async function employeeLogin(
     error: "Employee does not exist",
   };
 }
-
-/*export async function employeeLogin(
-  employeeEmail: string,
-  password: string,
-): Promise<boolean> {
-  return !!(
-    await Employee.findOne({ where: { employeeEmail: employeeEmail } })
-  )?.testPassword(password);
-}*/
 
 export async function setAsAccountManager(
   employeeId: CreationOptional<number>
@@ -218,8 +219,8 @@ export async function unsetAsAccountManager(
   };
 }
 
-export async function getAllEmployees(includes: any): Promise<Employee[]> {
-  return await Employee.findAll({
+export async function getAllEmployees(includes: string[] = []): Promise<Employee[]> {
+  return Employee.findAll({
     order: [
       [literal('dateOfResignation IS NULL'), "ASC"],
       ["dateOfResignation", "DESC"],
