@@ -15,7 +15,10 @@ export async function getAllSpecies(includes: string[]) {
   }
 }
 
-export async function getSpeciesByCode(speciesCode: string, includes: string[]) {
+export async function getSpeciesByCode(
+  speciesCode: string,
+  includes: string[],
+) {
   let result = await Species.findOne({
     where: { speciesCode: speciesCode },
     include: includes,
@@ -469,7 +472,7 @@ export async function createDietNeed(
   try {
     let newDietNeedEntry = await SpeciesDietNeed.create(newDietNeed);
 
-    newDietNeedEntry.setSpecies(await getSpeciesByCode(speciesCode, ""));
+    newDietNeedEntry.setSpecies(await getSpeciesByCode(speciesCode, []));
 
     return newDietNeedEntry;
   } catch (error: any) {
