@@ -5,6 +5,7 @@ import {
   login,
   // loginWithUsername,
   createCustomer,
+  deleteCustomer,
   retrieveCustomerAccountDetails,
   updateCustomerAccount,
   retrieveAllCustomerDetails,
@@ -21,6 +22,7 @@ router.post("/login", login);
 
 router.use(authMiddleware);
 
+router.delete("/deleteCustomer/:customerId", deleteCustomer);
 router.put("/retrieveCustomerAccountDetails", retrieveCustomerAccountDetails);
 router.put("/updateCustomerAccount", updateCustomerAccount);
 router.put("/retrieveAllCustomerDetails", retrieveAllCustomerDetails);

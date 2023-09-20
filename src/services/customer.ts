@@ -67,6 +67,7 @@ export async function customerLogin(
   );
 }
 
+//might need to disable instead of delete customer later when coding Order onwards
 export async function deleteCustomer(customerId: number) {
   let result = await Customer.destroy({
     where: { customerId: customerId },

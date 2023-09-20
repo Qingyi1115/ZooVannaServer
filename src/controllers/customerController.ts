@@ -86,12 +86,41 @@ export async function deleteCustomer(req: Request, res: Response) {
 
   try {
     const customerIdInt = parseInt(customerId);
-    const customer = await CustomerService.deleteCustomer(customerIdInt);
-    return res.status(200).json(customer);
+    if (!isNaN(customerIdInt)) {
+      const customer = await CustomerService.deleteCustomer(customerIdInt);
+      return res.status(200).json(customer);
+    } else {
+      return res.status(400).json({ error: "Invalid customer ID!" });
+    }
   } catch (error: any) {
     res.status(400).json({ error: error.message });
   }
 }
+
+//update customer
+// export async function updateCustomer(req: Request, res: Response) {
+//   try {
+//     const { speciesCode, educationalDescription } = req.body;
+
+//     if ([speciesCode, educationalDescription].includes(undefined)) {
+//       console.log("Missing field(s): ", {
+//         speciesCode,
+//         educationalDescription,
+//       });
+//       return res.status(400).json({ error: "Missing information!" });
+//     }
+
+//     // have to pass in req for image uploading
+//     let species = await SpeciesService.updateSpeciesEduDesc(
+//       speciesCode,
+//       educationalDescription,
+//     );
+
+//     return res.status(200).json({ species });
+//   } catch (error: any) {
+//     res.status(400).json({ error: error.message });
+//   }
+// }
 
 export const retrieveCustomerAccountDetails = async (
   req: Request,
