@@ -5,9 +5,13 @@ import { handleFileUpload } from "../helpers/multerProcessFile";
 export async function getAllSpecies(req: Request, res: Response) {
   const { includes = "" } = req.body;
 
-  const _includes : string[] = []
-  for (const role in ["speciesDietNeed", "speciesEnclosureNeed", "physiologicalReferenceNorms"]){
-    if (includes.includes(role)) _includes.push(role)
+  const _includes: string[] = [];
+  for (const role in [
+    "speciesDietNeed",
+    "speciesEnclosureNeed",
+    "physiologicalReferenceNorms",
+  ]) {
+    if (includes.includes(role)) _includes.push(role);
   }
 
   try {
@@ -22,9 +26,13 @@ export async function getSpeciesByCode(req: Request, res: Response) {
   const { speciesCode } = req.params;
   const { includes = "" } = req.body;
 
-  const _includes : string[] = []
-  for (const role in ["speciesDietNeed", "speciesEnclosureNeed", "physiologicalReferenceNorms"]){
-    if (includes.includes(role)) _includes.push(role)
+  const _includes: string[] = [];
+  for (const role in [
+    "speciesDietNeed",
+    "speciesEnclosureNeed",
+    "physiologicalReferenceNorms",
+  ]) {
+    if (includes.includes(role)) _includes.push(role);
   }
 
   if (speciesCode == undefined) {
