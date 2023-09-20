@@ -131,11 +131,15 @@ export async function updatePassword(
 
   //generate new salt for added security
   const newSalt = (Math.random() + 1).toString(36).substring(7);
-  customer.salt = newSalt;
-  customer.passwordHash = hash(newPassword + newSalt);
+
+  let updatedCustomer = {
+    customerId: customerId,
+    salt: newSalt,
+    passwordHash: hash(newPassword + newSalt),
+  } as any;
 
   try {
-    await Customer.update(customer, {
+    await Customer.update(updatedCustomer, {
       where: { customerId: customerId }, //might have error here
     });
   } catch (error: any) {

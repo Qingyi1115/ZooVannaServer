@@ -135,21 +135,53 @@ export async function deleteCustomer(req: Request, res: Response) {
 
 //update customer
 export async function updateCustomer(req: Request, res: Response) {
+  const { customerId } = req.params;
+
+  if (customerId == undefined) {
+    console.log("Missing field(s): ", {
+      customerId,
+    });
+    return res.status(400).json({ error: "Missing customer ID!" });
+  }
+
   try {
-    const {
-      customerId,
-      firstName,
-      lastName,
-      email,
-      contactNo,
-      birthday,
-      address,
-      nationality,
-    } = req.body;
+    const customerIdInt = parseInt(customerId);
+    if (!isNaN(customerIdInt)) {
+      const {
+        firstName,
+        lastName,
+        email,
+        contactNo,
+        birthday,
+        address,
+        nationality,
+      } = req.body;
 
-    if (
-      [
-        customerId,
+      if (
+        [
+          firstName,
+          lastName,
+          email,
+          contactNo,
+          birthday,
+          address,
+          nationality,
+        ].includes(undefined)
+      ) {
+        console.log("Missing field(s): ", {
+          firstName,
+          lastName,
+          email,
+          contactNo,
+          birthday,
+          address,
+          nationality,
+        });
+        return res.status(400).json({ error: "Missing information!" });
+      }
+
+      let customer = await CustomerService.updateCustomer(
+        customerIdInt,
         firstName,
         lastName,
         email,
@@ -157,44 +189,52 @@ export async function updateCustomer(req: Request, res: Response) {
         birthday,
         address,
         nationality,
-      ].includes(undefined)
-    ) {
-      console.log("Missing field(s): ", {
-        customerId,
-        firstName,
-        lastName,
-        email,
-        contactNo,
-        birthday,
-        address,
-        nationality,
-      });
-      return res.status(400).json({ error: "Missing information!" });
+      );
+
+      return res.status(200).json({ customer });
     }
-
-    let customer = await CustomerService.updateCustomer(
-      customerId,
-      firstName,
-      lastName,
-      email,
-      contactNo,
-      birthday,
-      address,
-      nationality,
-    );
-
-    return res.status(200).json({ customer });
   } catch (error: any) {
     res.status(400).json({ error: error.message });
   }
 }
 
-export const retrieveCustomerAccountDetails = async (
-  req: Request,
-  res: Response,
-) => {};
-export const updateCustomerAccount = async (req: Request, res: Response) => {};
-export const retrieveAllCustomerDetails = async (
-  req: Request,
-  res: Response,
-) => {};
+//update customer PASSWORD
+
+export async function updatePassword(req: Request, res: Response) {
+  const { customerId } = req.params;
+
+  if (customerId == undefined) {
+    console.log("Missing field(s): ", {
+      customerId,
+    });
+    console.log("missing customer id");
+    return res.status(400).json({ error: "Missing customer ID!" });
+  }
+
+  try {
+    const customerIdInt = parseInt(customerId);
+    if (!isNaN(customerIdInt)) {
+      const { oldPassword, newPassword } = req.body;
+
+      if ([oldPassword, newPassword].includes(undefined)) {
+        console.log("Missing field(s): ", {
+          oldPassword,
+          newPassword,
+        });
+        console.log("password is empty");
+        return res.status(400).json({ error: "Please enter password!" });
+      }
+
+      let customer = await CustomerService.updatePassword(
+        customerIdInt,
+        oldPassword,
+        newPassword,
+      );
+      console.log("update success");
+      return res.status(200).json({ customer });
+    }
+  } catch (error: any) {
+    console.log("last error");
+    res.status(400).json({ error: "boo" });
+  }
+}

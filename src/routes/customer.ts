@@ -8,6 +8,7 @@ import {
   deleteCustomer,
   getCustomer,
   updateCustomer,
+  updatePassword,
 } from "../controllers/customerController";
 import { authMiddleware } from "../middlewares/authMiddleware";
 
@@ -24,5 +25,5 @@ router.use(authMiddleware);
 router.delete("/deleteCustomer/:customerId", deleteCustomer);
 router.get("/getCustomer/:customerId", getCustomer);
 router.put("/updateCustomer/:customerId", updateCustomer);
-
+router.put("/updatePassword/:customerId", updatePassword);
 export default router;
