@@ -12,7 +12,7 @@ import {
   CreationOptional,
 } from "Sequelize";
 import { conn } from "../db";
-import { AnimalGrowthStage, GrowthStage } from "./enumerated";
+import { AnimalGrowthStage } from "./enumerated";
 import { Species } from "./species";
 
 class PhysiologicalReferenceNorms extends Model<

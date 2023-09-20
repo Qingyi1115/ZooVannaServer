@@ -89,13 +89,25 @@ enum GroupSexualDynamic {
 }
 
 enum PresentationContainer {
-  TEST = "TEST",
+  STAINLESS_STEEL_BOWL = "Stainless Steel Bowls",
+  PLASTIC_DISH = "Plastic Feeding Dishes",
+  SILICONE_DISH = "Silicone Dishes",
+  MESH_BAG = "Mesh Bags",
+  FREEZE_RESISTANT_CONTAINER = "Freeze-Resistant Containers",
+  AUTOMATIC_FEEDER = "Automatic Feeders",
+  HANGING_FEEDERS = "Hanging Feeder",
+  NET = "Net",
 }
 enum PresentationMethod {
-  TEST = "TEST",
+  DANGLING = "DANGLING",
+  CHOPPED = "CHOPPED",
+  FROEZEN = "FROEZEN",
+  MASHED = "MASHED",
+  DICED = "DICED",
+  ORIGINAL = "ORIGINAL",
 }
 enum PresentationLocation {
-  TEST = "TEST",
+  SCATTER = "SCATTER",
 }
 enum AnimalGrowthState {
   TEST = "TEST",
@@ -463,12 +475,6 @@ enum HubStatus {
   CONNECTED = "CONNECTED",
 }
 
-enum GrowthStage {
-  APE = "APE",
-  HUMAN = "HUMAN",
-  DEGEN = "DEGEN",
-}
-
 export {
   KeeperType,
   PlannerType,
@@ -500,5 +506,4 @@ export {
   OrderStatus,
   EnclosureStatus,
   HubStatus,
-  GrowthStage,
 };
