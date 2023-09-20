@@ -116,6 +116,9 @@ class Employee extends Model<
   public toJSON() {
     return {
       ...this.get(),
+      keeper: this.keeper?.toJSON(),
+      planningStaff: this.planningStaff?.toJSON(),
+      generalStaff: this.generalStaff?.toJSON(),
       employeePasswordHash: undefined,
       employeeSalt: undefined,
     };

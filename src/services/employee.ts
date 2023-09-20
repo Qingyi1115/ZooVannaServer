@@ -121,9 +121,13 @@ export async function findEmployeeByEmail(employeeEmail: string) {
   throw { error: "Invalid email!" };
 }
 
-export async function findEmployeeById(employeeId: CreationOptional<number>) {
+export async function findEmployeeById(
+  employeeId: CreationOptional<number>,
+  includes: string[] = []
+  ) {
   let result = await Employee.findOne({
     where: { employeeId: employeeId},
+    include: includes
   });
 
   if(result) {
@@ -135,11 +139,14 @@ export async function findEmployeeById(employeeId: CreationOptional<number>) {
 export async function employeeLogin(
   employeeEmail: string,
   password: string,
-): Promise<boolean> {
-  let result = await Employee.findOne({ where: {employeeEmail: employeeEmail}});
+): Promise<Employee> {
+  let result = await Employee.findOne({ 
+    where: {employeeEmail: employeeEmail},
+    include: ["generalStaff", "keeper", "planningStaff"]
+  });
   if(result) {
-    if(result.dateOfResignation == null) {
-      return result.testPassword(password);
+    if(result.dateOfResignation == null && result.testPassword(password)) {
+      return result;
     }
     throw {
       error: "Your account has been disabled!",
@@ -149,15 +156,6 @@ export async function employeeLogin(
     error: "Employee does not exist",
   };
 }
-
-/*export async function employeeLogin(
-  employeeEmail: string,
-  password: string,
-): Promise<boolean> {
-  return !!(
-    await Employee.findOne({ where: { employeeEmail: employeeEmail } })
-  )?.testPassword(password);
-}*/
 
 export async function setAsAccountManager(
   employeeId: CreationOptional<number>
@@ -210,7 +208,7 @@ export async function unsetAsAccountManager(
   };
 }
 
-export async function getAllEmployees(includes: any): Promise<Employee[]> {
+export async function getAllEmployees(includes: string[] = []): Promise<Employee[]> {
   return Employee.findAll({
     order: [
       [literal('dateOfResignation IS NULL'), "ASC"],

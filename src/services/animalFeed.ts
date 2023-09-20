@@ -23,18 +23,23 @@ export async function createNewAnimalFeed(
     }
 }
 
-export async function getAllAnimalFeed() {
+export async function getAllAnimalFeed(
+    includes: string[] = []
+) {
     try {
-        const allAnimalFeed = await AnimalFeed.findAll();
+        const allAnimalFeed = await AnimalFeed.findAll({
+            include:includes
+        });
         return allAnimalFeed;
     } catch (error: any) {
         throw validationErrorHandler(error);
     }
 }
 
-export async function getAnimalFeedByName(animalFeedName: string) {
+export async function getAnimalFeedByName(animalFeedName: string, includes: string[] = []) {
     let result = await AnimalFeed.findOne({
         where: { animalFeedName: animalFeedName },
+        include:includes
     });
     if (result) {
         return result;
