@@ -7,8 +7,11 @@ import * as SpeciesService from "../services/species";
 import { handleFileUpload } from "../helpers/multerProcessFile";
 
 export async function getAllSpecies(req: Request, res: Response) {
+    const { includes = "" } = req.body
+    const [_includes] = [includes.includes("speciesDietNeed"), includes.includes("speciesEnclosureNeed"), includes.includes("physiologicalReferenceNorms")]
+
     try {
-        const allSpecies = await SpeciesService.getAllSpecies();
+        const allSpecies = await SpeciesService.getAllSpecies(_includes);
         return res.status(200).json(allSpecies);
     } catch (error: any) {
         res.status(400).json({ error: error.message });
@@ -17,6 +20,8 @@ export async function getAllSpecies(req: Request, res: Response) {
 
 export async function getSpeciesByCode(req: Request, res: Response) {
     const { speciesCode } = req.params;
+    const { includes = "" } = req.body
+    const [_includes] = [includes.includes("speciesDietNeed"), includes.includes("speciesEnclosureNeed"), includes.includes("physiologicalReferenceNorms")]
 
     if (speciesCode == undefined) {
         console.log("Missing field(s): ", {
@@ -26,7 +31,7 @@ export async function getSpeciesByCode(req: Request, res: Response) {
     }
 
     try {
-        const species = await SpeciesService.getSpeciesByCode(speciesCode);
+        const species = await SpeciesService.getSpeciesByCode(speciesCode, _includes);
         return res.status(200).json(species);
     } catch (error: any) {
         res.status(400).json({ error: error.message });
@@ -300,273 +305,273 @@ export async function deleteSpeciesByCode(req: Request, res: Response) {
 }
 
 export async function getSpeciesEnclosureNeedsBySpeciesCode(
-  req: Request,
-  res: Response,
+    req: Request,
+    res: Response,
 ) {
-  const { speciesCode } = req.params;
-  if (speciesCode == undefined) {
-    console.log("Missing field(s): ", {
-      speciesCode,
-    });
-    return res.status(400).json({ error: "Missing information!" });
-  }
-  try {
-    const speciesEnclsoureNeeds =
-      await SpeciesService.getEnclosureNeedsByCode(speciesCode);
-    return res.status(200).json(speciesEnclsoureNeeds);
-  } catch (error: any) {
-    res.status(400).json({ error: error.message });
-  }
+    const { speciesCode } = req.params;
+    if (speciesCode == undefined) {
+        console.log("Missing field(s): ", {
+            speciesCode,
+        });
+        return res.status(400).json({ error: "Missing information!" });
+    }
+    try {
+        const speciesEnclsoureNeeds =
+            await SpeciesService.getEnclosureNeedsByCode(speciesCode);
+        return res.status(200).json(speciesEnclsoureNeeds);
+    } catch (error: any) {
+        res.status(400).json({ error: error.message });
+    }
 }
 
 export async function createSpeciesEnclosureNeeds(req: Request, res: Response) {
-  try {
-    const {
-      speciesCode,
-      smallExhibitHeightRequired,
-      minLandAreaRequired,
-      minWaterAreaRequired,
-      acceptableTempMin,
-      acceptableTempMax,
-      acceptableHumidityMin,
-      acceptableHumidityMax,
-      recommendedStandOffBarrierDistMetres,
-      plantationCoveragePercentMin,
-      plantationCoveragePercentMax,
-      longGrassPercentMin,
-      longGrassPercentMax,
-      shortGrassPercentMin,
-      shortGrassPercentMax,
-      rockPercentMin,
-      rockPercentMax,
-      sandPercentMin,
-      sandPercentMax,
-      snowPercentMin,
-      snowPercentMax,
-      soilPercenMin,
-      soilPercenMax,
-    } = req.body;
+    try {
+        const {
+            speciesCode,
+            smallExhibitHeightRequired,
+            minLandAreaRequired,
+            minWaterAreaRequired,
+            acceptableTempMin,
+            acceptableTempMax,
+            acceptableHumidityMin,
+            acceptableHumidityMax,
+            recommendedStandOffBarrierDistMetres,
+            plantationCoveragePercentMin,
+            plantationCoveragePercentMax,
+            longGrassPercentMin,
+            longGrassPercentMax,
+            shortGrassPercentMin,
+            shortGrassPercentMax,
+            rockPercentMin,
+            rockPercentMax,
+            sandPercentMin,
+            sandPercentMax,
+            snowPercentMin,
+            snowPercentMax,
+            soilPercenMin,
+            soilPercenMax,
+        } = req.body;
 
-    if (
-      [
-        speciesCode,
-        smallExhibitHeightRequired,
-        minLandAreaRequired,
-        minWaterAreaRequired,
-        acceptableTempMin,
-        acceptableTempMax,
-        acceptableHumidityMin,
-        acceptableHumidityMax,
-        recommendedStandOffBarrierDistMetres,
-        plantationCoveragePercentMin,
-        plantationCoveragePercentMax,
-        longGrassPercentMin,
-        longGrassPercentMax,
-        shortGrassPercentMin,
-        shortGrassPercentMax,
-        rockPercentMin,
-        rockPercentMax,
-        sandPercentMin,
-        sandPercentMax,
-        snowPercentMin,
-        snowPercentMax,
-        soilPercenMin,
-        soilPercenMax,
-      ].includes(undefined)
-    ) {
-      console.log("Missing field(s): ", {
-        speciesCode,
-        smallExhibitHeightRequired,
-        minLandAreaRequired,
-        minWaterAreaRequired,
-        acceptableTempMin,
-        acceptableTempMax,
-        acceptableHumidityMin,
-        acceptableHumidityMax,
-        recommendedStandOffBarrierDistMetres,
-        plantationCoveragePercentMin,
-        plantationCoveragePercentMax,
-        longGrassPercentMin,
-        longGrassPercentMax,
-        shortGrassPercentMin,
-        shortGrassPercentMax,
-        rockPercentMin,
-        rockPercentMax,
-        sandPercentMin,
-        sandPercentMax,
-        snowPercentMin,
-        snowPercentMax,
-        soilPercenMin,
-        soilPercenMax,
-      });
-      return res.status(400).json({ error: "Missing information!" });
+        if (
+            [
+                speciesCode,
+                smallExhibitHeightRequired,
+                minLandAreaRequired,
+                minWaterAreaRequired,
+                acceptableTempMin,
+                acceptableTempMax,
+                acceptableHumidityMin,
+                acceptableHumidityMax,
+                recommendedStandOffBarrierDistMetres,
+                plantationCoveragePercentMin,
+                plantationCoveragePercentMax,
+                longGrassPercentMin,
+                longGrassPercentMax,
+                shortGrassPercentMin,
+                shortGrassPercentMax,
+                rockPercentMin,
+                rockPercentMax,
+                sandPercentMin,
+                sandPercentMax,
+                snowPercentMin,
+                snowPercentMax,
+                soilPercenMin,
+                soilPercenMax,
+            ].includes(undefined)
+        ) {
+            console.log("Missing field(s): ", {
+                speciesCode,
+                smallExhibitHeightRequired,
+                minLandAreaRequired,
+                minWaterAreaRequired,
+                acceptableTempMin,
+                acceptableTempMax,
+                acceptableHumidityMin,
+                acceptableHumidityMax,
+                recommendedStandOffBarrierDistMetres,
+                plantationCoveragePercentMin,
+                plantationCoveragePercentMax,
+                longGrassPercentMin,
+                longGrassPercentMax,
+                shortGrassPercentMin,
+                shortGrassPercentMax,
+                rockPercentMin,
+                rockPercentMax,
+                sandPercentMin,
+                sandPercentMax,
+                snowPercentMin,
+                snowPercentMax,
+                soilPercenMin,
+                soilPercenMax,
+            });
+            return res.status(400).json({ error: "Missing information!" });
+        }
+
+        // have to pass in req for image uploading
+        let species = await SpeciesService.createEnclosureNeeds(
+            speciesCode,
+            smallExhibitHeightRequired,
+            minLandAreaRequired,
+            minWaterAreaRequired,
+            acceptableTempMin,
+            acceptableTempMax,
+            acceptableHumidityMin,
+            acceptableHumidityMax,
+            recommendedStandOffBarrierDistMetres,
+            plantationCoveragePercentMin,
+            plantationCoveragePercentMax,
+            longGrassPercentMin,
+            longGrassPercentMax,
+            shortGrassPercentMin,
+            shortGrassPercentMax,
+            rockPercentMin,
+            rockPercentMax,
+            sandPercentMin,
+            sandPercentMax,
+            snowPercentMin,
+            snowPercentMax,
+            soilPercenMin,
+            soilPercenMax,
+        );
+
+        return res.status(200).json({ species });
+    } catch (error: any) {
+        res.status(400).json({ error: error.message });
     }
-
-    // have to pass in req for image uploading
-    let species = await SpeciesService.createEnclosureNeeds(
-      speciesCode,
-      smallExhibitHeightRequired,
-      minLandAreaRequired,
-      minWaterAreaRequired,
-      acceptableTempMin,
-      acceptableTempMax,
-      acceptableHumidityMin,
-      acceptableHumidityMax,
-      recommendedStandOffBarrierDistMetres,
-      plantationCoveragePercentMin,
-      plantationCoveragePercentMax,
-      longGrassPercentMin,
-      longGrassPercentMax,
-      shortGrassPercentMin,
-      shortGrassPercentMax,
-      rockPercentMin,
-      rockPercentMax,
-      sandPercentMin,
-      sandPercentMax,
-      snowPercentMin,
-      snowPercentMax,
-      soilPercenMin,
-      soilPercenMax,
-    );
-
-    return res.status(200).json({ species });
-  } catch (error: any) {
-    res.status(400).json({ error: error.message });
-  }
 }
 
 export async function updateSpeciesEnclosureNeeds(req: Request, res: Response) {
-  try {
-    const {
-      speciesEnclosureNeedId,
-      smallExhibitHeightRequired,
-      minLandAreaRequired,
-      minWaterAreaRequired,
-      acceptableTempMin,
-      acceptableTempMax,
-      acceptableHumidityMin,
-      acceptableHumidityMax,
-      recommendedStandOffBarrierDistMetres,
-      plantationCoveragePercentMin,
-      plantationCoveragePercentMax,
-      longGrassPercentMin,
-      longGrassPercentMax,
-      shortGrassPercentMin,
-      shortGrassPercentMax,
-      rockPercentMin,
-      rockPercentMax,
-      sandPercentMin,
-      sandPercentMax,
-      snowPercentMin,
-      snowPercentMax,
-      soilPercenMin,
-      soilPercenMax,
-    } = req.body;
+    try {
+        const {
+            speciesEnclosureNeedId,
+            smallExhibitHeightRequired,
+            minLandAreaRequired,
+            minWaterAreaRequired,
+            acceptableTempMin,
+            acceptableTempMax,
+            acceptableHumidityMin,
+            acceptableHumidityMax,
+            recommendedStandOffBarrierDistMetres,
+            plantationCoveragePercentMin,
+            plantationCoveragePercentMax,
+            longGrassPercentMin,
+            longGrassPercentMax,
+            shortGrassPercentMin,
+            shortGrassPercentMax,
+            rockPercentMin,
+            rockPercentMax,
+            sandPercentMin,
+            sandPercentMax,
+            snowPercentMin,
+            snowPercentMax,
+            soilPercenMin,
+            soilPercenMax,
+        } = req.body;
 
-    if (
-      [
-        speciesEnclosureNeedId,
-        smallExhibitHeightRequired,
-        minLandAreaRequired,
-        minWaterAreaRequired,
-        acceptableTempMin,
-        acceptableTempMax,
-        acceptableHumidityMin,
-        acceptableHumidityMax,
-        recommendedStandOffBarrierDistMetres,
-        plantationCoveragePercentMin,
-        plantationCoveragePercentMax,
-        longGrassPercentMin,
-        longGrassPercentMax,
-        shortGrassPercentMin,
-        shortGrassPercentMax,
-        rockPercentMin,
-        rockPercentMax,
-        sandPercentMin,
-        sandPercentMax,
-        snowPercentMin,
-        snowPercentMax,
-        soilPercenMin,
-        soilPercenMax,
-      ].includes(undefined)
-    ) {
-      console.log("Missing field(s): ", {
-        speciesEnclosureNeedId,
-        smallExhibitHeightRequired,
-        minLandAreaRequired,
-        minWaterAreaRequired,
-        acceptableTempMin,
-        acceptableTempMax,
-        acceptableHumidityMin,
-        acceptableHumidityMax,
-        recommendedStandOffBarrierDistMetres,
-        plantationCoveragePercentMin,
-        plantationCoveragePercentMax,
-        longGrassPercentMin,
-        longGrassPercentMax,
-        shortGrassPercentMin,
-        shortGrassPercentMax,
-        rockPercentMin,
-        rockPercentMax,
-        sandPercentMin,
-        sandPercentMax,
-        snowPercentMin,
-        snowPercentMax,
-        soilPercenMin,
-        soilPercenMax,
-      });
-      return res.status(400).json({ error: "Missing information!" });
+        if (
+            [
+                speciesEnclosureNeedId,
+                smallExhibitHeightRequired,
+                minLandAreaRequired,
+                minWaterAreaRequired,
+                acceptableTempMin,
+                acceptableTempMax,
+                acceptableHumidityMin,
+                acceptableHumidityMax,
+                recommendedStandOffBarrierDistMetres,
+                plantationCoveragePercentMin,
+                plantationCoveragePercentMax,
+                longGrassPercentMin,
+                longGrassPercentMax,
+                shortGrassPercentMin,
+                shortGrassPercentMax,
+                rockPercentMin,
+                rockPercentMax,
+                sandPercentMin,
+                sandPercentMax,
+                snowPercentMin,
+                snowPercentMax,
+                soilPercenMin,
+                soilPercenMax,
+            ].includes(undefined)
+        ) {
+            console.log("Missing field(s): ", {
+                speciesEnclosureNeedId,
+                smallExhibitHeightRequired,
+                minLandAreaRequired,
+                minWaterAreaRequired,
+                acceptableTempMin,
+                acceptableTempMax,
+                acceptableHumidityMin,
+                acceptableHumidityMax,
+                recommendedStandOffBarrierDistMetres,
+                plantationCoveragePercentMin,
+                plantationCoveragePercentMax,
+                longGrassPercentMin,
+                longGrassPercentMax,
+                shortGrassPercentMin,
+                shortGrassPercentMax,
+                rockPercentMin,
+                rockPercentMax,
+                sandPercentMin,
+                sandPercentMax,
+                snowPercentMin,
+                snowPercentMax,
+                soilPercenMin,
+                soilPercenMax,
+            });
+            return res.status(400).json({ error: "Missing information!" });
+        }
+
+        // have to pass in req for image uploading
+        let speciesEnclosureNeeds = await SpeciesService.updateEnclosureNeeds(
+            speciesEnclosureNeedId,
+            smallExhibitHeightRequired,
+            minLandAreaRequired,
+            minWaterAreaRequired,
+            acceptableTempMin,
+            acceptableTempMax,
+            acceptableHumidityMin,
+            acceptableHumidityMax,
+            recommendedStandOffBarrierDistMetres,
+            plantationCoveragePercentMin,
+            plantationCoveragePercentMax,
+            longGrassPercentMin,
+            longGrassPercentMax,
+            shortGrassPercentMin,
+            shortGrassPercentMax,
+            rockPercentMin,
+            rockPercentMax,
+            sandPercentMin,
+            sandPercentMax,
+            snowPercentMin,
+            snowPercentMax,
+            soilPercenMin,
+            soilPercenMax,
+        );
+
+        return res.status(200).json({ speciesEnclosureNeeds });
+    } catch (error: any) {
+        res.status(400).json({ error: error.message });
     }
-
-    // have to pass in req for image uploading
-    let speciesEnclosureNeeds = await SpeciesService.updateEnclosureNeeds(
-      speciesEnclosureNeedId,
-      smallExhibitHeightRequired,
-      minLandAreaRequired,
-      minWaterAreaRequired,
-      acceptableTempMin,
-      acceptableTempMax,
-      acceptableHumidityMin,
-      acceptableHumidityMax,
-      recommendedStandOffBarrierDistMetres,
-      plantationCoveragePercentMin,
-      plantationCoveragePercentMax,
-      longGrassPercentMin,
-      longGrassPercentMax,
-      shortGrassPercentMin,
-      shortGrassPercentMax,
-      rockPercentMin,
-      rockPercentMax,
-      sandPercentMin,
-      sandPercentMax,
-      snowPercentMin,
-      snowPercentMax,
-      soilPercenMin,
-      soilPercenMax,
-    );
-
-    return res.status(200).json({ speciesEnclosureNeeds });
-  } catch (error: any) {
-    res.status(400).json({ error: error.message });
-  }
 }
 
 export async function deleteSpeciesEnclosureNeeds(req: Request, res: Response) {
-  const { speciesEnclosureNeedId } = req.params;
+    const { speciesEnclosureNeedId } = req.params;
 
-  if (speciesEnclosureNeedId == undefined) {
-    console.log("Missing field(s): ", {
-      speciesEnclosureNeedId,
-    });
-    return res.status(400).json({ error: "Missing information!" });
-  }
+    if (speciesEnclosureNeedId == undefined) {
+        console.log("Missing field(s): ", {
+            speciesEnclosureNeedId,
+        });
+        return res.status(400).json({ error: "Missing information!" });
+    }
 
-  try {
-    const species = await SpeciesService.deleteSpeciesEnclosureNeeds(
-      speciesEnclosureNeedId,
-    );
-    return res.status(200).json(species);
-  } catch (error: any) {
-    res.status(400).json({ error: error.message });
-  }
+    try {
+        const species = await SpeciesService.deleteSpeciesEnclosureNeeds(
+            speciesEnclosureNeedId,
+        );
+        return res.status(200).json(species);
+    } catch (error: any) {
+        res.status(400).json({ error: error.message });
+    }
 }
