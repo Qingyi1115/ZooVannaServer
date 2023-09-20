@@ -215,8 +215,12 @@ export const resetPasswordController = async (
 
     const {employeeId} = req.params;
 
-    await resetPassword(Number(employeeId));
-    return res.status(200).json({message: "Email for reset password has been sent"});
+    resetPassword(Number(employeeId), (error:string) =>{
+      res.status(200).json({ message: "Failed to send email!\n" + error });
+    }, () =>{
+      res.status(200).json({message: "Email for reset password has been sent"});
+    }
+    );
   }
   catch (error: any) {
     return res.status(400).json({error: error.message});

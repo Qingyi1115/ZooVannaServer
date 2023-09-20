@@ -12,6 +12,7 @@ import * as nodemailer from 'nodemailer';
 import { v4 as uuidv4 } from 'uuid';
 import { PlanningStaff } from "../models/planningStaff";
 import { GeneralStaff } from "../models/generalStaff";
+import { Request, Response } from "express";
 
 //Account Manager
 export async function createNewEmployee(
@@ -54,7 +55,9 @@ export async function createNewEmployee(
 }
 
 export async function resetPassword(
-  employeeId: CreationOptional<number>
+  employeeId: CreationOptional<number>,
+  err:Function,
+  success:Function
 ) {
   let result = await Employee.findOne({
     where: {employeeId: employeeId},
@@ -86,15 +89,17 @@ export async function resetPassword(
           from: process.env.EMAIL_USERNAME,
           to: result.employeeEmail,
           subject: 'Reset Password',
-          text: 'Click the link below to reset your password: ',
-          html: '<a href="http://localhost:3000/employee/resetForgottenPassword/${token}">Reset Password</a>',
+          html: '<h3>Click the link below to reset your password: </h3>' + 
+          `<a href="http://localhost:3000/api/employee/resetForgottenPassword/${token}">Reset Password</a>`,
         };
 
         transporter.sendMail(mailOptions, (error, info) => {
           if (error) {
-            console.error('Error sending email:', error);
+            console.log({ message: "Failed to send email!\n" + error });
+            err(error);
           } else {
             console.log('Email sent:', info.response);
+            success();
           }
         });
       }
