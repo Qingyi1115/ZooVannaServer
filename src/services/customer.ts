@@ -47,6 +47,17 @@ export async function findCustomerByEmail(email: string) {
   throw { error: "Invalid email!" };
 }
 
+//might have an error for param type
+export async function findCustomerByCustomerId(customerId: number) {
+  let result = await Customer.findOne({
+    where: { customerId: customerId },
+  });
+  if (result) {
+    return result;
+  }
+  throw { error: "Invalid email!" };
+}
+
 export async function customerLogin(
   email: string,
   password: string,
@@ -54,4 +65,56 @@ export async function customerLogin(
   return !!(await Customer.findOne({ where: { email: email } }))?.testPassword(
     password,
   );
+}
+
+export async function deleteCustomer(email: string) {
+  let result = await Customer.destroy({
+    where: { email: email },
+  });
+  if (result) {
+    return result;
+  }
+  throw { error: "Email not found!" };
+}
+
+//update customer
+//update password not included here
+//further improvement: can try using customer id to update instead of email
+export async function updateCustomer(
+  firstName: string,
+  lastName: string,
+  email: string,
+  contactNo: string,
+  birthday: Date,
+  address: string,
+  nationality: Country,
+) {
+  let updatedCustomer = {
+    firstName: firstName,
+    lastName: lastName,
+    email: email,
+    contactNo: contactNo,
+    birthday: birthday,
+    address: address,
+    nationality: nationality,
+  } as any;
+
+  console.log(updatedCustomer);
+
+  try {
+    let customer = await Customer.update(updatedCustomer, {
+      where: { email: email },
+    });
+  } catch (error: any) {
+    throw validationErrorHandler(error);
+  }
+}
+
+export async function getAllCustomers(includes: any) {
+  try {
+    const allCustomers = await Customer.findAll({ include: includes });
+    return allCustomers;
+  } catch (error: any) {
+    throw validationErrorHandler(error);
+  }
 }
