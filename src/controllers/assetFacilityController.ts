@@ -129,8 +129,11 @@ export async function getAllHubs(req: Request, res: Response) {
         .json({ error: "Access Denied! Operation managers only!" });
 
     const { includes } = req.body;
-    
-    const _includes = [includes.includes("sensors"), includes.includes("facility")]
+
+    const _includes : string[] = []
+    for (const role in ["sensors", "facility"]){
+      if (includes.includes(role)) _includes.push(role)
+    }
 
     let hubs : HubProcessor[] = await _getAllHubs(_includes);
 
@@ -158,7 +161,12 @@ export async function getAllSensors(req: Request, res: Response) {
         .json({ error: "Access Denied! Operation managers only!" });
 
     const { includes } = req.body;
-    const _includes = [includes.includes("hubProcessor"), includes.includes("sensorReading"), includes.includes("generalStaff")]
+
+    const _includes : string[] = []
+    for (const role in ["hubProcessor", "sensorReading", "generalStaff"]){
+      if (includes.includes(role)) _includes.push(role)
+    }
+  
     let sensors : Sensor[] = await _getAllSensors(_includes);
 
     sensors.forEach(sensor => sensor.toJSON())
