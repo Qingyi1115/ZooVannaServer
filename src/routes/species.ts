@@ -19,24 +19,24 @@ const router = express.Router();
 router.use(authMiddleware);
 
 //species basic
-router.get("/getallspecies", getAllSpecies);
-router.get("/getspecies/:speciesCode", getSpeciesByCode);
-router.post("/createnewspecies", createSpecies);
-router.put("/updatespecies", updateSpecies);
-router.delete("/deletespecies/:speciesCode", deleteSpeciesByCode);
+router.get("/getAllSpecies", getAllSpecies);
+router.get("/getSpecies/:speciesCode", getSpeciesByCode);
+router.post("/createNewSpecies", createSpecies);
+router.put("/updateSpecies", updateSpecies);
+router.delete("/deleteSpecies/:speciesCode", deleteSpeciesByCode);
 
 //species edu content
-router.put("/updatespeciesedu", updateSpeciesEduDesc);
+router.put("/updateSpeciesEdu", updateSpeciesEduDesc);
 
 //species enclosure requirements
 router.get(
-  "/getenclosureneeds/:speciesCode",
+  "/getEnclosureNeeds/:speciesCode",
   getSpeciesEnclosureNeedsBySpeciesCode,
 );
-router.post("/createenclosureneeds", createSpeciesEnclosureNeeds);
-router.put("/updateenclosureneeds", updateSpeciesEnclosureNeeds);
+router.post("/createEnclosureNeeds", createSpeciesEnclosureNeeds);
+router.put("/updateEnclosureNeeds", updateSpeciesEnclosureNeeds);
 router.delete(
-  "/deleteenclosureneeds/:speciesEnclosureNeedId",
+  "/deleteEnclosureNeeds/:speciesEnclosureNeedId",
   deleteSpeciesEnclosureNeeds,
 );
 
