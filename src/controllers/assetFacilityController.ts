@@ -470,26 +470,23 @@ export async function getAuthorizationForCamera(req: Request, res: Response) {
 //Asset functions
 export async function createNewAnimalFeed(req: Request, res: Response) {
   try {
-    const imageUrl = await handleFileUpload(
+    const animalFeedImageUrl = await handleFileUpload(
       req,
       process.env.IMG_URL_ROOT! + "animalFeed", //"D:/capstoneUploads/animalFeed",
     );
     const {
-      animalFeedName,
-      animalFeedImageUrl,
+      animalFeedName,     
       animalFeedCategory
     } = req.body;
 
     if (
       [
         animalFeedName,
-        animalFeedImageUrl,
         animalFeedCategory
       ].includes(undefined)
     ) {
       console.log("Missing field(s): ", {
         animalFeedName,
-        animalFeedImageUrl,
         animalFeedCategory
       });
       return res.status(400).json({ error: "Missing information!" });
@@ -503,6 +500,7 @@ export async function createNewAnimalFeed(req: Request, res: Response) {
 
     return res.status(200).json({ animalFeed: animalFeed.toJSON() });
   } catch (error: any) {
+    console.log(error);
     res.status(400).json({ error: error.message });
   }
 }
