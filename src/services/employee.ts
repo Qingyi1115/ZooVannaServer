@@ -50,6 +50,8 @@ export async function createNewEmployee(
         association: role,
       },
     });
+
+    await newEmployee.save();
     return [randomPassword, newEmployee.toJSON()];
   } catch (error: any) {
     throw validationErrorHandler(error);
@@ -80,7 +82,8 @@ export async function resetPassword(
       };
 
       try {
-        await Token.create(resetTokens);
+        let t = await Token.create(resetTokens);
+        t.save();
         console.log("here??");
 
         const transporter = nodemailer.createTransport({
@@ -220,6 +223,8 @@ export async function unsetAsAccountManager(
 }
 
 export async function getAllEmployees(includes: string[] = []): Promise<Employee[]> {
+  console.log('hereeeeee');
+  console.log(includes);
   return Employee.findAll({
     order: [
       [literal('dateOfResignation IS NULL'), "ASC"],
