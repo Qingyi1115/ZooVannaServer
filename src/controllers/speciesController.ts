@@ -1,18 +1,14 @@
 import { Request, Response } from "express";
-import { Species } from "models/species";
-
-import { createNewEmployee, findEmployeeByEmail } from "../services/employee";
 import * as SpeciesService from "../services/species";
-
 import { handleFileUpload } from "../helpers/multerProcessFile";
 
 export async function getAllSpecies(req: Request, res: Response) {
   const { includes = "" } = req.body;
-  const [_includes] = [
-    includes.includes("speciesDietNeed"),
-    includes.includes("speciesEnclosureNeed"),
-    includes.includes("physiologicalReferenceNorms"),
-  ];
+
+  const _includes : string[] = []
+  for (const role in ["speciesDietNeed", "speciesEnclosureNeed", "physiologicalReferenceNorms"]){
+    if (includes.includes(role)) _includes.push(role)
+  }
 
   try {
     const allSpecies = await SpeciesService.getAllSpecies(_includes);
@@ -25,11 +21,11 @@ export async function getAllSpecies(req: Request, res: Response) {
 export async function getSpeciesByCode(req: Request, res: Response) {
   const { speciesCode } = req.params;
   const { includes = "" } = req.body;
-  const [_includes] = [
-    includes.includes("speciesDietNeed"),
-    includes.includes("speciesEnclosureNeed"),
-    includes.includes("physiologicalReferenceNorms"),
-  ];
+
+  const _includes : string[] = []
+  for (const role in ["speciesDietNeed", "speciesEnclosureNeed", "physiologicalReferenceNorms"]){
+    if (includes.includes(role)) _includes.push(role)
+  }
 
   if (speciesCode == undefined) {
     console.log("Missing field(s): ", {

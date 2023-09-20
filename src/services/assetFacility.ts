@@ -33,10 +33,11 @@ export async function createNewFacility(
   }
 }
 
-export async function getFacilityById(facilityId: number) {
+export async function getFacilityById(facilityId: number, includes: string[] = []) {
   try {
     return Facility.findOne({
       where: { facilityId: facilityId },
+      include:includes
     });
   } catch (error: any) {
     throw validationErrorHandler(error);
@@ -45,7 +46,8 @@ export async function getFacilityById(facilityId: number) {
 
 export async function addHubProcessorByFacilityId(
   facilityId: number,
-  processorName: string
+  processorName: string,
+  includes: string[] = []
 ): Promise<HubProcessor> {
   try {
     const facility = await Facility.findOne({
@@ -66,7 +68,7 @@ export async function addHubProcessorByFacilityId(
   }
 }
 
-export async function _getAllHubs(includes: any): Promise<HubProcessor[]> {
+export async function _getAllHubs(includes: string[] = []): Promise<HubProcessor[]> {
   try {
     return HubProcessor.findAll({include:includes});
   } catch (error: any) {
@@ -74,7 +76,7 @@ export async function _getAllHubs(includes: any): Promise<HubProcessor[]> {
   }
 }
 
-export async function _getAllSensors(includes: any): Promise<Sensor[]> {
+export async function _getAllSensors(includes: string[] = []): Promise<Sensor[]> {
   try {
     return Sensor.findAll({include:includes});
   } catch (error: any) {

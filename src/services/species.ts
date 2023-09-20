@@ -6,7 +6,7 @@ import { PhysiologicalReferenceNorms } from "../models/physiologicalReferenceNor
 import { AnimalGrowthStage } from "../models/enumerated";
 import { SpeciesDietNeed } from "../models/speciesDietNeed";
 
-export async function getAllSpecies(includes: any) {
+export async function getAllSpecies(includes: string[]) {
   try {
     const allSpecies = await Species.findAll({ include: includes });
     return allSpecies;
@@ -15,7 +15,7 @@ export async function getAllSpecies(includes: any) {
   }
 }
 
-export async function getSpeciesByCode(speciesCode: string, includes: any) {
+export async function getSpeciesByCode(speciesCode: string, includes: string[]) {
   let result = await Species.findOne({
     where: { speciesCode: speciesCode },
     include: includes,
@@ -232,7 +232,7 @@ export async function createEnclosureNeeds(
   try {
     let speciesEncloure = await SpeciesEnclosureNeed.create(newEnclosureNeed);
     await (
-      await getSpeciesByCode(speciesCode, "")
+      await getSpeciesByCode(speciesCode, [])
     ).setSpeciesEnclosureNeed(speciesEncloure);
 
     return speciesEncloure;
@@ -362,7 +362,7 @@ export async function createPhysiologicalReferenceNorms(
     // ).addPhysiologicalRefNorm(newPhysiologicalRefNormEntry);
 
     newPhysiologicalRefNormEntry.setSpecies(
-      await getSpeciesByCode(speciesCode, ""),
+      await getSpeciesByCode(speciesCode, []),
     );
 
     return newPhysiologicalRefNormEntry;

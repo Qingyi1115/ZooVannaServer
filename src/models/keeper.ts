@@ -14,6 +14,7 @@ import { conn } from "../db";
 import { Employee } from "./employee";
 import { Enclosure } from "./enclosure";
 import { KeeperType, Specialization } from "./enumerated";
+import { Event } from "./event";
 
 class Keeper extends Model<
   InferAttributes<Keeper>,
@@ -53,7 +54,16 @@ class Keeper extends Model<
   //     // Similar idea albert more useful when compared to java's toString
   //     return {...this.get(), EmployeeEmployeeId: undefined}
   // }
+
+  public enable() {
+    this.isDisabled = false;
+  }
+
+  public disable() {
+    this.isDisabled = true;
+  }
 }
+
 
 Keeper.init(
   {
@@ -70,7 +80,8 @@ Keeper.init(
     isDisabled: {
       type: DataTypes.BOOLEAN,
       allowNull: false,
-    }
+      defaultValue: true,
+    },
   },
   {
     freezeTableName: true,
