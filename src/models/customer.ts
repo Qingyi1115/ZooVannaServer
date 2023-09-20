@@ -95,14 +95,14 @@ Customer.init(
       type: DataTypes.STRING,
       allowNull: false,
       validate: {
-        len: [2, Infinity], // At least 2 characters long
+        len: [2, 1000], // At least 2 characters long, less than longest name in the world (747 char) + buffer
       },
     },
     lastName: {
       type: DataTypes.STRING,
       allowNull: false,
       validate: {
-        len: [2, Infinity], // At least 2 characters long
+        len: [2, 1000], // At least 2 characters long, less than longest name in the world (747 char) + buffer
       },
     },
     email: {
@@ -137,7 +137,7 @@ Customer.init(
       type: DataTypes.STRING,
       allowNull: false,
       validate: {
-        len: [5, Infinity], // At least 5 characters long
+        len: [5, 1000], // At least 5 characters long
       },
     },
     nationality: {
