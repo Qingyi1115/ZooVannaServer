@@ -111,7 +111,7 @@ export async function getAllFacility(req: Request, res: Response) {
     const { includes } = req.body;
 
     const _includes : string[] = []
-    for (const role in ["hubProcessors"]){
+    for (const role of ["hubProcessors"]){
       if (includes.includes(role)) _includes.push(role)
     }
 
@@ -409,7 +409,7 @@ export async function getAllHubs(req: Request, res: Response) {
     const { includes } = req.body;
 
     const _includes : string[] = []
-    for (const role in ["sensors", "facility"]){
+    for (const role of ["sensors", "facility"]){
       if (includes.includes(role)) _includes.push(role)
     }
 
@@ -441,7 +441,7 @@ export async function getAllSensors(req: Request, res: Response) {
     const { includes } = req.body;
 
     const _includes : string[] = []
-    for (const role in ["hubProcessor", "sensorReading", "generalStaff"]){
+    for (const role of ["hubProcessor", "sensorReading", "generalStaff"]){
       if (includes.includes(role)) _includes.push(role)
     }
   

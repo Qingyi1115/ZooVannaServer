@@ -6,7 +6,7 @@ export async function getAllSpecies(req: Request, res: Response) {
   const { includes = "" } = req.body;
 
   const _includes : string[] = []
-  for (const role in ["speciesDietNeed", "speciesEnclosureNeed", "physiologicalReferenceNorms"]){
+  for (const role of ["speciesDietNeed", "speciesEnclosureNeed", "physiologicalReferenceNorms"]){
     if (includes.includes(role)) _includes.push(role)
   }
 
@@ -23,7 +23,7 @@ export async function getSpeciesByCode(req: Request, res: Response) {
   const { includes = "" } = req.body;
 
   const _includes : string[] = []
-  for (const role in ["speciesDietNeed", "speciesEnclosureNeed", "physiologicalReferenceNorms"]){
+  for (const role of ["speciesDietNeed", "speciesEnclosureNeed", "physiologicalReferenceNorms"]){
     if (includes.includes(role)) _includes.push(role)
   }
 
