@@ -79,16 +79,10 @@ export async function getCustomer(req: Request, res: Response) {
 
   const { email } = (req as any).locals.jwtPayload;
   const customer = await findCustomerByEmail(email);
+
+  if (!customer) return res.status(400).json({ error: "Customer not found!" });
   
-  if (customer) {
-    // console.log("Customer valid" + customer);
-    return res.status(200).json(customer);
-  } else {
-    // console.log("Customer invalid" + customer);
-    return res
-      .status(400)
-      .json({ error: `Customer not found!` });
-  }
+  return res.status(200).json(customer);
 }
 
 export async function deleteCustomer(req: Request, res: Response) {
