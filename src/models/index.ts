@@ -41,6 +41,7 @@ import { HubProcessor } from "./hubProcessor";
 import { CustomerReportLog } from "./customerReportLog";
 import { SensorReading } from "./sensorReading";
 import { PhysiologicalReferenceNorms } from "./physiologicalReferenceNorms";
+import { predictNextDate } from "../helpers/predictors";
 
 function addCascadeOptions(options: object) {
   return { ...options, onDelete: "CASCADE", onUpdate: "CASCADE" };
@@ -321,6 +322,7 @@ export const tutorial = async () => {
     employeeSalt: "NaCl",
     employeeDoorAccessCode: "123456",
     employeeEducation: "PHD in not eating",
+    employeeBirthDate: new Date("1992-03-04"),
     isAccountManager: true,
     employeeBirthDate: new Date("2003-08-03"),
   });
@@ -357,13 +359,14 @@ export const tutorial = async () => {
         employeeSalt: "NaAg",
         employeeDoorAccessCode: "234567",
         employeeEducation: "PHD in not sleeping",
+        employeeBirthDate: new Date("2001-09-02"),
         isAccountManager: false,
         employeeBirthDate: new Date("1996-03-05"),
         // @ts-ignore
         keeper: {
           keeperType: KeeperType.KEEPER,
-          isDisabled: false,
           specialization: Specialization.AMPHIBIAN,
+          isDisabled: false
         },
       },
       {
@@ -375,13 +378,14 @@ export const tutorial = async () => {
         employeeSalt: "NaH",
         employeeDoorAccessCode: "345678",
         employeeEducation: "PHD in not breathing",
+        employeeBirthDate: new Date("2001-09-02"),
         isAccountManager: false,
         employeeBirthDate: new Date("1987-02-04"),
         // @ts-ignore
         keeper: {
           keeperType: KeeperType.KEEPER,
-          isDisabled: false,
           specialization: Specialization.AMPHIBIAN,
+          isDisabled: false
         },
       },
     ],
@@ -419,13 +423,14 @@ export const tutorial = async () => {
       employeeSalt: "H2",
       employeeDoorAccessCode: "987654",
       employeeEducation: "PHD in not waking up",
+      employeeBirthDate: new Date("2001-09-02"),
       isAccountManager: false,
       employeeBirthDate: new Date("2001-12-09"),
       // @ts-ignore
       planningStaff: {
         plannerType: PlannerType.CURATOR,
-        isDisabled: false,
         specialization: Specialization.AMPHIBIAN,
+        isDisabled: false,
       },
     },
     {
@@ -446,6 +451,7 @@ export const tutorial = async () => {
       employeePasswordHash: Employee.getHash("manager1_password", "H3"),
       employeeSalt: "H3",
       employeeDoorAccessCode: "222222",
+      employeeBirthDate: new Date("2001-09-02"),
       employeeEducation: "Math Major",
       isAccountManager: true,
       employeeBirthDate: new Date("1999-04-03"),
@@ -472,13 +478,14 @@ export const tutorial = async () => {
       employeeSalt: "SiO2",
       employeeDoorAccessCode: "222223",
       employeeEducation: "Another Math Major",
+      employeeBirthDate: new Date("2001-09-02"),
       isAccountManager: true,
       employeeBirthDate: new Date("1993-11-19"),
       // @ts-ignore
       planningStaff: {
         plannerType: PlannerType.OPERATIONS_MANAGER,
-        isDisabled: false,
         specialization: Specialization.REPTILE,
+        isDisabled: false,
       },
     },
     {

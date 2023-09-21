@@ -39,6 +39,7 @@ export async function createNewEmployee(
     employeePasswordHash: hash(randomPassword + randomSalt),
     employeeSalt: randomSalt,
     employeeDoorAccessCode: await Employee.generateNewDoorAccessCode(),
+    employeeBirthDate: employeeBirthDate,
     employeeEducation: employeeEducation,
     isAccountManager: isAccountManager,
     employeeBirthDate: employeeBirthDate,

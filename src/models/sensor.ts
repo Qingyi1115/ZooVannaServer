@@ -16,6 +16,7 @@ import { SensorType } from "./enumerated";
 import { HubProcessor } from "./hubProcessor";
 import { SensorReading } from "./sensorReading";
 import { GeneralStaff } from "./generalStaff";
+import { MaintenanceLog } from "./maintenanceLog";
 
 class Sensor extends Model<
   InferAttributes<Sensor>,
@@ -30,18 +31,32 @@ class Sensor extends Model<
 
   declare hubProcessor?: HubProcessor;
   declare sensorReading? :SensorReading[];
+  declare maintenanceLog? :MaintenanceLog[];
   declare generalStaff?: GeneralStaff;
 
   declare getHubProcessor: BelongsToGetAssociationMixin<HubProcessor>;
   declare setHubProcessor: BelongsToSetAssociationMixin<HubProcessor, number>;
 
-  declare getSensorReadings: HasManyGetAssociationsMixin<SensorReading[]>;
+  declare getSensorReadings: HasManyGetAssociationsMixin<SensorReading>;
   declare addSensorReading: HasManyAddAssociationMixin<SensorReading, number>;
   declare setSensorReadings: HasManySetAssociationsMixin<SensorReading[], number>;
   declare removeSensorReading: HasManyRemoveAssociationMixin<SensorReading, number>;
 
+  declare getMaintenanceLogs: HasManyGetAssociationsMixin<MaintenanceLog>;
+  declare addMaintenanceLog: HasManyAddAssociationMixin<MaintenanceLog, number>;
+  declare setMaintenanceLogs: HasManySetAssociationsMixin<MaintenanceLog[], number>;
+  declare removeMaintenanceLog: HasManyRemoveAssociationMixin<MaintenanceLog, number>;
+
   declare getGeneralStaff: BelongsToGetAssociationMixin<GeneralStaff>;
   declare setGeneralStaff: BelongsToSetAssociationMixin<GeneralStaff, number>;
+
+  public async toFullJSON(){
+    return {
+      ...this.get(),
+      hubProcessor: (await this.getHubProcessor())?.toJSON(),
+      generalStaff: (await this.getGeneralStaff())?.toJSON(),
+    };
+  }
 }
 
 Sensor.init(
