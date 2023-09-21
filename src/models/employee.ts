@@ -44,7 +44,6 @@ class Employee extends Model<
   declare isAccountManager: boolean;
   declare dateOfResignation: Date | null;
   declare employeeProfileURL: string | null;
-  declare employeeBirthDate: Date;
 
   declare keeper?: Keeper | null;
   declare planningStaff?: PlanningStaff | null;
@@ -195,9 +194,6 @@ Employee.init(
     },
     employeeProfileURL: {
       type: DataTypes.STRING,
-    },
-    employeeBirthDate: {
-      type: DataTypes.DATE,
     },
   },
   {
