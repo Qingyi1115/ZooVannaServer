@@ -109,8 +109,11 @@ export async function getAllFacility(req: Request, res: Response) {
         .json({ error: "Access Denied! Operation managers only!" });
 
     const { includes } = req.body;
-    
-    const _includes = [includes.includes("hubProcessors")]
+
+    const _includes : string[] = []
+    for (const role in ["hubProcessors"]){
+      if (includes.includes(role)) _includes.push(role)
+    }
 
     let facilities : Facility[] = await _getAllFacility(_includes, includes.includes("facilityDetail"));
 

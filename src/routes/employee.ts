@@ -15,8 +15,9 @@ import {
   disableRoleController,
   updateGeneralStaffTypeController,
   updatePlanningStaffTypeController,
-  updateEmployeeAccount,
-  updateEmployeePassword,
+  updateEmployeeAccountController,
+  updateEmployeePasswordController,
+  getSelfController,
 } from "../controllers/employeeController";
 import {
   addEnclosureToKeeperController,
@@ -36,11 +37,11 @@ router.put("resetForgottenPassword/:token", resetForgottenPasswordController); /
 router.use(authMiddleware);
 
 // Employee common infra : employee self use only (No role required)
-router.post("/updateEmployeeAccount", updateEmployeeAccount);
-router.post("/updateEmployeePassword", updateEmployeePassword);
-
+router.post("/updateEmployeePassword", updateEmployeePasswordController);
+router.get("/getEmployee", getSelfController);
 router.post("/createEmployee", createEmployeeController);
 router.get("/getEmployee/:employeeId", getEmployeeController);
+router.put("/updateEmployeeAccount", updateEmployeeAccountController);
 router.put("/setAccountManager/:employeeId", setAccountManagerController);
 router.put("/unsetAccountManager/:employeeId", unsetAccountManagerController);
 

@@ -33,7 +33,7 @@ export async function login(req: Request, res: Response) {
   }
 };
 
-export async function updateEmployeeAccount(req: Request, res: Response) {
+export async function updateEmployeeAccountController(req: Request, res: Response) {
   try {
     const { email } = (req as any).locals.jwtPayload;
     const employee = await findEmployeeByEmail(email);
@@ -70,7 +70,7 @@ export async function updateEmployeeAccount(req: Request, res: Response) {
   }
 };
 
-export async function updateEmployeePassword(req: Request, res: Response) {
+export async function updateEmployeePasswordController(req: Request, res: Response) {
   try {
     const { email } = (req as any).locals.jwtPayload;
     const employee = await findEmployeeByEmail(email);
@@ -94,6 +94,16 @@ export async function updateEmployeePassword(req: Request, res: Response) {
   } catch (error: any) {
     console.log(error.message);
     return res.status(400).json({error: error.message});
+  }
+};
+
+export const getSelfController = async (req: Request, res: Response) => {
+  try {
+    const { email } = (req as any).locals.jwtPayload;
+    const employee = await findEmployeeByEmail(email);
+    return res.status(200).json({ employee: await employee.toFullJSON() });
+  } catch (error: any) {
+    res.status(400).json({ error: error.message });
   }
 };
 

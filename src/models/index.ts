@@ -323,7 +323,17 @@ export const tutorial = async () => {
     employeeDoorAccessCode: "123456",
     employeeEducation: "PHD in not eating",
     employeeBirthDate: new Date("1992-03-04"),
-    isAccountManager: true
+    isAccountManager: true,
+    //@ts-ignore
+    planningStaff:{
+      plannerType: PlannerType.OPERATIONS_MANAGER,
+      specialization: Specialization.FISH,
+      isDisabled : false
+    }
+  },{
+    include: {
+      association: "planningStaff",
+    },
   });
   console.log(marry.toJSON());
   console.log("marry's actuall secret hash: ", marry.employeePasswordHash);
