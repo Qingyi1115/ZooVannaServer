@@ -41,8 +41,7 @@ export async function createNewEmployee(
     employeeDoorAccessCode: await Employee.generateNewDoorAccessCode(),
     employeeBirthDate: employeeBirthDate,
     employeeEducation: employeeEducation,
-    isAccountManager: isAccountManager,
-    employeeBirthDate: employeeBirthDate,
+    isAccountManager: isAccountManager
   };
   employee_details[role] = roleJson;
   try {

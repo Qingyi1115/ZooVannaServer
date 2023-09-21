@@ -323,8 +323,7 @@ export const tutorial = async () => {
     employeeDoorAccessCode: "123456",
     employeeEducation: "PHD in not eating",
     employeeBirthDate: new Date("1992-03-04"),
-    isAccountManager: true,
-    employeeBirthDate: new Date("2003-08-03"),
+    isAccountManager: true
   });
   console.log(marry.toJSON());
   console.log("marry's actuall secret hash: ", marry.employeePasswordHash);
@@ -361,7 +360,6 @@ export const tutorial = async () => {
         employeeEducation: "PHD in not sleeping",
         employeeBirthDate: new Date("2001-09-02"),
         isAccountManager: false,
-        employeeBirthDate: new Date("1996-03-05"),
         // @ts-ignore
         keeper: {
           keeperType: KeeperType.KEEPER,
@@ -380,7 +378,6 @@ export const tutorial = async () => {
         employeeEducation: "PHD in not breathing",
         employeeBirthDate: new Date("2001-09-02"),
         isAccountManager: false,
-        employeeBirthDate: new Date("1987-02-04"),
         // @ts-ignore
         keeper: {
           keeperType: KeeperType.KEEPER,
@@ -425,7 +422,6 @@ export const tutorial = async () => {
       employeeEducation: "PHD in not waking up",
       employeeBirthDate: new Date("2001-09-02"),
       isAccountManager: false,
-      employeeBirthDate: new Date("2001-12-09"),
       // @ts-ignore
       planningStaff: {
         plannerType: PlannerType.CURATOR,
@@ -454,7 +450,6 @@ export const tutorial = async () => {
       employeeBirthDate: new Date("2001-09-02"),
       employeeEducation: "Math Major",
       isAccountManager: true,
-      employeeBirthDate: new Date("1999-04-03"),
       // @ts-ignore
       generalStaff: {
         generalStaffType: GeneralStaffType.ZOO_MAINTENANCE,
@@ -480,7 +475,6 @@ export const tutorial = async () => {
       employeeEducation: "Another Math Major",
       employeeBirthDate: new Date("2001-09-02"),
       isAccountManager: true,
-      employeeBirthDate: new Date("1993-11-19"),
       // @ts-ignore
       planningStaff: {
         plannerType: PlannerType.OPERATIONS_MANAGER,
