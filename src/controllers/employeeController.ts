@@ -17,7 +17,7 @@ import {
   updatePlanningStaffType,
 } from "../services/employee";
 
-export const login = async (req: Request, res: Response) => {
+export async function login(req: Request, res: Response) {
   try {
     const { email, password } = req.body;
     if (email && password) {
@@ -33,7 +33,71 @@ export const login = async (req: Request, res: Response) => {
   }
 };
 
-export const createEmployeeController = async (req: Request, res: Response) => {
+export async function updateEmployeeAccount(req: Request, res: Response) {
+  try {
+    const { email } = (req as any).locals.jwtPayload;
+    const employee = await findEmployeeByEmail(email);
+
+    const { 
+      employeeAddress, 
+      employeeEmail, 
+      employeePhoneNumber,
+      employeeEducation
+    } = req.params;
+
+    for (const [field, v] of Object.entries({
+      employeeAddress:employeeAddress, 
+      employeeEmail:employeeEmail, 
+      employeePhoneNumber:employeePhoneNumber,
+      employeeEducation:employeeEducation})){
+        if (v !== undefined){
+          (employee as any)[field] = v;
+        } 
+      }
+
+    employee.save();
+    
+    let token = undefined;
+    if (employeeEmail !== undefined){
+      token = createToken(employee.employeeEmail);
+    }
+
+    
+    return res.status(200).json({newToken: token, employee: employee.toJSON()});
+  } catch (error: any) {
+    console.log(error.message);
+    return res.status(400).json({error: error.message});
+  }
+};
+
+export async function updateEmployeePassword(req: Request, res: Response) {
+  try {
+    const { email } = (req as any).locals.jwtPayload;
+    const employee = await findEmployeeByEmail(email);
+
+    const { 
+      newPassword,
+      oldPassword
+    } = req.params;
+
+    if ([newPassword, oldPassword].every(
+        (field) => field === undefined,
+      )
+    ) {
+      return res.status(400).json({ error: "Missing information!" });
+    }
+    if (!employee.testPassword(oldPassword)) throw {message: "Wrong password!"}
+
+    employee.updatePassword(newPassword);
+    
+    return res.status(200);
+  } catch (error: any) {
+    console.log(error.message);
+    return res.status(400).json({error: error.message});
+  }
+};
+
+export async function createEmployeeController(req: Request, res: Response) {
   try {
     const { email } = (req as any).locals.jwtPayload;
     const employee = await findEmployeeByEmail(email);
@@ -103,10 +167,7 @@ export const createEmployeeController = async (req: Request, res: Response) => {
   }
 };
 
-export const setAccountManagerController = async (
-  req: Request,
-  res: Response,
-) => {
+export async function setAccountManagerController(req: Request, res: Response) {
   try {
     const { email } = (req as any).locals.jwtPayload;
     const employee = await findEmployeeByEmail(email);
@@ -128,10 +189,7 @@ export const setAccountManagerController = async (
 }
 };
 
-export const unsetAccountManagerController = async (
-  req: Request,
-  res: Response,
-) => {
+export async function unsetAccountManagerController(req: Request, res: Response) {
   try {
     const { email } = (req as any).locals.jwtPayload;
     const employee = await findEmployeeByEmail(email);
@@ -153,10 +211,7 @@ export const unsetAccountManagerController = async (
   }
 };
 
-export const getAllEmployeesController = async (
-  req: Request, 
-  res: Response,
-) => {
+export async function getAllEmployeesController(req: Request, res: Response) {
   try {
     const { email } = (req as any).locals.jwtPayload;
     const employee = await findEmployeeByEmail(email);
@@ -183,10 +238,7 @@ export const getAllEmployeesController = async (
   } 
 }
 
-export const getEmployeeController = async (
-  req: Request,
-  res: Response,
-) => {
+export async function getEmployeeController(req: Request, res: Response) {
   try {
     const { email } = (req as any).locals.jwtPayload;
     const employee = await findEmployeeByEmail(email);
@@ -208,10 +260,7 @@ export const getEmployeeController = async (
   }
 };
 
-export const resetPasswordController = async (
-  req: Request,
-  res: Response,
-) => {
+export async function resetPasswordController(req: Request, res: Response) {
   try {
     const { email } = (req as any).locals.jwtPayload;
     const employee = await findEmployeeByEmail(email);
@@ -236,10 +285,7 @@ export const resetPasswordController = async (
   }
 }
 
-export const disableEmployeeAccountController = async (
-  req: Request,
-  res: Response,
-) => {
+export async function disableEmployeeAccountController(req: Request, res: Response) {
   try {
     const { email } = (req as any).locals.jwtPayload;
     const employee = await findEmployeeByEmail(email);
@@ -260,10 +306,7 @@ export const disableEmployeeAccountController = async (
   }
 }
 
-export const resetForgottenPasswordController = async (
-  req: Request,
-  res: Response,
-) => {
+export async function resetForgottenPasswordController(req: Request, res: Response) {
   try {
     const {
       token,
@@ -291,10 +334,7 @@ export const resetForgottenPasswordController = async (
   }
 }
 
-export const enableRoleController = async (
-  req: Request, 
-  res: Response,
-) => {
+export async function enableRoleController(req: Request, res: Response) {
   try {
     const { email } = (req as any).locals.jwtPayload;
     const employee = await findEmployeeByEmail(email);
@@ -316,10 +356,7 @@ export const enableRoleController = async (
   }
 }
 
-export const disableRoleController = async (
-  req: Request, 
-  res: Response,
-) => {
+export async function disableRoleController(req: Request, res: Response) {
   try {
     const { email } = (req as any).locals.jwtPayload;
     const employee = await findEmployeeByEmail(email);
@@ -342,10 +379,7 @@ export const disableRoleController = async (
   }
 }
 
-export const updateGeneralStaffTypeController = async (
-  req: Request,
-  res: Response,
-) => {
+export async function updateGeneralStaffTypeController(req: Request, res: Response) {
   try {
       const { email } = (req as any).locals.jwtPayload;
       const employee = await findEmployeeByEmail(email);
@@ -369,10 +403,7 @@ export const updateGeneralStaffTypeController = async (
   }
 }
 
-export const updatePlanningStaffTypeController = async (
-  req: Request,
-  res: Response,
-) => {
+export async function updatePlanningStaffTypeController(req: Request, res: Response) {
   try {
       const { email } = (req as any).locals.jwtPayload;
       const employee = await findEmployeeByEmail(email);
