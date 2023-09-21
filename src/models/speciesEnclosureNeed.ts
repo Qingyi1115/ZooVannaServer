@@ -37,8 +37,8 @@ class SpeciesEnclosureNeed extends Model<
   declare sandPercentMax: number;
   declare snowPercentMin: number;
   declare snowPercentMax: number;
-  declare soilPercenMin: number;
-  declare soilPercenMax: number;
+  declare soilPercentMin: number;
+  declare soilPercentMax: number;
 
   declare species?: Species;
 
@@ -135,11 +135,11 @@ SpeciesEnclosureNeed.init(
       type: DataTypes.INTEGER,
       allowNull: false,
     },
-    soilPercenMin: {
+    soilPercentMin: {
       type: DataTypes.INTEGER,
       allowNull: false,
     },
-    soilPercenMax: {
+    soilPercentMax: {
       type: DataTypes.INTEGER,
       allowNull: false,
     },
