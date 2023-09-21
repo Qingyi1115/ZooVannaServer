@@ -246,7 +246,7 @@ export const disableEmployeeAccountController = async (
     }
 
     const {employeeId} = req.params;
-    const {dateOfResignation} = req.body;
+    const dateOfResignation = new Date();
 
     let result = await disableEmployeeAccount(Number(employeeId), dateOfResignation);
     return res.status(200).json({date: result});
