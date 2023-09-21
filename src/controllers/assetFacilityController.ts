@@ -890,24 +890,21 @@ export async function deleteAnimalFeedByName(req: Request, res: Response) {
 
 export async function createNewEnrichmentItem(req: Request, res: Response) {
   try {
-    const imageUrl = await handleFileUpload(
+    const enrichmentItemImageUrl = await handleFileUpload(
       req,
       process.env.IMG_URL_ROOT! + "enrichmentItem", //"D:/capstoneUploads/enrichmentItem",
     );
     const {
-      enrichmentItemName,
-      enrichmentItemImageUrl
+      enrichmentItemName
     } = req.body;
 
     if (
       [
-        enrichmentItemName,
-        enrichmentItemImageUrl
+        enrichmentItemName
       ].includes(undefined)
     ) {
       console.log("Missing field(s): ", {
-        enrichmentItemName,
-        enrichmentItemImageUrl
+        enrichmentItemName
       });
       return res.status(400).json({ error: "Missing information!" });
     }
