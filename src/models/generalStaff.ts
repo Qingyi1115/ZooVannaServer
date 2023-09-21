@@ -11,6 +11,8 @@ import {
   BelongsToManyAddAssociationMixin,
   BelongsToManyRemoveAssociationMixin,
   HasManyRemoveAssociationMixin,
+  BelongsToManyGetAssociationsMixin,
+  BelongsToManySetAssociationsMixin,
 } from "Sequelize";
 import { conn } from "../db";
 import { Employee } from "./employee";
@@ -33,9 +35,9 @@ class GeneralStaff extends Model<
   declare getEmployee: BelongsToGetAssociationMixin<Employee>;
   declare setEmployee: BelongsToSetAssociationMixin<Employee, number>;
 
-  declare getMaintainedFacilities: BelongsToGetAssociationMixin<InHouse[]>;
+  declare getMaintainedFacilities: BelongsToManyGetAssociationsMixin<InHouse[]>;
   declare addMaintainedFacility: BelongsToManyAddAssociationMixin<InHouse, number>;
-  declare setMaintainedFacilities: BelongsToSetAssociationMixin<InHouse[], number>;
+  declare setMaintainedFacilities: BelongsToManySetAssociationsMixin<InHouse, number>;
   declare removeMaintainedFacility: BelongsToManyRemoveAssociationMixin<InHouse, number>;
 
   declare getOperatedFacility: BelongsToGetAssociationMixin<InHouse>;
@@ -45,6 +47,10 @@ class GeneralStaff extends Model<
   declare addSensor: HasManyAddAssociationMixin<Sensor, number>;
   declare setSensors: HasManySetAssociationsMixin<Sensor[], number>;
   declare removeSensor: HasManyRemoveAssociationMixin<Sensor, number>;
+  
+  public toJSON() {
+    return this.get();
+  }
 
   public enable() {
     this.isDisabled = false;

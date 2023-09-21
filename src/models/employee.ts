@@ -40,6 +40,7 @@ class Employee extends Model<
   declare employeeSalt: string;
   declare employeeDoorAccessCode: string;
   declare employeeEducation: string;
+  declare employeeBirthDate: Date;
   declare isAccountManager: boolean;
   declare dateOfResignation: Date | null;
   declare employeeProfileURL: string | null;
@@ -86,8 +87,8 @@ class Employee extends Model<
     return this;
   }
 
-  public disableAccount() {
-    this.dateOfResignation = new Date();
+  public disableAccount(dateOfResignation:Date) {
+    this.dateOfResignation = dateOfResignation
     this.save();
     console.log("Employee account has been disabled");
     return this.dateOfResignation;
@@ -114,8 +115,6 @@ class Employee extends Model<
   }
 
   public toJSON() {
-    // Can control default values returned rather than manually populating json, removing secrets
-    // Similar idea albert more useful when compared to java's toString
     return {
       ...this.get(),
       keeper: this.keeper?.toJSON(),
@@ -123,6 +122,17 @@ class Employee extends Model<
       generalStaff: this.generalStaff?.toJSON(),
       employeePasswordHash: undefined,
       employeeSalt: undefined,
+    };
+  }
+
+  public async toFullJSON(){
+    return {
+      ...this.get(),
+      employeePasswordHash: undefined,
+      employeeSalt: undefined,
+      keeper: (await this.getKeeper())?.toJSON(),
+      generalStaff: (await this.getGeneralStaff())?.toJSON(),
+      planningStaff: (await this.getPlanningStaff())?.toJSON(),
     };
   }
 }
@@ -166,6 +176,10 @@ Employee.init(
       type: DataTypes.STRING,
       allowNull: false,
       unique: true,
+    },
+    employeeBirthDate: {
+      type: DataTypes.DATE,
+      allowNull: false,
     },
     employeeEducation: {
       type: DataTypes.STRING,

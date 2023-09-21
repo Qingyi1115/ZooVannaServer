@@ -47,6 +47,7 @@ export const createEmployeeController = async (req: Request, res: Response) => {
       employeeEmail,
       employeePhoneNumber,
       employeeEducation,
+      employeeBirthDate,
       isAccountManager,
       role,
       roleJson,
@@ -58,6 +59,7 @@ export const createEmployeeController = async (req: Request, res: Response) => {
         employeeEmail,
         employeePhoneNumber,
         employeeEducation,
+        employeeBirthDate,
         isAccountManager,
         role,
         roleJson,
@@ -69,6 +71,7 @@ export const createEmployeeController = async (req: Request, res: Response) => {
         employeeEmail,
         employeePhoneNumber,
         employeeEducation,
+        employeeBirthDate,
         isAccountManager,
         role,
         roleJson,
@@ -83,7 +86,8 @@ export const createEmployeeController = async (req: Request, res: Response) => {
         employeeEmail,
         employeePhoneNumber,
         employeeEducation,
-        (isAccountManager as string).toLocaleUpperCase() == "TRUE",
+        isAccountManager,
+        employeeBirthDate,
         role,
         roleJson,
       );
@@ -117,7 +121,7 @@ export const setAccountManagerController = async (
 
     let result = await setAsAccountManager(Number(employeeId));
     
-    return res.status(200).json({set: result});
+    return res.status(200).json({employee: result});
 } catch (error: any) {
   console.log(error.message);
   return res.status(400).json({error: error.message});
@@ -142,7 +146,7 @@ export const unsetAccountManagerController = async (
 
     let result = await unsetAsAccountManager(Number(employeeId));
     
-    return res.status(200).json({unset: result});
+    return res.status(200).json({employee: result});
   } catch (error: any) {
     console.log(error.message);
     return res.status(400).json({error: error.message});
@@ -163,7 +167,7 @@ export const getAllEmployeesController = async (
         .json({ error: "Access Denied! Account managers only!" });
     }
 
-    const {includes } = req.body();
+    const {includes } = req.body;
     const _includes : string[] = []
     for (const role in ["keeper", "generalStaff", "planningStaff"]){
       if (includes.includes(role)) _includes.push(role)
@@ -242,8 +246,9 @@ export const disableEmployeeAccountController = async (
     }
 
     const {employeeId} = req.params;
+    const dateOfResignation = new Date();
 
-    let result = await disableEmployeeAccount(Number(employeeId));
+    let result = await disableEmployeeAccount(Number(employeeId), dateOfResignation);
     return res.status(200).json({date: result});
   }
   catch (error: any) {

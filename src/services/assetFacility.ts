@@ -1,10 +1,17 @@
-import { HubStatus, SensorType } from "../models/enumerated";
+import { GeneralStaffType, HubStatus, SensorType } from "../models/enumerated";
 import { validationErrorHandler } from "../helpers/errorHandler";
 import { Facility } from "../models/facility";
 import { Sensor } from "../models/sensor";
 import { HubProcessor } from "../models/hubProcessor";
 import { hash } from "../helpers/security";
-import { SensorReading } from "models/sensorReading";
+import { findEmployeeById, getAllEmployees } from "./employee";
+import { GeneralStaff } from "../models/generalStaff";
+import { InHouse } from "../models/inHouse";
+import { FacilityLog } from "../models/faciltiyLog";
+import { compareDates } from "../helpers/others";
+import { predictNextDate } from "../helpers/predictors";
+import { SensorReading } from "../models/sensorReading";
+import { MaintenanceLog } from "../models/maintenanceLog";
 
 export async function createNewFacility(
   facilityName: string,
@@ -44,6 +51,187 @@ export async function getFacilityById(facilityId: number, includes: string[] = [
   }
 }
 
+export async function getAllFacilityMaintenanceSuggestions() {
+  try {
+
+    let facilities : Facility[] = await _getAllFacility([], true);
+    facilities = facilities.filter(facility => facility.facilityDetail == "inHouse");
+    const suggested = []
+
+    for (const facility in facilities){
+      let inHouse = await (facility as any).getFacilityDetail();
+      let logs = (await inHouse.getFacilityLogs()) || [];
+      logs = logs.sort((a:FacilityLog,b:FacilityLog)=> compareDates(a.dateTime, b.dateTime));
+      logs = logs.map( (log: FacilityLog) => log.dateTime);
+      (facility as any)["predictedMaintenanceDate"] = predictNextDate(logs.slice(0, Math.max(logs.length, 5)));
+    }
+    
+    return facilities;
+  } catch (error: any) {
+    throw validationErrorHandler(error);
+  }
+}
+
+export async function updateFacilityByFacilityId(
+  facilityId:number,
+  facilityAttribute: any,
+  facilityDetailJson:any,
+): Promise<HubProcessor> {
+  try {
+    let facility = (await getFacilityById(Number(facilityId))) as any;
+    if (!facility) throw { message: "Unable to find facilityId " + facilityId };
+
+    for (const [field, v] of Object.entries(facilityAttribute)) {
+      facility[field] = v;
+    }
+
+    const p1: Promise<Facility> = facility.save();
+    if (facilityDetailJson !== undefined) {
+      
+      const facilityDetail = await facility.getFacilityDetail();
+      if (facilityDetail === undefined) throw {message: "Unable to find facilityDetail for facilityId " + facilityId,};
+
+      for (const [field, v] of Object.entries(facilityDetailJson)) {
+        facilityDetail[field] = v;
+      }
+      await facilityDetail.save();
+    }
+    await p1;
+    return facility;
+
+  } catch (error: any) {
+    throw validationErrorHandler(error);
+  }
+}
+
+export async function assignMaintenanceStaffToFacilityById(
+  facilityId : number,
+  employeeIds: number[]
+): Promise<InHouse>{
+  try {
+    const facility = await Facility.findOne({
+      where: { facilityId: facilityId },
+    });
+    if (!facility) throw { message: "Unable to find facilityId: " + facility };
+    const inHouse = await facility.getInHouse();
+    if (!inHouse) throw { message: "Facility is not In House!" };
+
+    const employees = await getAllEmployees([]);
+    employees.filter(employee => employeeIds.includes(employee.employeeId));
+    employees.map(employee => employee.getGeneralStaff());
+    const staffList:GeneralStaff[] = []
+    for (const staffPromise in (employees as any)){
+      const staff = await (staffPromise as any);
+      if (staff.generalStaffType != GeneralStaffType.ZOO_MAINTENANCE) throw { message:"Not a Maintenance Staff!"}
+      staffList.push(staff)
+    }
+    for (const staff in staffList){
+      inHouse.addMaintenanceStaff(staff as any);
+      (staff as any).addMaintainedFacility(inHouse);
+    }
+    
+    return inHouse;
+  } catch (error: any) {
+    throw validationErrorHandler(error);
+  }
+}
+
+export async function removeMaintenanceStaffFromFacilityById(
+  facilityId : number,
+  employeeIds: number[]
+): Promise<InHouse>{
+  try {
+    const facility = await Facility.findOne({
+      where: { facilityId: facilityId },
+    });
+    if (!facility) throw { message: "Unable to find facilityId: " + facility };
+    const inHouse = await facility.getInHouse();
+    if (!inHouse) throw { message: "Facility is not In House!" };
+
+    const employees = await getAllEmployees([]);
+    employees.filter(employee => employeeIds.includes(employee.employeeId));
+    employees.map(employee => employee.getGeneralStaff());
+    const staffList:GeneralStaff[] = []
+    for (const staffPromise in (employees as any)){
+      const staff = await (staffPromise as any);
+      if (staff.generalStaffType != GeneralStaffType.ZOO_MAINTENANCE) throw { message:"Not a Maintenance Staff!"}
+      staffList.push(staff)
+    }
+    for (const staff in staffList){
+      inHouse.removeMaintenanceStaff(staff as any);
+      (staff as any).removeMaintainedFacility(inHouse);
+    }
+    
+    return inHouse;
+  } catch (error: any) {
+    throw validationErrorHandler(error);
+  }
+}
+
+export async function assignOperationStaffToFacilityById(
+  facilityId : number,
+  employeeIds: number[]
+): Promise<InHouse>{
+  try {
+    const facility = await Facility.findOne({
+      where: { facilityId: facilityId },
+    });
+    if (!facility) throw { message: "Unable to find facilityId: " + facility };
+    const inHouse = await facility.getInHouse();
+    if (!inHouse) throw { message: "Facility is not In House!" };
+
+    const employees = await getAllEmployees([]);
+    employees.filter(employee => employeeIds.includes(employee.employeeId));
+    employees.map(employee => employee.getGeneralStaff());
+    const staffList:GeneralStaff[] = []
+    for (const staffPromise in (employees as any)){
+      const staff = await (staffPromise as any);
+      if (staff.generalStaffType != GeneralStaffType.ZOO_OPERATIONS) throw { message:"Not a Operation Staff!"}
+      staffList.push(staff)
+    }
+    for (const staff in staffList){
+      inHouse.addOperationStaff(staff as any);
+      (staff as any).setOperatedFacility(inHouse);
+    }
+    
+    return inHouse;
+  } catch (error: any) {
+    throw validationErrorHandler(error);
+  }
+}
+
+export async function removeOperationStaffFromFacilityById(
+  facilityId : number,
+  employeeIds: number[]
+): Promise<InHouse>{
+  try {
+    const facility = await Facility.findOne({
+      where: { facilityId: facilityId },
+    });
+    if (!facility) throw { message: "Unable to find facilityId: " + facility };
+    const inHouse = await facility.getInHouse();
+    if (!inHouse) throw { message: "Facility is not In House!" };
+
+    const employees = await getAllEmployees([]);
+    employees.filter(employee => employeeIds.includes(employee.employeeId));
+    employees.map(employee => employee.getGeneralStaff());
+    const staffList:GeneralStaff[] = []
+    for (const staffPromise in (employees as any)){
+      const staff = await (staffPromise as any);
+      if (staff.generalStaffType != GeneralStaffType.ZOO_OPERATIONS) throw { message:"Not a Operation Staff!"}
+      staffList.push(staff)
+    }
+    for (const staff in staffList){
+      inHouse.removeOperationStaff(staff as any);
+      (staff as any).setOperatedFacility(undefined);
+    }
+    
+    return inHouse;
+  } catch (error: any) {
+    throw validationErrorHandler(error);
+  }
+}
+
 export async function addHubProcessorByFacilityId(
   facilityId: number,
   processorName: string,
@@ -63,6 +251,37 @@ export async function addHubProcessorByFacilityId(
 
     await facility.addHubProcessor(newHub);
     return newHub;
+  } catch (error: any) {
+    throw validationErrorHandler(error);
+  }
+}
+
+export async function _getAllFacility(
+  includes: any,
+  facilityDetail: boolean
+  ): Promise<Facility[]> {
+  try {
+    const all_Facilities = await Facility.findAll({include:includes});
+
+    if (facilityDetail) all_Facilities.forEach(async facility => (facility as any)["facilityDetails"] = await facility.getFacilityDetail());  
+
+    return all_Facilities;
+  } catch (error: any) {
+    throw validationErrorHandler(error);
+  }
+}
+
+export async function deleteFacilityById(
+  facilityId: number
+  ): Promise<void> {
+  try {
+    const facility = await Facility.findOne({
+      where: { facilityId: facilityId },
+    });
+
+    if (!facility) throw { message: "Unable to find facilityId: " + facility };
+
+    return facility.destroy();
   } catch (error: any) {
     throw validationErrorHandler(error);
   }
@@ -94,6 +313,23 @@ export async function getSensorReadingBySensorId(
     if (!sensor) throw { message: "Unable to find sensorId: " + sensor };
 
     return sensor.getSensorReadings();
+  } catch (error: any) {
+    throw validationErrorHandler(error);
+  }
+}
+
+export async function getAllSensorMaintenanceSuggestions() {
+  try {
+
+    let sensors : Sensor[] = await _getAllSensors(["sensorReading"]);
+
+    for (const sensor in sensors){
+      let logs = (await (sensor as any).getMaintenanceLogs()) || [];
+      logs = logs.sort((a:MaintenanceLog,b:MaintenanceLog)=> compareDates(a.dateTime, b.dateTime));
+      logs = logs.map((log:MaintenanceLog)=>log.dateTime);
+      (sensor as any)["predictedMaintenanceDate"] = predictNextDate(logs.slice(0, Math.max(logs.length, 5)));
+    }
+    return sensors;
   } catch (error: any) {
     throw validationErrorHandler(error);
   }
@@ -213,6 +449,52 @@ export async function initializeHubProcessor(
     hubProcessor.save();
 
     return newtoken;
+  } catch (error: any) {
+    throw validationErrorHandler(error);
+  }
+}
+
+export async function assignMaintenanceStaffToSensorById(
+  sensorId: number,
+  employeeId:number
+): Promise<Sensor>{
+  try {
+    const sensor = await Sensor.findOne({
+      where: { sensorId: sensorId },
+    });
+    if (!sensor) throw { message: "Unable to find sensorId: " + sensor };
+    
+    const generalStaff = await (await findEmployeeById(employeeId)).getGeneralStaff();
+    if (!generalStaff) throw { message: "Unable to find generalStaff with employeeId: " + employeeId };
+
+    sensor.setGeneralStaff(generalStaff);
+    generalStaff.addSensor(sensor);
+    sensor.save();
+    
+    return sensor;
+  } catch (error: any) {
+    throw validationErrorHandler(error);
+  }
+}
+
+export async function removeMaintenanceStaffFromSensorById(
+  sensorId: number,
+  employeeId:number
+): Promise<Sensor>{
+  try {
+    const sensor = await Sensor.findOne({
+      where: { sensorId: sensorId },
+    });
+    if (!sensor) throw { message: "Unable to find sensorId: " + sensor };
+    
+    const generalStaff = await (await findEmployeeById(employeeId)).getGeneralStaff();
+    if (!generalStaff) throw { message: "Unable to find generalStaff with employeeId: " + employeeId };
+
+    generalStaff.removeSensor(sensor);
+    sensor.setGeneralStaff(undefined);
+    sensor.save();
+    
+    return sensor;
   } catch (error: any) {
     throw validationErrorHandler(error);
   }
