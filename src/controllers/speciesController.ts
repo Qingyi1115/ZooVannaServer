@@ -924,3 +924,73 @@ export async function deleteDietNeed(req: Request, res: Response) {
     res.status(400).json({ error: error.message });
   }
 }
+
+export async function createCompatibility(req: Request, res: Response) {
+  try {
+    const { speciesCode1, speciesCode2 } = req.body;
+
+    if ([speciesCode1, speciesCode2].includes(undefined)) {
+      console.log("Missing field(s): ", {
+        speciesCode1,
+        speciesCode2,
+      });
+      return res.status(400).json({ error: "Missing information!" });
+    }
+
+    // have to pass in req for image uploading
+    let compatibility = await SpeciesService.createCompatibility(
+      speciesCode1,
+      speciesCode2,
+    );
+
+    return res.status(200).json({ compatibility });
+  } catch (error: any) {
+    res.status(400).json({ error: error.message });
+  }
+}
+
+export async function getAllCompatibilitiesbySpeciesCode(
+  req: Request,
+  res: Response,
+) {
+  const { speciesCode } = req.params;
+  try {
+    const allCompatibility =
+      await SpeciesService.getAllCompatibilitiesbySpeciesCode(speciesCode);
+    return res.status(200).json(allCompatibility);
+  } catch (error: any) {
+    res.status(400).json({ error: error.message });
+  }
+}
+
+export async function checkIsCompatible(req: Request, res: Response) {
+  const { speciesCode1, speciesCode2 } = req.params;
+  try {
+    const isCompatible = await SpeciesService.checkIsCompatible(
+      speciesCode1,
+      speciesCode2,
+    );
+    return res.status(200).json(isCompatible);
+  } catch (error: any) {
+    res.status(400).json({ error: error.message });
+  }
+}
+
+export async function deleteCompatibility(req: Request, res: Response) {
+  const { compatibilityId } = req.params;
+
+  if (compatibilityId == undefined) {
+    console.log("Missing field(s): ", {
+      compatibilityId,
+    });
+    return res.status(400).json({ error: "Missing information!" });
+  }
+
+  try {
+    const compatibility =
+      await SpeciesService.deleteCompatibility(compatibilityId);
+    return res.status(200).json(compatibility);
+  } catch (error: any) {
+    res.status(400).json({ error: error.message });
+  }
+}

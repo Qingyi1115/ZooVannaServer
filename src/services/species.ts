@@ -1,10 +1,12 @@
 import { Request } from "express";
+import { Op } from "Sequelize";
 import { validationErrorHandler } from "../helpers/errorHandler";
 import { Species } from "../models/species";
 import { SpeciesEnclosureNeed } from "../models/speciesEnclosureNeed";
 import { PhysiologicalReferenceNorms } from "../models/physiologicalReferenceNorms";
 import { AnimalGrowthStage } from "../models/enumerated";
 import { SpeciesDietNeed } from "../models/speciesDietNeed";
+import { Compatibility } from "../models/compatibility";
 
 export async function getAllSpecies(includes: string[]) {
   try {
@@ -446,7 +448,6 @@ export async function deletePhysiologicalReferenceNorms(
   throw { error: "Invalid Physiological Reference Id!" };
 }
 
-//createPhysiologicalReferenceNorms
 export async function createDietNeed(
   speciesCode: string,
   animalFeedCategory: string,
@@ -544,4 +545,118 @@ export async function deleteDietNeed(speciesDietNeedId: string) {
     return result;
   }
   throw { error: "Invalid Species Diet Need Id!" };
+}
+
+//
+export async function createCompatibility(
+  speciesCode1: string,
+  speciesCode2: string,
+) {
+  let newCompatibility = {
+    speciesId1: await getSpeciesIdByCode(speciesCode1),
+    speciesId2: await getSpeciesIdByCode(speciesCode2),
+  } as any;
+
+  // Check if compatibility already exists
+  const existingCompatibility = await Compatibility.findOne({
+    where: {
+      [Op.or]: [
+        {
+          speciesId1: newCompatibility.speciesId1,
+          speciesId2: newCompatibility.speciesId2,
+        },
+        {
+          speciesId1: newCompatibility.speciesId2,
+          speciesId2: newCompatibility.speciesId1,
+        },
+      ],
+    },
+  });
+  if (existingCompatibility) {
+    throw new Error("Compatibility already exists.");
+  } else {
+    console.log(newCompatibility);
+
+    try {
+      let newCompatibilityEntry = await Compatibility.create(newCompatibility);
+
+      await newCompatibilityEntry.setSpecies1(
+        await getSpeciesByCode(speciesCode1, []),
+      );
+      await newCompatibilityEntry.setSpecies2(
+        await getSpeciesByCode(speciesCode2, []),
+      );
+
+      return newCompatibilityEntry;
+    } catch (error: any) {
+      console.log(error);
+      throw validationErrorHandler(error);
+    }
+  }
+}
+
+export async function getAllCompatibilitiesbySpeciesCode(speciesCode: string) {
+  let speciesResult = await Species.findOne({
+    where: { speciesCode: speciesCode },
+    // include: Compatibility, //eager fetch here
+  });
+
+  if (speciesResult) {
+    // Find all species compatible with the given species
+    const compatibilities = await Compatibility.findAll({
+      where: {
+        [Op.or]: [
+          { speciesId1: speciesResult.speciesId },
+          { speciesId2: speciesResult.speciesId },
+        ],
+      },
+    });
+
+    // Extract the IDs of compatible species
+    const compatibleSpeciesIds = compatibilities.map((compatibility) => {
+      if (compatibility.speciesId1 === speciesResult?.speciesId) {
+        return compatibility.speciesId2;
+      } else {
+        return compatibility.speciesId1;
+      }
+    });
+
+    // Find the actual compatible species using their IDs
+    const compatibleSpecies = await Species.findAll({
+      where: { speciesId: compatibleSpeciesIds },
+    });
+
+    return compatibleSpecies;
+  }
+  throw { error: "Invalid Species Code!" };
+}
+
+export async function checkIsCompatible(
+  speciesCode1: string,
+  speciesCode2: string,
+) {
+  let specie1Result = await Species.findOne({
+    where: { speciesCode: speciesCode1 },
+    include: Compatibility, //eager fetch here
+  });
+
+  let specie2Result = await Species.findOne({
+    where: { speciesCode: speciesCode2 },
+    include: Compatibility, //eager fetch here
+  });
+
+  if (specie1Result && specie2Result) {
+    return specie1Result.isCompatible(specie2Result);
+  }
+  throw { error: "Invalid Species Code!" };
+}
+
+export async function deleteCompatibility(compatibilityId: string) {
+  let result = await Compatibility.destroy({
+    where: { compatibilityId: compatibilityId },
+  });
+  if (result) {
+    return result;
+  }
+  throw { error: "Invalid Compatibility Id!" };
 }

@@ -12,6 +12,7 @@ import {
   HasManySetAssociationsMixin,
   HasManyRemoveAssociationMixin,
   CreationOptional,
+  Op,
 } from "Sequelize";
 import { conn } from "../db";
 import {
@@ -23,6 +24,7 @@ import {
 import { SpeciesDietNeed } from "./speciesDietNeed";
 import { SpeciesEnclosureNeed } from "./speciesEnclosureNeed";
 import { PhysiologicalReferenceNorms } from "./physiologicalReferenceNorms";
+import { Compatibility } from "./compatibility";
 
 class Species extends Model<
   InferAttributes<Species>,
@@ -55,23 +57,13 @@ class Species extends Model<
   declare speciesEnclosureNeed?: SpeciesEnclosureNeed;
   declare physiologicalReferenceNorms?: PhysiologicalReferenceNorms[];
   declare speciesDietNeeds?: SpeciesDietNeed[];
+  declare compatibilities?: Compatibility[];
 
-  // declare getSpeciesEnclosureNeed: BelongsToGetAssociationMixin<SpeciesEnclosureNeed>;
-  // declare setSpeciesEnclosureNeed: BelongsToSetAssociationMixin<
-  //   SpeciesEnclosureNeed,
-  //   number
-  // >;
   declare getSpeciesEnclosureNeed: HasOneGetAssociationMixin<SpeciesEnclosureNeed>;
   declare setSpeciesEnclosureNeed: HasOneSetAssociationMixin<
     SpeciesEnclosureNeed,
     number
   >;
-
-  // declare getPhysiologicalReferenceNorms: BelongsToGetAssociationMixin<PhysiologicalReferenceNorms>;
-  // declare setPhysiologicalReferenceNorms: BelongsToSetAssociationMixin<
-  //   PhysiologicalReferenceNorms,
-  //   number
-  // >;
 
   declare getPhysiologicalRefNorm: HasManyGetAssociationsMixin<
     PhysiologicalReferenceNorms[]
@@ -89,12 +81,6 @@ class Species extends Model<
     number
   >;
 
-  // declare getSpeciesDietNeed: BelongsToGetAssociationMixin<SpeciesDietNeed>;
-  // declare setSpeciesDietNeed: BelongsToSetAssociationMixin<
-  //   SpeciesDietNeed,
-  //   number
-  // >;
-
   declare getSpeciesDietNeed: HasManyGetAssociationsMixin<SpeciesDietNeed[]>;
   declare addSpeciesDietNeed: HasManyAddAssociationMixin<
     SpeciesDietNeed,
@@ -106,6 +92,17 @@ class Species extends Model<
   >;
   declare removeSpeciesDietNeed: HasManyRemoveAssociationMixin<
     SpeciesDietNeed,
+    number
+  >;
+
+  declare getCompatibilities: HasManyGetAssociationsMixin<Compatibility[]>;
+  declare addCompatibilities: HasManyAddAssociationMixin<Compatibility, number>;
+  declare setCompatibilities: HasManySetAssociationsMixin<
+    Compatibility[],
+    number
+  >;
+  declare removeCompatibilities: HasManyRemoveAssociationMixin<
+    Compatibility,
     number
   >;
 
@@ -122,6 +119,26 @@ class Species extends Model<
 
   public getSpeciesId() {
     return this.speciesId;
+  }
+
+  // Custom method to check compatibility
+  public async isCompatible(otherSpecies: Species): Promise<boolean> {
+    const isCompatible = await Compatibility.findOne({
+      where: {
+        [Op.or]: [
+          {
+            speciesId1: this.speciesId,
+            speciesId2: otherSpecies.speciesId,
+          },
+          {
+            speciesId1: otherSpecies.speciesId,
+            speciesId2: this.speciesId,
+          },
+        ],
+      },
+    });
+
+    return !!isCompatible;
   }
 }
 

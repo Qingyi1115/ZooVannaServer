@@ -4,6 +4,7 @@ import { Employee } from "./employee";
 import { Keeper } from "./keeper";
 import { PlanningStaff } from "./planningStaff";
 import { Facility } from "./facility";
+import { Compatibility } from "./compatibility";
 import { Sensor } from "./sensor";
 import { GeneralStaff } from "./generalStaff";
 import { InHouse } from "./inHouse";
@@ -176,24 +177,7 @@ export const createDatabase = async (options: any) => {
     addCascadeOptions({ foreignKey: "AnimalClinicId" }),
   );
 
-  // SpeciesDietNeed.hasMany(
-  //   Species,
-  //   addCascadeOptions({ foreignKey: "speciesDietNeedId" }),
-  // );
-  // Species.belongsTo(
-  //   SpeciesDietNeed,
-  //   addCascadeOptions({ foreignKey: "speciesDietNeedId" }),
-  // );
-
-  // SpeciesEnclosureNeed.hasMany(
-  //   Species,
-  //   addCascadeOptions({ foreignKey: "speciesEnclosureNeedId" }),
-  // );
-  // Species.belongsTo(
-  //   SpeciesEnclosureNeed,
-  //   addCascadeOptions({ foreignKey: "speciesEnclosureNeedId" }),
-  // );
-
+  // ------------ Species Relation --------------
   Species.hasOne(SpeciesEnclosureNeed, {
     // foreignKey: "speciesEnclosureNeedId",
     onDelete: "CASCADE",
@@ -202,20 +186,26 @@ export const createDatabase = async (options: any) => {
     // foreignKey: "speciesId",
   });
 
-  // PhysiologicalReferenceNorms.hasMany(
-  //   Species,
-  //   addCascadeOptions({ foreignKey: "physiologicalRefId" }),
-  // );
-  // Species.belongsTo(
-  //   PhysiologicalReferenceNorms,
-  //   addCascadeOptions({ foreignKey: "physiologicalRefId" }),
-  // );
-
   Species.hasMany(PhysiologicalReferenceNorms, { onDelete: "CASCADE" });
   PhysiologicalReferenceNorms.belongsTo(Species);
 
   Species.hasMany(SpeciesDietNeed, { onDelete: "CASCADE" });
   SpeciesDietNeed.belongsTo(Species);
+
+  Species.hasMany(Compatibility, { onDelete: "CASCADE" });
+  Compatibility.belongsTo(Species, {
+    as: "species1",
+    foreignKey: "speciesId1",
+    targetKey: "speciesId",
+    onDelete: "CASCADE",
+  });
+
+  Compatibility.belongsTo(Species, {
+    as: "species2",
+    foreignKey: "speciesId2",
+    targetKey: "speciesId",
+    onDelete: "CASCADE",
+  });
 
   Species.hasMany(Animal, addCascadeOptions({ foreignKey: "speciesId" }));
   Animal.belongsTo(Species, addCascadeOptions({ foreignKey: "speciesId" }));
@@ -713,4 +703,78 @@ export const speciesSeed = async () => {
     AnimalGrowthStage.JUVENILE,
   );
   console.log(panda1DietNeed2.toJSON());
+
+  let capybara1Template = {
+    speciesCode: await Species.getNextSpeciesCode(),
+    commonName: "Capybara",
+    scientificName: "Hydrochoerus Hydrochaeris",
+    aliasName: "Water pig, Hydrochaeris hydrochaeris",
+    conservationStatus: ConservationStatus.LEAST_CONCERN,
+    domain: "Eukaryota",
+    kingdom: "Animalia",
+    phylum: "Chordata",
+    speciesClass: "Mammalia",
+    order: "Rodentia",
+    family: "Caviidae",
+    genus: "Hydrochoerus",
+    educationalDescription:
+      "The Capybara is the largest living rodent in the world, known for its semi-aquatic lifestyle and friendly demeanor. These herbivorous animals are highly social and often live in groups, making them excellent swimmers and grazers. They are native to South America and are well-adapted to various aquatic habitats.",
+    educationalFunFact: "Fun Fact 001",
+    nativeContinent: Continent.SOUTH_OR_CENTRAL_AMERICA,
+    nativeBiomes: "Grasslands, Savannas, Wetlands, Rainforests",
+    groupSexualDynamic: GroupSexualDynamic.POLYANDROUS,
+    habitatOrExhibit: "Water bodies",
+    generalDietPreference: "Herbivores",
+    imageUrl: "Fake_URL_Here",
+    lifeExpectancyYears: 10,
+    // foodRemark: "Food remark...",
+  } as any;
+  let capybara1 = await Species.create(capybara1Template);
+  console.log(capybara1.toJSON());
+
+  let redPanda1Template = {
+    speciesCode: await Species.getNextSpeciesCode(),
+    commonName: "Red Panda",
+    scientificName: "Ailurus fulgens",
+    aliasName: "Lesser Panda, Fire Fox",
+    conservationStatus: ConservationStatus.ENDANGERED,
+    domain: "Eukaryota",
+    kingdom: "Animalia",
+    phylum: "Chordata",
+    speciesClass: "Mammalia",
+    order: "Carnivora",
+    family: "Ailuridae",
+    genus: "Ailurus",
+    educationalDescription:
+      "The Red Panda is a small, arboreal mammal known for its striking red fur and bushy tail. Despite its name, it is not closely related to the giant panda and belongs to its own family, Ailuridae. Red pandas are native to the eastern Himalayas and southwestern China. They are primarily herbivorous, feeding on bamboo, fruits, and insects. These solitary animals are known for their shy and elusive nature.",
+    educationalFunFact: "Fun Fact 001",
+    nativeContinent: Continent.ASIA,
+    nativeBiomes: "Temperate Forests, Bamboo Forests",
+    groupSexualDynamic: GroupSexualDynamic.POLYANDROUS,
+    habitatOrExhibit: "Forested areas",
+    generalDietPreference: "Herbivores",
+    imageUrl: "Fake_URL_Here",
+    lifeExpectancyYears: 14,
+    // foodRemark: "Food remark...",
+  } as any;
+  let redPanda1 = await Species.create(redPanda1Template);
+  console.log(redPanda1.toJSON());
+
+  let compatibility1 = await SpeciesService.createCompatibility(
+    "SPE001",
+    "SPE002",
+  );
+  console.log(compatibility1.toJSON());
+
+  let compatibility2 = await SpeciesService.createCompatibility(
+    "SPE001",
+    "SPE003",
+  );
+  console.log(compatibility2.toJSON());
+
+  let compatibility3 = await SpeciesService.createCompatibility(
+    "SPE002",
+    "SPE003",
+  );
+  console.log(compatibility3.toJSON());
 };

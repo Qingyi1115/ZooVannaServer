@@ -22,6 +22,10 @@ import {
   getDietNeedById,
   updateDietNeed,
   deleteDietNeed,
+  createCompatibility,
+  getAllCompatibilitiesbySpeciesCode,
+  checkIsCompatible,
+  deleteCompatibility,
 } from "../controllers/speciesController";
 
 const router = express.Router();
@@ -85,5 +89,14 @@ router.get("/getDietNeedById/:speciesDietNeedId", getDietNeedById);
 router.post("/createDietNeed", createDietNeed);
 router.put("/updateDietNeed", updateDietNeed);
 router.delete("/deleteDietNeed/:speciesDietNeedId", deleteDietNeed);
+
+//species competebility
+router.get(
+  "/getAllCompatibilitiesbySpeciesCode/:speciesCode",
+  getAllCompatibilitiesbySpeciesCode,
+);
+router.get("/getCompatibility/:speciesCode1/:speciesCode2", checkIsCompatible);
+router.post("/createCompatibility", createCompatibility);
+router.delete("/deleteCompatibility/:compatibilityId", deleteCompatibility);
 
 export default router;
