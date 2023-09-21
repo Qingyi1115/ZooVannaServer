@@ -20,6 +20,7 @@ export async function createNewEmployee(
   employeeEmail: string,
   employeePhoneNumber: string,
   employeeEducation: string,
+  employeeBirthDate: Date,
   isAccountManager: Boolean,
   role: string,
   roleJson: any,
@@ -37,6 +38,7 @@ export async function createNewEmployee(
     employeePasswordHash: hash(randomPassword + randomSalt),
     employeeSalt: randomSalt,
     employeeDoorAccessCode: await Employee.generateNewDoorAccessCode(),
+    employeeBirthDate: employeeBirthDate,
     employeeEducation: employeeEducation,
     isAccountManager: isAccountManager,
   };
