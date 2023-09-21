@@ -833,28 +833,21 @@ export async function getAnimalFeedByName(req: Request, res: Response) {
   }
 }
 
-export async function updateAnimalFeed(req: Request, res: Response) {
+export async function updateAnimalFeedController(req: Request, res: Response) {
   try {
-    const imageUrl = await handleFileUpload(
-      req,
-      process.env.IMG_URL_ROOT! + "animalFeed", //"D:/capstoneUploads/animalFeed",
-    );
     const {
       animalFeedName,
-      animalFeedImageUrl,
       animalFeedCategory
     } = req.body;
 
     if (
       [
         animalFeedName,
-        animalFeedImageUrl,
         animalFeedCategory
       ].includes(undefined)
     ) {
       console.log("Missing field(s): ", {
         animalFeedName,
-        animalFeedImageUrl,
         animalFeedCategory
       });
       return res.status(400).json({ error: "Missing information!" });
@@ -863,12 +856,47 @@ export async function updateAnimalFeed(req: Request, res: Response) {
     // have to pass in req for image uploading
     let animalFeed = await AnimalFeedService.updateAnimalFeed(
       animalFeedName,
-      animalFeedImageUrl,
       animalFeedCategory
     );
 
     return res.status(200).json({ animalFeed });
   } catch (error: any) {
+    console.log(error)
+    res.status(400).json({ error: error.message });
+  }
+}
+
+export async function updateAnimalFeedImageController(req: Request, res: Response) {
+  try {
+    // req has image??
+    const imageUrl = await handleFileUpload(
+      req,
+      process.env.IMG_URL_ROOT! + "animalFeed", //"D:/capstoneUploads/animalFeed",
+    );
+    const {
+      animalFeedName
+    } = req.body;
+
+    if (
+      [
+        animalFeedName
+      ].includes(undefined)
+    ) {
+      console.log("Missing field(s): ", {
+        animalFeedName
+      });
+      return res.status(400).json({ error: "Missing information!" });
+    }
+
+    // have to pass in req for image uploading
+    let animalFeed = await AnimalFeedService.updateAnimalFeedImage(
+      animalFeedName,
+      imageUrl
+    );
+
+    return res.status(200).json({ animalFeed });
+  } catch (error: any) {
+    console.log(error)
     res.status(400).json({ error: error.message });
   }
 }

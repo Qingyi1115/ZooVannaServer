@@ -11,7 +11,7 @@ import {
   createNewAnimalFeed,
   getAllAnimalFeed,
   getAnimalFeedByName,
-  updateAnimalFeed,
+  updateAnimalFeedController,
   deleteAnimalFeedByName,
   createNewEnrichmentItem,
   getAllEnrichmentItem,
@@ -35,7 +35,8 @@ import {
   assignOperationStaffToFacility,
   removeOperationStaffFromFacility,
   getFacilityMaintenanceSuggestions,
-  getSensorMaintenanceSuggestions
+  getSensorMaintenanceSuggestions,
+  updateAnimalFeedImageController
 } from "../controllers/assetFacilityController";
 
 const router = express.Router();
@@ -61,7 +62,8 @@ router.get("/removeOperationStaffFromFacility/:facilityId", removeOperationStaff
 router.post("/createNewAnimalFeed", createNewAnimalFeed);
 router.get("/getAllAnimalFeed", getAllAnimalFeed);
 router.get("/getAnimalFeed/:animalFeedName", getAnimalFeedByName);
-router.put("/updateAnimalFeed", updateAnimalFeed);
+router.put("/updateAnimalFeed", updateAnimalFeedController);
+router.put("/updateAnimalFeedImage", updateAnimalFeedImageController);
 router.delete("/deleteAnimalFeed/:animalFeedName", deleteAnimalFeedByName);
 
 // Enrichment Items
