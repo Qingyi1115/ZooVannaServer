@@ -49,6 +49,49 @@ export async function createNewEmployee(
         association: role,
       },
     });
+
+    newEmployee.save();
+
+    const token = uuidv4();
+
+    const resetTokens: any = {
+      token: token,
+      email: employeeEmail,
+      createdAt: Date.now(),
+      expiresAt: Date.now() + 600000, //expires in 10 minutes
+    };
+
+    try {
+      await Token.create(resetTokens);
+
+      const transporter = nodemailer.createTransport({
+        service: 'gmail',
+        auth: {
+          user: process.env.EMAIL_USERNAME,
+          pass: process.env.EMAIL_PASSWORD,
+        },
+      });
+
+      const mailOptions = {
+        from: process.env.EMAIL_USERNAME,
+        to: employeeEmail,
+        subject: 'Set Password',
+        text: 'Click the link below to set your password: ',
+        html: `<a href="http://localhost:5173/employeeAccount/setPassword/${token}">Set Password</a>`,
+      };
+
+      transporter.sendMail(mailOptions, (error, info) => {
+        if (error) {
+          console.error('Error sending email:', error);
+        } else {
+          console.log('Email sent:', info.response);
+        }
+      });
+    }
+    
+    catch (error: any) {
+      throw validationErrorHandler(error);
+    }
     return [randomPassword, newEmployee.toJSON()];
   } catch (error: any) {
     throw validationErrorHandler(error);
@@ -89,7 +132,7 @@ export async function resetPassword(
           to: result.employeeEmail,
           subject: 'Reset Password',
           text: 'Click the link below to reset your password: ',
-          html: '<a href="http://localhost:3000/employee/resetForgottenPassword/${token}">Reset Password</a>',
+          html: `<a href="http://localhost:5173/employeeAccount/setPassword/${token}">Reset Password</a>`,
         };
 
         transporter.sendMail(mailOptions, (error, info) => {
