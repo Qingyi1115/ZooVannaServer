@@ -37,7 +37,7 @@ router.put("resetForgottenPassword/:token", resetForgottenPasswordController); /
 router.use(authMiddleware);
 
 // Employee common infra : employee self use only (No role required)
-router.post("/updateEmployeePassword", updateEmployeePasswordController);
+router.put("/updateEmployeePassword", updateEmployeePasswordController);
 router.get("/getEmployee", getSelfController);
 router.post("/createEmployee", createEmployeeController);
 router.get("/getEmployee/:employeeId", getEmployeeController);
@@ -52,7 +52,6 @@ router.put("/disableEmployee/:employeeId", disableEmployeeAccountController);
 //Enable and disable role (can be Keeper, General Staff or Planning Staff)
 router.put("/getEmployee/:employeeId/enableRole", enableRoleController);
 router.put("/getEmployee/:employeeId/disableRole", disableRoleController);
-
 
 //Update Employee Role Details
 //Update Keeper Role --> Assign more enclosures or delete the enclosures --> for future use if needed

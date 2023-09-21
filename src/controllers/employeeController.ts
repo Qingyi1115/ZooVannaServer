@@ -43,7 +43,7 @@ export async function updateEmployeeAccountController(req: Request, res: Respons
       employeeEmail, 
       employeePhoneNumber,
       employeeEducation
-    } = req.params;
+    } = req.body;
 
     for (const [field, v] of Object.entries({
       employeeAddress:employeeAddress, 
@@ -54,18 +54,16 @@ export async function updateEmployeeAccountController(req: Request, res: Respons
           (employee as any)[field] = v;
         } 
       }
-
     employee.save();
     
     let token = undefined;
     if (employeeEmail !== undefined){
       token = createToken(employee.employeeEmail);
     }
-
     
     return res.status(200).json({newToken: token, employee: employee.toJSON()});
   } catch (error: any) {
-    console.log(error.message);
+    console.log("errore",error);
     return res.status(400).json({error: error.message});
   }
 };
@@ -78,7 +76,7 @@ export async function updateEmployeePasswordController(req: Request, res: Respon
     const { 
       newPassword,
       oldPassword
-    } = req.params;
+    } = req.body;
 
     if ([newPassword, oldPassword].every(
         (field) => field === undefined,
@@ -90,7 +88,7 @@ export async function updateEmployeePasswordController(req: Request, res: Respon
 
     employee.updatePassword(newPassword);
     
-    return res.status(200);
+    return res.status(200).json({result: "Success!"});
   } catch (error: any) {
     console.log(error.message);
     return res.status(400).json({error: error.message});
