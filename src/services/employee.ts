@@ -20,8 +20,8 @@ export async function createNewEmployee(
   employeeEmail: string,
   employeePhoneNumber: string,
   employeeEducation: string,
+  isAccountManager: boolean,
   employeeBirthDate: Date,
-  isAccountManager: Boolean,
   role: string,
   roleJson: any,
 ) {
@@ -236,7 +236,8 @@ export async function getEmployee(
 }
 
 export async function disableEmployeeAccount(
-  employeeId: CreationOptional<number>
+  employeeId: CreationOptional<number>, 
+  dateOfResignation: Date,
 ) {
   let employee = await Employee.findOne({
     where: {employeeId: employeeId},
@@ -244,7 +245,7 @@ export async function disableEmployeeAccount(
 
   if(employee) {
     if(employee.dateOfResignation == null) {
-      return employee.disableAccount();
+      return employee.disableAccount(dateOfResignation);
     }
     throw{
       error: "Employee account was disabled before on "+ employee.dateOfResignation,
