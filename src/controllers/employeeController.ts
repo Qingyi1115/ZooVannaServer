@@ -121,7 +121,7 @@ export const setAccountManagerController = async (
 
     let result = await setAsAccountManager(Number(employeeId));
     
-    return res.status(200).json({set: result});
+    return res.status(200).json({employee: result});
 } catch (error: any) {
   console.log(error.message);
   return res.status(400).json({error: error.message});
@@ -146,7 +146,7 @@ export const unsetAccountManagerController = async (
 
     let result = await unsetAsAccountManager(Number(employeeId));
     
-    return res.status(200).json({unset: result});
+    return res.status(200).json({employee: result});
   } catch (error: any) {
     console.log(error.message);
     return res.status(400).json({error: error.message});
