@@ -210,7 +210,7 @@ export async function unsetAsAccountManager(
   };
 }
 
-/*export async function getAllEmployees(includes: string[] = []): Promise<Employee[]> {
+export async function getAllEmployees(includes: string[] = []): Promise<Employee[]> {
   return Employee.findAll({
     order: [
       [literal('dateOfResignation IS NULL'), "ASC"],
@@ -218,20 +218,6 @@ export async function unsetAsAccountManager(
     ],
     include: includes,
   });
-}*/
-
-export async function getAllEmployees() {
-  return Employee.findAll({
-    order: [
-      [literal(`dateofResignation IS NULL`),"ASC" ],
-      ["dateOfResignation", "DESC"],
-    ],
-    /*include: [
-      {model: Keeper},
-      {model: PlanningStaff},
-      {model: GeneralStaff},
-    ]*/
-  })
 }
 
 export async function getEmployee(
