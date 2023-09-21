@@ -115,8 +115,6 @@ class Employee extends Model<
   }
 
   public toJSON() {
-    // Can control default values returned rather than manually populating json, removing secrets
-    // Similar idea albert more useful when compared to java's toString
     return {
       ...this.get(),
       keeper: this.keeper?.toJSON(),
@@ -124,6 +122,17 @@ class Employee extends Model<
       generalStaff: this.generalStaff?.toJSON(),
       employeePasswordHash: undefined,
       employeeSalt: undefined,
+    };
+  }
+
+  public async toFullJSON(){
+    return {
+      ...this.get(),
+      employeePasswordHash: undefined,
+      employeeSalt: undefined,
+      keeper: (await this.getKeeper())?.toJSON(),
+      generalStaff: (await this.getGeneralStaff())?.toJSON(),
+      planningStaff: (await this.getPlanningStaff())?.toJSON(),
     };
   }
 }

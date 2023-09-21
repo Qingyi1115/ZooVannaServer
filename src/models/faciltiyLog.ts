@@ -16,6 +16,7 @@ class FacilityLog extends Model<
 > {
   declare logId: CreationOptional<number>;
   declare dateTime: Date;
+  declare isMaintenance:boolean;
   declare title: string;
   // declare type: Type;
   declare details: string;
@@ -42,6 +43,10 @@ FacilityLog.init(
     dateTime: {
       type: DataTypes.DATE,
       defaultValue: DataTypes.NOW,
+    },
+    isMaintenance: {
+      type: DataTypes.BOOLEAN,
+      allowNull: false,
     },
     title: {
       type: DataTypes.STRING,
