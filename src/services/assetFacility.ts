@@ -120,18 +120,18 @@ export async function assignMaintenanceStaffToFacilityById(
     const inHouse = await facility.getInHouse();
     if (!inHouse) throw { message: "Facility is not In House!" };
 
-    const employees = await getAllEmployees([]);
-    employees.filter(employee => employeeIds.includes(employee.employeeId));
-    employees.map(employee => employee.getGeneralStaff());
+    let employees = await getAllEmployees([]);
+    console.log("all employees", employees)
+    employees = employees.filter(employee => employeeIds.includes(employee.employeeId));
     const staffList:GeneralStaff[] = []
-    for (const staffPromise in (employees as any)){
-      const staff = await (staffPromise as any);
+    for (const emp of employees){
+      const staff = await emp.getGeneralStaff();
       if (staff.generalStaffType != GeneralStaffType.ZOO_MAINTENANCE) throw { message:"Not a Maintenance Staff!"}
       staffList.push(staff)
     }
-    for (const staff in staffList){
-      inHouse.addMaintenanceStaff(staff as any);
-      (staff as any).addMaintainedFacility(inHouse);
+    for (const staff of staffList){
+      inHouse.addMaintenanceStaff(staff);
+      staff.addMaintainedFacilities(inHouse);
     }
     
     return inHouse;

@@ -339,6 +339,7 @@ export async function assignMaintenanceStaffToFacility(req: Request, res: Respon
 
     return res.status(200).json({ inHouse: inHouse.toFullJSON() });
   } catch (error: any) {
+    console.log("error",error)
     res.status(400).json({ error: error.message });
   }
 }
