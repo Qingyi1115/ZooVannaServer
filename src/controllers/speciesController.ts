@@ -491,7 +491,7 @@ export async function createSpeciesEnclosureNeeds(req: Request, res: Response) {
     }
 
     // have to pass in req for image uploading
-    let species = await SpeciesService.createEnclosureNeeds(
+    let speciesEnclosureNeeds = await SpeciesService.createEnclosureNeeds(
       speciesCode,
       smallExhibitHeightRequired,
       minLandAreaRequired,
@@ -517,7 +517,7 @@ export async function createSpeciesEnclosureNeeds(req: Request, res: Response) {
       soilPercentMax,
     );
 
-    return res.status(200).json({ species });
+    return res.status(200).json({ speciesEnclosureNeeds });
   } catch (error: any) {
     res.status(400).json({ error: error.message });
   }
