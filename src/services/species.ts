@@ -283,12 +283,14 @@ export async function createEnclosureNeeds(
   console.log(newEnclosureNeed);
 
   try {
-    let speciesEncloure = await SpeciesEnclosureNeed.create(newEnclosureNeed);
-    await (
-      await getSpeciesByCode(speciesCode, [])
-    ).setSpeciesEnclosureNeed(speciesEncloure);
+    let newSpeciesEncloureEntry =
+      await SpeciesEnclosureNeed.create(newEnclosureNeed);
+    // await (
+    //   await getSpeciesByCode(speciesCode, [])
+    // ).setSpeciesEnclosureNeed(speciesEncloure);
+    newSpeciesEncloureEntry.setSpecies(await getSpeciesByCode(speciesCode, []));
 
-    return speciesEncloure;
+    return newSpeciesEncloureEntry;
   } catch (error: any) {
     console.log(error);
     throw validationErrorHandler(error);
