@@ -169,7 +169,7 @@ export const getAllEmployeesController = async (
 
     const {includes } = req.body;
     const _includes : string[] = []
-    for (const role in ["keeper", "generalStaff", "planningStaff"]){
+    for (const role of ["keeper", "generalStaff", "planningStaff"]){
       if (includes.includes(role)) _includes.push(role)
     }
 
