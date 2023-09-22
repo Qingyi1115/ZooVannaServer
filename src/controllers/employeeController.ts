@@ -344,11 +344,11 @@ export const updateRoleTypeController = async (
     }
 
     const {employeeId} = req.params;
-    const roleJson = req.body;
-    console.log(roleJson.role, roleJson.roleType);
+    const result = req.body;
+    console.log(result.role, result.roleType);
 
-    await updateRoleType(Number(employeeId), roleJson.role, roleJson.roleType);
-    return res.status(200).json({message: `The ${roleJson.role} roleType has been updated`});
+    await updateRoleType(Number(employeeId), result.role, result.roleType);
+    return res.status(200).json({message: `The ${result.role} roleType has been updated`});
 
   }
   catch (error: any) {
@@ -371,11 +371,11 @@ export const updateSpecializationTypeController = async (
     }
 
     const {employeeId} = req.params;
-    const roleJson = req.body;
-    console.log(roleJson.role, roleJson.specialization);
+    const result = req.body;
+    console.log(result.role, result.specializationType);
 
-    await updateSpecializationType(Number(employeeId), roleJson.role, roleJson.specialization);
-    return res.status(200).json({message: `The ${roleJson.role} specialization has been updated`});
+    await updateSpecializationType(Number(employeeId), result.role, result.specializationType);
+    return res.status(200).json({message: `The ${result.role} specialization has been updated`});
 
   }
   catch (error: any) {

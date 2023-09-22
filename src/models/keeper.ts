@@ -87,6 +87,7 @@ class Keeper extends Model<
     } else if (roleType === "SENIOR_KEEPER") {
       this.keeperType = KeeperType.SENIOR_KEEPER;
     }
+    this.save();
   }
 }
 

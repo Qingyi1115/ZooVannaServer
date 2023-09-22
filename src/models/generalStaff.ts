@@ -62,12 +62,13 @@ class GeneralStaff extends Model<
     this.save();
   }
 
-  public updateGeneralStaffType(roleType: string) { GeneralStaffType.ZOO_OPERATIONS
+  public updateGeneralStaffType(roleType: string) { 
     if(roleType === "ZOO_MAINTENANCE") {
       this.generalStaffType = GeneralStaffType.ZOO_MAINTENANCE;
     } else if (roleType === "ZOO_OPERATIONS") {
       this.generalStaffType = GeneralStaffType.ZOO_OPERATIONS;
     }
+    this.save();
   }
 }
 
