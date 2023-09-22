@@ -13,8 +13,6 @@ import {
   unsetAsAccountManager,
   enableRole,
   disableRole,
-  updateRoleType,
-  updateSpecializationType
 } from "../services/employee";
 
 export const login = async (req: Request, res: Response) => {
@@ -288,7 +286,7 @@ export const enableRoleController = async (
     }
 
     const {employeeId} = req.params;
-    const result = req.body;
+    const {result} = req.body;
     console.log(result);
     console.log(employeeId);
     
@@ -317,65 +315,11 @@ export const disableRoleController = async (
     }
 
     const {employeeId} = req.params;
-    const roleJson = req.body;
+    const {roleJson} = req.body;
     console.log(roleJson, roleJson.role);
 
     await disableRole(Number(employeeId), roleJson.role);
     return res.status(200).json({message: `The ${roleJson.role} role has been disabled`});
-
-  }
-  catch (error: any) {
-    return res.status(400).json({error: error.message});
-  }
-}
-
-export const updateRoleTypeController = async (
-  req: Request, 
-  res: Response,
-) => {
-  try {
-    const { email } = (req as any).locals.jwtPayload;
-    const employee = await findEmployeeByEmail(email);
-
-    if (!employee.isAccountManager) {
-      return res
-        .status(403)
-        .json({ error: "Access Denied! Account managers only!" });
-    }
-
-    const {employeeId} = req.params;
-    const roleJson = req.body;
-    console.log(roleJson.role, roleJson.roleType);
-
-    await updateRoleType(Number(employeeId), roleJson.role, roleJson.roleType);
-    return res.status(200).json({message: `The ${roleJson.role} roleType has been updated`});
-
-  }
-  catch (error: any) {
-    return res.status(400).json({error: error.message});
-  }
-}
-
-export const updateSpecializationTypeController = async (
-  req: Request, 
-  res: Response,
-) => {
-  try {
-    const { email } = (req as any).locals.jwtPayload;
-    const employee = await findEmployeeByEmail(email);
-
-    if (!employee.isAccountManager) {
-      return res
-        .status(403)
-        .json({ error: "Access Denied! Account managers only!" });
-    }
-
-    const {employeeId} = req.params;
-    const roleJson = req.body;
-    console.log(roleJson.role, roleJson.specialization);
-
-    await updateSpecializationType(Number(employeeId), roleJson.role, roleJson.specialization);
-    return res.status(200).json({message: `The ${roleJson.role} specialization has been updated`});
 
   }
   catch (error: any) {

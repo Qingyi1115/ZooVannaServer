@@ -14,8 +14,6 @@ import {
   unsetAccountManagerController,
   enableRoleController,
   disableRoleController,
-  updateRoleTypeController,
-  updateSpecializationTypeController,
 } from "../controllers/employeeController";
 import {
   addEnclosureToKeeperController,
@@ -47,8 +45,6 @@ router.put("/disableEmployee/:employeeId", disableEmployeeAccountController);
 router.put("/getEmployee/:employeeId/enableRole", enableRoleController);
 router.put("/getEmployee/:employeeId/disableRole", disableRoleController);
 
-router.put("/getEmployee/:employeeId/updateRoleType", updateRoleTypeController);
-router.put("/getEmployee/:employeeId/updateSpecializationType", updateSpecializationTypeController);
 
 
 //Update Employee Role Details
