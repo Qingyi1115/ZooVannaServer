@@ -645,4 +645,151 @@ export const speciesSeed = async () => {
   } as any;
   let panda1 = await Species.create(panda1Template);
   console.log(panda1.toJSON());
+
+  let panda1enclosure = await SpeciesService.createEnclosureNeeds(
+    "SPE001",
+    10,
+    10,
+    10,
+    10,
+    10,
+    10,
+    10,
+    10,
+    10,
+    10,
+    10,
+    10,
+    10,
+    10,
+    10,
+    10,
+    10,
+    10,
+    10,
+    10,
+    10,
+    10,
+  );
+  console.log(panda1enclosure.toJSON());
+
+  let panda1phy1 = await SpeciesService.createPhysiologicalReferenceNorms(
+    "SPE001",
+    100,
+    100,
+    100,
+    100,
+    100,
+    AnimalGrowthStage.INFANT,
+  );
+  console.log(panda1phy1.toJSON());
+
+  let panda1phy2 = await SpeciesService.createPhysiologicalReferenceNorms(
+    "SPE001",
+    200,
+    200,
+    200,
+    200,
+    200,
+    AnimalGrowthStage.ADULT,
+  );
+  console.log(panda1phy2.toJSON());
+
+  let panda1DietNeed1 = await SpeciesService.createDietNeed(
+    "SPE001",
+    AnimalFeedCategory.FISH,
+    100,
+    1000,
+    PresentationContainer.SILICONE_DISH,
+    PresentationMethod.CHOPPED,
+    PresentationLocation.IN_CONTAINER,
+    AnimalGrowthStage.ADULT,
+  );
+  console.log(panda1DietNeed1.toJSON());
+
+  let panda1DietNeed2 = await SpeciesService.createDietNeed(
+    "SPE001",
+    AnimalFeedCategory.HAY,
+    1000,
+    7000,
+    PresentationContainer.HANGING_FEEDERS,
+    PresentationMethod.WHOLE,
+    PresentationLocation.IN_CONTAINER,
+    AnimalGrowthStage.JUVENILE,
+  );
+  console.log(panda1DietNeed2.toJSON());
+  let capybara1Template = {
+    speciesCode: await Species.getNextSpeciesCode(),
+    commonName: "Capybara",
+    scientificName: "Hydrochoerus Hydrochaeris",
+    aliasName: "Water pig, Hydrochaeris hydrochaeris",
+    conservationStatus: ConservationStatus.LEAST_CONCERN,
+    domain: "Eukaryota",
+    kingdom: "Animalia",
+    phylum: "Chordata",
+    speciesClass: "Mammalia",
+    order: "Rodentia",
+    family: "Caviidae",
+    genus: "Hydrochoerus",
+    educationalDescription:
+      "The Capybara is the largest living rodent in the world, known for its semi-aquatic lifestyle and friendly demeanor. These herbivorous animals are highly social and often live in groups, making them excellent swimmers and grazers. They are native to South America and are well-adapted to various aquatic habitats.",
+    educationalFunFact:
+      "Capybaras are excellent swimmers and can stay submerged underwater for up to five minutes. They use this skill to evade predators and forage for aquatic plants.",
+    nativeContinent: Continent.SOUTH_OR_CENTRAL_AMERICA,
+    nativeBiomes: "Grasslands, Savannas, Wetlands, Rainforests",
+    groupSexualDynamic: GroupSexualDynamic.POLYANDROUS,
+    habitatOrExhibit: "Water bodies",
+    generalDietPreference: "Herbivores",
+    imageUrl: "img/species/capybara.jpg",
+    lifeExpectancyYears: 10,
+    // foodRemark: "Food remark...",
+  } as any;
+  let capybara1 = await Species.create(capybara1Template);
+  console.log(capybara1.toJSON());
+
+  let redPanda1Template = {
+    speciesCode: await Species.getNextSpeciesCode(),
+    commonName: "Red Panda",
+    scientificName: "Ailurus fulgens",
+    aliasName: "Lesser Panda, Fire Fox",
+    conservationStatus: ConservationStatus.ENDANGERED,
+    domain: "Eukaryota",
+    kingdom: "Animalia",
+    phylum: "Chordata",
+    speciesClass: "Mammalia",
+    order: "Carnivora",
+    family: "Ailuridae",
+    genus: "Ailurus",
+    educationalDescription:
+      "The Red Panda is a small, arboreal mammal known for its striking red fur and bushy tail. Despite its name, it is not closely related to the giant panda and belongs to its own family, Ailuridae. Red pandas are native to the eastern Himalayas and southwestern China. They are primarily herbivorous, feeding on bamboo, fruits, and insects. These solitary animals are known for their shy and elusive nature.",
+    educationalFunFact: "Fun Fact 001",
+    nativeContinent: Continent.ASIA,
+    nativeBiomes: "Temperate Forests, Bamboo Forests",
+    groupSexualDynamic: GroupSexualDynamic.POLYANDROUS,
+    habitatOrExhibit: "Forested areas",
+    generalDietPreference: "Herbivores",
+    imageUrl: "img/species/redPanda.jpeg",
+    lifeExpectancyYears: 14,
+    // foodRemark: "Food remark...",
+  } as any;
+  let redPanda1 = await Species.create(redPanda1Template);
+  console.log(redPanda1.toJSON());
+
+  let compatibility1 = await SpeciesService.createCompatibility(
+    "SPE001",
+    "SPE002",
+  );
+  console.log(compatibility1.toJSON());
+
+  let compatibility2 = await SpeciesService.createCompatibility(
+    "SPE001",
+    "SPE003",
+  );
+  console.log(compatibility2.toJSON());
+
+  let compatibility3 = await SpeciesService.createCompatibility(
+    "SPE002",
+    "SPE003",
+  );
+  console.log(compatibility3.toJSON());
 };
