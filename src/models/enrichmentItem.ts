@@ -26,7 +26,7 @@ EnrichmentItem.init(
     enrichmentItemName: {
       type: DataTypes.STRING,
       allowNull: false,
-      unique: true
+      unique: false
     },
     enrichmentItemImageUrl: {
       type: DataTypes.STRING,

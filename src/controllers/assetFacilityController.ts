@@ -109,15 +109,15 @@ export async function getAllFacilityController(req: Request, res: Response) {
         .json({ error: "Access Denied! Operation managers only!" });
 
     let { includes } = req.body;
-    includes = includes || []; 
+    includes = includes || [];
 
-    const _includes : string[] = []
-    for (const role of ["hubProcessors"]){
+    const _includes: string[] = []
+    for (const role of ["hubProcessors"]) {
       if (includes.includes(role)) _includes.push(role)
     }
 
-    let facilities : Facility[] = await getAllFacility(_includes, includes.includes("facilityDetail"));
-    console.log("facilities",facilities)
+    let facilities: Facility[] = await getAllFacility(_includes, includes.includes("facilityDetail"));
+    console.log("facilities", facilities)
     facilities.forEach(facility => facility.toJSON())
 
     return res.status(200).json({ facilities: facilities });
@@ -141,17 +141,17 @@ export async function getFacilityController(req: Request, res: Response) {
       return res
         .status(403)
         .json({ error: "Access Denied! Operation managers only!" });
-    
+
     let { facilityId } = req.params
     let { includes } = req.body;
-    includes = includes || []; 
+    includes = includes || [];
 
-    const _includes : string[] = []
-    for (const role of ["hubProcessors"]){
+    const _includes: string[] = []
+    for (const role of ["hubProcessors"]) {
       if (includes.includes(role)) _includes.push(role)
     }
 
-    let facility : Facility = await getFacilityById(Number(facilityId), _includes );
+    let facility: Facility = await getFacilityById(Number(facilityId), _includes);
     return res.status(200).json({ facility: await facility.toFullJson() });
   } catch (error: any) {
     console.log(error)
@@ -196,7 +196,7 @@ export async function updateFacility(req: Request, res: Response) {
         .status(403)
         .json({ error: "Access Denied! Operation managers only!" });
     }
-    const { facilityId } = req.params; 
+    const { facilityId } = req.params;
     const {
       facilityName,
       xCoordinate,
@@ -213,8 +213,8 @@ export async function updateFacility(req: Request, res: Response) {
       return res.status(400).json({ error: "Missing information!" });
     }
 
-    const facilityAttribute :any = {}
-    
+    const facilityAttribute: any = {}
+
     for (const [field, v] of Object.entries({
       facilityName: facilityName,
       xCoordinate: Number(xCoordinate),
@@ -384,7 +384,7 @@ export async function deleteFacility(req: Request, res: Response) {
         .json({ error: "Access Denied! Operation managers only!" });
     }
     const { facilityId } = req.params;
-    if (facilityId === undefined ) return res.status(400).json({ error: "Missing information!" });
+    if (facilityId === undefined) return res.status(400).json({ error: "Missing information!" });
 
     await deleteFacilityById(Number(facilityId));
 
@@ -443,12 +443,12 @@ export async function getAllHubs(req: Request, res: Response) {
 
     const { includes = [] } = req.body;
 
-    const _includes : string[] = []
-    for (const role of ["sensors", "facility"]){
+    const _includes: string[] = []
+    for (const role of ["sensors", "facility"]) {
       if (includes.includes(role)) _includes.push(role)
     }
 
-    let hubs : HubProcessor[] = await _getAllHubs(_includes);
+    let hubs: HubProcessor[] = await _getAllHubs(_includes);
 
     hubs.forEach(hub => hub.toJSON())
 
@@ -472,15 +472,15 @@ export async function getAllSensors(req: Request, res: Response) {
       return res
         .status(403)
         .json({ error: "Access Denied! Operation managers only!" });
-    
-    const { includes=[] } = req.body;
 
-    const _includes : string[] = []
-    for (const role of ["hubProcessor", "sensorReading", "generalStaff"]){
+    const { includes = [] } = req.body;
+
+    const _includes: string[] = []
+    for (const role of ["hubProcessor", "sensorReading", "generalStaff"]) {
       if (includes.includes(role)) _includes.push(role)
     }
-  
-    let sensors : Sensor[] = await _getAllSensors(_includes);
+
+    let sensors: Sensor[] = await _getAllSensors(_includes);
 
     sensors.forEach(sensor => sensor.toJSON())
 
@@ -509,10 +509,10 @@ export async function getSensorReading(req: Request, res: Response) {
     const { startDate, endDate } = req.body;
 
     let sensorReadings = await getSensorReadingBySensorId(Number(sensorId));
-    
-    sensorReadings = sensorReadings.filter(reading => 
+
+    sensorReadings = sensorReadings.filter(reading =>
       compareDates(reading.readingDate, new Date(startDate)) >= 0 &&
-      compareDates(reading.readingDate, new Date(endDate)) <= 0 );
+      compareDates(reading.readingDate, new Date(endDate)) <= 0);
 
     sensorReadings.forEach(reading => reading.toJSON())
 
@@ -538,12 +538,12 @@ export async function updateHub(req: Request, res: Response) {
         .json({ error: "Access Denied! Operation managers only!" });
 
     const { hubId } = req.params;
-    const { processorName} = req.body;
+    const { processorName } = req.body;
     if ([hubId, processorName].includes(undefined)) {
       return res.status(400).json({ error: "Missing information!" });
     }
 
-    let hubUpdated= await updateHubByHubId(Number(hubId), {processorName:processorName});
+    let hubUpdated = await updateHubByHubId(Number(hubId), { processorName: processorName });
 
     return res.status(200).json({ hub: hubUpdated });
   } catch (error: any) {
@@ -567,20 +567,20 @@ export async function updateSensor(req: Request, res: Response) {
         .json({ error: "Access Denied! Operation managers only!" });
 
     const { sensorId } = req.params;
-    const { sensorName, sensorType} = req.body;
+    const { sensorName, sensorType } = req.body;
     if (sensorId === undefined || [sensorName, sensorType].includes(undefined)) {
       return res.status(400).json({ error: "Missing information!" });
     }
 
     const data: any = {};
-    if (sensorName !== undefined){
-      data["sensorName"] =sensorName
+    if (sensorName !== undefined) {
+      data["sensorName"] = sensorName
     }
-    if (sensorType !== undefined){
-      data["sensorType"] =sensorType
+    if (sensorType !== undefined) {
+      data["sensorType"] = sensorType
     }
 
-    let sensorUpdated= await updateSensorById(Number(sensorId), data);
+    let sensorUpdated = await updateSensorById(Number(sensorId), data);
 
     return res.status(200).json({ sensor: sensorUpdated });
   } catch (error: any) {
@@ -812,7 +812,7 @@ export async function createNewAnimalFeed(req: Request, res: Response) {
       process.env.IMG_URL_ROOT! + "animalFeed", //"D:/capstoneUploads/animalFeed",
     );
     const {
-      animalFeedName,     
+      animalFeedName,
       animalFeedCategory
     } = req.body;
 
@@ -996,52 +996,83 @@ export async function getAllEnrichmentItem(req: Request, res: Response) {
   }
 }
 
-export async function getEnrichmentItemByName(req: Request, res: Response) {
-  const { enrichmentItemName } = req.params;
+export async function getEnrichmentItemById(req: Request, res: Response) {
+  const {enrichmentItemId } = req.params;
 
-  if (enrichmentItemName == undefined) {
+  if (enrichmentItemId == undefined) {
     console.log("Missing field(s): ", {
-      enrichmentItemName,
+      enrichmentItemId: enrichmentItemId,
     });
     return res.status(400).json({ error: "Missing information!" });
   }
 
   try {
-    const enrichmentItem = await EnrichmentItemService.getEnrichmentItemByName(enrichmentItemName);
+    const enrichmentItem = await EnrichmentItemService.getEnrichmentItemById(parseInt(enrichmentItemId));
     return res.status(200).json(enrichmentItem);
   } catch (error: any) {
     res.status(400).json({ error: error.message });
   }
 }
 
-export async function updateEnrichmentItem(req: Request, res: Response) {
+export async function updateEnrichmentItemController(req: Request, res: Response) {
+  try {
+    const {
+      enrichmentItemId,
+      enrichmentItemName
+    } = req.body;
+
+    if (
+      [
+        enrichmentItemId,
+        enrichmentItemName
+      ].includes(undefined)
+    ) {
+      console.log("Missing field(s): ", {
+        enrichmentItemId,
+        enrichmentItemName
+      });
+      return res.status(400).json({ error: "Missing information!" });
+    }
+
+    // have to pass in req for image uploading
+    let enrichmentItem = await EnrichmentItemService.updateEnrichmentItem(enrichmentItemId, enrichmentItemName);
+
+    return res.status(200).json({ enrichmentItem });
+  } catch (error: any) {
+    console.log(error)
+    res.status(400).json({ error: error.message });
+  }
+}
+
+export async function updateEnrichmentItemImageController(req: Request, res: Response) {
   try {
     const imageUrl = await handleFileUpload(
       req,
       process.env.IMG_URL_ROOT! + "enrichmentItem", //"D:/capstoneUploads/enrichmentItem",
     );
     const {
-      enrichmentItemName,
-      enrichmentItemImageUrl
+      enrichmentItemId,
+      enrichmentItemName
     } = req.body;
 
     if (
       [
-        enrichmentItemName,
-        enrichmentItemImageUrl
+        enrichmentItemId,
+        enrichmentItemName
       ].includes(undefined)
     ) {
       console.log("Missing field(s): ", {
-        enrichmentItemName,
-        enrichmentItemImageUrl
+        enrichmentItemId,
+        enrichmentItemName
       });
       return res.status(400).json({ error: "Missing information!" });
     }
 
     // have to pass in req for image uploading
-    let enrichmentItem = await EnrichmentItemService.updateEnrichmentItem(
+    let enrichmentItem = await EnrichmentItemService.updateEnrichmentItemImage(
+      enrichmentItemId,
       enrichmentItemName,
-      enrichmentItemImageUrl
+      imageUrl
     );
 
     return res.status(200).json({ enrichmentItem });
