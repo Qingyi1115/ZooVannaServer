@@ -35,10 +35,12 @@ class PlanningStaff extends Model<
 
   public enable() {
     this.isDisabled = false;
+    this.save();
   }
 
   public disable() {
     this.isDisabled = true;
+    this.save();
   }
 }
 
