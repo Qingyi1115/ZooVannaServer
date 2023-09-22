@@ -7,7 +7,9 @@ import cookieParser from "cookie-parser";
 import compression from "compression";
 import cors from "cors";
 // import multer, { FileFilterCallback } from 'multer';
-import "dotenv/config";
+// import "dotenv/config";
+import * as dotenv from "dotenv";
+dotenv.config({ path: __dirname+'/.env' }); // For my laptop
 
 import employeeRoutes from "./routes/employee";
 import customerRoutes from "./routes/customer";

@@ -316,8 +316,7 @@ export const seedDatabase = async () => {
   // await speciesSeed();
   // await animalFeedSeed();
   // await enrichmentItemSeed();
-  // await facilitySeed();
-  // await sensorSeed();
+  await facilityAssetsSeed();
 };
 
 export const tutorial = async () => {
@@ -616,9 +615,97 @@ export const facilitySeed = async () => {
   console.log(toilet.toJSON());
 }
 
-export const sensorSeed = async () => {
+export const facilityAssetsSeed = async () => {
+  let tram1 = await Facility.create({
+    facilityName: "tram1",
+    xCoordinate: 123,
+    yCoordinate: 321,
+    isSheltered: true,
+    
+    //@ts-ignore
+    inHouse:{
+      isPaid: true,
+      maxAccommodationSize: 15,
+      hasAirCon: true,
+      facilityType: FacilityType.TRAMSTOP
+    }
+  },{
+    include: [
+      {
+        association: "inHouse",
+      },
+    ],
+  });
+  let tram2 = await Facility.create({
+    facilityName: "tram2",
+    xCoordinate: 123,
+    yCoordinate: 321,
+    isSheltered: true,
+    
+    //@ts-ignore
+    inHouse:{
+      isPaid: true,
+      maxAccommodationSize: 15,
+      hasAirCon: true,
+      facilityType: FacilityType.TRAMSTOP
+    }
+  },{
+    include: [
+      {
+        association: "inHouse",
+      },
+    ],
+  });
+  let hub1 = await HubProcessor.create({
+    processorName : "tramCam1",
+    ipAddressName: "172.25.99.172",
+    sensors:[
+      {
+        sensorName: "Camera1",
+        sensorType: SensorType.CAMERA
+      },{
+        sensorName: "Camera2",
+        sensorType: SensorType.CAMERA
+      }
+    ]
+  } as any,{
+    include: [
+      {
+        association: "sensors",
+      },
+    ],
+  });
+  let hub2 = await HubProcessor.create({
+    processorName : "tramCam2",
+    ipAddressName: "172.25.99.173",
+    HubStatus: HubStatus.CONNECTED,
+    sensors:[{
+      sensorName: "Camera3",
+      dateOfActivation: new Date("01-01-2023"),
+      dateOfLastMaintained: new Date("09-09-2023"),
+      sensorType: SensorType.CAMERA
+      },{
+        sensorName: "Camera4",
+        dateOfActivation: new Date("01-01-2023"),
+        dateOfLastMaintained: new Date("09-09-2023"),
+        sensorType: SensorType.CAMERA
+      }
+    ]
+  } as any,{
+    include: [
+      {
+        association: "sensors",
+      },
+    ],
+  });
+
+  (tram2.getInHouse()).then(tramstop => tram1.getInHouse().then(tramstop2=> tramstop.setNextTramStop(tramstop2))); 
+
+
+
+
   let cameraTemplate = {
-    sensorName: "Camera",
+    sensorName: "Camera5",
     dateOfActivation: new Date("01-01-2023"),
     dateOfLastMaintained: new Date("09-09-2023"),
     sensorType: SensorType.CAMERA
