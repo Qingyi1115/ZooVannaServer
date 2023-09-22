@@ -28,7 +28,7 @@ export async function getSpeciesByCode(
     if (result) {
         return result;
     }
-    throw { error: "Invalid Species Code!" };
+    throw new Error("Invalid Species Code!");
 }
 
 export async function getSpeciesIdByCode(speciesCode: string) {
@@ -38,7 +38,7 @@ export async function getSpeciesIdByCode(speciesCode: string) {
     if (result) {
         return result.getSpeciesId();
     }
-    throw { error: "Invalid Species Code!" };
+    throw new Error("Invalid Species Code!");
 }
 
 export async function createNewSpecies(
@@ -174,7 +174,7 @@ export async function deleteSpeciesByCode(speciesCode: string) {
     if (result) {
         return result;
     }
-    throw { error: "Invalid Species Code!" };
+    throw new Error("Invalid Species Code!");
 }
 
 export async function createEnclosureNeeds(
@@ -253,7 +253,7 @@ export async function getEnclosureNeedsBySpeciesCode(speciesCode: string) {
         let resultEnclosure = await result.speciesEnclosureNeed;
         return resultEnclosure;
     }
-    throw { error: "Invalid Species Code!" };
+    throw new Error("Invalid Species Code!");
 }
 
 export async function updateEnclosureNeeds(
@@ -329,7 +329,7 @@ export async function deleteSpeciesEnclosureNeeds(
     if (result) {
         return result;
     }
-    throw { error: "Invalid Species Enclosure Need Id!" };
+    throw new Error("Invalid Species Enclosure Need Id!");
 }
 
 export async function createPhysiologicalReferenceNorms(
@@ -387,7 +387,7 @@ export async function getAllPhysiologicalReferenceNormsbySpeciesCode(
         //   await result.getPhysiologicalRefNorm();
         return resultPhysiologicalReferenceNorms;
     }
-    throw { error: "Invalid Species Code!" };
+    throw new Error("Invalid Species Code!");
 }
 
 export async function getPhysiologicalReferenceNormsById(
@@ -400,7 +400,7 @@ export async function getPhysiologicalReferenceNormsById(
     if (result) {
         return result;
     }
-    throw { error: "Invalid Physiological Ref Id Code!" };
+    throw new Error("Invalid Physiological Ref Id Code!");
 }
 
 export async function updatePhysiologicalReferenceNorms(
@@ -441,7 +441,7 @@ export async function deletePhysiologicalReferenceNorms(
     if (result) {
         return result;
     }
-    throw { error: "Invalid Physiological Reference Id!" };
+    throw new Error("Invalid Physiological Reference Id!");
 }
 
 export async function createDietNeed(
@@ -488,7 +488,7 @@ export async function getAllDietNeedbySpeciesCode(speciesCode: string) {
         let resultSpeciesDietNeed = await result.speciesDietNeeds;
         return resultSpeciesDietNeed;
     }
-    throw { error: "Invalid Species Code!" };
+    throw new Error("Invalid Species Code!");
 }
 
 export async function getDietNeedById(speciesDietNeedId: string) {
@@ -499,7 +499,7 @@ export async function getDietNeedById(speciesDietNeedId: string) {
     if (result) {
         return result;
     }
-    throw { error: "Invalid Species Diet Need Id!" };
+    throw new Error("Invalid Species Diet Need Id!");
 }
 
 export async function updateDietNeed(
@@ -540,7 +540,7 @@ export async function deleteDietNeed(speciesDietNeedId: string) {
     if (result) {
         return result;
     }
-    throw { error: "Invalid Species Diet Need Id!" };
+    throw new Error("Invalid Species Diet Need Id!");
 }
 
 //
@@ -597,7 +597,7 @@ export async function getAllCompatibilitiesbySpeciesCode(speciesCode: string) {
         // include: Compatibility, //eager fetch here
     });
 
-    if (speciesResult) {
+    if (speciesResult != null) {
         // Find all species compatible with the given species
         const compatibilities = await Compatibility.findAll({
             where: {
@@ -624,7 +624,8 @@ export async function getAllCompatibilitiesbySpeciesCode(speciesCode: string) {
 
         return compatibleSpecies;
     }
-    throw { error: "Invalid Species Code!" };
+    //   throw { error: "Invalid Species Code!" };
+    throw new Error("Invalid Species Code!");
 }
 
 export async function checkIsCompatible(
@@ -644,7 +645,7 @@ export async function checkIsCompatible(
     if (specie1Result && specie2Result) {
         return specie1Result.isCompatible(specie2Result);
     }
-    throw { error: "Invalid Species Code!" };
+    throw new Error("Invalid Species Code!");
 }
 
 export async function deleteCompatibility(compatibilityId: string) {
@@ -654,5 +655,5 @@ export async function deleteCompatibility(compatibilityId: string) {
     if (result) {
         return result;
     }
-    throw { error: "Invalid Compatibility Id!" };
+    throw new Error("Invalid Compatibility Id!");
 }

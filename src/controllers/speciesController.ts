@@ -951,6 +951,8 @@ export async function getAllCompatibilitiesbySpeciesCode(
             await SpeciesService.getAllCompatibilitiesbySpeciesCode(speciesCode);
         return res.status(200).json(allCompatibility);
     } catch (error: any) {
+        console.error("An error occurred:", error);
+        // res.status(400).json({ error: error.message });
         res.status(400).json({ error: error.message });
     }
 }

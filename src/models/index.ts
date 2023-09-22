@@ -631,7 +631,7 @@ export const speciesSeed = async () => {
     groupSexualDynamic: GroupSexualDynamic.POLYANDROUS,
     habitatOrExhibit: "Southwest China",
     generalDietPreference: "Bamboo?? LOL what to put",
-    imageUrl: "Fake_URL_Here",
+    imageUrl: "img/panda.jpeg",
     lifeExpectancyYears: 14,
     // foodRemark: "Food remark...",
   } as any;
@@ -732,7 +732,7 @@ export const speciesSeed = async () => {
     groupSexualDynamic: GroupSexualDynamic.POLYANDROUS,
     habitatOrExhibit: "Water bodies",
     generalDietPreference: "Herbivores",
-    imageUrl: "Fake_URL_Here",
+    imageUrl: "img/capybara.jpg",
     lifeExpectancyYears: 10,
     // foodRemark: "Food remark...",
   } as any;
@@ -760,7 +760,7 @@ export const speciesSeed = async () => {
     groupSexualDynamic: GroupSexualDynamic.POLYANDROUS,
     habitatOrExhibit: "Forested areas",
     generalDietPreference: "Herbivores",
-    imageUrl: "Fake_URL_Here",
+    imageUrl: "img/redPanda.jpeg",
     lifeExpectancyYears: 14,
     // foodRemark: "Food remark...",
   } as any;
