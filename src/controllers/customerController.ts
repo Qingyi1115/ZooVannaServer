@@ -67,7 +67,9 @@ export const login = async (req: Request, res: Response) => {
         return res.status(403).json({ error: "Invalid credentials!" });
       }
       const token = createToken(email);
-      res.status(200).json({ email, token });
+      const customer = await CustomerService.findCustomerByEmail(email);
+      const customerId = customer.customerId;
+      res.status(200).json({ customerId, email, token });
     }
   } catch (error: any) {
     res.status(400).json({ error: error.message });
