@@ -18,6 +18,8 @@ import {
   updateEmployeeAccountController,
   updateEmployeePasswordController,
   getSelfController,
+  updateRoleTypeController,
+  updateSpecializationTypeController,
 } from "../controllers/employeeController";
 import {
   addEnclosureToKeeperController,
@@ -52,6 +54,10 @@ router.put("/disableEmployee/:employeeId", disableEmployeeAccountController);
 //Enable and disable role (can be Keeper, General Staff or Planning Staff)
 router.put("/getEmployee/:employeeId/enableRole", enableRoleController);
 router.put("/getEmployee/:employeeId/disableRole", disableRoleController);
+
+router.put("/getEmployee/:employeeId/updateRoleType", updateRoleTypeController);
+router.put("/getEmployee/:employeeId/updateSpecializationType", updateSpecializationTypeController);
+
 
 //Update Employee Role Details
 //Update Keeper Role --> Assign more enclosures or delete the enclosures --> for future use if needed

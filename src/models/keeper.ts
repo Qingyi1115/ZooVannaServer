@@ -74,6 +74,30 @@ class Keeper extends Model<
     this.keeperType = KeeperType.KEEPER;
     this.save();
   }
+  
+  public updateSpecialization(specialization: string) {
+    if(specialization === "AMPHIBIAN") {
+      this.specialization = Specialization.AMPHIBIAN; Specialization.REPTILE
+    } else if (specialization === "BIRD") {
+      this.specialization = Specialization.BIRD;
+    } else if (specialization === "FISH") {
+      this.specialization = Specialization.FISH;
+    } else if (specialization === "MAMMAL") {
+      this.specialization = Specialization.MAMMAL;
+    } else if (specialization === "REPTILE") {
+      this.specialization = Specialization.REPTILE;
+    }
+
+    this.save();
+  }
+
+  public updateKeeperType(roleType: string) { 
+    if(roleType === "KEEPER") {
+      this.keeperType = KeeperType.KEEPER;
+    } else if (roleType === "SENIOR_KEEPER") {
+      this.keeperType = KeeperType.SENIOR_KEEPER;
+    }
+  }
 }
 
 

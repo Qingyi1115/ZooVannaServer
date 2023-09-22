@@ -15,6 +15,8 @@ import {
   disableRole,
   updateGeneralStaffType,
   updatePlanningStaffType,
+  updateRoleType,
+  updateSpecializationType
 } from "../services/employee";
 
 export async function login(req: Request, res: Response) {
@@ -355,10 +357,14 @@ export async function enableRoleController(req: Request, res: Response) {
     }
 
     const {employeeId} = req.params;
-    const {role, roleJson} = req.body;
+    const result = req.body;
+    console.log(result);
+    console.log(employeeId);
+    
 
-    await enableRole(Number(employeeId), role, roleJson);
-    return res.status(200).json({message: `The ${role} role has been enabled`});
+    const ress = await enableRole(Number(employeeId), result.role, result.roleJson);
+    console.log(ress + "hereeee");
+    return res.status(200).json({message: `The ${result.role} role has been enabled`});
   }
   catch (error: any) {
     return res.status(400).json({error: error.message});
@@ -377,10 +383,65 @@ export async function disableRoleController(req: Request, res: Response) {
     }
 
     const {employeeId} = req.params;
-    const {role} = req.body;
+    const roleJson = req.body;
+    console.log(roleJson, roleJson.role);
 
-    await disableRole(Number(employeeId), role);
-    return res.status(200).json({message: `The ${role} role has been disabled`});
+    await disableRole(Number(employeeId), roleJson.role);
+    return res.status(200).json({message: `The ${roleJson.role} role has been disabled`});
+
+  }
+  catch (error: any) {
+    return res.status(400).json({error: error.message});
+  }
+}
+
+export const updateRoleTypeController = async (
+  req: Request, 
+  res: Response,
+) => {
+  try {
+    const { email } = (req as any).locals.jwtPayload;
+    const employee = await findEmployeeByEmail(email);
+
+    if (!employee.isAccountManager) {
+      return res
+        .status(403)
+        .json({ error: "Access Denied! Account managers only!" });
+    }
+
+    const {employeeId} = req.params;
+    const result = req.body;
+    console.log(result.role, result.roleType);
+
+    await updateRoleType(Number(employeeId), result.role, result.roleType);
+    return res.status(200).json({message: `The ${result.role} roleType has been updated`});
+
+  }
+  catch (error: any) {
+    return res.status(400).json({error: error.message});
+  }
+}
+
+export const updateSpecializationTypeController = async (
+  req: Request, 
+  res: Response,
+) => {
+  try {
+    const { email } = (req as any).locals.jwtPayload;
+    const employee = await findEmployeeByEmail(email);
+
+    if (!employee.isAccountManager) {
+      return res
+        .status(403)
+        .json({ error: "Access Denied! Account managers only!" });
+    }
+
+    const {employeeId} = req.params;
+    const result = req.body;
+    console.log(result.role, result.specializationType);
+
+    await updateSpecializationType(Number(employeeId), result.role, result.specializationType);
+    return res.status(200).json({message: `The ${result.role} specialization has been updated`});
 
   }
   catch (error: any) {
