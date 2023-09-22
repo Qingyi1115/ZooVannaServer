@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import { createToken } from "../helpers/security";
 import * as CustomerService from "../services/customer";
+import {findCustomerByEmail} from "../services/customer";
 
 //customer sign up
 export const createCustomer = async (req: Request, res: Response) => {
@@ -77,37 +78,13 @@ export const login = async (req: Request, res: Response) => {
 };
 
 export async function getCustomer(req: Request, res: Response) {
-  const { customerId } = req.params;
 
-  if (customerId == undefined) {
-    console.log("Missing field(s): ", {
-      customerId,
-    });
-    return res.status(400).json({ error: "Missing information!" });
-  }
+  const { email } = (req as any).locals.jwtPayload;
+  const customer = await findCustomerByEmail(email);
 
-  try {
-    const customerIdInt = parseInt(customerId);
-    if (!isNaN(customerIdInt)) {
-      const customer =
-        await CustomerService.findCustomerByCustomerId(customerIdInt);
-      if (customer) {
-        // console.log("Customer valid" + customer);
-        return res.status(200).json(customer);
-      } else {
-        // console.log("Customer invalid" + customer);
-        return res
-          .status(400)
-          .json({ error: `Customer with id ${customerId} not found` });
-      }
-    } else {
-      // console.log("Customer invalid 1");
-      return res.status(400).json({ error: "Invalid customer ID!" });
-    }
-  } catch (error: any) {
-    // console.log("Customer invalid 2");
-    res.status(400).json({ error: `Customer with id ${customerId} not found` });
-  }
+  if (!customer) return res.status(400).json({ error: "Customer not found!" });
+  
+  return res.status(200).json(customer);
 }
 
 export async function deleteCustomer(req: Request, res: Response) {
