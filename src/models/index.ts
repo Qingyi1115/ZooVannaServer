@@ -18,12 +18,12 @@ import {
   ConservationStatus,
   Continent,
   GroupSexualDynamic,
-  SensorType,
   AnimalGrowthStage,
   PresentationContainer,
   PresentationLocation,
   PresentationMethod,
   AnimalFeedCategory,
+  SensorType,
 } from "./enumerated";
 import { ThirdParty } from "./thirdParty";
 import { AnimalClinic } from "./animalClinics";
@@ -383,10 +383,11 @@ export const createDatabase = async (options: any) => {
 export const seedDatabase = async () => {
   // Fake data goes here
   await tutorial();
+  await facilityAssetsSeed();
+  await speciesSeed();
   // await animalFeedSeed();
   // await enrichmentItemSeed();
-  await facilityAssetsSeed();
-  // await speciesSeed();
+  // await facilitySeed();
 };
 
 export const tutorial = async () => {
@@ -683,6 +684,7 @@ export const speciesSeed = async () => {
   } as any;
   let panda1 = await Species.create(panda1Template);
   console.log(panda1.toJSON());
+
   let panda1enclosure = await SpeciesService.createEnclosureNeeds(
     "SPE001",
     10,
@@ -755,7 +757,6 @@ export const speciesSeed = async () => {
     AnimalGrowthStage.JUVENILE,
   );
   console.log(panda1DietNeed2.toJSON());
-
   let capybara1Template = {
     speciesCode: await Species.getNextSpeciesCode(),
     commonName: "Capybara",

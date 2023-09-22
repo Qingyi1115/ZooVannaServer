@@ -111,6 +111,10 @@ router.get(
 );
 router.get("/getCompatibility/:speciesCode1/:speciesCode2", checkIsCompatible);
 router.post("/createCompatibility", createCompatibility);
-router.delete("/deleteCompatibility/:compatibilityId", deleteCompatibility);
+// router.delete("/deleteCompatibility/:compatibilityId", deleteCompatibility);
+router.delete(
+  "/deleteCompatibility/:speciesCode1/:speciesCode2",
+  deleteCompatibility,
+);
 
 export default router;

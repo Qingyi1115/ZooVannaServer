@@ -702,12 +702,50 @@ export async function checkIsCompatible(
   throw new Error("Invalid Species Code!");
 }
 
-export async function deleteCompatibility(compatibilityId: string) {
-  let result = await Compatibility.destroy({
-    where: { compatibilityId: compatibilityId },
-  });
-  if (result) {
-    return result;
+export async function deleteCompatibility(
+  speciesCode1: string,
+  speciesCode2: string,
+) {
+  // Find the first species by ID
+  const species1 = await Species.findByPk(
+    await getSpeciesIdByCode(speciesCode1),
+  );
+  if (!species1) {
+    throw new Error(`Species Code ${speciesCode1} not found.`);
   }
-  throw new Error("Invalid Compatibility Id!");
+
+  // Find the second species by ID
+  const species2 = await Species.findByPk(
+    await getSpeciesIdByCode(speciesCode2),
+  );
+  if (!species2) {
+    throw new Error(`Species Code ${speciesCode2} not found.`);
+  }
+
+  // Check if compatibility exists
+  const compatibility = await Compatibility.findOne({
+    where: {
+      [Op.or]: [
+        {
+          speciesId1: species1.speciesId,
+          speciesId2: species2.speciesId,
+        },
+        {
+          speciesId1: species2.speciesId,
+          speciesId2: species1.speciesId,
+        },
+      ],
+    },
+  });
+
+  if (compatibility) {
+    let result = await Compatibility.destroy({
+      where: { compatibilityId: compatibility.compatibilityId },
+    });
+
+    if (result) {
+      return result;
+    }
+  }
+  throw new Error("Invalid Species Code(s)!");
 }

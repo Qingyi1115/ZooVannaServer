@@ -1036,18 +1036,21 @@ export async function checkIsCompatible(req: Request, res: Response) {
 }
 
 export async function deleteCompatibility(req: Request, res: Response) {
-  const { compatibilityId } = req.params;
+  const { speciesCode1, speciesCode2 } = req.params;
 
-  if (compatibilityId == undefined) {
+  if (speciesCode1 == undefined || speciesCode2 == undefined) {
     console.log("Missing field(s): ", {
-      compatibilityId,
+      speciesCode1,
+      speciesCode2,
     });
     return res.status(400).json({ error: "Missing information!" });
   }
 
   try {
-    const compatibility =
-      await SpeciesService.deleteCompatibility(compatibilityId);
+    const compatibility = await SpeciesService.deleteCompatibility(
+      speciesCode1,
+      speciesCode2,
+    );
     return res.status(200).json(compatibility);
   } catch (error: any) {
     res.status(400).json({ error: error.message });
