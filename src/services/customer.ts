@@ -169,11 +169,12 @@ export async function resetPassword(token: string, password: string) {
     let customer = await Customer.findOne({
       where: { email: realToken.email },
     });
-    console.log(customer);
+    console.log("customer", customer);
 
     if (customer) {
-      if (realToken.expiresAt.getTime() <= Date.now()) {
+      if (realToken.expiresAt.getTime() > Date.now()) {
         realToken.destroy();
+        console.log("customer update")
         return customer.updatePasswordWithToken(password);
       }
       realToken.destroy();
