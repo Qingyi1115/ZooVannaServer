@@ -386,7 +386,7 @@ export const seedDatabase = async () => {
   // await animalFeedSeed();
   // await enrichmentItemSeed();
   await facilityAssetsSeed();
-  await speciesSeed();
+  // await speciesSeed();
 };
 
 export const tutorial = async () => {
@@ -838,6 +838,31 @@ export const facilitySeed = async () => {
 }
 
 export const facilityAssetsSeed = async () => {
+  let manager = await Employee.create(
+    {
+      employeeName: "managerDelete",
+      employeeAddress: "Singapore Kent Ridge LT14",
+      employeeEmail: "managerdelete@gmail.com",
+      employeePhoneNumber: "0020",
+      employeePasswordHash: Employee.getHash("managerdelete_password", "H3"),
+      employeeSalt: "H35",
+      employeeDoorAccessCode: "2222222",
+      employeeBirthDate: new Date("2001-09-02"),
+      employeeEducation: "Math Major",
+      isAccountManager: true,
+      // @ts-ignore
+      generalStaff: {
+        generalStaffType: GeneralStaffType.ZOO_MAINTENANCE,
+        isDisabled: false,
+      },
+    },
+    {
+      include: {
+        association: "generalStaff",
+      },
+    },
+  );
+
   let tram1 = await Facility.create({
     facilityName: "tram1",
     xCoordinate: 123,
@@ -858,6 +883,13 @@ export const facilityAssetsSeed = async () => {
       },
     ],
   });
+  let gs = await manager.getGeneralStaff();
+  let is1 =await tram1.getInHouse();
+
+
+  await gs.addMaintainedFacilities(is1);
+
+
   let tram2 = await Facility.create({
     facilityName: "tram2",
     xCoordinate: 123,
@@ -933,5 +965,4 @@ export const facilityAssetsSeed = async () => {
     sensorType: SensorType.CAMERA
   } as any;
   let camera = await Sensor.create(cameraTemplate);
-  console.log(camera.toJSON());
 }

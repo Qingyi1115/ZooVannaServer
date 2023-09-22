@@ -51,7 +51,7 @@ class InHouse extends Model<
   declare getNextTramStop: HasOneGetAssociationMixin<InHouse>;
   declare setNextTramStop: HasOneSetAssociationMixin<InHouse, number>;
 
-  declare getMaintenanceStaffs: BelongsToManyGetAssociationsMixin<GeneralStaff[]>;
+  declare getMaintenanceStaffs: BelongsToManyGetAssociationsMixin<GeneralStaff>;
   declare addMaintenanceStaff: BelongsToManyAddAssociationMixin<GeneralStaff, number>;
   declare setMaintenanceStaffs: BelongsToManySetAssociationsMixin<GeneralStaff[], number>;
   declare removeMaintenanceStaff: BelongsToManyRemoveAssociationMixin<GeneralStaff, number>;
@@ -85,9 +85,9 @@ class InHouse extends Model<
   public async toFullJSON(){
     return {
       ...this.get(),
-      facility: (await this.getFacility()).toJSON(),
-      previousTramStop: (await this.getPreviousTramStop()).toJSON(),
-      nextTramStop: (await this.getNextTramStop()).toJSON(),
+      facility: (await this.getFacility()),
+      previousTramStop: (await this.getPreviousTramStop()),
+      nextTramStop: (await this.getNextTramStop()),
       maintenanceStaffs: await (this.getMaintenanceStaffs()),
       operationStaffs: await (this.getOperationStaffs()),
       facilityLogs: await (this.getFacilityLogs()),

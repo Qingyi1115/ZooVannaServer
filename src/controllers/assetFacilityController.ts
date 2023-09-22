@@ -26,6 +26,8 @@ import {
   updateFacilityByFacilityId,
   updateHubByHubId,
   updateSensorById,
+  getMaintenanceStaffsByFacilityId,
+  getAllMaintenanceStaff,
 } from "../services/assetFacility";
 import { Facility } from "../models/facility";
 import { Sensor } from "../models/sensor";
@@ -56,15 +58,24 @@ export async function createFacility(req: Request, res: Response) {
       facilityName,
       xCoordinate,
       yCoordinate,
+      isSheltered,
       facilityDetail,
       facilityDetailJson,
     } = req.body;
-
+    console.log({
+      facilityName,
+      xCoordinate,
+      yCoordinate,
+      isSheltered,
+      facilityDetail,
+      facilityDetailJson,
+    } )
     if (
       [
         facilityName,
         xCoordinate,
         yCoordinate,
+        isSheltered,
         facilityDetail,
         facilityDetailJson,
       ].includes(undefined)
@@ -73,6 +84,7 @@ export async function createFacility(req: Request, res: Response) {
         facilityName,
         xCoordinate,
         yCoordinate,
+        isSheltered,
         facilityDetail,
         facilityDetailJson,
       });
@@ -83,12 +95,14 @@ export async function createFacility(req: Request, res: Response) {
       facilityName,
       xCoordinate,
       yCoordinate,
+      isSheltered,
       facilityDetail,
       facilityDetailJson,
     );
 
     return res.status(200).json({ facility: facility.toJSON() });
   } catch (error: any) {
+    console.log("val error", error)
     res.status(400).json({ error: error.message });
   }
 }
@@ -232,6 +246,69 @@ export async function updateFacility(req: Request, res: Response) {
   }
 }
 
+export async function getAssignedMaintenanceStaffOfFacilityController(req: Request, res: Response) {
+  try {
+    const { email } = (req as any).locals.jwtPayload;
+    const employee = await findEmployeeByEmail(email);
+
+    if (
+      !(
+        (await employee.getPlanningStaff())?.plannerType ==
+        PlannerType.OPERATIONS_MANAGER
+      )
+    )
+      return res
+        .status(403)
+        .json({ error: "Access Denied! Operation managers only!" });
+
+    const { facilityId } = req.params;
+
+    if (facilityId === undefined) {
+      return res.status(400).json({ error: "Missing information!" });
+    }
+
+    let staffs = await getMaintenanceStaffsByFacilityId(
+      Number(facilityId)
+    );
+      console.log("staffs",staffs)
+    return res.status(200).json({ maintenanceStaffs: staffs });
+  } catch (error: any) {
+    console.log(error)
+    res.status(400).json({ error: error.message });
+  }
+}
+
+export async function getAllMaintenanceStaffController(req: Request, res: Response) {
+  try {
+    const { email } = (req as any).locals.jwtPayload;
+    const employee = await findEmployeeByEmail(email);
+
+    if (
+      !(
+        (await employee.getPlanningStaff())?.plannerType ==
+        PlannerType.OPERATIONS_MANAGER
+      )
+    )
+      return res
+        .status(403)
+        .json({ error: "Access Denied! Operation managers only!" });
+
+      const { includes = [] } = req.body;
+
+      const _includes : string[] = []
+      for (const role of ["sensors", "facility"]){
+        if (includes.includes(role)) _includes.push(role)
+      }
+    
+    let staffs = await getAllMaintenanceStaff(_includes);
+    
+    return res.status(200).json({ maintenanceStaffs: staffs });
+  } catch (error: any) {
+    console.log(error)
+    res.status(400).json({ error: error.message });
+  }
+}
+
 export async function assignMaintenanceStaffToFacility(req: Request, res: Response) {
   try {
     const { email } = (req as any).locals.jwtPayload;
@@ -283,7 +360,7 @@ export async function removeMaintenanceStaffFromFacility(req: Request, res: Resp
 
     const { employeeIds } = req.body;
     const { facilityId } = req.params;
-
+      console.log("removeMaintenanceStaffFromFacility")
     if ([facilityId, employeeIds].includes(undefined)) {
       return res.status(400).json({ error: "Missing information!" });
     }
@@ -296,6 +373,7 @@ export async function removeMaintenanceStaffFromFacility(req: Request, res: Resp
 
     return res.status(200).json({ inHouse: inHouse.toFullJSON() });
   } catch (error: any) {
+    console.log(error)
     res.status(400).json({ error: error.message });
   }
 }
@@ -388,7 +466,7 @@ export async function deleteFacility(req: Request, res: Response) {
 
     await deleteFacilityById(Number(facilityId));
 
-    return res.status(200);
+    return res.status(200).json({result:"Success!"});
   } catch (error: any) {
     res.status(400).json({ error: error.message });
   }

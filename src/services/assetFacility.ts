@@ -10,13 +10,14 @@ import { InHouse } from "../models/inHouse";
 import { FacilityLog } from "../models/faciltiyLog";
 import { compareDates } from "../helpers/others";
 import { predictNextDate } from "../helpers/predictors";
-import { SensorReading } from "../models/sensorReading";
 import { MaintenanceLog } from "../models/maintenanceLog";
+import { Employee } from "models/employee";
 
 export async function createNewFacility(
   facilityName: string,
   xCoordinate: number,
   yCoordinate: number,
+  isSheltered: boolean,
   facilityDetail: string,
   facilityDetailJson: any,
 ) {
@@ -24,6 +25,7 @@ export async function createNewFacility(
     facilityName: facilityName,
     xCoordinate: xCoordinate,
     yCoordinate: yCoordinate,
+    isSheltered: isSheltered
   } as any;
   newFacility[facilityDetail] = facilityDetailJson;
 
@@ -150,18 +152,17 @@ export async function removeMaintenanceStaffFromFacilityById(
     const inHouse = await facility.getInHouse();
     if (!inHouse) throw { message: "Facility is not In House!" };
 
-    const employees = await getAllEmployees([]);
-    employees.filter(employee => employeeIds.includes(employee.employeeId));
-    employees.map(employee => employee.getGeneralStaff());
+    let employees = await getAllEmployees([]);
+    employees = employees.filter(employee => employeeIds.includes(employee.employeeId));
     const staffList:GeneralStaff[] = []
-    for (const staffPromise in (employees as any)){
-      const staff = await (staffPromise as any);
-      if (staff.generalStaffType != GeneralStaffType.ZOO_MAINTENANCE) throw { message:"Not a Maintenance Staff!"}
+    for (const emp of employees){
+      const staff = await emp.getGeneralStaff();
       staffList.push(staff)
     }
-    for (const staff in staffList){
-      inHouse.removeMaintenanceStaff(staff as any);
-      (staff as any).removeMaintainedFacility(inHouse);
+    for (const staff of staffList){
+      await inHouse.removeMaintenanceStaff(staff);
+      console.log(staff)
+      staff.removeMaintainedFacilities(inHouse);
     }
     
     return inHouse;
@@ -531,3 +532,37 @@ export async function getAuthorizationForCameraById(
     throw validationErrorHandler(error);
   }
 }
+
+export async function getMaintenanceStaffsByFacilityId(
+  facilityId: number
+) {
+  try {
+    const facility = await getFacilityById(facilityId);
+    const inHouse : InHouse = await facility.getFacilityDetail();
+    if (facility.facilityDetail != "inHouse") throw {message : "Facility not in house type!"};
+    let staffs : GeneralStaff[] = await inHouse.getMaintenanceStaffs();
+    let emps : Employee[] = []
+    for (const staff of staffs){
+      emps.push(await staff.getEmployee());
+    }
+    return emps;
+    
+
+  } catch (error: any) {
+    throw validationErrorHandler(error);
+  }
+}
+
+export async function getAllMaintenanceStaff(
+  includes:string[]
+) {
+  try {
+    if (!includes.includes("generalStaff")) includes.push("generalStaff") 
+    let employees:Employee[] = await getAllEmployees(includes);
+    employees = employees.filter(emp=>emp.generalStaff?.generalStaffType==GeneralStaffType.ZOO_MAINTENANCE);
+    return employees;
+  } catch (error: any) {
+    throw validationErrorHandler(error);
+  }
+}
+
