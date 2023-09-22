@@ -163,11 +163,13 @@ export async function resetPassword(token: string, password: string) {
   let realToken = await Token.findOne({
     where: { token: token },
   });
+  console.log(realToken);
 
   if (realToken) {
     let customer = await Customer.findOne({
       where: { email: realToken.email },
     });
+    console.log(customer);
 
     if (customer) {
       if (realToken.expiresAt.getTime() <= Date.now()) {
@@ -214,7 +216,7 @@ export async function sendResetPasswordLink(customerId: number) {
         to: result.email,
         subject: "Reset Password",
         text: "Click the link below to reset your password: ",
-        html: `<a href="http://localhost:5173/employeeAccount/setPassword/${token}">Reset Password</a>`,
+        html: `<a href="http://localhost:5174/resetPasswordNew/${token}">Reset Password</a>`,
       };
 
       transporter.sendMail(mailOptions, (error, info) => {
@@ -228,6 +230,6 @@ export async function sendResetPasswordLink(customerId: number) {
       throw validationErrorHandler(error);
     }
   } else {
-    throw { error: "Employee does not exist" };
+    throw { error: "Customer does not exist" };
   }
 }

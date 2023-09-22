@@ -258,16 +258,25 @@ export const resetForgottenPasswordController = async (
 
 export const sendForgetPasswordLink = async (req: Request, res: Response) => {
   try {
-    const { email } = (req as any).locals.jwtPayload;
-    const employee = await CustomerService.findCustomerByEmail(email);
+    const { email } = req.params;
+    // console.log("email" + email);
+    let customer = await CustomerService.findCustomerByEmail(email);
+    // console.log(customer);
 
-    const { customerId } = req.params;
+    if (!customer) {
+      console.log("Customer not found");
+      return res.status(400).json({ error: "Cannot find your account" });
+    }
 
-    await CustomerService.sendResetPasswordLink(Number(customerId));
-    return res
-      .status(200)
-      .json({ message: "Email for reset password has been sent" });
+    if (customer != null) {
+      await CustomerService.sendResetPasswordLink(Number(customer.customerId));
+      console.log("success");
+      return res
+        .status(200)
+        .json({ message: "Email for reset password has been sent" });
+    }
   } catch (error: any) {
+    console.log(error);
     return res.status(400).json({ error: error.message });
   }
 };
