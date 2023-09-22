@@ -15,7 +15,7 @@ import {
   deleteAnimalFeedByName,
   createNewEnrichmentItem,
   getAllEnrichmentItem,
-  getEnrichmentItemById,
+  getEnrichmentItemByIdController,
   updateEnrichmentItemImageController,
   updateEnrichmentItemController,
   deleteEnrichmentItemByName,
@@ -75,7 +75,7 @@ router.delete("/deleteAnimalFeed/:animalFeedName", deleteAnimalFeedByName);
 // Enrichment Items
 router.post("/createNewEnrichmentItem", createNewEnrichmentItem);
 router.get("/getAllEnrichmentItem", getAllEnrichmentItem);
-router.get("/getEnrichmentItem/:enrichmentItemId", getEnrichmentItemById);
+router.get("/getEnrichmentItem/:enrichmentItemId", getEnrichmentItemByIdController);
 router.put("/updateEnrichmentItem", updateEnrichmentItemController);
 router.put("/updateEnrichmentItemImage", updateEnrichmentItemImageController);
 router.delete("/deleteEnrichmentItem/:enrichmentItemName", deleteEnrichmentItemByName);

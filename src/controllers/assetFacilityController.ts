@@ -1076,9 +1076,9 @@ export async function getAllEnrichmentItem(req: Request, res: Response) {
   }
 }
 
-export async function getEnrichmentItemById(req: Request, res: Response) {
+export async function getEnrichmentItemByIdController(req: Request, res: Response) {
   const {enrichmentItemId } = req.params;
-
+  console.log(enrichmentItemId)
   if (enrichmentItemId == undefined) {
     console.log("Missing field(s): ", {
       enrichmentItemId: enrichmentItemId,
@@ -1087,9 +1087,12 @@ export async function getEnrichmentItemById(req: Request, res: Response) {
   }
 
   try {
-    const enrichmentItem = await EnrichmentItemService.getEnrichmentItemById(parseInt(enrichmentItemId));
-    return res.status(200).json(enrichmentItem);
+    const enrichmentItem = await EnrichmentItemService.getEnrichmentItemById(Number(enrichmentItemId));
+
+    console.log("enrichmentItem", enrichmentItem)
+    return res.status(200).json({enrichmentItem:enrichmentItem});
   } catch (error: any) {
+    console.log(error)
     res.status(400).json({ error: error.message });
   }
 }
@@ -1143,7 +1146,7 @@ export async function updateEnrichmentItemImageController(req: Request, res: Res
     ) {
       console.log("Missing field(s): ", {
         enrichmentItemName,
-        enrichmentItemImageUrl
+        imageUrl
       });
       return res.status(400).json({ error: "Missing information!" });
     }
