@@ -289,27 +289,6 @@ export async function getSpeciesEduDescBySpeciesCode(
   }
 }
 
-//SpeciesEduDesc
-export async function getSpeciesEduDescBySpeciesCode(
-  req: Request,
-  res: Response,
-) {
-  const { speciesCode } = req.params;
-  if (speciesCode == undefined) {
-    console.log("Missing field(s): ", {
-      speciesCode,
-    });
-    return res.status(400).json({ error: "Missing information!" });
-  }
-  try {
-    const speciesEduDesc =
-      await SpeciesService.getSpeciesEduDescBySpeciesCode(speciesCode);
-    return res.status(200).json(speciesEduDesc);
-  } catch (error: any) {
-    res.status(400).json({ error: error.message });
-  }
-}
-
 export async function updateSpeciesEduDesc(req: Request, res: Response) {
   try {
     // const imageUrl = await handleFileUpload(
