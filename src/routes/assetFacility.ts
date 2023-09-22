@@ -36,7 +36,8 @@ import {
   removeOperationStaffFromFacility,
   getFacilityMaintenanceSuggestions,
   getSensorMaintenanceSuggestions,
-  updateAnimalFeedImageController
+  updateAnimalFeedImageController,
+  getFacilityController
 } from "../controllers/assetFacilityController";
 
 const router = express.Router();
@@ -49,7 +50,7 @@ router.use(authMiddleware);
 // Facilities
 router.post("/createFacility", createFacility);
 router.post("/getAllFacility", getAllFacility);
-// router.put("/getFacility/:facilityId", getFacility);
+router.post("/getFacility/:facilityId", getFacilityController);
 router.get("/getFacilityMaintenanceSuggestions", getFacilityMaintenanceSuggestions);
 router.put("/updateFacility/:facilityId", updateFacility);
 router.delete("/deleteFacility/:facilityId", deleteFacility);

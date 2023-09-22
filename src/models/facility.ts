@@ -82,6 +82,15 @@ class Facility extends Model<
     // Similar idea albert more useful when compared to java's toString
     return this.get(); //{...this.get(), employeePasswordHash: undefined, employeeSalt: undefined}
   }
+
+  public async toFullJson(){
+    return {
+      ...this.get(),
+      facilityDetail: this.facilityDetail,
+      facilityDetailJson: (await this.getFacilityDetail()).toJson(),
+      hubProcessors: await this.getHubProcessors()
+    }
+  }
 }
 
 Facility.init(

@@ -126,6 +126,38 @@ export async function getAllFacility(req: Request, res: Response) {
   }
 }
 
+export async function getFacilityController(req: Request, res: Response) {
+  try {
+    const { email } = (req as any).locals.jwtPayload;
+    const employee = await findEmployeeByEmail(email);
+
+    if (
+      !(
+        (await employee.getPlanningStaff())?.plannerType ==
+        PlannerType.OPERATIONS_MANAGER
+      )
+    )
+      return res
+        .status(403)
+        .json({ error: "Access Denied! Operation managers only!" });
+    
+    let { facilityId } = req.params
+    let { includes } = req.body;
+    includes = includes || []; 
+
+    const _includes : string[] = []
+    for (const role of ["hubProcessors"]){
+      if (includes.includes(role)) _includes.push(role)
+    }
+
+    let facility : Facility = await getFacilityById(Number(facilityId), _includes );
+
+    return res.status(200).json({ facility: await facility.toFullJson() });
+  } catch (error: any) {
+    res.status(400).json({ error: error.message });
+  }
+}
+
 export async function getFacilityMaintenanceSuggestions(req: Request, res: Response) {
   try {
     const { email } = (req as any).locals.jwtPayload;

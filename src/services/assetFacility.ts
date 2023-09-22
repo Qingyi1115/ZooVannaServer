@@ -42,10 +42,12 @@ export async function createNewFacility(
 
 export async function getFacilityById(facilityId: number, includes: string[] = []) {
   try {
-    return Facility.findOne({
+    const facility = await Facility.findOne({
       where: { facilityId: facilityId },
       include:includes
     });
+    if (!facility) throw {error:"Unable to find facility!"}
+    return facility;
   } catch (error: any) {
     throw validationErrorHandler(error);
   }

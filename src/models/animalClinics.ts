@@ -43,11 +43,9 @@ class AnimalClinic extends Model<
   declare setEvents: HasManySetAssociationsMixin<Event[], number>;
   declare removeEvent: HasManyRemoveAssociationMixin<Event, number>;
 
-  // public toJSON() {
-  //     // Can control default values returned rather than manually populating json, removing secrets
-  //     // Similar idea albert more useful when compared to java's toString
-  //     return {...this.get(), EmployeeEmployeeId: undefined}
-  // }
+  public toJSON() {
+    return this.get();
+  }
 }
 
 AnimalClinic.init(
