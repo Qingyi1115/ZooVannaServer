@@ -13,8 +13,8 @@ import {
   unsetAccountManagerController,
   enableRoleController,
   disableRoleController,
-  updateGeneralStaffTypeController,
-  updatePlanningStaffTypeController,
+  // updateGeneralStaffTypeController,
+  // updatePlanningStaffTypeController,
   updateEmployeeAccountController,
   updateEmployeePasswordController,
   getSelfController,
@@ -24,7 +24,7 @@ import {
 import {
   addEnclosureToKeeperController,
   removeEnclosureFromKeeperController,
-  updateKeeperTypeController,
+  // updateKeeperTypeController,
 } from "../controllers/keeperController";
 import { authMiddleware } from "../middlewares/authMiddleware";
 
@@ -64,9 +64,9 @@ router.put("/getEmployee/:employeeId/updateSpecializationType", updateSpecializa
 router.put("getEmployee/:employeeId/addEnclosure/:enclosureId", addEnclosureToKeeperController);
 router.put("getEmployee/:employeeId/removeEnclosure/:enclosureId", removeEnclosureFromKeeperController);
 
-router.put("getEmployee/:employeeId/updateKeeperType", updateKeeperTypeController);
-router.put("getEmployee/:employeeId/updateGeneralStaffType", updateGeneralStaffTypeController);
-router.put("getEmployee/:employeeId/updatePlanningStaffType", updatePlanningStaffTypeController);
+// router.put("getEmployee/:employeeId/updateKeeperType", updateKeeperTypeController);
+// router.put("getEmployee/:employeeId/updateGeneralStaffType", updateGeneralStaffTypeController);
+// router.put("getEmployee/:employeeId/updatePlanningStaffType", updatePlanningStaffTypeController);
 
 //router.put("/changeSpecializationType/:employeeId", ) --> change specialization type for planning and keeper staff
 
