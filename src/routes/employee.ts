@@ -35,7 +35,6 @@ router.use(authMiddleware);
 router.post("/createEmployee", createEmployeeController);
 router.get("/getEmployee/:employeeId", getEmployeeController);
 router.put("/updateEmployeeAccount", updateEmployeeAccountController);
-router.post("/createEmployee", createEmployeeController);
 router.put("/setAccountManager/:employeeId", setAccountManagerController);
 router.put("/unsetAccountManager/:employeeId", unsetAccountManagerController);
 
