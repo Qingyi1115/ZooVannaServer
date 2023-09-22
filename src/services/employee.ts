@@ -265,9 +265,11 @@ export async function getAllEmployees(includes: string[] = []): Promise<Employee
 
 export async function getEmployee(
   employeeId: CreationOptional<number>
-) {
+): Promise<Employee>
+{
   let employee = await Employee.findOne({
     where: {employeeId: employeeId},
+    include: ["keeper", "generalStaff", "planningStaff"],
   });
 
   if(employee) {
