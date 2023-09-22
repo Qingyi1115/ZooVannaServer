@@ -20,7 +20,6 @@ import { conn } from "./db";
 
 const truthy = ["TRUE", "true", "True", "1"];
 const app = express();
-
 app.use(
   cors({
     credentials: true,
