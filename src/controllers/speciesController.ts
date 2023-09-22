@@ -268,7 +268,25 @@ export async function updateSpecies(req: Request, res: Response) {
   }
 }
 
-//SpeciesEduDesc
+export async function deleteSpeciesByCode(req: Request, res: Response) {
+  const { speciesCode } = req.params;
+
+  if (speciesCode == undefined) {
+    console.log("Missing field(s): ", {
+      speciesCode,
+    });
+    return res.status(400).json({ error: "Missing information!" });
+  }
+
+  try {
+    const species = await SpeciesService.deleteSpeciesByCode(speciesCode);
+    return res.status(200).json(species);
+  } catch (error: any) {
+    res.status(400).json({ error: error.message });
+  }
+}
+
+//Species EduDesc
 export async function getSpeciesEduDescBySpeciesCode(
   req: Request,
   res: Response,
@@ -324,19 +342,46 @@ export async function updateSpeciesEduDesc(req: Request, res: Response) {
   }
 }
 
-export async function deleteSpeciesByCode(req: Request, res: Response) {
+//Species Food Remark
+export async function getSpeciesFoodRemarkBySpeciesCode(
+  req: Request,
+  res: Response,
+) {
   const { speciesCode } = req.params;
-
   if (speciesCode == undefined) {
     console.log("Missing field(s): ", {
       speciesCode,
     });
     return res.status(400).json({ error: "Missing information!" });
   }
-
   try {
-    const species = await SpeciesService.deleteSpeciesByCode(speciesCode);
-    return res.status(200).json(species);
+    const speciesFoodRemark =
+      await SpeciesService.getSpeciesFoodRemark(speciesCode);
+    return res.status(200).json(speciesFoodRemark);
+  } catch (error: any) {
+    res.status(400).json({ error: error.message });
+  }
+}
+
+export async function updateSpeciesFoodRemark(req: Request, res: Response) {
+  try {
+    const { speciesCode, foodRemark } = req.body;
+
+    if ([speciesCode, foodRemark].includes(undefined)) {
+      console.log("Missing field(s): ", {
+        speciesCode,
+        foodRemark,
+      });
+      return res.status(400).json({ error: "Missing information!" });
+    }
+
+    // have to pass in req for image uploading
+    let speciesFoodRemark = await SpeciesService.updateSpeciesFoodRemark(
+      speciesCode,
+      foodRemark,
+    );
+
+    return res.status(200).json({ speciesFoodRemark });
   } catch (error: any) {
     res.status(400).json({ error: error.message });
   }

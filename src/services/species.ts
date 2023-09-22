@@ -147,11 +147,10 @@ export async function updateSpecies(
     throw validationErrorHandler(error);
   }
 }
-//getSpeciesEduDescBySpeciesCode
+
 export async function getSpeciesEduDescBySpeciesCode(speciesCode: string) {
   let result = await Species.findOne({
     where: { speciesCode: speciesCode },
-    include: SpeciesEnclosureNeed, //eager fetch here!!
   });
 
   if (result) {
@@ -173,6 +172,40 @@ export async function updateSpeciesEduDesc(
   let updatedSpecies = {
     educationalDescription: educationalDescription,
     educationalFunFact: educationalFunFact,
+  } as any;
+
+  console.log(updatedSpecies);
+
+  try {
+    let species = await Species.update(updatedSpecies, {
+      where: { speciesCode: speciesCode },
+    });
+  } catch (error: any) {
+    throw validationErrorHandler(error);
+  }
+}
+
+export async function getSpeciesFoodRemark(speciesCode: string) {
+  let result = await Species.findOne({
+    where: { speciesCode: speciesCode },
+  });
+
+  if (result) {
+    let newSpeciesFoodRemark = {
+      foodRemark: result.foodRemark,
+    };
+
+    return newSpeciesFoodRemark;
+  }
+  throw new Error("Invalid Species Code!");
+}
+
+export async function updateSpeciesFoodRemark(
+  speciesCode: string,
+  foodRemark: string,
+) {
+  let updatedSpecies = {
+    foodRemark: foodRemark,
   } as any;
 
   console.log(updatedSpecies);
