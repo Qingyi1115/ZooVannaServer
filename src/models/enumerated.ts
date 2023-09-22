@@ -38,6 +38,8 @@ enum FacilityType {
   PLAYGROUND = "PLAYGROUND",
   TRAMSTOP = "TRAMSTOP",
   PARKING = "PARKING",
+  RESTAURANT="RESTAURANT",
+  SHOP_SOUVENIR="SHOP_SOUVENIR"
 }
 
 enum Specialization {

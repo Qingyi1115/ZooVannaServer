@@ -264,8 +264,6 @@ export async function unsetAsAccountManager(
 }
 
 export async function getAllEmployees(includes: string[] = []): Promise<Employee[]> {
-  console.log('hereeeeee');
-  console.log(includes);
   return Employee.findAll({
     order: [
       [literal('dateOfResignation IS NULL'), "ASC"],
