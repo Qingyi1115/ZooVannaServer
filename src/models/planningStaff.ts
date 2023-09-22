@@ -42,6 +42,36 @@ class PlanningStaff extends Model<
     this.isDisabled = true;
     this.save();
   }
+
+  public updateSpecialization(specialization: string) {
+    if(specialization === "AMPHIBIAN") {
+      this.specialization = Specialization.AMPHIBIAN; Specialization.REPTILE
+    } else if (specialization === "BIRD") {
+      this.specialization = Specialization.BIRD;
+    } else if (specialization === "FISH") {
+      this.specialization = Specialization.FISH;
+    } else if (specialization === "MAMMAL") {
+      this.specialization = Specialization.MAMMAL;
+    } else if (specialization === "REPTILE") {
+      this.specialization = Specialization.REPTILE;
+    }
+    this.save();
+  }
+
+  public updatePlanningStaffType(roleType: string) {  PlannerType.SALES
+    if(roleType === "CURATOR") {
+      this.plannerType = PlannerType.CURATOR;
+    } else if (roleType === "CUSTOMER_OPERATIONS") {
+      this.plannerType = PlannerType.CUSTOMER_OPERATIONS;
+    } else if (roleType === "MARKETING") {
+      this.plannerType = PlannerType.MARKETING;
+    } else if (roleType === "OPERATIONS_MANAGER") {
+      this.plannerType = PlannerType.OPERATIONS_MANAGER;
+    } else if (roleType === "SALES") {
+      this.plannerType = PlannerType.SALES;
+    }
+    this.save();
+  }
 }
 
 PlanningStaff.init(
