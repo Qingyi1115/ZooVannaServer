@@ -35,6 +35,12 @@ class ThirdParty extends Model<
   declare addCustomerReportLog: HasManyAddAssociationMixin<CustomerReportLog, number>;
   declare setCustomerReportLogs: HasManySetAssociationsMixin<CustomerReportLog[], number>;
   declare removeCustomerReportLog: HasManyRemoveAssociationMixin<CustomerReportLog, number>;
+
+  public toJSON() {
+    return {
+      ...this.get()
+    }
+  }
 }
 ThirdParty.init(
   {

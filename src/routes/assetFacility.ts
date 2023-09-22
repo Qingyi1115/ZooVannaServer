@@ -11,12 +11,13 @@ import {
   createNewAnimalFeed,
   getAllAnimalFeed,
   getAnimalFeedByName,
-  updateAnimalFeed,
+  updateAnimalFeedController,
   deleteAnimalFeedByName,
   createNewEnrichmentItem,
   getAllEnrichmentItem,
-  getEnrichmentItemByName,
-  updateEnrichmentItem,
+  getEnrichmentItemByIdController,
+  updateEnrichmentItemImageController,
+  updateEnrichmentItemController,
   deleteEnrichmentItemByName,
   getAllHubs,
   getAllSensors,
@@ -26,7 +27,7 @@ import {
   deleteHub,
   deleteSensor,
   getAuthorizationForCamera,
-  getAllFacility,
+  getAllFacilityController,
   deleteFacility,
   assignMaintenanceStaffToSensor,
   removeMaintenanceStaffFromSensor,
@@ -35,7 +36,11 @@ import {
   assignOperationStaffToFacility,
   removeOperationStaffFromFacility,
   getFacilityMaintenanceSuggestions,
-  getSensorMaintenanceSuggestions
+  getSensorMaintenanceSuggestions,
+  updateAnimalFeedImageController,
+  getFacilityController,
+  getAssignedMaintenanceStaffOfFacilityController,
+  getAllMaintenanceStaffController
 } from "../controllers/assetFacilityController";
 
 const router = express.Router();
@@ -47,13 +52,15 @@ router.use(authMiddleware);
 
 // Facilities
 router.post("/createFacility", createFacility);
-router.post("/getAllFacility", getAllFacility);
-// router.put("/getFacility/:facilityId", getFacility);
+router.post("/getAllFacility", getAllFacilityController);
+router.post("/getFacility/:facilityId", getFacilityController);
 router.get("/getFacilityMaintenanceSuggestions", getFacilityMaintenanceSuggestions);
 router.put("/updateFacility/:facilityId", updateFacility);
 router.delete("/deleteFacility/:facilityId", deleteFacility);
+router.get("/getAssignedMaintenanceStaffOfFacility/:facilityId", getAssignedMaintenanceStaffOfFacilityController);
+router.get("/getAllMaintenanceStaff/", getAllMaintenanceStaffController);
 router.get("/assignMaintenanceStaffToFacility/:facilityId", assignMaintenanceStaffToFacility);
-router.get("/removeMaintenanceStaffFromFacility/:facilityId", removeMaintenanceStaffFromFacility);
+router.put("/removeMaintenanceStaffFromFacility/:facilityId", removeMaintenanceStaffFromFacility);
 router.get("/assignOperationStaffToFacility/:facilityId", assignOperationStaffToFacility);
 router.get("/removeOperationStaffFromFacility/:facilityId", removeOperationStaffFromFacility);
 
@@ -61,14 +68,16 @@ router.get("/removeOperationStaffFromFacility/:facilityId", removeOperationStaff
 router.post("/createNewAnimalFeed", createNewAnimalFeed);
 router.get("/getAllAnimalFeed", getAllAnimalFeed);
 router.get("/getAnimalFeed/:animalFeedName", getAnimalFeedByName);
-router.put("/updateAnimalFeed", updateAnimalFeed);
+router.put("/updateAnimalFeed", updateAnimalFeedController);
+router.put("/updateAnimalFeedImage", updateAnimalFeedImageController);
 router.delete("/deleteAnimalFeed/:animalFeedName", deleteAnimalFeedByName);
 
 // Enrichment Items
 router.post("/createNewEnrichmentItem", createNewEnrichmentItem);
 router.get("/getAllEnrichmentItem", getAllEnrichmentItem);
-router.get("/getEnrichmentItem/:enrichmentItemName", getEnrichmentItemByName);
-router.put("/updateEnrichmentItem", updateEnrichmentItem);
+router.get("/getEnrichmentItem/:enrichmentItemId", getEnrichmentItemByIdController);
+router.put("/updateEnrichmentItem", updateEnrichmentItemController);
+router.put("/updateEnrichmentItemImage", updateEnrichmentItemImageController);
 router.delete("/deleteEnrichmentItem/:enrichmentItemName", deleteEnrichmentItemByName);
 
 // Hubs and Sensors

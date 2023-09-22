@@ -5,27 +5,34 @@ import {
   login,
   // loginWithUsername,
   createCustomer,
-  retrieveCustomerAccountDetails,
-  updateCustomerAccount,
-  retrieveAllCustomerDetails,
+  deleteCustomer,
+  getCustomerByCustomerId,
+  getCustomerByEmail,
+  updateCustomer,
+  updatePassword,
+  sendForgetPasswordLink,
+  resetForgottenPasswordController,
   deleteCustomerByEmail,
 } from "../controllers/customerController";
 import { authMiddleware } from "../middlewares/authMiddleware";
 
 const router = express.Router();
 
+router.post("/sendForgetPasswordLink/:email", sendForgetPasswordLink); //reset password by account manager (sent to employee's email)
+router.put("/resetForgottenPassword/:token", resetForgottenPasswordController); //Reset from the customer side using email
 // sign up/create account
+router.post("/createCustomer", createCustomer);
 
 // log in
 router.post("/login", login);
-// router.post("/loginWithUsername", loginWithUsername);
 
 router.use(authMiddleware);
 
-router.put("/createCustomer", createCustomer);
-router.put("/retrieveCustomerAccountDetails", retrieveCustomerAccountDetails);
-router.put("/updateCustomerAccount", updateCustomerAccount);
-router.put("/retrieveAllCustomerDetails", retrieveAllCustomerDetails);
+router.delete("/deleteCustomer/:customerId", deleteCustomer);
+// router.get("/getCustomer/:customerId", getCustomerByCustomerId);
+router.get("/getCustomer", getCustomerByEmail);
+router.put("/updateCustomer/:customerId", updateCustomer);
+router.put("/updatePassword/:customerId", updatePassword);
 router.delete("/deleteCustomer", deleteCustomerByEmail);
 
 export default router;

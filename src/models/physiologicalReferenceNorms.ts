@@ -7,10 +7,12 @@ import {
   HasManyAddAssociationMixin,
   HasManySetAssociationsMixin,
   HasManyRemoveAssociationMixin,
+  BelongsToGetAssociationMixin,
+  BelongsToSetAssociationMixin,
   CreationOptional,
 } from "Sequelize";
 import { conn } from "../db";
-import { AnimalGrowthStage, GrowthStage } from "./enumerated";
+import { AnimalGrowthStage } from "./enumerated";
 import { Species } from "./species";
 
 class PhysiologicalReferenceNorms extends Model<
@@ -25,12 +27,16 @@ class PhysiologicalReferenceNorms extends Model<
   declare ageToGrowthAge: number;
   declare growthStage: AnimalGrowthStage;
 
-  declare species?: Species[];
+  // declare species?: Species[];
+  declare species?: Species;
 
-  declare getSpecies: HasManyGetAssociationsMixin<Species[]>;
-  declare addSpecies: HasManyAddAssociationMixin<Species, number>;
-  declare setSpecies: HasManySetAssociationsMixin<Species[], number>;
-  declare removeSpecies: HasManyRemoveAssociationMixin<Species, number>;
+  // declare getSpecies: HasManyGetAssociationsMixin<Species[]>;
+  // declare addSpecies: HasManyAddAssociationMixin<Species, number>;
+  // declare setSpecies: HasManySetAssociationsMixin<Species[], number>;
+  // declare removeSpecies: HasManyRemoveAssociationMixin<Species, number>;
+
+  declare getSpecies: BelongsToGetAssociationMixin<Species>;
+  declare setSpecies: BelongsToSetAssociationMixin<Species, number>;
 }
 PhysiologicalReferenceNorms.init(
   {
@@ -61,7 +67,7 @@ PhysiologicalReferenceNorms.init(
     },
     growthStage: {
       type: DataTypes.ENUM,
-      values: Object.values(GrowthStage),
+      values: Object.values(AnimalGrowthStage),
       allowNull: false,
     },
   },

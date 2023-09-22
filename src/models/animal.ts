@@ -152,7 +152,7 @@ Animal.init(
     },
     dateOfAcquisition: {
       type: DataTypes.DATE,
-      allowNull: false,
+      defaultValue: DataTypes.NOW,
     },
     acquisitionRemarks: {
       type: DataTypes.STRING,

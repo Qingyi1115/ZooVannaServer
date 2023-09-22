@@ -10,13 +10,14 @@ import { InHouse } from "../models/inHouse";
 import { FacilityLog } from "../models/faciltiyLog";
 import { compareDates } from "../helpers/others";
 import { predictNextDate } from "../helpers/predictors";
-import { SensorReading } from "../models/sensorReading";
 import { MaintenanceLog } from "../models/maintenanceLog";
+import { Employee } from "models/employee";
 
 export async function createNewFacility(
   facilityName: string,
   xCoordinate: number,
   yCoordinate: number,
+  isSheltered: boolean,
   facilityDetail: string,
   facilityDetailJson: any,
 ) {
@@ -24,6 +25,7 @@ export async function createNewFacility(
     facilityName: facilityName,
     xCoordinate: xCoordinate,
     yCoordinate: yCoordinate,
+    isSheltered: isSheltered
   } as any;
   newFacility[facilityDetail] = facilityDetailJson;
 
@@ -42,10 +44,12 @@ export async function createNewFacility(
 
 export async function getFacilityById(facilityId: number, includes: string[] = []) {
   try {
-    return Facility.findOne({
+    const facility = await Facility.findOne({
       where: { facilityId: facilityId },
       include:includes
     });
+    if (!facility) throw {error:"Unable to find facility!"}
+    return facility;
   } catch (error: any) {
     throw validationErrorHandler(error);
   }
@@ -54,7 +58,7 @@ export async function getFacilityById(facilityId: number, includes: string[] = [
 export async function getAllFacilityMaintenanceSuggestions() {
   try {
 
-    let facilities : Facility[] = await _getAllFacility([], true);
+    let facilities : Facility[] = await getAllFacility([], true);
     facilities = facilities.filter(facility => facility.facilityDetail == "inHouse");
     const suggested = []
 
@@ -63,7 +67,7 @@ export async function getAllFacilityMaintenanceSuggestions() {
       let logs = (await inHouse.getFacilityLogs()) || [];
       logs = logs.sort((a:FacilityLog,b:FacilityLog)=> compareDates(a.dateTime, b.dateTime));
       logs = logs.map( (log: FacilityLog) => log.dateTime);
-      (facility as any)["predictedMaintenanceDate"] = predictNextDate(logs.slice(0, Math.max(logs.length, 5)));
+      (facility as any).dataValues["predictedMaintenanceDate"] = predictNextDate(logs.slice(0, Math.max(logs.length, 5)));
     }
     
     return facilities;
@@ -148,18 +152,17 @@ export async function removeMaintenanceStaffFromFacilityById(
     const inHouse = await facility.getInHouse();
     if (!inHouse) throw { message: "Facility is not In House!" };
 
-    const employees = await getAllEmployees([]);
-    employees.filter(employee => employeeIds.includes(employee.employeeId));
-    employees.map(employee => employee.getGeneralStaff());
+    let employees = await getAllEmployees([]);
+    employees = employees.filter(employee => employeeIds.includes(employee.employeeId));
     const staffList:GeneralStaff[] = []
-    for (const staffPromise in (employees as any)){
-      const staff = await (staffPromise as any);
-      if (staff.generalStaffType != GeneralStaffType.ZOO_MAINTENANCE) throw { message:"Not a Maintenance Staff!"}
+    for (const emp of employees){
+      const staff = await emp.getGeneralStaff();
       staffList.push(staff)
     }
-    for (const staff in staffList){
-      inHouse.removeMaintenanceStaff(staff as any);
-      (staff as any).removeMaintainedFacility(inHouse);
+    for (const staff of staffList){
+      await inHouse.removeMaintenanceStaff(staff);
+      console.log(staff)
+      staff.removeMaintainedFacilities(inHouse);
     }
     
     return inHouse;
@@ -256,7 +259,7 @@ export async function addHubProcessorByFacilityId(
   }
 }
 
-export async function _getAllFacility(
+export async function getAllFacility(
   includes: any,
   facilityDetail: boolean
   ): Promise<Facility[]> {
@@ -321,13 +324,15 @@ export async function getSensorReadingBySensorId(
 export async function getAllSensorMaintenanceSuggestions() {
   try {
 
-    let sensors : Sensor[] = await _getAllSensors(["sensorReading"]);
-
-    for (const sensor in sensors){
-      let logs = (await (sensor as any).getMaintenanceLogs()) || [];
+    let sensors : any[] = await _getAllSensors(["sensorReadings"]);
+    let counter = 0
+    for (const sensor of sensors){
+      console.log(sensor);
+      let logs = (await sensor.getMaintenanceLogs()) || [];
       logs = logs.sort((a:MaintenanceLog,b:MaintenanceLog)=> compareDates(a.dateTime, b.dateTime));
-      logs = logs.map((log:MaintenanceLog)=>log.dateTime);
-      (sensor as any)["predictedMaintenanceDate"] = predictNextDate(logs.slice(0, Math.max(logs.length, 5)));
+      let dateLogs = logs.map((log:MaintenanceLog)=>log.dateTime);
+      (sensor as any).dataValues["predictedMaintenanceDate"] = predictNextDate(dateLogs.slice(0, Math.max(dateLogs.length, 5)));
+      counter = counter + 1
     }
     return sensors;
   } catch (error: any) {
@@ -527,3 +532,37 @@ export async function getAuthorizationForCameraById(
     throw validationErrorHandler(error);
   }
 }
+
+export async function getMaintenanceStaffsByFacilityId(
+  facilityId: number
+) {
+  try {
+    const facility = await getFacilityById(facilityId);
+    const inHouse : InHouse = await facility.getFacilityDetail();
+    if (facility.facilityDetail != "inHouse") throw {message : "Facility not in house type!"};
+    let staffs : GeneralStaff[] = await inHouse.getMaintenanceStaffs();
+    let emps : Employee[] = []
+    for (const staff of staffs){
+      emps.push(await staff.getEmployee());
+    }
+    return emps;
+    
+
+  } catch (error: any) {
+    throw validationErrorHandler(error);
+  }
+}
+
+export async function getAllMaintenanceStaff(
+  includes:string[]
+) {
+  try {
+    if (!includes.includes("generalStaff")) includes.push("generalStaff") 
+    let employees:Employee[] = await getAllEmployees(includes);
+    employees = employees.filter(emp=>emp.generalStaff?.generalStaffType==GeneralStaffType.ZOO_MAINTENANCE);
+    return employees;
+  } catch (error: any) {
+    throw validationErrorHandler(error);
+  }
+}
+

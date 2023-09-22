@@ -77,7 +77,7 @@ HubProcessor.init(
     hubStatus:{
       type: DataTypes.ENUM,
       values: Object.values(HubStatus),
-      allowNull: false,
+      defaultValue: HubStatus.PENDING
     }
   },
   {

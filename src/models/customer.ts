@@ -36,7 +36,6 @@ class Customer extends Model<
   declare birthday: Date;
   declare address: string;
   declare nationality: Country;
-  declare profileUrl: string;
 
   declare orders?: CustomerOrder[];
 
@@ -62,6 +61,12 @@ class Customer extends Model<
 
   static generateCustomerSalt() {
     return (Math.random() + 1).toString(36).substring(7);
+  }
+
+  public updatePasswordWithToken(password: string) {
+    this.passwordHash = hash(password + this.salt);
+    this.save();
+    return this;
   }
 
   static getHash(password: string, salt: string) {
@@ -97,19 +102,40 @@ Customer.init(
     firstName: {
       type: DataTypes.STRING,
       allowNull: false,
+      validate: {
+        len: [2, 1000], // At least 2 characters long, less than longest name in the world (747 char) + buffer
+      },
     },
     lastName: {
       type: DataTypes.STRING,
       allowNull: false,
+      validate: {
+        len: [2, 1000], // At least 2 characters long, less than longest name in the world (747 char) + buffer
+      },
     },
     email: {
       type: DataTypes.STRING,
       allowNull: false,
       unique: true,
+      validate: {
+        isEmail: true, // Email format validation from Sequelize
+      },
     },
     contactNo: {
       type: DataTypes.STRING,
       allowNull: false,
+      validate: {
+        isContactNumber(value: string) {
+          if (!/^[0-9\s\-\(\)]+$/.test(value)) {
+            throw new Error(
+              "Contact number should only contain digits, spaces, hyphens, or parentheses.",
+            );
+          }
+          if (value.replace(/[\s\-\(\)]/g, "").length < 7) {
+            throw new Error("Contact number should have at least 7 digits.");
+          }
+        },
+      },
     },
     birthday: {
       type: DataTypes.DATE,
@@ -118,15 +144,14 @@ Customer.init(
     address: {
       type: DataTypes.STRING,
       allowNull: false,
+      validate: {
+        len: [5, 1000], // At least 5 characters long
+      },
     },
     nationality: {
       type: DataTypes.ENUM,
       values: Object.values(Country),
       allowNull: false,
-    },
-    profileUrl: {
-      type: DataTypes.STRING,
-      allowNull: true,
     },
   },
   {

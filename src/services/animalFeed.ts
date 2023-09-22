@@ -59,13 +59,31 @@ export async function deleteAnimalFeedByName(animalFeedName: string) {
 
 export async function updateAnimalFeed(
     animalFeedName: string,
-    animalFeedImageUrl: string,
     animalFeedCategory: AnimalFeedCategory) {
 
     let updatedAnimalFeed = {
         animalFeedName: animalFeedName,
-        animalFeedImageUrl: animalFeedImageUrl,
         animalFeedCategory: animalFeedCategory
+    } as any;
+
+    console.log(updatedAnimalFeed)
+
+    try {
+        let animalFeed = await AnimalFeed.update(updatedAnimalFeed, {
+            where: { animalFeedName: animalFeedName },
+        });
+    } catch (error: any) {
+        throw validationErrorHandler(error);
+    }
+}
+
+export async function updateAnimalFeedImage(
+    animalFeedName:string,
+    imageUrl: string
+    ) {
+
+    let updatedAnimalFeed = {
+        imageUrl: imageUrl
     } as any;
 
     console.log(updatedAnimalFeed)

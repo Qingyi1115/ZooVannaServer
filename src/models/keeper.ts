@@ -65,6 +65,16 @@ class Keeper extends Model<
     this.save();
   }
 
+  public setSeniorKeeper() {
+    this.keeperType = KeeperType.SENIOR_KEEPER;
+    this.save();
+  }
+
+  public setKeeper() {
+    this.keeperType = KeeperType.KEEPER;
+    this.save();
+  }
+  
   public updateSpecialization(specialization: string) {
     if(specialization === "AMPHIBIAN") {
       this.specialization = Specialization.AMPHIBIAN; Specialization.REPTILE

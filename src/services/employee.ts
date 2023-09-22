@@ -12,6 +12,7 @@ import * as nodemailer from 'nodemailer';
 import { v4 as uuidv4 } from 'uuid';
 import { PlanningStaff } from "../models/planningStaff";
 import { GeneralStaff } from "../models/generalStaff";
+import { Request, Response } from "express";
 
 //Account Manager
 export async function createNewEmployee(
@@ -99,14 +100,19 @@ export async function createNewEmployee(
 }
 
 export async function resetPassword(
-  employeeId: CreationOptional<number>
+  employeeId: CreationOptional<number>,
+  err:Function,
+  success:Function
 ) {
   let result = await Employee.findOne({
     where: {employeeId: employeeId},
   });
   
+  console.log("it is here");
+  console.log(result);
   if(result) {
     if(result.dateOfResignation == null) {
+      console.log("hel");
       const token = uuidv4();
 
       const resetTokens: any = {
@@ -117,7 +123,9 @@ export async function resetPassword(
       };
 
       try {
-        await Token.create(resetTokens);
+        let t = await Token.create(resetTokens);
+        t.save();
+        console.log("here??");
 
         const transporter = nodemailer.createTransport({
           service: 'gmail',
@@ -137,9 +145,11 @@ export async function resetPassword(
 
         transporter.sendMail(mailOptions, (error, info) => {
           if (error) {
-            console.error('Error sending email:', error);
+            console.log({ message: "Failed to send email!\n" + error });
+            err(error);
           } else {
             console.log('Email sent:', info.response);
+            success();
           }
         });
       }
@@ -451,6 +461,80 @@ export async function disableRole(
     throw {error: "Employee does not exist"};
   }
 }
+
+// export async function updateGeneralStaffType(
+//   employeeId: CreationOptional<number>,
+//   roleType: string,
+// ) {
+//   let employee = await Employee.findOne({
+//     where: {employeeId: employeeId},
+//   });
+
+//   if(employee) {
+//       if(await employee.getGeneralStaff()) {
+//           if(roleType == "MAINTENANCE") {
+//               (await employee.getGeneralStaff())?.setMaintenance();
+//           }
+
+//           else if(roleType == "OPERATIONS") {
+//               (await employee.getGeneralStaff())?.setOperations();
+//           }
+
+//           else {
+//               throw {error: "Such role type does not exist"};
+//           }
+
+//       } else {
+//           throw {error: "There is no general staff role in this account"};
+//       }
+      
+//   } else {
+//       throw {error: "Employee does not exist"};
+//   }
+// }
+
+// export async function updatePlanningStaffType(
+//   employeeId: CreationOptional<number>,
+//   roleType: string,
+// ) {
+//   let employee = await Employee.findOne({
+//     where: {employeeId: employeeId},
+//   });
+
+//   if(employee) {
+//       if(await employee.getPlanningStaff()) {
+//           if(roleType == "CURATOR") {
+//             (await employee.getPlanningStaff())?.setCurator();
+//           }
+
+//           else if(roleType == "SALES") {
+//             (await employee.getPlanningStaff())?.setSales();
+//           }
+
+//           else if(roleType == "MARKETING") {
+//             (await employee.getPlanningStaff())?.setMarketing();
+//           }
+
+//           else if(roleType == "OPERATIONS MANAGER") {
+//             (await employee.getPlanningStaff())?.setOperationsManager();
+//           }
+
+//           else if(roleType == "CUSTOMER OPERATIONS") {
+//             (await employee.getPlanningStaff())?.setCustomerOperations();
+//           }
+
+//           else {
+//               throw {error: "Such role type does not exist"};
+//           }
+
+//       } else {
+//           throw {error: "There is no planning staff role in this account"};
+//       }
+      
+//   } else {
+//       throw {error: "Employee does not exist"};
+//   }
+// }
 
 export async function updateRoleType(
   employeeId: CreationOptional<number>,

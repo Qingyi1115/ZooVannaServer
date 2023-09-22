@@ -36,9 +36,9 @@ class GeneralStaff extends Model<
   declare setEmployee: BelongsToSetAssociationMixin<Employee, number>;
 
   declare getMaintainedFacilities: BelongsToManyGetAssociationsMixin<InHouse[]>;
-  declare addMaintainedFacility: BelongsToManyAddAssociationMixin<InHouse, number>;
+  declare addMaintainedFacilities: BelongsToManyAddAssociationMixin<InHouse, number>;
   declare setMaintainedFacilities: BelongsToManySetAssociationsMixin<InHouse, number>;
-  declare removeMaintainedFacility: BelongsToManyRemoveAssociationMixin<InHouse, number>;
+  declare removeMaintainedFacilities: BelongsToManyRemoveAssociationMixin<InHouse, number>;
 
   declare getOperatedFacility: BelongsToGetAssociationMixin<InHouse>;
   declare setOperatedFacility: BelongsToSetAssociationMixin<InHouse, number>;

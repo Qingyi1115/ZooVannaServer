@@ -72,6 +72,32 @@ class PlanningStaff extends Model<
     }
     this.save();
   }
+
+  public setCurator() {
+    this.plannerType = PlannerType.CURATOR;
+    this.save();
+  }
+
+  public setCustomerOperations() {
+    this.plannerType = PlannerType.CUSTOMER_OPERATIONS;
+    this.save();
+  }
+
+  public setMarketing() {
+    this.plannerType = PlannerType.MARKETING;
+    this.save();
+  }
+
+  public setOperationsManager() {
+    this.plannerType = PlannerType.OPERATIONS_MANAGER;
+    this.save();
+  }
+
+  public setSales() {
+    this.plannerType = PlannerType.SALES;
+    this.save();
+  }
+
 }
 
 PlanningStaff.init(

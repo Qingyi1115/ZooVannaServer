@@ -16,6 +16,8 @@
         MYSQL_PASSWORD=your_password
         RESET_DB=True/TRUE/true/1 (false otherwise)
         SECRET_KEY=anything_works
+        EMAIL_USERNAME=zoovannaserver@gmail.com
+        EMAIL_PASSWORD=qfiy zmgb ycoa bylw
 
     Other optional env are (with their default values if not stated):
 
