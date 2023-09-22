@@ -26,7 +26,7 @@ import {
   deleteHub,
   deleteSensor,
   getAuthorizationForCamera,
-  getAllFacility,
+  getAllFacilityController,
   deleteFacility,
   assignMaintenanceStaffToSensor,
   removeMaintenanceStaffFromSensor,
@@ -49,7 +49,7 @@ router.use(authMiddleware);
 
 // Facilities
 router.post("/createFacility", createFacility);
-router.post("/getAllFacility", getAllFacility);
+router.post("/getAllFacility", getAllFacilityController);
 router.post("/getFacility/:facilityId", getFacilityController);
 router.get("/getFacilityMaintenanceSuggestions", getFacilityMaintenanceSuggestions);
 router.put("/updateFacility/:facilityId", updateFacility);

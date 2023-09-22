@@ -81,7 +81,9 @@ class Enclosure extends Model<
   declare removeKeeper: BelongsToManyRemoveAssociationMixin<Keeper, number>;
   
   public toJSON() {
-    return this.get();
+    return {
+      ...this.get()
+    }
   }
 }
 

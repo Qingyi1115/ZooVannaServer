@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import { findEmployeeByEmail } from "../services/employee";
 import { PlannerType } from "../models/enumerated";
 import {
-  _getAllFacility,
+  getAllFacility,
   _getAllHubs,
   _getAllSensors,
   addHubProcessorByFacilityId,
@@ -93,7 +93,7 @@ export async function createFacility(req: Request, res: Response) {
   }
 }
 
-export async function getAllFacility(req: Request, res: Response) {
+export async function getAllFacilityController(req: Request, res: Response) {
   try {
     const { email } = (req as any).locals.jwtPayload;
     const employee = await findEmployeeByEmail(email);
@@ -116,12 +116,13 @@ export async function getAllFacility(req: Request, res: Response) {
       if (includes.includes(role)) _includes.push(role)
     }
 
-    let facilities : Facility[] = await _getAllFacility(_includes, includes.includes("facilityDetail"));
-
+    let facilities : Facility[] = await getAllFacility(_includes, includes.includes("facilityDetail"));
+    console.log("facilities",facilities)
     facilities.forEach(facility => facility.toJSON())
 
     return res.status(200).json({ facilities: facilities });
   } catch (error: any) {
+    console.log(error)
     res.status(400).json({ error: error.message });
   }
 }
@@ -151,9 +152,9 @@ export async function getFacilityController(req: Request, res: Response) {
     }
 
     let facility : Facility = await getFacilityById(Number(facilityId), _includes );
-
     return res.status(200).json({ facility: await facility.toFullJson() });
   } catch (error: any) {
+    console.log(error)
     res.status(400).json({ error: error.message });
   }
 }
@@ -173,7 +174,6 @@ export async function getFacilityMaintenanceSuggestions(req: Request, res: Respo
         .status(403)
         .json({ error: "Access Denied! Operation managers only!" });
     let facilities = await getAllFacilityMaintenanceSuggestions();
-    console.log("facilities", facilities);
     return res.status(200).json({ facilities: facilities });
   } catch (error: any) {
     console.log("error", error);

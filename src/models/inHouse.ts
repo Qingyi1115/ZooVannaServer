@@ -77,7 +77,9 @@ class InHouse extends Model<
   declare removeCustomerReportLog: HasManyRemoveAssociationMixin<CustomerReportLog, number>;
 
   public toJSON() {
-    return this.get();
+    return {
+      ...this.get()
+    }
   }
 
   public async toFullJSON(){

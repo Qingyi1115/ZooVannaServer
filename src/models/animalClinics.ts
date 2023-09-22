@@ -44,7 +44,9 @@ class AnimalClinic extends Model<
   declare removeEvent: HasManyRemoveAssociationMixin<Event, number>;
 
   public toJSON() {
-    return this.get();
+    return {
+      ...this.get()
+    }
   }
 }
 

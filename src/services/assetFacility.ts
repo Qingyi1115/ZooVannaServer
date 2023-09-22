@@ -56,7 +56,7 @@ export async function getFacilityById(facilityId: number, includes: string[] = [
 export async function getAllFacilityMaintenanceSuggestions() {
   try {
 
-    let facilities : Facility[] = await _getAllFacility([], true);
+    let facilities : Facility[] = await getAllFacility([], true);
     facilities = facilities.filter(facility => facility.facilityDetail == "inHouse");
     const suggested = []
 
@@ -65,7 +65,7 @@ export async function getAllFacilityMaintenanceSuggestions() {
       let logs = (await inHouse.getFacilityLogs()) || [];
       logs = logs.sort((a:FacilityLog,b:FacilityLog)=> compareDates(a.dateTime, b.dateTime));
       logs = logs.map( (log: FacilityLog) => log.dateTime);
-      (facility as any)["predictedMaintenanceDate"] = predictNextDate(logs.slice(0, Math.max(logs.length, 5)));
+      (facility as any).dataValues["predictedMaintenanceDate"] = predictNextDate(logs.slice(0, Math.max(logs.length, 5)));
     }
     
     return facilities;
@@ -258,7 +258,7 @@ export async function addHubProcessorByFacilityId(
   }
 }
 
-export async function _getAllFacility(
+export async function getAllFacility(
   includes: any,
   facilityDetail: boolean
   ): Promise<Facility[]> {

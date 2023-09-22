@@ -52,8 +52,6 @@ server.listen(port, async () => {
 
 app.use((req, res, next) => {
   console.log(req.path, req.method);
-  console.log("socket localAddress :<",req.socket.localAddress,">",req.socket.localAddress=="::1" )
-  console.log("socket remoteAddress :<",req.socket.remoteAddress,">")
   next();
 });
 

@@ -84,12 +84,13 @@ class Facility extends Model<
   }
 
   public async toFullJson(){
-    return {
+    const _json : any = {
       ...this.get(),
-      facilityDetail: this.facilityDetail,
-      facilityDetailJson: (await this.getFacilityDetail()).toJson(),
-      hubProcessors: await this.getHubProcessors()
+      facilityDetailJson: (await this.getFacilityDetail()),
+      hubProcessors: (await this.getHubProcessors())
     }
+    _json.facilityDetail = this.facilityDetail
+    return _json;
   }
 }
 
