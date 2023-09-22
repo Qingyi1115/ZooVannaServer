@@ -8,6 +8,7 @@ import {
   retrieveCustomerAccountDetails,
   updateCustomerAccount,
   retrieveAllCustomerDetails,
+  deleteCustomerByEmail,
 } from "../controllers/customerController";
 import { authMiddleware } from "../middlewares/authMiddleware";
 
@@ -25,5 +26,6 @@ router.put("/createCustomer", createCustomer);
 router.put("/retrieveCustomerAccountDetails", retrieveCustomerAccountDetails);
 router.put("/updateCustomerAccount", updateCustomerAccount);
 router.put("/retrieveAllCustomerDetails", retrieveAllCustomerDetails);
+router.delete("/deleteCustomer", deleteCustomerByEmail);
 
 export default router;

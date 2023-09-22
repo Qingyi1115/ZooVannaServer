@@ -6,6 +6,7 @@ import {
   customerLogin,
   // customerLoginWithUsername
 } from "../services/customer";
+import * as CustomerService from "../services/customer"
 
 export const createCustomer = async (req: Request, res: Response) => {
   try {
@@ -107,3 +108,21 @@ export const retrieveAllCustomerDetails = async (
   req: Request,
   res: Response,
 ) => { };
+
+export async function deleteCustomerByEmail(req: Request, res: Response) {
+  const { customerCode } = req.params;
+
+  if (customerCode == undefined) {
+      console.log("Missing field(s): ", {
+          customerCode,
+      });
+      return res.status(400).json({ error: "Missing information!" });
+  }
+
+  try {
+      const customer = await CustomerService.deleteCustomerByEmail(customerCode);
+      return res.status(200).json(customer);
+  } catch (error: any) {
+      res.status(400).json({ error: error.message });
+  }
+}
