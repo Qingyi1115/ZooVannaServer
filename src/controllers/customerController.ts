@@ -236,6 +236,6 @@ export async function updatePassword(req: Request, res: Response) {
     }
   } catch (error: any) {
     console.log("last error");
-    res.status(400).json({ error: "boo" });
+    res.status(400).json({ error: "There is an error during the update" });
   }
 }
