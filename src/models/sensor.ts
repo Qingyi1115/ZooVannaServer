@@ -82,6 +82,7 @@ Sensor.init(
     },
     dateOfLastMaintained: {
       type: DataTypes.DATE,
+      defaultValue: DataTypes.NOW,
     },
     sensorType: {
       type: DataTypes.ENUM,

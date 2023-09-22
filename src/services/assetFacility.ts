@@ -323,13 +323,15 @@ export async function getSensorReadingBySensorId(
 export async function getAllSensorMaintenanceSuggestions() {
   try {
 
-    let sensors : Sensor[] = await _getAllSensors(["sensorReading"]);
-
-    for (const sensor in sensors){
-      let logs = (await (sensor as any).getMaintenanceLogs()) || [];
+    let sensors : any[] = await _getAllSensors(["sensorReadings"]);
+    let counter = 0
+    for (const sensor of sensors){
+      console.log(sensor);
+      let logs = (await sensor.getMaintenanceLogs()) || [];
       logs = logs.sort((a:MaintenanceLog,b:MaintenanceLog)=> compareDates(a.dateTime, b.dateTime));
-      logs = logs.map((log:MaintenanceLog)=>log.dateTime);
-      (sensor as any)["predictedMaintenanceDate"] = predictNextDate(logs.slice(0, Math.max(logs.length, 5)));
+      let dateLogs = logs.map((log:MaintenanceLog)=>log.dateTime);
+      (sensor as any).dataValues["predictedMaintenanceDate"] = predictNextDate(dateLogs.slice(0, Math.max(dateLogs.length, 5)));
+      counter = counter + 1
     }
     return sensors;
   } catch (error: any) {

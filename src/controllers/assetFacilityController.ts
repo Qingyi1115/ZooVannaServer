@@ -172,9 +172,11 @@ export async function getFacilityMaintenanceSuggestions(req: Request, res: Respo
       return res
         .status(403)
         .json({ error: "Access Denied! Operation managers only!" });
-    let facilities = getAllFacilityMaintenanceSuggestions();
+    let facilities = await getAllFacilityMaintenanceSuggestions();
+    console.log("facilities", facilities);
     return res.status(200).json({ facilities: facilities });
   } catch (error: any) {
+    console.log("error", error);
     res.status(400).json({ error: error.message });
   }
 }
@@ -698,9 +700,10 @@ export async function getSensorMaintenanceSuggestions(req: Request, res: Respons
         .status(403)
         .json({ error: "Access Denied! Operation managers only!" });
 
-    let sensors = getAllSensorMaintenanceSuggestions();
+    let sensors = await getAllSensorMaintenanceSuggestions();
     return res.status(200).json({ sensors: sensors });
   } catch (error: any) {
+    console.log("error", error);
     res.status(400).json({ error: error.message });
   }
 }

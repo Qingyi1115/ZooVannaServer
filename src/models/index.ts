@@ -43,9 +43,9 @@ import { HubProcessor } from "./hubProcessor";
 import { CustomerReportLog } from "./customerReportLog";
 import { SensorReading } from "./sensorReading";
 import { PhysiologicalReferenceNorms } from "./physiologicalReferenceNorms";
-import { predictNextDate } from "../helpers/predictors";
 import { EnrichmentItem } from "./enrichmentItem";
 import { AnimalFeed } from "./animalFeed";
+import { MaintenanceLog } from "./maintenanceLog";
 
 function addCascadeOptions(options: object) {
   return { ...options, onDelete: "CASCADE", onUpdate: "CASCADE" };
@@ -79,6 +79,9 @@ export const createDatabase = async (options: any) => {
 
   HubProcessor.hasMany(Sensor, addCascadeOptions({ foreignKey: "hubProcessorId" }));
   Sensor.belongsTo(HubProcessor, addCascadeOptions({ foreignKey: "hubProcessorId" }));
+
+  Sensor.hasMany(MaintenanceLog, addCascadeOptions({ foreignKey: "sensorId" }));
+  MaintenanceLog.belongsTo(Sensor, addCascadeOptions({ foreignKey: "sensorId" }));
 
   Sensor.hasMany(SensorReading, addCascadeOptions({ foreignKey: "sensorId" }));
   SensorReading.belongsTo(Sensor, addCascadeOptions({ foreignKey: "sensorId" }));
