@@ -10,6 +10,7 @@ import {
   getCustomerByEmail,
   updateCustomer,
   updatePassword,
+  sendForgetPasswordLink,
   resetForgottenPasswordController,
 } from "../controllers/customerController";
 import { authMiddleware } from "../middlewares/authMiddleware";
@@ -29,5 +30,6 @@ router.delete("/deleteCustomer/:customerId", deleteCustomer);
 router.get("/getCustomer", getCustomerByEmail);
 router.put("/updateCustomer/:customerId", updateCustomer);
 router.put("/updatePassword/:customerId", updatePassword);
+router.put("/sendForgetPasswordLink/:customerId", sendForgetPasswordLink); //reset password by account manager (sent to employee's email)
 router.put("/resetForgottenPassword/:token", resetForgottenPasswordController); //Reset from the customer side using email
 export default router;

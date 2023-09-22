@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import { createToken } from "../helpers/security";
 import * as CustomerService from "../services/customer";
+import { Customer } from "models/customer";
 
 //customer sign up
 export const createCustomer = async (req: Request, res: Response) => {
@@ -250,6 +251,22 @@ export const resetForgottenPasswordController = async (
 
     let result = await CustomerService.resetPassword(token, password);
     return res.status(200).json({ customer: result });
+  } catch (error: any) {
+    return res.status(400).json({ error: error.message });
+  }
+};
+
+export const sendForgetPasswordLink = async (req: Request, res: Response) => {
+  try {
+    const { email } = (req as any).locals.jwtPayload;
+    const employee = await CustomerService.findCustomerByEmail(email);
+
+    const { customerId } = req.params;
+
+    await CustomerService.sendResetPasswordLink(Number(customerId));
+    return res
+      .status(200)
+      .json({ message: "Email for reset password has been sent" });
   } catch (error: any) {
     return res.status(400).json({ error: error.message });
   }

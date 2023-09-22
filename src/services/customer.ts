@@ -3,6 +3,8 @@ import { validationErrorHandler } from "../helpers/errorHandler";
 import { hash } from "../helpers/security";
 import { Customer } from "../models/customer";
 import { Country } from "../models/enumerated";
+import * as nodemailer from "nodemailer";
+import { v4 as uuidv4 } from "uuid";
 
 export async function createNewCustomer(
   customerPassword: string,
@@ -178,5 +180,54 @@ export async function resetPassword(token: string, password: string) {
 
     realToken.destroy();
     throw { error: "Customer does not exist" };
+  }
+}
+
+export async function sendResetPasswordLink(customerId: number) {
+  let result = await Customer.findOne({
+    where: { customerId: customerId },
+  });
+
+  if (result) {
+    const token = uuidv4();
+
+    const resetTokens: any = {
+      token: token,
+      email: result.email,
+      createdAt: Date.now(),
+      expiresAt: Date.now() + 600000, //expires in 10 minutes
+    };
+
+    try {
+      await Token.create(resetTokens);
+
+      const transporter = nodemailer.createTransport({
+        service: "gmail",
+        auth: {
+          user: process.env.EMAIL_USERNAME,
+          pass: process.env.EMAIL_PASSWORD,
+        },
+      });
+
+      const mailOptions = {
+        from: process.env.EMAIL_USERNAME,
+        to: result.email,
+        subject: "Reset Password",
+        text: "Click the link below to reset your password: ",
+        html: `<a href="http://localhost:5173/employeeAccount/setPassword/${token}">Reset Password</a>`,
+      };
+
+      transporter.sendMail(mailOptions, (error, info) => {
+        if (error) {
+          console.error("Error sending email:", error);
+        } else {
+          console.log("Email sent:", info.response);
+        }
+      });
+    } catch (error: any) {
+      throw validationErrorHandler(error);
+    }
+  } else {
+    throw { error: "Employee does not exist" };
   }
 }
