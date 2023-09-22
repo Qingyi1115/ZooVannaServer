@@ -58,7 +58,7 @@ class PlanningStaff extends Model<
     this.save();
   }
 
-  public updatePlanningStaffType(roleType: string) {  PlannerType.SALES
+  public updatePlanningStaffType(roleType: string) { 
     if(roleType === "CURATOR") {
       this.plannerType = PlannerType.CURATOR;
     } else if (roleType === "CUSTOMER_OPERATIONS") {
