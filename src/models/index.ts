@@ -525,6 +525,31 @@ export const tutorial = async () => {
   console.log(planner1.toJSON());
   console.log((await planner1.getPlanningStaff()).toJSON());
 
+  await Employee.create(
+    {
+      employeeName: "lalaboi",
+      employeeAddress: "Singapore Kent Ridge LT17",
+      employeeEmail: "jsonBoi@gmail.com",
+      employeePhoneNumber: "2218818",
+      employeePasswordHash: Employee.getHash("joason_password", "NaAg"),
+      employeeSalt: "NaAg33",
+      employeeDoorAccessCode: "2345632127",
+      employeeEducation: "PHD in not sleeping",
+      employeeBirthDate: new Date("2001-09-02"),
+      isAccountManager: false,
+      // @ts-ignore
+      generalStaff: {
+        generalStaffType: GeneralStaffType.ZOO_OPERATIONS,
+        isDisabled: false,
+      },
+    },
+    {
+      include: {
+        association: "generalStaff",
+      },
+    },
+  );
+
   let manager = await Employee.create(
     {
       employeeName: "manager1",
