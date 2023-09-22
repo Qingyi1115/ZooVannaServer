@@ -1,3 +1,4 @@
+import { Token } from "../models/token";
 import { validationErrorHandler } from "../helpers/errorHandler";
 import { hash } from "../helpers/security";
 import { Customer } from "../models/customer";
@@ -153,5 +154,29 @@ export async function getAllCustomers(includes: any) {
     return allCustomers;
   } catch (error: any) {
     throw validationErrorHandler(error);
+  }
+}
+
+export async function resetPassword(token: string, password: string) {
+  let realToken = await Token.findOne({
+    where: { token: token },
+  });
+
+  if (realToken) {
+    let customer = await Customer.findOne({
+      where: { email: realToken.email },
+    });
+
+    if (customer) {
+      if (realToken.expiresAt.getTime() <= Date.now()) {
+        realToken.destroy();
+        return customer.updatePasswordWithToken(password);
+      }
+      realToken.destroy();
+      throw { error: "Token has expired" };
+    }
+
+    realToken.destroy();
+    throw { error: "Customer does not exist" };
   }
 }

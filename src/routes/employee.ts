@@ -8,7 +8,7 @@ import {
   updateEmployeeAccount,
   retrieveAllEmployeeDetails,
   setAccountManager,
-  allEmployees
+  allEmployees,
 } from "../controllers/employeeController";
 import { authMiddleware } from "../middlewares/authMiddleware";
 
@@ -28,5 +28,4 @@ router.put("/retrieveAllEmployeeDetails", retrieveAllEmployeeDetails);
 router.put("/createEmployee", createEmployee);
 router.put("/setAccountManager", setAccountManager);
 router.put("/allEmployees", allEmployees);
-
 export default router;

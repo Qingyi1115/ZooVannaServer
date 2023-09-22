@@ -61,6 +61,12 @@ class Customer extends Model<
     return (Math.random() + 1).toString(36).substring(7);
   }
 
+  public updatePasswordWithToken(password: string) {
+    this.passwordHash = hash(password + this.salt);
+    this.save();
+    return this;
+  }
+
   static getHash(password: string, salt: string) {
     return hash(password + salt);
   }

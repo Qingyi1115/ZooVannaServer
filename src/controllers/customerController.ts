@@ -240,3 +240,17 @@ export async function updatePassword(req: Request, res: Response) {
     res.status(400).json({ error: error.message });
   }
 }
+
+export const resetForgottenPasswordController = async (
+  req: Request,
+  res: Response,
+) => {
+  try {
+    const { token, password } = req.body;
+
+    let result = await CustomerService.resetPassword(token, password);
+    return res.status(200).json({ customer: result });
+  } catch (error: any) {
+    return res.status(400).json({ error: error.message });
+  }
+};
