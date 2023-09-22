@@ -87,8 +87,8 @@ class Employee extends Model<
     return this;
   }
 
-  public disableAccount() {
-    this.dateOfResignation = new Date();
+  public disableAccount(dateOfResignation:Date) {
+    this.dateOfResignation = dateOfResignation
     this.save();
     console.log("Employee account has been disabled");
     return this.dateOfResignation;

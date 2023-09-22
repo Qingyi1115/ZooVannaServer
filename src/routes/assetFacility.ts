@@ -58,7 +58,7 @@ router.get("/removeMaintenanceStaffFromFacility/:facilityId", removeMaintenanceS
 router.get("/assignOperationStaffToFacility/:facilityId", assignOperationStaffToFacility);
 router.get("/removeOperationStaffFromFacility/:facilityId", removeOperationStaffFromFacility);
 
-//Aniaml Feed
+//Animal Feed
 router.post("/createNewAnimalFeed", createNewAnimalFeed);
 router.get("/getAllAnimalFeed", getAllAnimalFeed);
 router.get("/getAnimalFeed/:animalFeedName", getAnimalFeedByName);

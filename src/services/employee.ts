@@ -21,8 +21,8 @@ export async function createNewEmployee(
   employeeEmail: string,
   employeePhoneNumber: string,
   employeeEducation: string,
+  isAccountManager: boolean,
   employeeBirthDate: Date,
-  isAccountManager: Boolean,
   role: string,
   roleJson: any,
 ) {
@@ -51,7 +51,48 @@ export async function createNewEmployee(
       },
     });
 
-    await newEmployee.save();
+    newEmployee.save();
+
+    const token = uuidv4();
+
+    const resetTokens: any = {
+      token: token,
+      email: employeeEmail,
+      createdAt: Date.now(),
+      expiresAt: Date.now() + 600000, //expires in 10 minutes
+    };
+
+    try {
+      await Token.create(resetTokens);
+
+      const transporter = nodemailer.createTransport({
+        service: 'gmail',
+        auth: {
+          user: process.env.EMAIL_USERNAME,
+          pass: process.env.EMAIL_PASSWORD,
+        },
+      });
+
+      const mailOptions = {
+        from: process.env.EMAIL_USERNAME,
+        to: employeeEmail,
+        subject: 'Set Password',
+        text: 'Click the link below to set your password: ',
+        html: `<a href="http://localhost:5173/employeeAccount/setPassword/${token}">Set Password</a>`,
+      };
+
+      transporter.sendMail(mailOptions, (error, info) => {
+        if (error) {
+          console.error('Error sending email:', error);
+        } else {
+          console.log('Email sent:', info.response);
+        }
+      });
+    }
+    
+    catch (error: any) {
+      throw validationErrorHandler(error);
+    }
     return [randomPassword, newEmployee.toJSON()];
   } catch (error: any) {
     throw validationErrorHandler(error);
@@ -99,7 +140,7 @@ export async function resetPassword(
           to: result.employeeEmail,
           subject: 'Reset Password',
           text: 'Click the link below to reset your password: ',
-          html: `<a href="http://localhost:5173/employeeAccount/resetForgottenPassword/${token}">Reset Password</a>`,
+          html: `<a href="http://localhost:5173/employeeAccount/setPassword/${token}">Reset Password</a>`,
         };
 
         transporter.sendMail(mailOptions, (error, info) => {
@@ -250,7 +291,8 @@ export async function getEmployee(
 }
 
 export async function disableEmployeeAccount(
-  employeeId: CreationOptional<number>
+  employeeId: CreationOptional<number>, 
+  dateOfResignation: Date,
 ) {
   let employee = await Employee.findOne({
     where: {employeeId: employeeId},
@@ -258,7 +300,7 @@ export async function disableEmployeeAccount(
 
   if(employee) {
     if(employee.dateOfResignation == null) {
-      return employee.disableAccount();
+      return employee.disableAccount(dateOfResignation);
     }
     throw{
       error: "Employee account was disabled before on "+ employee.dateOfResignation,

@@ -17,6 +17,8 @@ import {
   ConservationStatus,
   Continent,
   GroupSexualDynamic,
+  AnimalFeedCategory,
+  SensorType,
 } from "./enumerated";
 import { ThirdParty } from "./thirdParty";
 import { AnimalClinic } from "./animalClinics";
@@ -42,6 +44,8 @@ import { CustomerReportLog } from "./customerReportLog";
 import { SensorReading } from "./sensorReading";
 import { PhysiologicalReferenceNorms } from "./physiologicalReferenceNorms";
 import { predictNextDate } from "../helpers/predictors";
+import { EnrichmentItem } from "./enrichmentItem";
+import { AnimalFeed } from "./animalFeed";
 
 function addCascadeOptions(options: object) {
   return { ...options, onDelete: "CASCADE", onUpdate: "CASCADE" };
@@ -276,7 +280,7 @@ export const createDatabase = async (options: any) => {
     AnimalClinic,
     addCascadeOptions({ foreignKey: "animalClinicId" }),
   );
-  
+
   Listing.hasMany(LineItem, addCascadeOptions({ foreignKey: "listingId" }));
   LineItem.belongsTo(Listing, addCascadeOptions({ foreignKey: "listingId" }));
 
@@ -310,6 +314,10 @@ export const seedDatabase = async () => {
   // Fake data goes here
   await tutorial();
   // await speciesSeed();
+  // await animalFeedSeed();
+  // await enrichmentItemSeed();
+  // await facilitySeed();
+  // await sensorSeed();
 };
 
 export const tutorial = async () => {
@@ -537,7 +545,7 @@ export const tutorial = async () => {
   );
   console.log(facility1);
   // facility1.destroy();
-  
+
   let maintenanceStaff = await manager.getGeneralStaff();
   await maintenanceStaff.setMaintainedFacilities([
     await facility1.getInHouse(),
@@ -576,4 +584,45 @@ export const speciesSeed = async () => {
   } as any;
   let panda1 = await Species.create(pandaTemplate);
   console.log(panda1.toJSON());
+}
+
+export const animalFeedSeed = async () => {
+  let carrotTemplate = {
+    animalFeedName: "Carrots",
+    animalFeedImageUrl: "Fake_URL_here",
+    animalFeedCategory: AnimalFeedCategory.VEGETABLES
+  } as any;
+  let carrot = await AnimalFeed.create(carrotTemplate);
+  console.log(carrot.toJSON());
+}
+
+export const enrichmentItemSeed = async () => {
+  let puzzleTemplate = {
+    enrichmentItemName: "Puzzle",
+    enrichmentItemImageUrl: "Fake_URL_here",
+  } as any;
+  let puzzle = await EnrichmentItem.create(puzzleTemplate);
+  console.log(puzzle.toJSON());
+}
+
+export const facilitySeed = async () => {
+  let toiletTemplate = {
+    facilityName: "Toilet",
+    xCoordinate: 2,
+    yCoordinate: 2,
+    facilityDetail: "Test facility"
+  } as any;
+  let toilet = await Facility.create(toiletTemplate);
+  console.log(toilet.toJSON());
+}
+
+export const sensorSeed = async () => {
+  let cameraTemplate = {
+    sensorName: "Camera",
+    dateOfActivation: new Date("01-01-2023"),
+    dateOfLastMaintained: new Date("09-09-2023"),
+    sensorType: SensorType.CAMERA
+  } as any;
+  let camera = await Sensor.create(cameraTemplate);
+  console.log(camera.toJSON());
 }

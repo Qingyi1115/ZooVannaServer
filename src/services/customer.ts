@@ -55,3 +55,13 @@ export async function customerLogin(
     password,
   );
 }
+
+export async function deleteCustomerByEmail(customerEmail: string) {
+  let result = await Customer.destroy({
+      where: { email: customerEmail },
+  });
+  if (result) {
+      return result;
+  }
+  throw { error: "Invalid Customer Email!" };
+}

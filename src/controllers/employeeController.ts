@@ -192,7 +192,7 @@ export async function setAccountManagerController(req: Request, res: Response) {
 
     let result = await setAsAccountManager(Number(employeeId));
     
-    return res.status(200).json({set: result});
+    return res.status(200).json({employee: result});
 } catch (error: any) {
   console.log(error.message);
   return res.status(400).json({error: error.message});
@@ -214,7 +214,7 @@ export async function unsetAccountManagerController(req: Request, res: Response)
 
     let result = await unsetAsAccountManager(Number(employeeId));
     
-    return res.status(200).json({unset: result});
+    return res.status(200).json({employee: result});
   } catch (error: any) {
     console.log(error.message);
     return res.status(400).json({error: error.message});
@@ -306,8 +306,9 @@ export async function disableEmployeeAccountController(req: Request, res: Respon
     }
 
     const {employeeId} = req.params;
+    const dateOfResignation = new Date();
 
-    let result = await disableEmployeeAccount(Number(employeeId));
+    let result = await disableEmployeeAccount(Number(employeeId), dateOfResignation);
     return res.status(200).json({date: result});
   }
   catch (error: any) {
