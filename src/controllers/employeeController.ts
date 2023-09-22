@@ -43,18 +43,18 @@ export async function updateEmployeeAccountController(req: Request, res: Respons
       employeeEmail, 
       employeePhoneNumber,
       employeeEducation
-    } = req.params;
+    } = req.body;
 
     for (const [field, v] of Object.entries({
       employeeAddress:employeeAddress, 
       employeeEmail:employeeEmail, 
       employeePhoneNumber:employeePhoneNumber,
       employeeEducation:employeeEducation})){
+        
         if (v !== undefined){
           (employee as any)[field] = v;
         } 
       }
-
     employee.save();
     
     let token = undefined;
