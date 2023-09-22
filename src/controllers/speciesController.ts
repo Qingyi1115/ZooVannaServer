@@ -184,7 +184,6 @@ export async function updateSpecies(req: Request, res: Response) {
       order,
       family,
       genus,
-      educationalDescription,
       nativeContinent,
       nativeBiomes,
       groupSexualDynamic,
@@ -207,7 +206,6 @@ export async function updateSpecies(req: Request, res: Response) {
         order,
         family,
         genus,
-        educationalDescription,
         nativeContinent,
         nativeBiomes,
         groupSexualDynamic,
@@ -230,7 +228,6 @@ export async function updateSpecies(req: Request, res: Response) {
         order,
         family,
         genus,
-        educationalDescription,
         nativeContinent,
         nativeBiomes,
         groupSexualDynamic,
@@ -256,7 +253,6 @@ export async function updateSpecies(req: Request, res: Response) {
       order,
       family,
       genus,
-      educationalDescription,
       nativeContinent,
       nativeBiomes,
       groupSexualDynamic,
@@ -267,6 +263,27 @@ export async function updateSpecies(req: Request, res: Response) {
     );
 
     return res.status(200).json({ species });
+  } catch (error: any) {
+    res.status(400).json({ error: error.message });
+  }
+}
+
+//SpeciesEduDesc
+export async function getSpeciesEduDescBySpeciesCode(
+  req: Request,
+  res: Response,
+) {
+  const { speciesCode } = req.params;
+  if (speciesCode == undefined) {
+    console.log("Missing field(s): ", {
+      speciesCode,
+    });
+    return res.status(400).json({ error: "Missing information!" });
+  }
+  try {
+    const speciesEduDesc =
+      await SpeciesService.getSpeciesEduDescBySpeciesCode(speciesCode);
+    return res.status(200).json(speciesEduDesc);
   } catch (error: any) {
     res.status(400).json({ error: error.message });
   }
