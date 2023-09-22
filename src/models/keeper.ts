@@ -8,10 +8,13 @@ import {
   BelongsToManyGetAssociationsMixin,
   BelongsToManyAddAssociationMixin,
   BelongsToManySetAssociationsMixin,
+  BelongsToManyRemoveAssociationMixin,
 } from "Sequelize";
 import { conn } from "../db";
 import { Employee } from "./employee";
+import { Enclosure } from "./enclosure";
 import { KeeperType, Specialization } from "./enumerated";
+import { Event } from "./event";
 
 class Keeper extends Model<
   InferAttributes<Keeper>,
@@ -19,23 +22,48 @@ class Keeper extends Model<
 > {
   declare keeperType: KeeperType;
   declare specialization: Specialization;
+  declare isDisabled: boolean; 
 
   declare employee?: Employee;
-  declare events?: Event[];
+  declare publicEvents?: Event[];
+  declare internalEvents?:Event[];
+  declare enclosures?: Enclosure[];
+
 
   declare getEmployee: BelongsToGetAssociationMixin<Employee>;
   declare setEmployee: BelongsToSetAssociationMixin<Employee, number>;
 
-  declare getEvents: BelongsToManyGetAssociationsMixin<Event[]>;
-  declare addEvent: BelongsToManyAddAssociationMixin<Event, number>;
-  declare setEvents: BelongsToManySetAssociationsMixin<Event[], number>;
+  declare getPublicEvents: BelongsToManyGetAssociationsMixin<Event[]>;
+  declare addPublicEvent: BelongsToManyAddAssociationMixin<Event, number>;
+  declare setPublicEvents: BelongsToManySetAssociationsMixin<Event[], number>;
+  declare removePublicEvent: BelongsToManyRemoveAssociationMixin<Event, number>;
+
+  declare getInternalEvents: BelongsToManyGetAssociationsMixin<Event[]>;
+  declare addInternalEvent: BelongsToManyAddAssociationMixin<Event, number>;
+  declare setInternalEvents: BelongsToManySetAssociationsMixin<Event[], number>;
+  declare removeInternalEvent: BelongsToManyRemoveAssociationMixin<Event, number>;
+
+  declare getEnclosures: BelongsToManyGetAssociationsMixin<Enclosure[]>;
+  declare addEnclosure: BelongsToManyAddAssociationMixin<Enclosure, number>;
+  declare setEnclosure: BelongsToManySetAssociationsMixin<Enclosure[], number>;
+  declare removeEnclosure: BelongsToManyRemoveAssociationMixin<Enclosure, number>;
+
 
   // public toJSON() {
   //     // Can control default values returned rather than manually populating json, removing secrets
   //     // Similar idea albert more useful when compared to java's toString
   //     return {...this.get(), EmployeeEmployeeId: undefined}
   // }
+
+  public enable() {
+    this.isDisabled = false;
+  }
+
+  public disable() {
+    this.isDisabled = true;
+  }
 }
+
 
 Keeper.init(
   {
@@ -48,6 +76,11 @@ Keeper.init(
       type: DataTypes.ENUM,
       values: Object.values(Specialization),
       allowNull: false,
+    },
+    isDisabled: {
+      type: DataTypes.BOOLEAN,
+      allowNull: false,
+      defaultValue: true,
     },
   },
   {

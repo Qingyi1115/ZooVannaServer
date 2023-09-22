@@ -7,18 +7,85 @@ import {
   createFacility,
   updateFacility,
   addSensorToHub,
-  initializeHub
+  initializeHub,
+  createNewAnimalFeed,
+  getAllAnimalFeed,
+  getAnimalFeedByName,
+  updateAnimalFeed,
+  deleteAnimalFeedByName,
+  createNewEnrichmentItem,
+  getAllEnrichmentItem,
+  getEnrichmentItemByName,
+  updateEnrichmentItem,
+  deleteEnrichmentItemByName,
+  getAllHubs,
+  getAllSensors,
+  getSensorReading,
+  updateHub,
+  updateSensor,
+  deleteHub,
+  deleteSensor,
+  getAuthorizationForCamera,
+  getAllFacility,
+  deleteFacility,
+  assignMaintenanceStaffToSensor,
+  removeMaintenanceStaffFromSensor,
+  assignMaintenanceStaffToFacility,
+  removeMaintenanceStaffFromFacility,
+  assignOperationStaffToFacility,
+  removeOperationStaffFromFacility,
+  getFacilityMaintenanceSuggestions,
+  getSensorMaintenanceSuggestions
 } from "../controllers/assetFacilityController";
 
 const router = express.Router();
 
+// IP device API
 router.put("/initializeHub", initializeHub);
 
 router.use(authMiddleware);
 
-router.put("/createFacility", createFacility);
-router.post("/updateFacility", updateFacility);
-router.put("/addHub", addHubToFacility);
-router.put("/addSensor", addSensorToHub);
+// Facilities
+router.post("/createFacility", createFacility);
+router.post("/getAllFacility", getAllFacility);
+// router.put("/getFacility/:facilityId", getFacility);
+router.get("/getFacilityMaintenanceSuggestions", getFacilityMaintenanceSuggestions);
+router.put("/updateFacility/:facilityId", updateFacility);
+router.delete("/deleteFacility/:facilityId", deleteFacility);
+router.get("/assignMaintenanceStaffToFacility/:facilityId", assignMaintenanceStaffToFacility);
+router.get("/removeMaintenanceStaffFromFacility/:facilityId", removeMaintenanceStaffFromFacility);
+router.get("/assignOperationStaffToFacility/:facilityId", assignOperationStaffToFacility);
+router.get("/removeOperationStaffFromFacility/:facilityId", removeOperationStaffFromFacility);
+
+//Animal Feed
+router.post("/createNewAnimalFeed", createNewAnimalFeed);
+router.get("/getAllAnimalFeed", getAllAnimalFeed);
+router.get("/getAnimalFeed/:animalFeedName", getAnimalFeedByName);
+router.put("/updateAnimalFeed", updateAnimalFeed);
+router.delete("/deleteAnimalFeed/:animalFeedName", deleteAnimalFeedByName);
+
+// Enrichment Items
+router.post("/createNewEnrichmentItem", createNewEnrichmentItem);
+router.get("/getAllEnrichmentItem", getAllEnrichmentItem);
+router.get("/getEnrichmentItem/:enrichmentItemName", getEnrichmentItemByName);
+router.put("/updateEnrichmentItem", updateEnrichmentItem);
+router.delete("/deleteEnrichmentItem/:enrichmentItemName", deleteEnrichmentItemByName);
+
+// Hubs and Sensors
+router.post("/addHub", addHubToFacility);
+router.get("/getAllHubs", getAllHubs);
+router.put("/updateHub/:hubId", updateHub);
+router.delete("/deleteHub/:hubId", deleteHub);
+
+router.post("/addSensor", addSensorToHub);
+router.get("/getAllSensors", getAllSensors);
+router.get("/getSensorReading/:sensorId", getSensorReading);
+router.get("/getSensorMaintenanceSuggestions", getSensorMaintenanceSuggestions);
+router.get("/assignMaintenanceStaffToSensor/:sensorId", assignMaintenanceStaffToSensor);
+router.get("/removeMaintenanceStaffFromSensor/:sensorId", removeMaintenanceStaffFromSensor);
+router.put("/updateSensor/:sensorId", updateSensor);
+router.delete("/deleteSensor/:sensorId", deleteSensor);
+
+router.get("/getAuthorizationForCamera", getAuthorizationForCamera);
 
 export default router;

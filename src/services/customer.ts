@@ -234,3 +234,13 @@ export async function sendResetPasswordLink(customerId: number) {
     throw { error: "Customer does not exist" };
   }
 }
+
+export async function deleteCustomerByEmail(customerEmail: string) {
+  let result = await Customer.destroy({
+      where: { email: customerEmail },
+  });
+  if (result) {
+      return result;
+  }
+  throw { error: "Invalid Customer Email!" };
+}

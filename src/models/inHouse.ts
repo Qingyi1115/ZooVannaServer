@@ -10,6 +10,11 @@ import {
   HasManyGetAssociationsMixin,
   HasManySetAssociationsMixin,
   HasManyAddAssociationMixin,
+  HasManyRemoveAssociationMixin,
+  BelongsToManyGetAssociationsMixin,
+  BelongsToManyAddAssociationMixin,
+  BelongsToManySetAssociationsMixin,
+  BelongsToManyRemoveAssociationMixin,
 } from "Sequelize";
 import { conn } from "../db";
 import { Facility } from "./facility";
@@ -46,28 +51,48 @@ class InHouse extends Model<
   declare getNextTramStop: HasOneGetAssociationMixin<InHouse>;
   declare setNextTramStop: HasOneSetAssociationMixin<InHouse, number>;
 
-  declare getMaintenanceStaffs: HasManyGetAssociationsMixin<GeneralStaff[]>;
-  declare setMaintenanceStaffs: HasManySetAssociationsMixin<GeneralStaff[], number>;
+  declare getMaintenanceStaffs: BelongsToManyGetAssociationsMixin<GeneralStaff[]>;
+  declare addMaintenanceStaff: BelongsToManyAddAssociationMixin<GeneralStaff, number>;
+  declare setMaintenanceStaffs: BelongsToManySetAssociationsMixin<GeneralStaff[], number>;
+  declare removeMaintenanceStaff: BelongsToManyRemoveAssociationMixin<GeneralStaff, number>;
 
   declare getOperationStaffs: HasManyGetAssociationsMixin<GeneralStaff[]>;
+  declare addOperationStaff: HasManyAddAssociationMixin<GeneralStaff,number>;
   declare setOperationStaffs: HasManySetAssociationsMixin<GeneralStaff[],number>;
+  declare removeOperationStaff: HasManyRemoveAssociationMixin<GeneralStaff,number>;
 
   declare getFacilityLogs: HasManyGetAssociationsMixin<FacilityLog[]>;
+  declare addFacilityLog: HasManyAddAssociationMixin<FacilityLog, number>;
   declare setFacilityLogs: HasManySetAssociationsMixin<FacilityLog[], number>;
+  declare removeFacilityLog: HasManyRemoveAssociationMixin<FacilityLog, number>;
 
   declare getEvents: HasManyGetAssociationsMixin<Event[]>;
-  declare addEvents: HasManyAddAssociationMixin<Event, number>;
+  declare addEvent: HasManyAddAssociationMixin<Event, number>;
   declare setEvents: HasManySetAssociationsMixin<Event[], number>;
+  declare removeEvent: HasManyRemoveAssociationMixin<Event, number>;
   
   declare getCustomerReportLogs: HasManyGetAssociationsMixin<CustomerReportLog[]>;
   declare addCustomerReportLog: HasManyAddAssociationMixin<CustomerReportLog, number>;
   declare setCustomerReportLogs: HasManySetAssociationsMixin<CustomerReportLog[], number>;
+  declare removeCustomerReportLog: HasManyRemoveAssociationMixin<CustomerReportLog, number>;
 
-  // public toJSON() {
-  //     // Can control default values returned rather than manually populating json, removing secrets
-  //     // Similar idea albert more useful when compared to java's toString
-  //     return {...this.get(), EmployeeEmployeeId: undefined}
-  // }
+  public toJSON() {
+    return this.get();
+  }
+
+  public async toFullJSON(){
+    return {
+      ...this.get(),
+      facility: (await this.getFacility()).toJSON(),
+      previousTramStop: (await this.getPreviousTramStop()).toJSON(),
+      nextTramStop: (await this.getNextTramStop()).toJSON(),
+      maintenanceStaffs: await (this.getMaintenanceStaffs()),
+      operationStaffs: await (this.getOperationStaffs()),
+      facilityLogs: await (this.getFacilityLogs()),
+      events: await (this.getEvents()),
+      customerReportLogs: await (this.getCustomerReportLogs())
+    };
+  }
 }
 
 InHouse.init(

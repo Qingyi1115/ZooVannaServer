@@ -5,25 +5,33 @@ import {
   employeeLogin,
   findEmployeeByEmail,
   getAllEmployees,
-  setAsAccountManager
+  setAsAccountManager,
+  getEmployee,
+  resetPassword,
+  disableEmployeeAccount,
+  setPassword,
+  unsetAsAccountManager,
+  enableRole,
+  disableRole,
 } from "../services/employee";
 
 export const login = async (req: Request, res: Response) => {
   try {
     const { email, password } = req.body;
     if (email && password) {
-      if (!(await employeeLogin(email, password))) {
+      const employeeData = await employeeLogin(email, password);
+      if (!employeeData) {
         return res.status(403).json({ error: "Invalid credentials!" });
       }
       const token = createToken(email);
-      res.status(200).json({ email, token });
+      return res.status(200).json({ token, employeeData: employeeData.toJSON() });
     }
   } catch (error: any) {
     res.status(400).json({ error: error.message });
   }
 };
 
-export const createEmployee = async (req: Request, res: Response) => {
+export const createEmployeeController = async (req: Request, res: Response) => {
   try {
     const { email } = (req as any).locals.jwtPayload;
     const employee = await findEmployeeByEmail(email);
@@ -39,6 +47,7 @@ export const createEmployee = async (req: Request, res: Response) => {
       employeeEmail,
       employeePhoneNumber,
       employeeEducation,
+      employeeBirthDate,
       isAccountManager,
       role,
       roleJson,
@@ -50,6 +59,7 @@ export const createEmployee = async (req: Request, res: Response) => {
         employeeEmail,
         employeePhoneNumber,
         employeeEducation,
+        employeeBirthDate,
         isAccountManager,
         role,
         roleJson,
@@ -61,6 +71,7 @@ export const createEmployee = async (req: Request, res: Response) => {
         employeeEmail,
         employeePhoneNumber,
         employeeEducation,
+        employeeBirthDate,
         isAccountManager,
         role,
         roleJson,
@@ -75,7 +86,8 @@ export const createEmployee = async (req: Request, res: Response) => {
         employeeEmail,
         employeePhoneNumber,
         employeeEducation,
-        (isAccountManager as string).toLocaleUpperCase() == "TRUE",
+        isAccountManager,
+        employeeBirthDate,
         role,
         roleJson,
       );
@@ -89,17 +101,9 @@ export const createEmployee = async (req: Request, res: Response) => {
   }
 };
 
-export const retrieveEmployeeAccountDetails = async (
-  req: Request,
-  res: Response,
-) => {};
-export const updateEmployeeAccount = async (req: Request, res: Response) => {};
-export const retrieveAllEmployeeDetails = async (
-  req: Request,
-  res: Response,
-) => {};
+export const updateEmployeeAccountController = async (req: Request, res: Response) => {};
 
-export const setAccountManager = async (
+export const setAccountManagerController = async (
   req: Request,
   res: Response,
 ) => {
@@ -113,18 +117,43 @@ export const setAccountManager = async (
         .json({ error: "Access Denied! Account managers only!" });
     }
 
-    const { employeeId } = req.body;
+    const { employeeId } = req.params;
 
-    let result = await setAsAccountManager(employeeId);
+    let result = await setAsAccountManager(Number(employeeId));
     
-    return res.status(200).json({created: result});
+    return res.status(200).json({employee: result});
 } catch (error: any) {
   console.log(error.message);
   return res.status(400).json({error: error.message});
 }
 };
 
-export const allEmployees = async (
+export const unsetAccountManagerController = async (
+  req: Request,
+  res: Response,
+) => {
+  try {
+    const { email } = (req as any).locals.jwtPayload;
+    const employee = await findEmployeeByEmail(email);
+
+    if (!employee.isAccountManager) {
+      return res
+        .status(403)
+        .json({ error: "Access Denied! Account managers only!" });
+    }
+
+    const { employeeId } = req.params;
+
+    let result = await unsetAsAccountManager(Number(employeeId));
+    
+    return res.status(200).json({employee: result});
+  } catch (error: any) {
+    console.log(error.message);
+    return res.status(400).json({error: error.message});
+  }
+};
+
+export const getAllEmployeesController = async (
   req: Request, 
   res: Response,
 ) => {
@@ -138,8 +167,14 @@ export const allEmployees = async (
         .json({ error: "Access Denied! Account managers only!" });
     }
 
-    let result = await getAllEmployees();
-    return res.status(200).json({list: result});
+    const {includes } = req.body;
+    const _includes : string[] = []
+    for (const role of ["keeper", "generalStaff", "planningStaff"]){
+      if (includes.includes(role)) _includes.push(role)
+    }
+
+    let result = await getAllEmployees(_includes);
+    return res.status(200).json({employees: result});
 
   } catch (error: any) {
     console.log(error.message);
@@ -147,3 +182,142 @@ export const allEmployees = async (
   } 
 }
 
+export const getEmployeeController = async (
+  req: Request,
+  res: Response,
+) => {
+  try {
+    const { email } = (req as any).locals.jwtPayload;
+    const employee = await findEmployeeByEmail(email);
+
+    if (!employee.isAccountManager) {
+      return res
+        .status(403)
+        .json({ error: "Access Denied! Account managers only!" });
+    }
+
+    const {employeeId} = req.params;
+
+    let result = await getEmployee(Number(employeeId));     
+    return res.status(200).json({employee: result});
+    
+  } catch (error: any) {
+    console.log(error.message);
+    return res.status(400).json({error: error.message});
+  }
+};
+
+export const resetPasswordController = async (
+  req: Request,
+  res: Response,
+) => {
+  try {
+    const { email } = (req as any).locals.jwtPayload;
+    const employee = await findEmployeeByEmail(email);
+
+    if (!employee.isAccountManager) {
+      return res
+        .status(403)
+        .json({ error: "Access Denied! Account managers only!" });
+    }
+
+    const {employeeId} = req.params;
+
+    await resetPassword(Number(employeeId));
+    return res.status(200).json({message: "Email for reset password has been sent"});
+  }
+  catch (error: any) {
+    return res.status(400).json({error: error.message});
+  }
+}
+
+export const disableEmployeeAccountController = async (
+  req: Request,
+  res: Response,
+) => {
+  try {
+    const { email } = (req as any).locals.jwtPayload;
+    const employee = await findEmployeeByEmail(email);
+
+    if (!employee.isAccountManager) {
+      return res
+        .status(403)
+        .json({ error: "Access Denied! Account managers only!" });
+    }
+
+    const {employeeId} = req.params;
+    const dateOfResignation = new Date();
+
+    let result = await disableEmployeeAccount(Number(employeeId), dateOfResignation);
+    return res.status(200).json({date: result});
+  }
+  catch (error: any) {
+    return res.status(400).json({error: error.message});
+  }
+}
+
+export const resetForgottenPasswordController = async (
+  req: Request,
+  res: Response,
+) => {
+  try {
+    const {token, password} = req.body;
+
+    let result = await setPassword(token, password);
+    return res.status(200).json({employee: result});
+  }
+  catch (error: any) {
+    return res.status(400).json({error: error.message});
+  }
+}
+
+export const enableRoleController = async (
+  req: Request, 
+  res: Response,
+) => {
+  try {
+    const { email } = (req as any).locals.jwtPayload;
+    const employee = await findEmployeeByEmail(email);
+
+    if (!employee.isAccountManager) {
+      return res
+        .status(403)
+        .json({ error: "Access Denied! Account managers only!" });
+    }
+
+    const {employeeId} = req.params;
+    const {role, roleJson} = req.body;
+
+    await enableRole(Number(employeeId), role, roleJson);
+    return res.status(200).json({message: `The ${role} role has been enabled`});
+  }
+  catch (error: any) {
+    return res.status(400).json({error: error.message});
+  }
+}
+
+export const disableRoleController = async (
+  req: Request, 
+  res: Response,
+) => {
+  try {
+    const { email } = (req as any).locals.jwtPayload;
+    const employee = await findEmployeeByEmail(email);
+
+    if (!employee.isAccountManager) {
+      return res
+        .status(403)
+        .json({ error: "Access Denied! Account managers only!" });
+    }
+
+    const {employeeId} = req.params;
+    const {role} = req.body;
+
+    await disableRole(Number(employeeId), role);
+    return res.status(200).json({message: `The ${role} role has been disabled`});
+
+  }
+  catch (error: any) {
+    return res.status(400).json({error: error.message});
+  }
+}

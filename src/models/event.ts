@@ -8,6 +8,8 @@ import {
   BelongsToManyGetAssociationsMixin,
   BelongsToManySetAssociationsMixin,
   BelongsToManyAddAssociationMixin,
+  HasManyRemoveAssociationMixin,
+  CreationOptional,
 } from "Sequelize";
 import { conn } from "../db";
 import { EventTimingType, EventType } from "./enumerated";
@@ -22,7 +24,7 @@ class Event extends Model<
   InferAttributes<Event>,
   InferCreationAttributes<Event>
 > {
-  declare eventId: number;
+  declare eventId: CreationOptional<number>;
   declare eventName: String;
   declare eventNotificationDate: Date;
   declare eventStartDateTime: Date;
@@ -47,6 +49,7 @@ class Event extends Model<
   declare getKeepers: BelongsToManyGetAssociationsMixin<Keeper[]>;
   declare addKeeper: BelongsToManyAddAssociationMixin<Keeper, number>;
   declare setKeepers: BelongsToManySetAssociationsMixin<Keeper[], number>;
+  declare removeKeeper: HasManyRemoveAssociationMixin<Keeper, number>;
 
   declare getEnclosure: BelongsToGetAssociationMixin<Enclosure>;
   declare setEnclosure: BelongsToSetAssociationMixin<Enclosure, number>;

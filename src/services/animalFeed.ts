@@ -23,6 +23,58 @@ export async function createNewAnimalFeed(
     }
 }
 
-export async function getAnimalFeed() { }
-export async function setAnimalFeed() { }
-export async function deleteAnimalFeed() { }
+export async function getAllAnimalFeed(
+    includes: string[] = []
+) {
+    try {
+        const allAnimalFeed = await AnimalFeed.findAll({
+            include:includes
+        });
+        return allAnimalFeed;
+    } catch (error: any) {
+        throw validationErrorHandler(error);
+    }
+}
+
+export async function getAnimalFeedByName(animalFeedName: string, includes: string[] = []) {
+    let result = await AnimalFeed.findOne({
+        where: { animalFeedName: animalFeedName },
+        include:includes
+    });
+    if (result) {
+        return result;
+    }
+    throw { error: "Invalid animal feed name!" };
+}
+
+export async function deleteAnimalFeedByName(animalFeedName: string) {
+    let result = await AnimalFeed.destroy({
+        where: { animalFeedName: animalFeedName },
+    });
+    if (result) {
+        return result;
+    }
+    throw { error: "Invalid animal feed name!" };
+}
+
+export async function updateAnimalFeed(
+    animalFeedName: string,
+    animalFeedImageUrl: string,
+    animalFeedCategory: AnimalFeedCategory) {
+
+    let updatedAnimalFeed = {
+        animalFeedName: animalFeedName,
+        animalFeedImageUrl: animalFeedImageUrl,
+        animalFeedCategory: animalFeedCategory
+    } as any;
+
+    console.log(updatedAnimalFeed)
+
+    try {
+        let animalFeed = await AnimalFeed.update(updatedAnimalFeed, {
+            where: { animalFeedName: animalFeedName },
+        });
+    } catch (error: any) {
+        throw validationErrorHandler(error);
+    }
+}

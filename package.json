@@ -19,6 +19,8 @@
     "@types/jsonwebtoken": "^9.0.2",
     "@types/multer": "^1.4.7",
     "@types/node": "^20.5.7",
+    "@types/nodemailer": "^6.4.10",
+    "@types/uuid": "^9.0.4",
     "nodemon": "^3.0.1",
     "prettier": "3.0.3",
     "ts-node": "^10.9.1",
@@ -27,6 +29,7 @@
   "dependencies": {
     "@types/nodemailer": "^6.4.10",
     "@types/uuid": "^9.0.4",
+    "@radix-ui/react-slider": "^1.1.2",
     "body-parser": "^1.20.2",
     "compression": "^1.7.4",
     "cookie-parser": "^1.4.6",

@@ -7,6 +7,7 @@ import {
     HasManyGetAssociationsMixin,
     HasManySetAssociationsMixin,
     HasManyAddAssociationMixin,
+    HasManyRemoveAssociationMixin,
   } from "Sequelize";
   import { conn } from "../db";
 import { CustomerOrder } from "./customerOrder";
@@ -25,9 +26,10 @@ import { CustomerOrder } from "./customerOrder";
   
     declare customerOrder?: CustomerOrder[];
   
-    declare getCustomerOrders: HasManyGetAssociationsMixin<CustomerOrder>;
+    declare getCustomerOrders: HasManyGetAssociationsMixin<CustomerOrder[]>;
     declare addCustomerOrder: HasManyAddAssociationMixin<CustomerOrder, number>;
-    declare setCustomerOrders: HasManySetAssociationsMixin<CustomerOrder, number>;
+    declare setCustomerOrders: HasManySetAssociationsMixin<CustomerOrder[], number>;
+    declare removeCustomerOrder: HasManyRemoveAssociationMixin<CustomerOrder, number>;
 }
   
 Promotion.init({

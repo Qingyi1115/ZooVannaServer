@@ -7,6 +7,7 @@ import {
   HasManyGetAssociationsMixin,
   HasManySetAssociationsMixin,
   HasManyAddAssociationMixin,
+  HasManyRemoveAssociationMixin,
 } from "Sequelize";
 import { conn } from "../db";
 import crypto from "crypto";
@@ -39,8 +40,9 @@ class Customer extends Model<
   declare orders?: CustomerOrder[];
 
   declare getOrders: HasManyGetAssociationsMixin<CustomerOrder[]>;
-  declare addOrders: HasManyAddAssociationMixin<CustomerOrder, number>;
+  declare addOrder: HasManyAddAssociationMixin<CustomerOrder, number>;
   declare setOrders: HasManySetAssociationsMixin<CustomerOrder[], number>;
+  declare removeOrder: HasManyRemoveAssociationMixin<CustomerOrder, number>;
 
   static getTotalCustomer() {
     // Example for static class functions

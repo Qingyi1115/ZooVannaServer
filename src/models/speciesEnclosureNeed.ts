@@ -5,18 +5,18 @@ import {
   InferCreationAttributes,
   HasManySetAssociationsMixin,
   HasManyGetAssociationsMixin,
-  BelongsToGetAssociationMixin,
   BelongsToSetAssociationMixin,
+  BelongsToGetAssociationMixin,
+  CreationOptional,
 } from "Sequelize";
 import { conn } from "../db";
 import { Species } from "./species";
-import { TerrainDistribution } from "./terrainDistribution";
 
 class SpeciesEnclosureNeed extends Model<
   InferAttributes<SpeciesEnclosureNeed>,
   InferCreationAttributes<SpeciesEnclosureNeed>
 > {
-  declare speciesEnclosureNeedId: number;
+  declare speciesEnclosureNeedId: CreationOptional<number>;
   declare smallExhibitHeightRequired: number; // nullable
   declare minLandAreaRequired: number;
   declare minWaterAreaRequired: number;
@@ -25,27 +25,27 @@ class SpeciesEnclosureNeed extends Model<
   declare acceptableHumidityMin: number;
   declare acceptableHumidityMax: number;
   declare recommendedStandOffBarrierDistMetres: number;
-  declare plantationCoveragePercent: number;
-  declare standoffBarrierDist: number;
+  declare plantationCoveragePercentMin: number;
+  declare plantationCoveragePercentMax: number;
+  declare longGrassPercentMin: number;
+  declare longGrassPercentMax: number;
+  declare shortGrassPercentMin: number;
+  declare shortGrassPercentMax: number;
+  declare rockPercentMin: number;
+  declare rockPercentMax: number;
+  declare sandPercentMin: number;
+  declare sandPercentMax: number;
+  declare snowPercentMin: number;
+  declare snowPercentMax: number;
+  declare soilPercentMin: number;
+  declare soilPercentMax: number;
 
   declare species?: Species;
-  declare terrainDistributionMin?: TerrainDistribution;
-  declare terrainDistributionMax?: TerrainDistribution;
 
-  declare getSpecies: HasManyGetAssociationsMixin<Species>;
-  declare setSpecies: HasManySetAssociationsMixin<Species, number>;
-
-  declare getTerrainDistributionMin: BelongsToGetAssociationMixin<TerrainDistribution>;
-  declare setTerrainDistributionMin: BelongsToSetAssociationMixin<
-    TerrainDistribution,
-    number
-  >;
-
-  declare getTerrainDistributionMax: BelongsToGetAssociationMixin<TerrainDistribution>;
-  declare setTerrainDistributionMax: BelongsToSetAssociationMixin<
-    TerrainDistribution,
-    number
-  >;
+  // declare getSpecies: HasManyGetAssociationsMixin<Species>;
+  // declare setSpecies: HasManySetAssociationsMixin<Species, number>;
+  declare getSpecies: BelongsToGetAssociationMixin<Species>;
+  declare setSpecies: BelongsToSetAssociationMixin<Species, number>;
 }
 
 SpeciesEnclosureNeed.init(
@@ -57,6 +57,7 @@ SpeciesEnclosureNeed.init(
     },
     smallExhibitHeightRequired: {
       type: DataTypes.INTEGER,
+      allowNull: false,
     },
     minLandAreaRequired: {
       type: DataTypes.INTEGER,
@@ -86,12 +87,60 @@ SpeciesEnclosureNeed.init(
       type: DataTypes.DOUBLE,
       allowNull: false,
     },
-    plantationCoveragePercent: {
+    plantationCoveragePercentMin: {
       type: DataTypes.DOUBLE,
       allowNull: false,
     },
-    standoffBarrierDist: {
+    plantationCoveragePercentMax: {
       type: DataTypes.DOUBLE,
+      allowNull: false,
+    },
+    longGrassPercentMin: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+    },
+    longGrassPercentMax: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+    },
+    shortGrassPercentMin: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+    },
+    shortGrassPercentMax: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+    },
+    rockPercentMin: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+    },
+    rockPercentMax: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+    },
+    sandPercentMin: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+    },
+    sandPercentMax: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+    },
+    snowPercentMin: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+    },
+    snowPercentMax: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+    },
+    soilPercentMin: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+    },
+    soilPercentMax: {
+      type: DataTypes.INTEGER,
       allowNull: false,
     },
   },

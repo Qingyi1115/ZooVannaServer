@@ -40,6 +40,7 @@ class Employee extends Model<
   declare employeeSalt: string;
   declare employeeDoorAccessCode: string;
   declare employeeEducation: string;
+  declare employeeBirthDate: Date;
   declare isAccountManager: boolean;
   declare dateOfResignation: Date | null;
   declare employeeProfileURL: string | null;
@@ -68,6 +69,12 @@ class Employee extends Model<
     return this;
   }
 
+  public unsetAsAccountManager() {
+    this.isAccountManager = false;
+    this.save();
+    return this;
+  }
+
   public testPassword(password: string) {
     return !hash(password + this.employeeSalt).localeCompare(
       this.employeePasswordHash,
@@ -78,6 +85,13 @@ class Employee extends Model<
     this.employeePasswordHash = hash(password + this.employeeSalt);
     this.save();
     return this;
+  }
+
+  public disableAccount(dateOfResignation:Date) {
+    this.dateOfResignation = dateOfResignation
+    this.save();
+    console.log("Employee account has been disabled");
+    return this.dateOfResignation;
   }
 
   static generateEmployeeSalt() {
@@ -101,12 +115,24 @@ class Employee extends Model<
   }
 
   public toJSON() {
-    // Can control default values returned rather than manually populating json, removing secrets
-    // Similar idea albert more useful when compared to java's toString
+    return {
+      ...this.get(),
+      keeper: this.keeper?.toJSON(),
+      planningStaff: this.planningStaff?.toJSON(),
+      generalStaff: this.generalStaff?.toJSON(),
+      employeePasswordHash: undefined,
+      employeeSalt: undefined,
+    };
+  }
+
+  public async toFullJSON(){
     return {
       ...this.get(),
       employeePasswordHash: undefined,
       employeeSalt: undefined,
+      keeper: (await this.getKeeper())?.toJSON(),
+      generalStaff: (await this.getGeneralStaff())?.toJSON(),
+      planningStaff: (await this.getPlanningStaff())?.toJSON(),
     };
   }
 }
@@ -150,6 +176,10 @@ Employee.init(
       type: DataTypes.STRING,
       allowNull: false,
       unique: true,
+    },
+    employeeBirthDate: {
+      type: DataTypes.DATE,
+      allowNull: false,
     },
     employeeEducation: {
       type: DataTypes.STRING,

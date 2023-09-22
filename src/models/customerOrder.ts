@@ -8,7 +8,8 @@ import {
     BelongsToSetAssociationMixin,
     HasManyGetAssociationsMixin,
     HasManySetAssociationsMixin,
-    HasManyAddAssociationMixin
+    HasManyAddAssociationMixin,
+    HasManyRemoveAssociationMixin
   } from "Sequelize";
   import { conn } from "../db";
 import { Country, OrderStatus } from "./enumerated";
@@ -42,13 +43,15 @@ import { LineItem } from "./lineItem";
     declare getCustomer: BelongsToGetAssociationMixin<Customer>;
     declare setCustomer: BelongsToSetAssociationMixin<Customer, number>;
 
-    declare getPayment: HasManyGetAssociationsMixin<Payment[]>;
+    declare getPayments: HasManyGetAssociationsMixin<Payment[]>;
     declare addPayment: HasManyAddAssociationMixin<Payment, number>;
-    declare setPayment: HasManySetAssociationsMixin<Payment[], number>;
+    declare setPayments: HasManySetAssociationsMixin<Payment[], number>;
+    declare removePayment: HasManyRemoveAssociationMixin<Payment, number>;
 
     declare getLineItems: HasManyGetAssociationsMixin<LineItem[]>;
     declare addLineItem: HasManyAddAssociationMixin<LineItem, number>;
     declare setLineItems: HasManySetAssociationsMixin<LineItem[], number>;
+    declare removeLineItem: HasManyRemoveAssociationMixin<LineItem, number>;
 
 }
   

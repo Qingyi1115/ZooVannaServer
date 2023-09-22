@@ -8,6 +8,7 @@ import {
   HasManyGetAssociationsMixin,
   HasManySetAssociationsMixin,
   HasManyAddAssociationMixin,
+  HasManyRemoveAssociationMixin,
 } from "Sequelize";
 import { conn } from "../db";
 import { Employee } from "./employee";
@@ -19,6 +20,7 @@ class PlanningStaff extends Model<
 > {
   declare plannerType: PlannerType;
   declare specialization: Specialization;
+  declare isDisabled: boolean; 
 
   declare employee?: Employee;
   declare events?: Event[];
@@ -29,6 +31,15 @@ class PlanningStaff extends Model<
   declare getEvents: HasManyGetAssociationsMixin<Event[]>;
   declare addEvents: HasManyAddAssociationMixin<Event, number>;
   declare setEvents: HasManySetAssociationsMixin<Event[], number>;
+  declare removeEvent: HasManyRemoveAssociationMixin<Event, number>;
+
+  public enable() {
+    this.isDisabled = false;
+  }
+
+  public disable() {
+    this.isDisabled = true;
+  }
 }
 
 PlanningStaff.init(
@@ -42,6 +53,11 @@ PlanningStaff.init(
       type: DataTypes.ENUM,
       values: Object.values(Specialization),
       allowNull: false,
+    },
+    isDisabled: {
+      type: DataTypes.BOOLEAN,
+      allowNull: false,
+      defaultValue: true,
     },
   },
   {

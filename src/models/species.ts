@@ -5,22 +5,32 @@ import {
   InferCreationAttributes,
   BelongsToGetAssociationMixin,
   BelongsToSetAssociationMixin,
-  INTEGER,
+  HasOneGetAssociationMixin,
+  HasOneSetAssociationMixin,
+  HasManyGetAssociationsMixin,
+  HasManyAddAssociationMixin,
+  HasManySetAssociationsMixin,
+  HasManyRemoveAssociationMixin,
+  CreationOptional,
+  Op,
 } from "Sequelize";
 import { conn } from "../db";
 import {
+  AnimalGrowthStage,
   ConservationStatus,
   Continent,
   GroupSexualDynamic,
 } from "./enumerated";
 import { SpeciesDietNeed } from "./speciesDietNeed";
 import { SpeciesEnclosureNeed } from "./speciesEnclosureNeed";
+import { PhysiologicalReferenceNorms } from "./physiologicalReferenceNorms";
+import { Compatibility } from "./compatibility";
 
 class Species extends Model<
   InferAttributes<Species>,
   InferCreationAttributes<Species>
 > {
-  declare speciesId: number;
+  declare speciesId: CreationOptional<number>;
   declare speciesCode: string;
   declare commonName: string;
   declare scientificName: string;
@@ -36,35 +46,99 @@ class Species extends Model<
   declare nativeContinent: Continent;
   declare nativeBiomes: string;
   declare educationalDescription: string;
+  declare educationalFunFact: string;
   declare groupSexualDynamic: GroupSexualDynamic;
   declare habitatOrExhibit: string;
   declare imageUrl: string;
   declare generalDietPreference: string;
-
-  declare speciesDietNeed?: SpeciesDietNeed;
+  declare lifeExpectancyYears: number;
+  declare foodRemark: string;
+  //--FK
   declare speciesEnclosureNeed?: SpeciesEnclosureNeed;
+  declare physiologicalReferenceNorms?: PhysiologicalReferenceNorms[];
+  declare speciesDietNeeds?: SpeciesDietNeed[];
+  declare compatibilities?: Compatibility[];
 
-  declare getSpeciesDietNeed: BelongsToGetAssociationMixin<SpeciesDietNeed>;
-  declare setSpeciesDietNeed: BelongsToSetAssociationMixin<
+  declare getSpeciesEnclosureNeed: HasOneGetAssociationMixin<SpeciesEnclosureNeed>;
+  declare setSpeciesEnclosureNeed: HasOneSetAssociationMixin<
+    SpeciesEnclosureNeed,
+    number
+  >;
+
+  declare getPhysiologicalRefNorm: HasManyGetAssociationsMixin<
+    PhysiologicalReferenceNorms[]
+  >;
+  declare addPhysiologicalRefNorm: HasManyAddAssociationMixin<
+    PhysiologicalReferenceNorms,
+    number
+  >;
+  declare setPhysiologicalRefNorm: HasManySetAssociationsMixin<
+    PhysiologicalReferenceNorms[],
+    number
+  >;
+  declare removePhysiologicalRefNorm: HasManyRemoveAssociationMixin<
+    PhysiologicalReferenceNorms,
+    number
+  >;
+
+  declare getSpeciesDietNeed: HasManyGetAssociationsMixin<SpeciesDietNeed[]>;
+  declare addSpeciesDietNeed: HasManyAddAssociationMixin<
+    SpeciesDietNeed,
+    number
+  >;
+  declare setSpeciesDietNeed: HasManySetAssociationsMixin<
+    SpeciesDietNeed[],
+    number
+  >;
+  declare removeSpeciesDietNeed: HasManyRemoveAssociationMixin<
     SpeciesDietNeed,
     number
   >;
 
-  declare getSpeciesEnclosureNeed: BelongsToGetAssociationMixin<SpeciesEnclosureNeed>;
-  declare setSpeciesEnclosureNeed: BelongsToSetAssociationMixin<
-    SpeciesEnclosureNeed,
+  declare getCompatibilities: HasManyGetAssociationsMixin<Compatibility[]>;
+  declare addCompatibilities: HasManyAddAssociationMixin<Compatibility, number>;
+  declare setCompatibilities: HasManySetAssociationsMixin<
+    Compatibility[],
+    number
+  >;
+  declare removeCompatibilities: HasManyRemoveAssociationMixin<
+    Compatibility,
     number
   >;
 
   static async getNextSpeciesCode() {
     try {
-      const maxId: number = await this.max('speciesId');
+      const maxId: number = await this.max("speciesId");
       const nextId = (maxId || 0) + 1;
-      return `SPE${String(nextId).padStart(3, '0')}`;
+      return `SPE${String(nextId).padStart(3, "0")}`;
     } catch (error) {
-      console.error('Error generating species code:', error);
+      console.error("Error generating species code:", error);
       throw error; // Optionally, re-throw the error for further handling
     }
+  }
+
+  public getSpeciesId() {
+    return this.speciesId;
+  }
+
+  // Custom method to check compatibility
+  public async isCompatible(otherSpecies: Species): Promise<boolean> {
+    const isCompatible = await Compatibility.findOne({
+      where: {
+        [Op.or]: [
+          {
+            speciesId1: this.speciesId,
+            speciesId2: otherSpecies.speciesId,
+          },
+          {
+            speciesId1: otherSpecies.speciesId,
+            speciesId2: this.speciesId,
+          },
+        ],
+      },
+    });
+
+    return !!isCompatible;
   }
 }
 
@@ -91,7 +165,7 @@ Species.init(
     },
     aliasName: {
       type: DataTypes.STRING,
-      allowNull: false,
+      allowNull: true,
     },
     conservationStatus: {
       type: DataTypes.ENUM,
@@ -136,8 +210,12 @@ Species.init(
       allowNull: false,
     },
     educationalDescription: {
-      type: DataTypes.STRING,
-      allowNull: false,
+      type: DataTypes.TEXT,
+      allowNull: true,
+    },
+    educationalFunFact: {
+      type: DataTypes.TEXT,
+      allowNull: true,
     },
     groupSexualDynamic: {
       type: DataTypes.ENUM,
@@ -155,6 +233,14 @@ Species.init(
     generalDietPreference: {
       type: DataTypes.STRING,
       allowNull: false,
+    },
+    lifeExpectancyYears: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+    },
+    foodRemark: {
+      type: DataTypes.STRING,
+      allowNull: true,
     },
   },
   {

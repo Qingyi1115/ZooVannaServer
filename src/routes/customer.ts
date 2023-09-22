@@ -12,6 +12,7 @@ import {
   updatePassword,
   sendForgetPasswordLink,
   resetForgottenPasswordController,
+  deleteCustomerByEmail,
 } from "../controllers/customerController";
 import { authMiddleware } from "../middlewares/authMiddleware";
 
@@ -32,5 +33,6 @@ router.delete("/deleteCustomer/:customerId", deleteCustomer);
 router.get("/getCustomer", getCustomerByEmail);
 router.put("/updateCustomer/:customerId", updateCustomer);
 router.put("/updatePassword/:customerId", updatePassword);
+router.delete("/deleteCustomer", deleteCustomerByEmail);
 
 export default router;
