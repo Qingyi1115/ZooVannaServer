@@ -108,7 +108,8 @@ export async function getAllFacility(req: Request, res: Response) {
         .status(403)
         .json({ error: "Access Denied! Operation managers only!" });
 
-    const { includes } = req.body;
+    let { includes } = req.body;
+    includes = includes || []; 
 
     const _includes : string[] = []
     for (const role of ["hubProcessors"]){
@@ -406,7 +407,7 @@ export async function getAllHubs(req: Request, res: Response) {
         .status(403)
         .json({ error: "Access Denied! Operation managers only!" });
 
-    const { includes } = req.body;
+    const { includes = [] } = req.body;
 
     const _includes : string[] = []
     for (const role of ["sensors", "facility"]){
@@ -437,8 +438,8 @@ export async function getAllSensors(req: Request, res: Response) {
       return res
         .status(403)
         .json({ error: "Access Denied! Operation managers only!" });
-
-    const { includes } = req.body;
+    
+    const { includes=[] } = req.body;
 
     const _includes : string[] = []
     for (const role of ["hubProcessor", "sensorReading", "generalStaff"]){

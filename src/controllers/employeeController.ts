@@ -232,7 +232,7 @@ export async function getAllEmployeesController(req: Request, res: Response) {
         .json({ error: "Access Denied! Account managers only!" });
     }
 
-    const {includes } = req.body;
+    const {includes=[] } = req.body;
     const _includes : string[] = []
     for (const role of ["keeper", "generalStaff", "planningStaff"]){
       if (includes.includes(role)) _includes.push(role)
