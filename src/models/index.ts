@@ -624,14 +624,15 @@ export const speciesSeed = async () => {
     family: "Ursidae",
     genus: "Ailuropoda",
     educationalDescription:
-      "The giant panda (Ailuropoda melanoleuca),...The giant panda (Ailuropoda melanoleuca),...The giant panda (Ailuropoda melanoleuca),...The giant panda (Ailuropoda melanoleuca),...The giant panda (Ailuropoda melanoleuca),...The giant panda (Ailuropoda melanoleuca),...The giant panda (Ailuropoda melanoleuca),...The giant panda (Ailuropoda melanoleuca),...The giant panda (Ailuropoda melanoleuca),...The giant panda (Ailuropoda melanoleuca),...The giant panda (Ailuropoda melanoleuca),...The giant panda (Ailuropoda melanoleuca),...The giant panda (Ailuropoda melanoleuca),...The giant panda (Ailuropoda melanoleuca),...The giant panda (Ailuropoda melanoleuca),...The giant panda (Ailuropoda melanoleuca),...",
-    educationalFunFact: "Fun Fact 001",
+      "The Giant Panda, often simply referred to as the Panda, is a large, charismatic bear known for its distinct black and white coloration. It is native to China and is one of the most iconic and endangered species in the world. Pandas primarily feed on bamboo, which makes up the majority of their diet. They are known for their solitary and sedentary nature. Conservation efforts have been made to protect and preserve these pandas due to their vulnerable status.",
+    educationalFunFact:
+      'Pandas have a "thumb" for better bamboo grip, helping them eat and climb!',
     nativeContinent: Continent.ASIA,
     nativeBiomes: "Temperate Forests",
     groupSexualDynamic: GroupSexualDynamic.POLYANDROUS,
     habitatOrExhibit: "Southwest China",
     generalDietPreference: "Bamboo?? LOL what to put",
-    imageUrl: "img/panda.jpeg",
+    imageUrl: "img/species/panda.jpeg",
     lifeExpectancyYears: 14,
     // foodRemark: "Food remark...",
   } as any;
@@ -726,13 +727,14 @@ export const speciesSeed = async () => {
     genus: "Hydrochoerus",
     educationalDescription:
       "The Capybara is the largest living rodent in the world, known for its semi-aquatic lifestyle and friendly demeanor. These herbivorous animals are highly social and often live in groups, making them excellent swimmers and grazers. They are native to South America and are well-adapted to various aquatic habitats.",
-    educationalFunFact: "Fun Fact 001",
+    educationalFunFact:
+      "Capybaras are excellent swimmers and can stay submerged underwater for up to five minutes. They use this skill to evade predators and forage for aquatic plants.",
     nativeContinent: Continent.SOUTH_OR_CENTRAL_AMERICA,
     nativeBiomes: "Grasslands, Savannas, Wetlands, Rainforests",
     groupSexualDynamic: GroupSexualDynamic.POLYANDROUS,
     habitatOrExhibit: "Water bodies",
     generalDietPreference: "Herbivores",
-    imageUrl: "img/capybara.jpg",
+    imageUrl: "img/species/capybara.jpg",
     lifeExpectancyYears: 10,
     // foodRemark: "Food remark...",
   } as any;
@@ -760,7 +762,7 @@ export const speciesSeed = async () => {
     groupSexualDynamic: GroupSexualDynamic.POLYANDROUS,
     habitatOrExhibit: "Forested areas",
     generalDietPreference: "Herbivores",
-    imageUrl: "img/redPanda.jpeg",
+    imageUrl: "img/species/redPanda.jpeg",
     lifeExpectancyYears: 14,
     // foodRemark: "Food remark...",
   } as any;

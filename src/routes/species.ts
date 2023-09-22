@@ -26,6 +26,7 @@ import {
   getAllCompatibilitiesbySpeciesCode,
   checkIsCompatible,
   deleteCompatibility,
+  getSpeciesEduDescBySpeciesCode,
 } from "../controllers/speciesController";
 
 const router = express.Router();
@@ -41,6 +42,10 @@ router.delete("/deleteSpecies/:speciesCode", deleteSpeciesByCode);
 
 //species edu content
 router.put("/updateSpeciesEdu", updateSpeciesEduDesc);
+router.get(
+  "/getSpeciesEduDescBySpeciesCode/:speciesCode",
+  getSpeciesEduDescBySpeciesCode,
+);
 
 //species enclosure requirements
 router.get(

@@ -272,18 +272,45 @@ export async function updateSpecies(req: Request, res: Response) {
   }
 }
 
+//SpeciesEduDesc
+export async function getSpeciesEduDescBySpeciesCode(
+  req: Request,
+  res: Response,
+) {
+  const { speciesCode } = req.params;
+  if (speciesCode == undefined) {
+    console.log("Missing field(s): ", {
+      speciesCode,
+    });
+    return res.status(400).json({ error: "Missing information!" });
+  }
+  try {
+    const speciesEduDesc =
+      await SpeciesService.getSpeciesEduDescBySpeciesCode(speciesCode);
+    return res.status(200).json(speciesEduDesc);
+  } catch (error: any) {
+    res.status(400).json({ error: error.message });
+  }
+}
+
 export async function updateSpeciesEduDesc(req: Request, res: Response) {
   try {
     // const imageUrl = await handleFileUpload(
     //     req,
     //     process.env.IMG_URL_ROOT! + "species", //"D:/capstoneUploads/species",
     // );
-    const { speciesCode, educationalDescription } = req.body;
+    const { speciesCode, educationalDescription, educationalFunFact } =
+      req.body;
 
-    if ([speciesCode, educationalDescription].includes(undefined)) {
+    if (
+      [speciesCode, educationalDescription, educationalFunFact].includes(
+        undefined,
+      )
+    ) {
       console.log("Missing field(s): ", {
         speciesCode,
         educationalDescription,
+        educationalFunFact,
       });
       return res.status(400).json({ error: "Missing information!" });
     }
@@ -292,6 +319,7 @@ export async function updateSpeciesEduDesc(req: Request, res: Response) {
     let species = await SpeciesService.updateSpeciesEduDesc(
       speciesCode,
       educationalDescription,
+      educationalFunFact,
     );
 
     return res.status(200).json({ species });

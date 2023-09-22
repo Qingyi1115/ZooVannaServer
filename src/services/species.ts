@@ -149,13 +149,32 @@ export async function updateSpecies(
     throw validationErrorHandler(error);
   }
 }
+//getSpeciesEduDescBySpeciesCode
+export async function getSpeciesEduDescBySpeciesCode(speciesCode: string) {
+  let result = await Species.findOne({
+    where: { speciesCode: speciesCode },
+    include: SpeciesEnclosureNeed, //eager fetch here!!
+  });
+
+  if (result) {
+    let newSpeciesEdu = {
+      educationalDescription: result.educationalDescription,
+      educationalFunFact: result.educationalFunFact,
+    };
+
+    return newSpeciesEdu;
+  }
+  throw new Error("Invalid Species Code!");
+}
 
 export async function updateSpeciesEduDesc(
   speciesCode: string,
   educationalDescription: string,
+  educationalFunFact: string,
 ) {
   let updatedSpecies = {
     educationalDescription: educationalDescription,
+    educationalFunFact: educationalFunFact,
   } as any;
 
   console.log(updatedSpecies);
