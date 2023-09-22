@@ -30,6 +30,7 @@ app.use(
 app.use(compression());
 app.use(cookieParser());
 app.use(bodyParser.json());
+app.use('/img', express.static('img'));
 
 const server = http.createServer(app);
 

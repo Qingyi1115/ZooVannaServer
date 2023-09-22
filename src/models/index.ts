@@ -4,6 +4,7 @@ import { Employee } from "./employee";
 import { Keeper } from "./keeper";
 import { PlanningStaff } from "./planningStaff";
 import { Facility } from "./facility";
+import { Compatibility } from "./compatibility";
 import { Sensor } from "./sensor";
 import { GeneralStaff } from "./generalStaff";
 import { InHouse } from "./inHouse";
@@ -17,8 +18,12 @@ import {
   ConservationStatus,
   Continent,
   GroupSexualDynamic,
-  AnimalFeedCategory,
   SensorType,
+  AnimalGrowthStage,
+  PresentationContainer,
+  PresentationLocation,
+  PresentationMethod,
+  AnimalFeedCategory,
 } from "./enumerated";
 import { ThirdParty } from "./thirdParty";
 import { AnimalClinic } from "./animalClinics";
@@ -46,6 +51,8 @@ import { PhysiologicalReferenceNorms } from "./physiologicalReferenceNorms";
 import { EnrichmentItem } from "./enrichmentItem";
 import { AnimalFeed } from "./animalFeed";
 import { MaintenanceLog } from "./maintenanceLog";
+import * as SpeciesService from "../services/species";
+import { predictNextDate } from "../helpers/predictors";
 
 function addCascadeOptions(options: object) {
   return { ...options, onDelete: "CASCADE", onUpdate: "CASCADE" };
@@ -74,26 +81,41 @@ export const createDatabase = async (options: any) => {
     addCascadeOptions({ foreignKey: "employeeId" }),
   );
 
-  Facility.hasMany(HubProcessor, addCascadeOptions({ foreignKey: "facilityId" }));
-  HubProcessor.belongsTo(Facility, addCascadeOptions({ foreignKey: "facilityId" }));
+  Facility.hasMany(
+    HubProcessor,
+    addCascadeOptions({ foreignKey: "facilityId" }),
+  );
+  HubProcessor.belongsTo(
+    Facility,
+    addCascadeOptions({ foreignKey: "facilityId" }),
+  );
 
-  HubProcessor.hasMany(Sensor, addCascadeOptions({ foreignKey: "hubProcessorId" }));
-  Sensor.belongsTo(HubProcessor, addCascadeOptions({ foreignKey: "hubProcessorId" }));
+  HubProcessor.hasMany(
+    Sensor,
+    addCascadeOptions({ foreignKey: "hubProcessorId" }),
+  );
+  Sensor.belongsTo(
+    HubProcessor,
+    addCascadeOptions({ foreignKey: "hubProcessorId" }),
+  );
 
   Sensor.hasMany(MaintenanceLog, addCascadeOptions({ foreignKey: "sensorId" }));
   MaintenanceLog.belongsTo(Sensor, addCascadeOptions({ foreignKey: "sensorId" }));
 
   Sensor.hasMany(SensorReading, addCascadeOptions({ foreignKey: "sensorId" }));
-  SensorReading.belongsTo(Sensor, addCascadeOptions({ foreignKey: "sensorId" }));
+  SensorReading.belongsTo(
+    Sensor,
+    addCascadeOptions({ foreignKey: "sensorId" }),
+  );
 
   Facility.hasOne(InHouse, addCascadeOptions({ foreignKey: "facilityId" }));
   InHouse.belongsTo(Facility, addCascadeOptions({ foreignKey: "facilityId" }));
 
   Facility.hasOne(Enclosure, addCascadeOptions({ foreignKey: "facilityId" }));
-  Enclosure.belongsTo(Facility, addCascadeOptions({ foreignKey: "facilityId" }));
-
-  PhysiologicalReferenceNorms.hasMany(Species, addCascadeOptions({ foreignKey: "physiologicalRefId" }));
-  Species.belongsTo(PhysiologicalReferenceNorms, addCascadeOptions({ foreignKey: "physiologicalRefId" }));
+  Enclosure.belongsTo(
+    Facility,
+    addCascadeOptions({ foreignKey: "facilityId" }),
+  );
 
   InHouse.belongsToMany(GeneralStaff, {
     foreignKey: "maintainedFacilityId",
@@ -163,23 +185,35 @@ export const createDatabase = async (options: any) => {
     addCascadeOptions({ foreignKey: "AnimalClinicId" }),
   );
 
-  SpeciesDietNeed.hasMany(
-    Species,
-    addCascadeOptions({ foreignKey: "speciesDietNeedId" }),
-  );
-  Species.belongsTo(
-    SpeciesDietNeed,
-    addCascadeOptions({ foreignKey: "speciesDietNeedId" }),
-  );
+  // ------------ Species Relation --------------
+  Species.hasOne(SpeciesEnclosureNeed, {
+    // foreignKey: "speciesEnclosureNeedId",
+    onDelete: "CASCADE",
+  });
+  SpeciesEnclosureNeed.belongsTo(Species, {
+    // foreignKey: "speciesId",
+  });
 
-  SpeciesEnclosureNeed.hasMany(
-    Species,
-    addCascadeOptions({ foreignKey: "speciesEnclosureNeedId" }),
-  );
-  Species.belongsTo(
-    SpeciesEnclosureNeed,
-    addCascadeOptions({ foreignKey: "speciesEnclosureNeedId" }),
-  );
+  Species.hasMany(PhysiologicalReferenceNorms, { onDelete: "CASCADE" });
+  PhysiologicalReferenceNorms.belongsTo(Species);
+
+  Species.hasMany(SpeciesDietNeed, { onDelete: "CASCADE" });
+  SpeciesDietNeed.belongsTo(Species);
+
+  Species.hasMany(Compatibility, { onDelete: "CASCADE" });
+  Compatibility.belongsTo(Species, {
+    as: "species1",
+    foreignKey: "speciesId1",
+    targetKey: "speciesId",
+    onDelete: "CASCADE",
+  });
+
+  Compatibility.belongsTo(Species, {
+    as: "species2",
+    foreignKey: "speciesId2",
+    targetKey: "speciesId",
+    onDelete: "CASCADE",
+  });
 
   Species.hasMany(Animal, addCascadeOptions({ foreignKey: "speciesId" }));
   Animal.belongsTo(Species, addCascadeOptions({ foreignKey: "speciesId" }));
@@ -287,23 +321,56 @@ export const createDatabase = async (options: any) => {
   Listing.hasMany(LineItem, addCascadeOptions({ foreignKey: "listingId" }));
   LineItem.belongsTo(Listing, addCascadeOptions({ foreignKey: "listingId" }));
 
-  Promotion.hasMany(CustomerOrder, addCascadeOptions({ foreignKey: "promotionId" }));
-  CustomerOrder.belongsTo(Promotion, addCascadeOptions({ foreignKey: "promotionId" }));
+  Promotion.hasMany(
+    CustomerOrder,
+    addCascadeOptions({ foreignKey: "promotionId" }),
+  );
+  CustomerOrder.belongsTo(
+    Promotion,
+    addCascadeOptions({ foreignKey: "promotionId" }),
+  );
 
-  Customer.hasMany(CustomerOrder, addCascadeOptions({ foreignKey: "customerId" }));
-  CustomerOrder.belongsTo(Customer, addCascadeOptions({ foreignKey: "customerId" }));
+  Customer.hasMany(
+    CustomerOrder,
+    addCascadeOptions({ foreignKey: "customerId" }),
+  );
+  CustomerOrder.belongsTo(
+    Customer,
+    addCascadeOptions({ foreignKey: "customerId" }),
+  );
 
   LineItem.hasMany(CustomerOrder, addCascadeOptions({ foreignKey: "orderId" }));
-  CustomerOrder.belongsTo(LineItem, addCascadeOptions({ foreignKey: "orderId" }));
+  CustomerOrder.belongsTo(
+    LineItem,
+    addCascadeOptions({ foreignKey: "orderId" }),
+  );
 
-  ThirdParty.hasMany(CustomerReportLog, addCascadeOptions({ foreignKey: "thirdPartyId" }));
-  CustomerReportLog.belongsTo(ThirdParty, addCascadeOptions({ foreignKey: "thirdPartyId" }));
+  ThirdParty.hasMany(
+    CustomerReportLog,
+    addCascadeOptions({ foreignKey: "thirdPartyId" }),
+  );
+  CustomerReportLog.belongsTo(
+    ThirdParty,
+    addCascadeOptions({ foreignKey: "thirdPartyId" }),
+  );
 
-  InHouse.hasMany(CustomerReportLog, addCascadeOptions({ foreignKey: "inHouseId" }));
-  CustomerReportLog.belongsTo(InHouse, addCascadeOptions({ foreignKey: "inHouseId" }));
+  InHouse.hasMany(
+    CustomerReportLog,
+    addCascadeOptions({ foreignKey: "inHouseId" }),
+  );
+  CustomerReportLog.belongsTo(
+    InHouse,
+    addCascadeOptions({ foreignKey: "inHouseId" }),
+  );
 
-  GeneralStaff.hasMany(Sensor, addCascadeOptions({ foreignKey: "generalStaffId" }));
-  Sensor.belongsTo(GeneralStaff, addCascadeOptions({ foreignKey: "generalStaffId" }));
+  GeneralStaff.hasMany(
+    Sensor,
+    addCascadeOptions({ foreignKey: "generalStaffId" }),
+  );
+  Sensor.belongsTo(
+    GeneralStaff,
+    addCascadeOptions({ foreignKey: "generalStaffId" }),
+  );
 
   // Create tables
   if (options["forced"]) {
@@ -316,10 +383,10 @@ export const createDatabase = async (options: any) => {
 export const seedDatabase = async () => {
   // Fake data goes here
   await tutorial();
-  // await speciesSeed();
   // await animalFeedSeed();
   // await enrichmentItemSeed();
   await facilityAssetsSeed();
+  await speciesSeed();
 };
 
 export const tutorial = async () => {
@@ -384,7 +451,7 @@ export const tutorial = async () => {
         keeper: {
           keeperType: KeeperType.KEEPER,
           specialization: Specialization.AMPHIBIAN,
-          isDisabled: false
+          isDisabled: false,
         },
       },
       {
@@ -402,7 +469,7 @@ export const tutorial = async () => {
         keeper: {
           keeperType: KeeperType.KEEPER,
           specialization: Specialization.AMPHIBIAN,
-          isDisabled: false
+          isDisabled: false,
         },
       },
     ],
@@ -523,7 +590,7 @@ export const tutorial = async () => {
         {
           processorName: "A01",
           ipAddressName: "172.1.2.19",
-          hubStatus: HubStatus.CONNECTED
+          hubStatus: HubStatus.CONNECTED,
         } as any,
       ],
       inHouse: {
@@ -563,7 +630,7 @@ export const tutorial = async () => {
 };
 
 export const speciesSeed = async () => {
-  let pandaTemplate = {
+  let panda1Template = {
     speciesCode: await Species.getNextSpeciesCode(),
     commonName: "Giant Panda",
     scientificName: "Ailuropoda Melanoleuca",
@@ -576,17 +643,169 @@ export const speciesSeed = async () => {
     order: "Carnivora",
     family: "Ursidae",
     genus: "Ailuropoda",
-    educationalDescription: "The giant panda (Ailuropoda melanoleuca),...The giant panda (Ailuropoda melanoleuca),...The giant panda (Ailuropoda melanoleuca),...The giant panda (Ailuropoda melanoleuca),...The giant panda (Ailuropoda melanoleuca),...The giant panda (Ailuropoda melanoleuca),...The giant panda (Ailuropoda melanoleuca),...The giant panda (Ailuropoda melanoleuca),...The giant panda (Ailuropoda melanoleuca),...The giant panda (Ailuropoda melanoleuca),...The giant panda (Ailuropoda melanoleuca),...The giant panda (Ailuropoda melanoleuca),...The giant panda (Ailuropoda melanoleuca),...The giant panda (Ailuropoda melanoleuca),...The giant panda (Ailuropoda melanoleuca),...The giant panda (Ailuropoda melanoleuca),...",
+    educationalDescription:
+      "The Giant Panda, often simply referred to as the Panda, is a large, charismatic bear known for its distinct black and white coloration. It is native to China and is one of the most iconic and endangered species in the world. Pandas primarily feed on bamboo, which makes up the majority of their diet. They are known for their solitary and sedentary nature. Conservation efforts have been made to protect and preserve these pandas due to their vulnerable status.",
+    educationalFunFact:
+      'Pandas have a "thumb" for better bamboo grip, helping them eat and climb!',
     nativeContinent: Continent.ASIA,
     nativeBiomes: "Temperate Forests",
     groupSexualDynamic: GroupSexualDynamic.POLYANDROUS,
     habitatOrExhibit: "Southwest China",
     generalDietPreference: "Bamboo?? LOL what to put",
-    imageUrl: "Fake_URL_Here"
+    imageUrl: "img/species/panda.jpeg",
+    lifeExpectancyYears: 14,
+    // foodRemark: "Food remark...",
   } as any;
-  let panda1 = await Species.create(pandaTemplate);
+  let panda1 = await Species.create(panda1Template);
   console.log(panda1.toJSON());
-}
+  let panda1enclosure = await SpeciesService.createEnclosureNeeds(
+    "SPE001",
+    10,
+    10,
+    10,
+    10,
+    10,
+    10,
+    10,
+    10,
+    10,
+    10,
+    10,
+    10,
+    10,
+    10,
+    10,
+    10,
+    10,
+    10,
+    10,
+    10,
+    10,
+    10,
+  );
+  console.log(panda1enclosure.toJSON());
+
+  let panda1phy1 = await SpeciesService.createPhysiologicalReferenceNorms(
+    "SPE001",
+    100,
+    100,
+    100,
+    100,
+    100,
+    AnimalGrowthStage.INFANT,
+  );
+  console.log(panda1phy1.toJSON());
+
+  let panda1phy2 = await SpeciesService.createPhysiologicalReferenceNorms(
+    "SPE001",
+    200,
+    200,
+    200,
+    200,
+    200,
+    AnimalGrowthStage.ADULT,
+  );
+  console.log(panda1phy2.toJSON());
+
+  let panda1DietNeed1 = await SpeciesService.createDietNeed(
+    "SPE001",
+    AnimalFeedCategory.FISH,
+    100,
+    1000,
+    PresentationContainer.SILICONE_DISH,
+    PresentationMethod.CHOPPED,
+    PresentationLocation.IN_CONTAINER,
+    AnimalGrowthStage.ADULT,
+  );
+  console.log(panda1DietNeed1.toJSON());
+
+  let panda1DietNeed2 = await SpeciesService.createDietNeed(
+    "SPE001",
+    AnimalFeedCategory.HAY,
+    1000,
+    7000,
+    PresentationContainer.HANGING_FEEDERS,
+    PresentationMethod.WHOLE,
+    PresentationLocation.IN_CONTAINER,
+    AnimalGrowthStage.JUVENILE,
+  );
+  console.log(panda1DietNeed2.toJSON());
+
+  let capybara1Template = {
+    speciesCode: await Species.getNextSpeciesCode(),
+    commonName: "Capybara",
+    scientificName: "Hydrochoerus Hydrochaeris",
+    aliasName: "Water pig, Hydrochaeris hydrochaeris",
+    conservationStatus: ConservationStatus.LEAST_CONCERN,
+    domain: "Eukaryota",
+    kingdom: "Animalia",
+    phylum: "Chordata",
+    speciesClass: "Mammalia",
+    order: "Rodentia",
+    family: "Caviidae",
+    genus: "Hydrochoerus",
+    educationalDescription:
+      "The Capybara is the largest living rodent in the world, known for its semi-aquatic lifestyle and friendly demeanor. These herbivorous animals are highly social and often live in groups, making them excellent swimmers and grazers. They are native to South America and are well-adapted to various aquatic habitats.",
+    educationalFunFact:
+      "Capybaras are excellent swimmers and can stay submerged underwater for up to five minutes. They use this skill to evade predators and forage for aquatic plants.",
+    nativeContinent: Continent.SOUTH_OR_CENTRAL_AMERICA,
+    nativeBiomes: "Grasslands, Savannas, Wetlands, Rainforests",
+    groupSexualDynamic: GroupSexualDynamic.POLYANDROUS,
+    habitatOrExhibit: "Water bodies",
+    generalDietPreference: "Herbivores",
+    imageUrl: "img/species/capybara.jpg",
+    lifeExpectancyYears: 10,
+    // foodRemark: "Food remark...",
+  } as any;
+  let capybara1 = await Species.create(capybara1Template);
+  console.log(capybara1.toJSON());
+
+  let redPanda1Template = {
+    speciesCode: await Species.getNextSpeciesCode(),
+    commonName: "Red Panda",
+    scientificName: "Ailurus fulgens",
+    aliasName: "Lesser Panda, Fire Fox",
+    conservationStatus: ConservationStatus.ENDANGERED,
+    domain: "Eukaryota",
+    kingdom: "Animalia",
+    phylum: "Chordata",
+    speciesClass: "Mammalia",
+    order: "Carnivora",
+    family: "Ailuridae",
+    genus: "Ailurus",
+    educationalDescription:
+      "The Red Panda is a small, arboreal mammal known for its striking red fur and bushy tail. Despite its name, it is not closely related to the giant panda and belongs to its own family, Ailuridae. Red pandas are native to the eastern Himalayas and southwestern China. They are primarily herbivorous, feeding on bamboo, fruits, and insects. These solitary animals are known for their shy and elusive nature.",
+    educationalFunFact: "Fun Fact 001",
+    nativeContinent: Continent.ASIA,
+    nativeBiomes: "Temperate Forests, Bamboo Forests",
+    groupSexualDynamic: GroupSexualDynamic.POLYANDROUS,
+    habitatOrExhibit: "Forested areas",
+    generalDietPreference: "Herbivores",
+    imageUrl: "img/species/redPanda.jpeg",
+    lifeExpectancyYears: 14,
+    // foodRemark: "Food remark...",
+  } as any;
+  let redPanda1 = await Species.create(redPanda1Template);
+  console.log(redPanda1.toJSON());
+
+  let compatibility1 = await SpeciesService.createCompatibility(
+    "SPE001",
+    "SPE002",
+  );
+  console.log(compatibility1.toJSON());
+
+  let compatibility2 = await SpeciesService.createCompatibility(
+    "SPE001",
+    "SPE003",
+  );
+  console.log(compatibility2.toJSON());
+
+  let compatibility3 = await SpeciesService.createCompatibility(
+    "SPE002",
+    "SPE003",
+  );
+  console.log(compatibility3.toJSON());
+};
 
 export const animalFeedSeed = async () => {
   let carrotTemplate = {
