@@ -4,6 +4,7 @@ import { Employee } from "./employee";
 import { Keeper } from "./keeper";
 import { PlanningStaff } from "./planningStaff";
 import { Facility } from "./facility";
+import { Compatibility } from "./compatibility";
 import { Sensor } from "./sensor";
 import { GeneralStaff } from "./generalStaff";
 import { InHouse } from "./inHouse";
@@ -17,6 +18,10 @@ import {
   ConservationStatus,
   Continent,
   GroupSexualDynamic,
+  AnimalGrowthStage,
+  PresentationContainer,
+  PresentationLocation,
+  PresentationMethod,
   AnimalFeedCategory,
   SensorType,
 } from "./enumerated";
@@ -43,6 +48,7 @@ import { HubProcessor } from "./hubProcessor";
 import { CustomerReportLog } from "./customerReportLog";
 import { SensorReading } from "./sensorReading";
 import { PhysiologicalReferenceNorms } from "./physiologicalReferenceNorms";
+import * as SpeciesService from "../services/species";
 import { predictNextDate } from "../helpers/predictors";
 import { EnrichmentItem } from "./enrichmentItem";
 import { AnimalFeed } from "./animalFeed";
@@ -74,23 +80,38 @@ export const createDatabase = async (options: any) => {
     addCascadeOptions({ foreignKey: "employeeId" }),
   );
 
-  Facility.hasMany(HubProcessor, addCascadeOptions({ foreignKey: "facilityId" }));
-  HubProcessor.belongsTo(Facility, addCascadeOptions({ foreignKey: "facilityId" }));
+  Facility.hasMany(
+    HubProcessor,
+    addCascadeOptions({ foreignKey: "facilityId" }),
+  );
+  HubProcessor.belongsTo(
+    Facility,
+    addCascadeOptions({ foreignKey: "facilityId" }),
+  );
 
-  HubProcessor.hasMany(Sensor, addCascadeOptions({ foreignKey: "hubProcessorId" }));
-  Sensor.belongsTo(HubProcessor, addCascadeOptions({ foreignKey: "hubProcessorId" }));
+  HubProcessor.hasMany(
+    Sensor,
+    addCascadeOptions({ foreignKey: "hubProcessorId" }),
+  );
+  Sensor.belongsTo(
+    HubProcessor,
+    addCascadeOptions({ foreignKey: "hubProcessorId" }),
+  );
 
   Sensor.hasMany(SensorReading, addCascadeOptions({ foreignKey: "sensorId" }));
-  SensorReading.belongsTo(Sensor, addCascadeOptions({ foreignKey: "sensorId" }));
+  SensorReading.belongsTo(
+    Sensor,
+    addCascadeOptions({ foreignKey: "sensorId" }),
+  );
 
   Facility.hasOne(InHouse, addCascadeOptions({ foreignKey: "facilityId" }));
   InHouse.belongsTo(Facility, addCascadeOptions({ foreignKey: "facilityId" }));
 
   Facility.hasOne(Enclosure, addCascadeOptions({ foreignKey: "facilityId" }));
-  Enclosure.belongsTo(Facility, addCascadeOptions({ foreignKey: "facilityId" }));
-
-  PhysiologicalReferenceNorms.hasMany(Species, addCascadeOptions({ foreignKey: "physiologicalRefId" }));
-  Species.belongsTo(PhysiologicalReferenceNorms, addCascadeOptions({ foreignKey: "physiologicalRefId" }));
+  Enclosure.belongsTo(
+    Facility,
+    addCascadeOptions({ foreignKey: "facilityId" }),
+  );
 
   InHouse.belongsToMany(GeneralStaff, {
     foreignKey: "maintainedFacilityId",
@@ -160,23 +181,35 @@ export const createDatabase = async (options: any) => {
     addCascadeOptions({ foreignKey: "AnimalClinicId" }),
   );
 
-  SpeciesDietNeed.hasMany(
-    Species,
-    addCascadeOptions({ foreignKey: "speciesDietNeedId" }),
-  );
-  Species.belongsTo(
-    SpeciesDietNeed,
-    addCascadeOptions({ foreignKey: "speciesDietNeedId" }),
-  );
+  // ------------ Species Relation --------------
+  Species.hasOne(SpeciesEnclosureNeed, {
+    // foreignKey: "speciesEnclosureNeedId",
+    onDelete: "CASCADE",
+  });
+  SpeciesEnclosureNeed.belongsTo(Species, {
+    // foreignKey: "speciesId",
+  });
 
-  SpeciesEnclosureNeed.hasMany(
-    Species,
-    addCascadeOptions({ foreignKey: "speciesEnclosureNeedId" }),
-  );
-  Species.belongsTo(
-    SpeciesEnclosureNeed,
-    addCascadeOptions({ foreignKey: "speciesEnclosureNeedId" }),
-  );
+  Species.hasMany(PhysiologicalReferenceNorms, { onDelete: "CASCADE" });
+  PhysiologicalReferenceNorms.belongsTo(Species);
+
+  Species.hasMany(SpeciesDietNeed, { onDelete: "CASCADE" });
+  SpeciesDietNeed.belongsTo(Species);
+
+  Species.hasMany(Compatibility, { onDelete: "CASCADE" });
+  Compatibility.belongsTo(Species, {
+    as: "species1",
+    foreignKey: "speciesId1",
+    targetKey: "speciesId",
+    onDelete: "CASCADE",
+  });
+
+  Compatibility.belongsTo(Species, {
+    as: "species2",
+    foreignKey: "speciesId2",
+    targetKey: "speciesId",
+    onDelete: "CASCADE",
+  });
 
   Species.hasMany(Animal, addCascadeOptions({ foreignKey: "speciesId" }));
   Animal.belongsTo(Species, addCascadeOptions({ foreignKey: "speciesId" }));
@@ -284,23 +317,56 @@ export const createDatabase = async (options: any) => {
   Listing.hasMany(LineItem, addCascadeOptions({ foreignKey: "listingId" }));
   LineItem.belongsTo(Listing, addCascadeOptions({ foreignKey: "listingId" }));
 
-  Promotion.hasMany(CustomerOrder, addCascadeOptions({ foreignKey: "promotionId" }));
-  CustomerOrder.belongsTo(Promotion, addCascadeOptions({ foreignKey: "promotionId" }));
+  Promotion.hasMany(
+    CustomerOrder,
+    addCascadeOptions({ foreignKey: "promotionId" }),
+  );
+  CustomerOrder.belongsTo(
+    Promotion,
+    addCascadeOptions({ foreignKey: "promotionId" }),
+  );
 
-  Customer.hasMany(CustomerOrder, addCascadeOptions({ foreignKey: "customerId" }));
-  CustomerOrder.belongsTo(Customer, addCascadeOptions({ foreignKey: "customerId" }));
+  Customer.hasMany(
+    CustomerOrder,
+    addCascadeOptions({ foreignKey: "customerId" }),
+  );
+  CustomerOrder.belongsTo(
+    Customer,
+    addCascadeOptions({ foreignKey: "customerId" }),
+  );
 
   LineItem.hasMany(CustomerOrder, addCascadeOptions({ foreignKey: "orderId" }));
-  CustomerOrder.belongsTo(LineItem, addCascadeOptions({ foreignKey: "orderId" }));
+  CustomerOrder.belongsTo(
+    LineItem,
+    addCascadeOptions({ foreignKey: "orderId" }),
+  );
 
-  ThirdParty.hasMany(CustomerReportLog, addCascadeOptions({ foreignKey: "thirdPartyId" }));
-  CustomerReportLog.belongsTo(ThirdParty, addCascadeOptions({ foreignKey: "thirdPartyId" }));
+  ThirdParty.hasMany(
+    CustomerReportLog,
+    addCascadeOptions({ foreignKey: "thirdPartyId" }),
+  );
+  CustomerReportLog.belongsTo(
+    ThirdParty,
+    addCascadeOptions({ foreignKey: "thirdPartyId" }),
+  );
 
-  InHouse.hasMany(CustomerReportLog, addCascadeOptions({ foreignKey: "inHouseId" }));
-  CustomerReportLog.belongsTo(InHouse, addCascadeOptions({ foreignKey: "inHouseId" }));
+  InHouse.hasMany(
+    CustomerReportLog,
+    addCascadeOptions({ foreignKey: "inHouseId" }),
+  );
+  CustomerReportLog.belongsTo(
+    InHouse,
+    addCascadeOptions({ foreignKey: "inHouseId" }),
+  );
 
-  GeneralStaff.hasMany(Sensor, addCascadeOptions({ foreignKey: "generalStaffId" }));
-  Sensor.belongsTo(GeneralStaff, addCascadeOptions({ foreignKey: "generalStaffId" }));
+  GeneralStaff.hasMany(
+    Sensor,
+    addCascadeOptions({ foreignKey: "generalStaffId" }),
+  );
+  Sensor.belongsTo(
+    GeneralStaff,
+    addCascadeOptions({ foreignKey: "generalStaffId" }),
+  );
 
   // Create tables
   if (options["forced"]) {
@@ -313,7 +379,7 @@ export const createDatabase = async (options: any) => {
 export const seedDatabase = async () => {
   // Fake data goes here
   await tutorial();
-  // await speciesSeed();
+  await speciesSeed();
   // await animalFeedSeed();
   // await enrichmentItemSeed();
   // await facilitySeed();
@@ -372,7 +438,7 @@ export const tutorial = async () => {
         keeper: {
           keeperType: KeeperType.KEEPER,
           specialization: Specialization.AMPHIBIAN,
-          isDisabled: false
+          isDisabled: false,
         },
       },
       {
@@ -390,7 +456,7 @@ export const tutorial = async () => {
         keeper: {
           keeperType: KeeperType.KEEPER,
           specialization: Specialization.AMPHIBIAN,
-          isDisabled: false
+          isDisabled: false,
         },
       },
     ],
@@ -511,7 +577,7 @@ export const tutorial = async () => {
         {
           processorName: "A01",
           ipAddressName: "172.1.2.19",
-          hubStatus: HubStatus.CONNECTED
+          hubStatus: HubStatus.CONNECTED,
         } as any,
       ],
       inHouse: {
@@ -551,7 +617,7 @@ export const tutorial = async () => {
 };
 
 export const speciesSeed = async () => {
-  let pandaTemplate = {
+  let panda1Template = {
     speciesCode: await Species.getNextSpeciesCode(),
     commonName: "Giant Panda",
     scientificName: "Ailuropoda Melanoleuca",
@@ -564,55 +630,19 @@ export const speciesSeed = async () => {
     order: "Carnivora",
     family: "Ursidae",
     genus: "Ailuropoda",
-    educationalDescription: "The giant panda (Ailuropoda melanoleuca),...The giant panda (Ailuropoda melanoleuca),...The giant panda (Ailuropoda melanoleuca),...The giant panda (Ailuropoda melanoleuca),...The giant panda (Ailuropoda melanoleuca),...The giant panda (Ailuropoda melanoleuca),...The giant panda (Ailuropoda melanoleuca),...The giant panda (Ailuropoda melanoleuca),...The giant panda (Ailuropoda melanoleuca),...The giant panda (Ailuropoda melanoleuca),...The giant panda (Ailuropoda melanoleuca),...The giant panda (Ailuropoda melanoleuca),...The giant panda (Ailuropoda melanoleuca),...The giant panda (Ailuropoda melanoleuca),...The giant panda (Ailuropoda melanoleuca),...The giant panda (Ailuropoda melanoleuca),...",
+    educationalDescription:
+      "The Giant Panda, often simply referred to as the Panda, is a large, charismatic bear known for its distinct black and white coloration. It is native to China and is one of the most iconic and endangered species in the world. Pandas primarily feed on bamboo, which makes up the majority of their diet. They are known for their solitary and sedentary nature. Conservation efforts have been made to protect and preserve these pandas due to their vulnerable status.",
+    educationalFunFact:
+      'Pandas have a "thumb" for better bamboo grip, helping them eat and climb!',
     nativeContinent: Continent.ASIA,
     nativeBiomes: "Temperate Forests",
     groupSexualDynamic: GroupSexualDynamic.POLYANDROUS,
     habitatOrExhibit: "Southwest China",
     generalDietPreference: "Bamboo?? LOL what to put",
-    imageUrl: "Fake_URL_Here"
+    imageUrl: "img/species/panda.jpeg",
+    lifeExpectancyYears: 14,
+    // foodRemark: "Food remark...",
   } as any;
-  let panda1 = await Species.create(pandaTemplate);
+  let panda1 = await Species.create(panda1Template);
   console.log(panda1.toJSON());
-}
-
-export const animalFeedSeed = async () => {
-  let carrotTemplate = {
-    animalFeedName: "Carrots",
-    animalFeedImageUrl: "Fake_URL_here",
-    animalFeedCategory: AnimalFeedCategory.VEGETABLES
-  } as any;
-  let carrot = await AnimalFeed.create(carrotTemplate);
-  console.log(carrot.toJSON());
-}
-
-export const enrichmentItemSeed = async () => {
-  let puzzleTemplate = {
-    enrichmentItemName: "Puzzle",
-    enrichmentItemImageUrl: "Fake_URL_here",
-  } as any;
-  let puzzle = await EnrichmentItem.create(puzzleTemplate);
-  console.log(puzzle.toJSON());
-}
-
-export const facilitySeed = async () => {
-  let toiletTemplate = {
-    facilityName: "Toilet",
-    xCoordinate: 2,
-    yCoordinate: 2,
-    facilityDetail: "Test facility"
-  } as any;
-  let toilet = await Facility.create(toiletTemplate);
-  console.log(toilet.toJSON());
-}
-
-export const sensorSeed = async () => {
-  let cameraTemplate = {
-    sensorName: "Camera",
-    dateOfActivation: new Date("01-01-2023"),
-    dateOfLastMaintained: new Date("09-09-2023"),
-    sensorType: SensorType.CAMERA
-  } as any;
-  let camera = await Sensor.create(cameraTemplate);
-  console.log(camera.toJSON());
-}
+};

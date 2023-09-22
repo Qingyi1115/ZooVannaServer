@@ -5,6 +5,8 @@ import {
   InferCreationAttributes,
   HasManySetAssociationsMixin,
   HasManyGetAssociationsMixin,
+  BelongsToSetAssociationMixin,
+  BelongsToGetAssociationMixin,
   CreationOptional,
 } from "Sequelize";
 import { conn } from "../db";
@@ -25,23 +27,25 @@ class SpeciesEnclosureNeed extends Model<
   declare recommendedStandOffBarrierDistMetres: number;
   declare plantationCoveragePercentMin: number;
   declare plantationCoveragePercentMax: number;
-  declare longGrassPercentMin : number;
-  declare longGrassPercentMax : number;
-  declare shortGrassPercentMin : number;
-  declare shortGrassPercentMax : number;
-  declare rockPercentMinMax : number;
-  declare rockPercentMax : number;
-  declare sandPercentMin : number;
-  declare sandPercentMax : number;
-  declare snowPercentMin : number;
-  declare snowPercentMax : number;
-  declare soilPercenMin : number;
-  declare soilPercenMax : number;
+  declare longGrassPercentMin: number;
+  declare longGrassPercentMax: number;
+  declare shortGrassPercentMin: number;
+  declare shortGrassPercentMax: number;
+  declare rockPercentMin: number;
+  declare rockPercentMax: number;
+  declare sandPercentMin: number;
+  declare sandPercentMax: number;
+  declare snowPercentMin: number;
+  declare snowPercentMax: number;
+  declare soilPercentMin: number;
+  declare soilPercentMax: number;
 
   declare species?: Species;
 
-  declare getSpecies: HasManyGetAssociationsMixin<Species>;
-  declare setSpecies: HasManySetAssociationsMixin<Species, number>;
+  // declare getSpecies: HasManyGetAssociationsMixin<Species>;
+  // declare setSpecies: HasManySetAssociationsMixin<Species, number>;
+  declare getSpecies: BelongsToGetAssociationMixin<Species>;
+  declare setSpecies: BelongsToSetAssociationMixin<Species, number>;
 }
 
 SpeciesEnclosureNeed.init(
@@ -53,6 +57,7 @@ SpeciesEnclosureNeed.init(
     },
     smallExhibitHeightRequired: {
       type: DataTypes.INTEGER,
+      allowNull: false,
     },
     minLandAreaRequired: {
       type: DataTypes.INTEGER,
@@ -106,7 +111,7 @@ SpeciesEnclosureNeed.init(
       type: DataTypes.INTEGER,
       allowNull: false,
     },
-    rockPercentMinMax: {
+    rockPercentMin: {
       type: DataTypes.INTEGER,
       allowNull: false,
     },
@@ -130,11 +135,11 @@ SpeciesEnclosureNeed.init(
       type: DataTypes.INTEGER,
       allowNull: false,
     },
-    soilPercenMin: {
+    soilPercentMin: {
       type: DataTypes.INTEGER,
       allowNull: false,
     },
-    soilPercenMax: {
+    soilPercentMax: {
       type: DataTypes.INTEGER,
       allowNull: false,
     },
