@@ -1045,11 +1045,13 @@ export async function createNewEnrichmentItem(req: Request, res: Response) {
 
     if (
       [
-        enrichmentItemName
+        enrichmentItemName,
+        enrichmentItemImageUrl
       ].includes(undefined)
     ) {
       console.log("Missing field(s): ", {
-        enrichmentItemName
+        enrichmentItemName,
+        enrichmentItemImageUrl
       });
       return res.status(400).json({ error: "Missing information!" });
     }
@@ -1135,13 +1137,13 @@ export async function updateEnrichmentItemImageController(req: Request, res: Res
 
     if (
       [
-        enrichmentItemId,
-        enrichmentItemName
+        enrichmentItemName,
+        imageUrl
       ].includes(undefined)
     ) {
       console.log("Missing field(s): ", {
-        enrichmentItemId,
-        enrichmentItemName
+        enrichmentItemName,
+        enrichmentItemImageUrl
       });
       return res.status(400).json({ error: "Missing information!" });
     }
