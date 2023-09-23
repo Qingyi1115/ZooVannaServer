@@ -47,7 +47,7 @@ export async function findCustomerByEmail(email: string) {
   if (result) {
     return result;
   }
-  throw { error: "Invalid email!" };
+  throw { message: "Invalid email!" };
 }
 
 //might have an error for param type, might be CreationOptional<number>
@@ -58,7 +58,7 @@ export async function findCustomerByCustomerId(customerId: number) {
   if (result) {
     return result;
   }
-  throw { error: "Invalid email!" };
+  throw { message: "Invalid email!" };
 }
 
 export async function customerLogin(
@@ -78,7 +78,7 @@ export async function deleteCustomer(customerId: number) {
   if (result) {
     return result;
   }
-  throw { error: "Customer not found!" };
+  throw { message: "Customer not found!" };
 }
 
 //update customer
@@ -125,11 +125,11 @@ export async function updatePassword(
     where: { customerId: customerId },
   });
   if (!customer) {
-    throw { error: "No customer found" };
+    throw { message: "No customer found" };
   }
 
   if (hash(oldPassword + customer.salt) !== customer.passwordHash) {
-    throw { error: "Old password is incorrect" };
+    throw { message: "Old password is incorrect" };
   }
 
   //generate new salt for added security
@@ -178,11 +178,11 @@ export async function resetPassword(token: string, password: string) {
         return customer.updatePasswordWithToken(password);
       }
       realToken.destroy();
-      throw { error: "Token has expired" };
+      throw { message: "Token has expired" };
     }
 
     realToken.destroy();
-    throw { error: "Customer does not exist" };
+    throw { message: "Customer does not exist" };
   }
 }
 
@@ -231,7 +231,7 @@ export async function sendResetPasswordLink(customerId: number) {
       throw validationErrorHandler(error);
     }
   } else {
-    throw { error: "Customer does not exist" };
+    throw { message: "Customer does not exist" };
   }
 }
 
@@ -242,5 +242,5 @@ export async function deleteCustomerByEmail(customerEmail: string) {
   if (result) {
       return result;
   }
-  throw { error: "Invalid Customer Email!" };
+  throw { message: "Invalid Customer Email!" };
 }

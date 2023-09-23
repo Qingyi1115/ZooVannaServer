@@ -484,15 +484,15 @@ export async function disableRole(
 //           }
 
 //           else {
-//               throw {error: "Such role type does not exist"};
+//               throw { message: "Such role type does not exist"};
 //           }
 
 //       } else {
-//           throw {error: "There is no general staff role in this account"};
+//           throw { message: "There is no general staff role in this account"};
 //       }
       
 //   } else {
-//       throw {error: "Employee does not exist"};
+//       throw { message: "Employee does not exist"};
 //   }
 // }
 
@@ -527,15 +527,15 @@ export async function disableRole(
 //           }
 
 //           else {
-//               throw {error: "Such role type does not exist"};
+//               throw { message: "Such role type does not exist"};
 //           }
 
 //       } else {
-//           throw {error: "There is no planning staff role in this account"};
+//           throw { message: "There is no planning staff role in this account"};
 //       }
       
 //   } else {
-//       throw {error: "Employee does not exist"};
+//       throw { message: "Employee does not exist"};
 //   }
 // }
 
@@ -554,7 +554,7 @@ export async function updateRoleType(
       if(employee.keeper) {
         employee.keeper.updateKeeperType(roleType); 
       } else {
-        throw {error: "Keeper role does not exist in this account"};
+        throw { message: "Keeper role does not exist in this account"};
       }
     }
     else if (role === "Planning Staff") {
@@ -562,7 +562,7 @@ export async function updateRoleType(
         employee.planningStaff.updatePlanningStaffType(roleType);
       }
       else { 
-        throw {error: "Planning Staff role does not exist in this account"};
+        throw { message: "Planning Staff role does not exist in this account"};
       } 
     }
     else if (role === "General Staff") {
