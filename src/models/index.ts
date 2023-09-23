@@ -61,7 +61,7 @@ function addCascadeOptions(options: object) {
 export const createDatabase = async (options: any) => {
   // Create relationships
   Employee.hasOne(Keeper, addCascadeOptions({ foreignKey: "employeeId" }));
-  Keeper.belongsTo(Employee , addCascadeOptions({ foreignKey: "employeeId" }));
+  Keeper.belongsTo(Employee, addCascadeOptions({ foreignKey: "employeeId" }));
 
   Employee.hasOne(
     PlanningStaff,
@@ -403,12 +403,12 @@ export const tutorial = async () => {
     employeeBirthDate: new Date("1992-03-04"),
     isAccountManager: true,
     //@ts-ignore
-    planningStaff:{
+    planningStaff: {
       plannerType: PlannerType.OPERATIONS_MANAGER,
       specialization: Specialization.FISH,
-      isDisabled : false
+      isDisabled: false
     }
-  },{
+  }, {
     include: {
       association: "planningStaff",
     },
@@ -653,6 +653,37 @@ export const tutorial = async () => {
       await (await Facility.findOne())?.getFacilityDetail()
     )?.getMaintenanceStaffs(),
   );
+
+  let Carrot = await AnimalFeed.create(
+    {
+      animalFeedName: "Carrot",
+      animalFeedImageUrl: "img/animalFeed/Carrot.jpg",
+      animalFeedCategory: AnimalFeedCategory.VEGETABLES
+    });
+  console.log(Carrot.toJSON());
+  
+  let Pineapple = await AnimalFeed.create(
+    {
+      animalFeedName: "Pineapple",
+      animalFeedImageUrl: "img/animalFeed/Pineapple.jpg",
+      animalFeedCategory: AnimalFeedCategory.FRUITS
+    });
+  console.log(Pineapple.toJSON());
+  
+  
+  let Puzzle = await EnrichmentItem.create(
+    {
+      enrichmentItemName: "Puzzle",
+      enrichmentItemImageUrl: "img/enrichmentItem/Puzzle.jpg",
+    });
+  console.log(Puzzle.toJSON());
+  
+  let Feeder = await EnrichmentItem.create(
+    {
+      enrichmentItemName: "Feeder",
+      enrichmentItemImageUrl: "img/enrichmentItem/Feeder.jpeg",
+    });
+  console.log(Feeder.toJSON());
 };
 
 export const speciesSeed = async () => {
@@ -894,15 +925,15 @@ export const facilityAssetsSeed = async () => {
     xCoordinate: 123,
     yCoordinate: 321,
     isSheltered: true,
-    
+
     //@ts-ignore
-    inHouse:{
+    inHouse: {
       isPaid: true,
       maxAccommodationSize: 15,
       hasAirCon: true,
       facilityType: FacilityType.TRAMSTOP
     }
-  },{
+  }, {
     include: [
       {
         association: "inHouse",
@@ -910,7 +941,7 @@ export const facilityAssetsSeed = async () => {
     ],
   });
   let gs = await manager.getGeneralStaff();
-  let is1 =await tram1.getInHouse();
+  let is1 = await tram1.getInHouse();
 
 
   await gs.addMaintainedFacilities(is1);
@@ -921,15 +952,15 @@ export const facilityAssetsSeed = async () => {
     xCoordinate: 123,
     yCoordinate: 321,
     isSheltered: true,
-    
+
     //@ts-ignore
-    inHouse:{
+    inHouse: {
       isPaid: true,
       maxAccommodationSize: 15,
       hasAirCon: true,
       facilityType: FacilityType.TRAMSTOP
     }
-  },{
+  }, {
     include: [
       {
         association: "inHouse",
@@ -937,18 +968,18 @@ export const facilityAssetsSeed = async () => {
     ],
   });
   let hub1 = await HubProcessor.create({
-    processorName : "tramCam1",
+    processorName: "tramCam1",
     ipAddressName: "172.25.99.172",
-    sensors:[
+    sensors: [
       {
         sensorName: "Camera1",
         sensorType: SensorType.CAMERA
-      },{
+      }, {
         sensorName: "Camera2",
         sensorType: SensorType.CAMERA
       }
     ]
-  } as any,{
+  } as any, {
     include: [
       {
         association: "sensors",
@@ -956,22 +987,22 @@ export const facilityAssetsSeed = async () => {
     ],
   });
   let hub2 = await HubProcessor.create({
-    processorName : "tramCam2",
+    processorName: "tramCam2",
     ipAddressName: "172.25.99.173",
     HubStatus: HubStatus.CONNECTED,
-    sensors:[{
+    sensors: [{
       sensorName: "Camera3",
       dateOfActivation: new Date("01-01-2023"),
       dateOfLastMaintained: new Date("09-09-2023"),
       sensorType: SensorType.CAMERA
-      },{
-        sensorName: "Camera4",
-        dateOfActivation: new Date("01-01-2023"),
-        dateOfLastMaintained: new Date("09-09-2023"),
-        sensorType: SensorType.CAMERA
-      }
+    }, {
+      sensorName: "Camera4",
+      dateOfActivation: new Date("01-01-2023"),
+      dateOfLastMaintained: new Date("09-09-2023"),
+      sensorType: SensorType.CAMERA
+    }
     ]
-  } as any,{
+  } as any, {
     include: [
       {
         association: "sensors",
@@ -979,7 +1010,7 @@ export const facilityAssetsSeed = async () => {
     ],
   });
 
-  (tram2.getInHouse()).then(tramstop => tram1.getInHouse().then(tramstop2=> tramstop.setNextTramStop(tramstop2))); 
+  (tram2.getInHouse()).then(tramstop => tram1.getInHouse().then(tramstop2 => tramstop.setNextTramStop(tramstop2)));
 
 
 
