@@ -41,7 +41,7 @@ export async function createNewEmployee(
     employeeDoorAccessCode: await Employee.generateNewDoorAccessCode(),
     employeeBirthDate: employeeBirthDate,
     employeeEducation: employeeEducation,
-    isAccountManager: isAccountManager
+    isAccountManager: isAccountManager,
   };
   employee_details[role] = roleJson;
   try {
@@ -266,7 +266,7 @@ export async function unsetAsAccountManager(
 export async function getAllEmployees(includes: string[] = []): Promise<Employee[]> {
   return Employee.findAll({
     order: [
-      [literal('dateOfResignation IS NULL'), "ASC"],
+      [literal('dateOfResignation IS NULL'), "DESC"],
       ["dateOfResignation", "DESC"],
     ],
     include: includes,
@@ -354,39 +354,49 @@ export async function enableRole(
 ) {
   let employee = await Employee.findOne({
     where: {employeeId: employeeId},
+    include: ["keeper", "generalStaff", "planningStaff"]
   })
 
   if(employee) {
-    if (role == "Keeper") {
-      if(await employee.getKeeper()) {
-        (await employee.getKeeper())?.enable();
+    if (role === "Keeper") {
+      if(employee.keeper) {
+        employee.keeper.enable();
+        employee.keeper.save();
       } else {
         const keeper: any = roleJson;
         let newKeeper = await Keeper.create(keeper);
+        newKeeper.save();
+        newKeeper.setEmployee(employee);
         employee.setKeeper(newKeeper);
+        console.log(newKeeper);
       }
-
     }
-
-    else if (role == "Planning Staff") {
-      if(await employee.getPlanningStaff()) {
-        (await employee.getPlanningStaff())?.enable();
+    else if (role === "Planning Staff") {
+      if(employee.planningStaff) {
+        employee.planningStaff.enable();
+        employee.planningStaff.save();
+        return employee;
       }
       else {
         const planning: any = roleJson;
         let newPlanning = await PlanningStaff.create(planning);
+        newPlanning.setEmployee(employee);
         employee.setPlanningStaff(newPlanning);
+        return employee;
       }
       
     }
 
-    else if( role == "General Staff") {
-      if(await employee.getGeneralStaff()) {
-        (await employee.getGeneralStaff())?.enable();
+    else if( role === "General Staff") {
+      if(employee.generalStaff) {
+        employee.generalStaff.enable();
+        employee.generalStaff.save();
       }
       else {
         const general: any = roleJson;
         let newGeneral = await GeneralStaff.create(general);
+        newGeneral.enable();
+        newGeneral.setEmployee(employee);
         employee.setGeneralStaff(newGeneral);
       }
     }
@@ -404,36 +414,42 @@ export async function disableRole(
   employeeId: CreationOptional<number>,
   role: string,
 ) {
+  console.log("this " + role);
   let employee = await Employee.findOne({
     where: {employeeId: employeeId},
+    include: ["keeper", "generalStaff", "planningStaff"],
   })
 
   if(employee) {
-    if (role == "Keeper") {
-      if(await employee.getKeeper()) {
-        throw {error: "Keeper role does not exist in this account"};
+    if (role === "Keeper") {
+      if(employee.keeper) {
+        employee.keeper.disable();
+        employee.keeper.save();
+        console.log("it was heree"); 
       } else {
-        (await employee.getKeeper())?.disable();
+        throw {error: "Keeper role does not exist in this account"};
       }
 
     }
 
-    else if (role == "Planning Staff") {
-      if(await employee.getPlanningStaff()) {
-        throw {error: "Planning Staff role does not exist in this account"};
+    else if (role === "Planning Staff") {
+      if(employee.planningStaff) {
+        employee.planningStaff.disable();
+        employee.planningStaff.save();
       }
-      else {
-        (await employee.getPlanningStaff())?.disable();
+      else { 
+        throw {error: "Planning Staff role does not exist in this account"};
       }
       
     }
 
-    else if( role == "General Staff") {
-      if(await employee.getGeneralStaff()) {
-        throw {error: "General Staff role does not exist in this account"};
+    else if( role === "General Staff") {
+      if(employee.generalStaff) {
+        employee.generalStaff.disable(); 
+        employee.generalStaff.save();
       }
       else {
-        (await employee.getGeneralStaff())?.disable();
+        throw {error: "General Staff role does not exist in this account"};
       }
     }
 
@@ -446,78 +462,162 @@ export async function disableRole(
   }
 }
 
-export async function updateGeneralStaffType(
+// export async function updateGeneralStaffType(
+//   employeeId: CreationOptional<number>,
+//   roleType: string,
+// ) {
+//   let employee = await Employee.findOne({
+//     where: {employeeId: employeeId},
+//   });
+
+//   if(employee) {
+//       if(await employee.getGeneralStaff()) {
+//           if(roleType == "MAINTENANCE") {
+//               (await employee.getGeneralStaff())?.setMaintenance();
+//           }
+
+//           else if(roleType == "OPERATIONS") {
+//               (await employee.getGeneralStaff())?.setOperations();
+//           }
+
+//           else {
+//               throw {error: "Such role type does not exist"};
+//           }
+
+//       } else {
+//           throw {error: "There is no general staff role in this account"};
+//       }
+      
+//   } else {
+//       throw {error: "Employee does not exist"};
+//   }
+// }
+
+// export async function updatePlanningStaffType(
+//   employeeId: CreationOptional<number>,
+//   roleType: string,
+// ) {
+//   let employee = await Employee.findOne({
+//     where: {employeeId: employeeId},
+//   });
+
+//   if(employee) {
+//       if(await employee.getPlanningStaff()) {
+//           if(roleType == "CURATOR") {
+//             (await employee.getPlanningStaff())?.setCurator();
+//           }
+
+//           else if(roleType == "SALES") {
+//             (await employee.getPlanningStaff())?.setSales();
+//           }
+
+//           else if(roleType == "MARKETING") {
+//             (await employee.getPlanningStaff())?.setMarketing();
+//           }
+
+//           else if(roleType == "OPERATIONS MANAGER") {
+//             (await employee.getPlanningStaff())?.setOperationsManager();
+//           }
+
+//           else if(roleType == "CUSTOMER OPERATIONS") {
+//             (await employee.getPlanningStaff())?.setCustomerOperations();
+//           }
+
+//           else {
+//               throw {error: "Such role type does not exist"};
+//           }
+
+//       } else {
+//           throw {error: "There is no planning staff role in this account"};
+//       }
+      
+//   } else {
+//       throw {error: "Employee does not exist"};
+//   }
+// }
+
+export async function updateRoleType(
   employeeId: CreationOptional<number>,
-  roleType: string,
+  role: string,
+  roleType: string
+){
+  let employee = await Employee.findOne({
+    where: {employeeId: employeeId},
+    include: ["keeper", "generalStaff", "planningStaff"]
+  })
+
+  if(employee) {
+    if (role === "Keeper") {
+      if(employee.keeper) {
+        employee.keeper.updateKeeperType(roleType); 
+      } else {
+        throw {error: "Keeper role does not exist in this account"};
+      }
+    }
+    else if (role === "Planning Staff") {
+      if(employee.planningStaff) {
+        employee.planningStaff.updatePlanningStaffType(roleType);
+      }
+      else { 
+        throw {error: "Planning Staff role does not exist in this account"};
+      } 
+    }
+    else if (role === "General Staff") {
+      if(employee.generalStaff) {
+        employee.generalStaff.updateGeneralStaffType(roleType);
+      }
+      else {
+        throw {error: "General Staff role does not exist in this account"};
+      }
+    }
+    else {
+      throw {error: "The role does not exist"};
+    }
+
+  } else {
+    throw {error: "Employee does not exist"};
+  }
+
+
+}
+
+export async function updateSpecializationType(
+  employeeId: CreationOptional<number>,
+  role: string,
+  specialization: string
 ) {
   let employee = await Employee.findOne({
     where: {employeeId: employeeId},
-  });
+    include: ["keeper", "generalStaff", "planningStaff"]
+  })
 
   if(employee) {
-      if(await employee.getGeneralStaff()) {
-          if(roleType == "MAINTENANCE") {
-              (await employee.getGeneralStaff())?.setMaintenance();
-          }
-
-          else if(roleType == "OPERATIONS") {
-              (await employee.getGeneralStaff())?.setOperations();
-          }
-
-          else {
-              throw {error: "Such role type does not exist"};
-          }
-
+    if (role === "Keeper") {
+      if(employee.keeper) {
+        employee.keeper.updateSpecialization(specialization); 
       } else {
-          throw {error: "There is no general staff role in this account"};
+        throw {error: "Keeper role does not exist in this account"};
       }
-      
+    }
+    else if (role === "Planning Staff") {
+      if(employee.planningStaff) {
+        employee.planningStaff.updateSpecialization(specialization);
+      }
+      else { 
+        throw {error: "Planning Staff role does not exist in this account"};
+      } 
+    }
+    else {
+      throw {error: "The role does not exist"};
+    }
+
   } else {
-      throw {error: "Employee does not exist"};
+    throw {error: "Employee does not exist"};
   }
+
+
 }
 
-export async function updatePlanningStaffType(
-  employeeId: CreationOptional<number>,
-  roleType: string,
-) {
-  let employee = await Employee.findOne({
-    where: {employeeId: employeeId},
-  });
 
-  if(employee) {
-      if(await employee.getPlanningStaff()) {
-          if(roleType == "CURATOR") {
-            (await employee.getPlanningStaff())?.setCurator();
-          }
-
-          else if(roleType == "SALES") {
-            (await employee.getPlanningStaff())?.setSales();
-          }
-
-          else if(roleType == "MARKETING") {
-            (await employee.getPlanningStaff())?.setMarketing();
-          }
-
-          else if(roleType == "OPERATIONS MANAGER") {
-            (await employee.getPlanningStaff())?.setOperationsManager();
-          }
-
-          else if(roleType == "CUSTOMER OPERATIONS") {
-            (await employee.getPlanningStaff())?.setCustomerOperations();
-          }
-
-          else {
-              throw {error: "Such role type does not exist"};
-          }
-
-      } else {
-          throw {error: "There is no planning staff role in this account"};
-      }
-      
-  } else {
-      throw {error: "Employee does not exist"};
-  }
-}
 
 
