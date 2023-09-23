@@ -13,6 +13,7 @@ import {
   getAnimalFeedByName,
   updateAnimalFeedController,
   deleteAnimalFeedByName,
+  getAnimalFeedById,
   createNewEnrichmentItem,
   getAllEnrichmentItem,
   getEnrichmentItemByIdController,
@@ -68,8 +69,9 @@ router.get("/removeOperationStaffFromFacility/:facilityId", removeOperationStaff
 router.post("/createNewAnimalFeed", createNewAnimalFeed);
 router.get("/getAllAnimalFeed", getAllAnimalFeed);
 router.get("/getAnimalFeed/:animalFeedName", getAnimalFeedByName);
+router.get("/getAnimalFeedById/:animalFeedId", getAnimalFeedById);
 router.put("/updateAnimalFeed", updateAnimalFeedController);
-router.put("/updateAnimalFeedImage", updateAnimalFeedImageController);
+router.put("/updateAnimalFeedImage", updateAnimalFeedImageController); // dont use
 router.delete("/deleteAnimalFeed/:animalFeedName", deleteAnimalFeedByName);
 
 // Enrichment Items

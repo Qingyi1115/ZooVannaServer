@@ -28,7 +28,7 @@ export async function getAllAnimalFeed(
 ) {
     try {
         const allAnimalFeed = await AnimalFeed.findAll({
-            include:includes
+            include: includes
         });
         return allAnimalFeed;
     } catch (error: any) {
@@ -39,12 +39,23 @@ export async function getAllAnimalFeed(
 export async function getAnimalFeedByName(animalFeedName: string, includes: string[] = []) {
     let result = await AnimalFeed.findOne({
         where: { animalFeedName: animalFeedName },
-        include:includes
+        include: includes
     });
     if (result) {
         return result;
     }
     throw { error: "Invalid animal feed name!" };
+}
+
+export async function getAnimalFeedById(animalFeedId: number, includes: string[] = []) {
+    let result = await AnimalFeed.findOne({
+        where: { animalFeedId: animalFeedId },
+        include: includes
+    });
+    if (result) {
+        return result;
+    }
+    throw { error: "Invalid animal feed id!" };
 }
 
 export async function deleteAnimalFeedByName(animalFeedName: string) {
@@ -58,19 +69,23 @@ export async function deleteAnimalFeedByName(animalFeedName: string) {
 }
 
 export async function updateAnimalFeed(
+    animalFeedId: number,
     animalFeedName: string,
-    animalFeedCategory: AnimalFeedCategory) {
+    animalFeedCategory: AnimalFeedCategory,
+    animalFeedImageUrl: string) {
 
     let updatedAnimalFeed = {
+        animalFeedId: animalFeedId,
         animalFeedName: animalFeedName,
-        animalFeedCategory: animalFeedCategory
+        animalFeedCategory: animalFeedCategory,
+        animalFeedImageUrl: animalFeedImageUrl
     } as any;
 
-    console.log(updatedAnimalFeed)
+    // console.log(updatedAnimalFeed)
 
     try {
         let animalFeed = await AnimalFeed.update(updatedAnimalFeed, {
-            where: { animalFeedName: animalFeedName },
+            where: { animalFeedId: animalFeedId },
         });
     } catch (error: any) {
         throw validationErrorHandler(error);
@@ -78,9 +93,9 @@ export async function updateAnimalFeed(
 }
 
 export async function updateAnimalFeedImage(
-    animalFeedName:string,
+    animalFeedName: string,
     imageUrl: string
-    ) {
+) {
 
     let updatedAnimalFeed = {
         imageUrl: imageUrl
