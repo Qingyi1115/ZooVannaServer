@@ -69,7 +69,7 @@ export async function createFacility(req: Request, res: Response) {
       isSheltered,
       facilityDetail,
       facilityDetailJson,
-    } )
+    })
     if (
       [
         facilityName,
@@ -270,7 +270,7 @@ export async function getAssignedMaintenanceStaffOfFacilityController(req: Reque
     let staffs = await getMaintenanceStaffsByFacilityId(
       Number(facilityId)
     );
-      console.log("staffs",staffs)
+    console.log("staffs", staffs)
     return res.status(200).json({ maintenanceStaffs: staffs });
   } catch (error: any) {
     console.log(error)
@@ -293,15 +293,15 @@ export async function getAllMaintenanceStaffController(req: Request, res: Respon
         .status(403)
         .json({ error: "Access Denied! Operation managers only!" });
 
-      const { includes = [] } = req.body;
+    const { includes = [] } = req.body;
 
-      const _includes : string[] = []
-      for (const role of ["sensors", "facility"]){
-        if (includes.includes(role)) _includes.push(role)
-      }
-    
+    const _includes: string[] = []
+    for (const role of ["sensors", "facility"]) {
+      if (includes.includes(role)) _includes.push(role)
+    }
+
     let staffs = await getAllMaintenanceStaff(_includes);
-    
+
     return res.status(200).json({ maintenanceStaffs: staffs });
   } catch (error: any) {
     console.log(error)
@@ -360,7 +360,7 @@ export async function removeMaintenanceStaffFromFacility(req: Request, res: Resp
 
     const { employeeIds } = req.body;
     const { facilityId } = req.params;
-      console.log("removeMaintenanceStaffFromFacility")
+    console.log("removeMaintenanceStaffFromFacility")
     if ([facilityId, employeeIds].includes(undefined)) {
       return res.status(400).json({ error: "Missing information!" });
     }
@@ -466,7 +466,7 @@ export async function deleteFacility(req: Request, res: Response) {
 
     await deleteFacilityById(Number(facilityId));
 
-    return res.status(200).json({result:"Success!"});
+    return res.status(200).json({ result: "Success!" });
   } catch (error: any) {
     res.status(400).json({ error: error.message });
   }
@@ -947,20 +947,53 @@ export async function getAnimalFeedByName(req: Request, res: Response) {
   }
 }
 
+export async function getAnimalFeedById(req: Request, res: Response) {
+  const { animalFeedId } = req.params;
+
+  if (animalFeedId == undefined) {
+    console.log("Missing field(s): ", {
+      animalFeedId,
+    });
+    return res.status(400).json({ error: "Missing information!" });
+  }
+
+  try {
+    const animalFeed = await AnimalFeedService.getAnimalFeedById(Number(animalFeedId));
+    return res.status(200).json(animalFeed);
+  } catch (error: any) {
+    res.status(400).json({ error: error.message });
+  }
+
+}
+
 export async function updateAnimalFeedController(req: Request, res: Response) {
   try {
+    let animalFeedImageUrl;
+    if (
+      req.headers["content-type"] &&
+      req.headers["content-type"].includes("multipart/form-data")
+    ) {
+      animalFeedImageUrl = await handleFileUpload(
+        req,
+        process.env.IMG_URL_ROOT! + "species", //"D:/capstoneUploads/species",
+      );
+    } else {
+      animalFeedImageUrl = req.body.imageUrl;
+    }
     const {
+      animalFeedId,
       animalFeedName,
       animalFeedCategory
     } = req.body;
 
     if (
-      [
+      [animalFeedId,
         animalFeedName,
         animalFeedCategory
       ].includes(undefined)
     ) {
       console.log("Missing field(s): ", {
+        animalFeedId,
         animalFeedName,
         animalFeedCategory
       });
@@ -969,8 +1002,10 @@ export async function updateAnimalFeedController(req: Request, res: Response) {
 
     // have to pass in req for image uploading
     let animalFeed = await AnimalFeedService.updateAnimalFeed(
+      animalFeedId,
       animalFeedName,
-      animalFeedCategory
+      animalFeedCategory,
+      animalFeedImageUrl
     );
 
     return res.status(200).json({ animalFeed });
@@ -979,6 +1014,7 @@ export async function updateAnimalFeedController(req: Request, res: Response) {
     res.status(400).json({ error: error.message });
   }
 }
+
 
 export async function updateAnimalFeedImageController(req: Request, res: Response) {
   try {
@@ -1077,7 +1113,7 @@ export async function getAllEnrichmentItem(req: Request, res: Response) {
 }
 
 export async function getEnrichmentItemByIdController(req: Request, res: Response) {
-  const {enrichmentItemId } = req.params;
+  const { enrichmentItemId } = req.params;
   console.log(enrichmentItemId)
   if (enrichmentItemId == undefined) {
     console.log("Missing field(s): ", {
@@ -1090,7 +1126,7 @@ export async function getEnrichmentItemByIdController(req: Request, res: Respons
     const enrichmentItem = await EnrichmentItemService.getEnrichmentItemById(Number(enrichmentItemId));
 
     console.log("enrichmentItem", enrichmentItem)
-    return res.status(200).json({enrichmentItem:enrichmentItem});
+    return res.status(200).json({ enrichmentItem: enrichmentItem });
   } catch (error: any) {
     console.log(error)
     res.status(400).json({ error: error.message });
