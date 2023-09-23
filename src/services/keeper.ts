@@ -32,9 +32,9 @@ export async function updateDetails(
         if(enclosure) {
             return await (await employee.getKeeper())?.addEnclosure(enclosure);  
         }
-        throw {error: "Enclosure does not exist"};
+        throw { message: "Enclosure does not exist"};
     }
-    throw {error: "Employee does not exist"};
+    throw { message: "Employee does not exist"};
   }
 
 export async function removeEnclosure(
@@ -74,9 +74,9 @@ export async function removeEnclosure(
                 error: "There is currently event connected to this keeper",
             }
         }
-        throw {error: "Enclosure does not exist"};
+        throw { message: "Enclosure does not exist"};
     }
-    throw {error: "Employee does not exist"};
+    throw { message: "Employee does not exist"};
 }
 
 export async function updateKeeperType(
@@ -98,15 +98,15 @@ export async function updateKeeperType(
             }
 
             else {
-                throw {error: "Such role type does not exist"};
+                throw { message: "Such role type does not exist"};
             }
 
         } else {
-            throw {error: "There is no keeper role in this account"};
+            throw { message: "There is no keeper role in this account"};
         }
         
     } else {
-        throw {error: "Employee does not exist"};
+        throw { message: "Employee does not exist"};
     }
     
 }

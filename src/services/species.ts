@@ -678,7 +678,7 @@ export async function getAllCompatibilitiesbySpeciesCode(speciesCode: string) {
 
     return compatibleSpecies;
   }
-  //   throw { error: "Invalid Species Code!" };
+  //   throw { message: "Invalid Species Code!" };
   throw new Error("Invalid Species Code!");
 }
 

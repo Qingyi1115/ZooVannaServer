@@ -38,7 +38,7 @@ export async function getEnrichmentItemById(enrichmentItemId: number) {
     if (result) {
         return result;
     }
-    throw { error: "Invalid enrichment item id!" };
+    throw { message: "Invalid enrichment item id!" };
 }
 
 export async function deleteEnrichmentItemByName(enrichmentItemName: string) { 
@@ -48,7 +48,7 @@ export async function deleteEnrichmentItemByName(enrichmentItemName: string) {
     if (result) {
         return result;
     }
-    throw { error: "Invalid enrichment item name!" };
+    throw { message: "Invalid enrichment item name!" };
 }
 
 export async function updateEnrichmentItemImage(enrichmentItemId: number,
