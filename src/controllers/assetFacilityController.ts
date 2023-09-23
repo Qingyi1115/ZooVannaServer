@@ -215,12 +215,13 @@ export async function updateFacility(req: Request, res: Response) {
       facilityName,
       xCoordinate,
       yCoordinate,
+      isSheltered,
       facilityDetailJson,
     } = req.body;
 
     if (
       !facilityId ||
-      [facilityName, xCoordinate, yCoordinate, facilityDetailJson].every(
+      [facilityName, xCoordinate, yCoordinate, facilityDetailJson, isSheltered].every(
         (field) => field === undefined,
       )
     ) {
@@ -228,11 +229,12 @@ export async function updateFacility(req: Request, res: Response) {
     }
 
     const facilityAttribute: any = {}
-
+    
     for (const [field, v] of Object.entries({
       facilityName: facilityName,
       xCoordinate: Number(xCoordinate),
-      yCoordinate: Number(yCoordinate)
+      yCoordinate: Number(yCoordinate),
+      isSheltered: isSheltered.toLocaleUpperCase() == "TRUE"
     })) {
       if (v !== undefined) {
         facilityAttribute[field] = v;

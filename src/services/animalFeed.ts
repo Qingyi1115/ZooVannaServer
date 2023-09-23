@@ -44,7 +44,7 @@ export async function getAnimalFeedByName(animalFeedName: string, includes: stri
     if (result) {
         return result;
     }
-    throw { error: "Invalid animal feed name!" };
+    throw { message: "Invalid animal feed name!" };
 }
 
 export async function getAnimalFeedById(animalFeedId: number, includes: string[] = []) {
@@ -55,7 +55,7 @@ export async function getAnimalFeedById(animalFeedId: number, includes: string[]
     if (result) {
         return result;
     }
-    throw { error: "Invalid animal feed id!" };
+    throw { message: "Invalid animal feed id!" };
 }
 
 export async function deleteAnimalFeedByName(animalFeedName: string) {
@@ -65,7 +65,7 @@ export async function deleteAnimalFeedByName(animalFeedName: string) {
     if (result) {
         return result;
     }
-    throw { error: "Invalid animal feed name!" };
+    throw { message: "Invalid animal feed name!" };
 }
 
 export async function updateAnimalFeed(

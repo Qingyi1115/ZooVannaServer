@@ -48,7 +48,7 @@ export async function getFacilityById(facilityId: number, includes: string[] = [
       where: { facilityId: facilityId },
       include:includes
     });
-    if (!facility) throw {error:"Unable to find facility!"}
+    if (!facility) throw {message:"Unable to find facility!"}
     return facility;
   } catch (error: any) {
     throw validationErrorHandler(error);

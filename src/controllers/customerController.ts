@@ -77,25 +77,28 @@ export const login = async (req: Request, res: Response) => {
 };
 
 export async function getCustomerByEmail(req: Request, res: Response) {
-  const { email } = (req as any).locals.jwtPayload;
-  const customer = await CustomerService.findCustomerByEmail(email);
+  try{
+    const { email } = (req as any).locals.jwtPayload;
+    const customer = await CustomerService.findCustomerByEmail(email);
 
-  if (!customer) return res.status(400).json({ error: "Customer not found!" });
+    if (!customer) return res.status(400).json({ message: "Customer not found!" });
 
-  return res.status(200).json(customer);
+    return res.status(200).json(customer);
+  }catch(error:any){
+    return res.status(400).json({error : error.message});
+  }
 }
 
 export async function getCustomerByCustomerId(req: Request, res: Response) {
-  const { customerId } = req.params;
+  try{
+    const { customerId } = req.params;
 
-  if (customerId == undefined) {
+    if (customerId == undefined) {
     console.log("Missing field(s): ", {
       customerId,
     });
     return res.status(400).json({ error: "Missing information!" });
   }
-
-  try {
     const customerIdInt = parseInt(customerId);
     if (!isNaN(customerIdInt)) {
       let customer =
@@ -110,6 +113,7 @@ export async function getCustomerByCustomerId(req: Request, res: Response) {
 }
 
 export async function deleteCustomer(req: Request, res: Response) {
+  try {
   const { customerId } = req.params;
 
   if (customerId == undefined) {
@@ -119,7 +123,6 @@ export async function deleteCustomer(req: Request, res: Response) {
     return res.status(400).json({ error: "Missing information!" });
   }
 
-  try {
     const customerIdInt = parseInt(customerId);
     if (!isNaN(customerIdInt)) {
       await CustomerService.deleteCustomer(customerIdInt);
