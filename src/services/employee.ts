@@ -112,7 +112,6 @@ export async function resetPassword(
   console.log(result);
   if(result) {
     if(result.dateOfResignation == null) {
-      console.log("hel");
       const token = uuidv4();
 
       const resetTokens: any = {
@@ -125,7 +124,6 @@ export async function resetPassword(
       try {
         let t = await Token.create(resetTokens);
         t.save();
-        console.log("here??");
 
         const transporter = nodemailer.createTransport({
           service: 'gmail',
@@ -158,11 +156,11 @@ export async function resetPassword(
       }
     }
     else {
-      throw {error: "Employee has been disabled"};
+      throw {message: "Employee has been disabled"};
     } 
   }
   else {
-    throw { error: "Employee does not exist"};
+    throw { message: "Employee does not exist"};
   }
 }
 
@@ -173,7 +171,7 @@ export async function findEmployeeByEmail(employeeEmail: string) {
   if (result) {
     return result;
   }
-  throw { error: "Invalid email!" };
+  throw { message: "Invalid email!" };
 }
 
 export async function findEmployeeById(
@@ -188,7 +186,7 @@ export async function findEmployeeById(
   if(result) {
     return result;
   }
-  throw {error: "Employee does not exist"};
+  throw {message: "Employee does not exist"};
 }
 
 export async function employeeLogin(
@@ -200,15 +198,20 @@ export async function employeeLogin(
     include: ["generalStaff", "keeper", "planningStaff"]
   });
   if(result) {
-    if(result.dateOfResignation == null && result.testPassword(password)) {
-      return result;
+    if(result.dateOfResignation == null) {
+      if (result.testPassword(password)){
+        return result;
+      }
+      throw {
+        message: "Password inccorrect!",
+      }
     }
     throw {
-      error: "Your account has been disabled!",
+      message: "Your account has been disabled!",
     }
   }
   throw {
-    error: "Employee does not exist",
+    message: "Email does not exist!",
   };
 }
 
@@ -225,15 +228,15 @@ export async function setAsAccountManager(
         return employee.setAsAccountManager();
       }
       throw {
-        error: "Employee has been disabled"
+        message: "Employee has been disabled"
       };
     }
     throw {
-      error: "Employee is already Account Manager"
+      message: "Employee is already Account Manager"
     };
   }
   throw {
-    error: "Employee does not exist"
+    message: "Employee does not exist"
   };
 }
 
@@ -251,15 +254,15 @@ export async function unsetAsAccountManager(
         return employee.unsetAsAccountManager();
       }
       throw {
-        error: "Employee has been disabled"
+        message: "Employee has been disabled"
       };
     }
     throw {
-      error: "Employee is not Account Manager"
+      message: "Employee is not Account Manager"
     };
   }
   throw {
-    error: "Employee does not exist"
+    message: "Employee does not exist"
   };
 }
 
@@ -286,7 +289,7 @@ export async function getEmployee(
     return employee;
   }
   throw {
-    error: "Employee does not exist"
+    message: "Employee does not exist"
   };
 }
 
@@ -303,11 +306,11 @@ export async function disableEmployeeAccount(
       return employee.disableAccount(dateOfResignation);
     }
     throw{
-      error: "Employee account was disabled before on "+ employee.dateOfResignation,
+      message: "Employee account was disabled before on "+ employee.dateOfResignation,
     };
   }
   throw {
-    error: "Employee does not exist"
+    message: "Employee does not exist"
   };
 }
 
@@ -331,13 +334,13 @@ export async function setPassword(
           return employee.updatePassword(password);
         } 
         realToken.destroy();
-        throw {error: "Token has expired"};
+        throw {message: "Token has expired"};
       }
       realToken.destroy();
-      throw {error: "Employee has been disabled"};
+      throw {message: "Employee has been disabled"};
     }
     realToken.destroy();
-    throw{error: "Employee does not exist"};
+    throw{message: "Employee does not exist"};
   }
 }
 
@@ -402,11 +405,11 @@ export async function enableRole(
     }
 
     else {
-      throw {error: "The role does not exist"};
+      throw {message: "The role does not exist"};
     }
 
   } else {
-    throw {error: "Employee does not exist"};
+    throw {message: "Employee does not exist"};
   }
 }
 
@@ -427,7 +430,7 @@ export async function disableRole(
         employee.keeper.save();
         console.log("it was heree"); 
       } else {
-        throw {error: "Keeper role does not exist in this account"};
+        throw {message: "Keeper role does not exist in this account"};
       }
 
     }
@@ -438,7 +441,7 @@ export async function disableRole(
         employee.planningStaff.save();
       }
       else { 
-        throw {error: "Planning Staff role does not exist in this account"};
+        throw {message: "Planning Staff role does not exist in this account"};
       }
       
     }
@@ -449,16 +452,16 @@ export async function disableRole(
         employee.generalStaff.save();
       }
       else {
-        throw {error: "General Staff role does not exist in this account"};
+        throw {message: "General Staff role does not exist in this account"};
       }
     }
 
     else {
-      throw {error: "The role does not exist"};
+      throw {message: "The role does not exist"};
     }
 
   } else {
-    throw {error: "Employee does not exist"};
+    throw {message: "Employee does not exist"};
   }
 }
 
@@ -567,15 +570,15 @@ export async function updateRoleType(
         employee.generalStaff.updateGeneralStaffType(roleType);
       }
       else {
-        throw {error: "General Staff role does not exist in this account"};
+        throw {message: "General Staff role does not exist in this account"};
       }
     }
     else {
-      throw {error: "The role does not exist"};
+      throw {message: "The role does not exist"};
     }
 
   } else {
-    throw {error: "Employee does not exist"};
+    throw {message: "Employee does not exist"};
   }
 
 
@@ -596,7 +599,7 @@ export async function updateSpecializationType(
       if(employee.keeper) {
         employee.keeper.updateSpecialization(specialization); 
       } else {
-        throw {error: "Keeper role does not exist in this account"};
+        throw {message: "Keeper role does not exist in this account"};
       }
     }
     else if (role === "Planning Staff") {
@@ -604,15 +607,15 @@ export async function updateSpecializationType(
         employee.planningStaff.updateSpecialization(specialization);
       }
       else { 
-        throw {error: "Planning Staff role does not exist in this account"};
+        throw {message: "Planning Staff role does not exist in this account"};
       } 
     }
     else {
-      throw {error: "The role does not exist"};
+      throw {message: "The role does not exist"};
     }
 
   } else {
-    throw {error: "Employee does not exist"};
+    throw {message: "Employee does not exist"};
   }
 
 
