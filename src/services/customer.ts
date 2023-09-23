@@ -184,6 +184,7 @@ export async function resetPassword(token: string, password: string) {
     realToken.destroy();
     throw { message: "Customer does not exist" };
   }
+  throw {message: "Invalid Token!"}
 }
 
 export async function sendResetPasswordLink(customerId: number) {
