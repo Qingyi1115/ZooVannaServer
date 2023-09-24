@@ -661,7 +661,7 @@ export const tutorial = async () => {
       animalFeedCategory: AnimalFeedCategory.VEGETABLES
     });
   console.log(Carrot.toJSON());
-  
+
   let Pineapple = await AnimalFeed.create(
     {
       animalFeedName: "Pineapple",
@@ -669,15 +669,15 @@ export const tutorial = async () => {
       animalFeedCategory: AnimalFeedCategory.FRUITS
     });
   console.log(Pineapple.toJSON());
-  
-  
+
+
   let Puzzle = await EnrichmentItem.create(
     {
       enrichmentItemName: "Puzzle",
       enrichmentItemImageUrl: "img/enrichmentItem/Puzzle.jpg",
     });
   console.log(Puzzle.toJSON());
-  
+
   let Feeder = await EnrichmentItem.create(
     {
       enrichmentItemName: "Feeder",
@@ -893,13 +893,13 @@ export const speciesSeed = async () => {
 };
 
 export const animalFeedSeed = async () => {
-  let carrotTemplate = {
-    animalFeedName: "Carrot",
-    animalFeedImageUrl: "img/animalFeed/carrot.jpg",
-    animalFeedCategory: AnimalFeedCategory.VEGETABLES
-  } as any;
-  let carrot = await AnimalFeed.create(carrotTemplate);
-  console.log(carrot.toJSON());
+  // let carrotTemplate = {
+  //   animalFeedName: "Carrot",
+  //   animalFeedImageUrl: "img/animalFeed/carrot.jpg",
+  //   animalFeedCategory: AnimalFeedCategory.VEGETABLES
+  // } as any;
+  // let carrot = await AnimalFeed.create(carrotTemplate);
+  // console.log(carrot.toJSON());
 
   let appleTemplate = {
     animalFeedName: "Apple",
