@@ -385,8 +385,8 @@ export const seedDatabase = async () => {
   await tutorial();
   await facilityAssetsSeed();
   await speciesSeed();
-  // await animalFeedSeed();
-  // await enrichmentItemSeed();
+  await animalFeedSeed();
+  await enrichmentItemSeed();
   // await facilitySeed();
 };
 
@@ -693,7 +693,7 @@ export const speciesSeed = async () => {
     scientificName: "Ailuropoda Melanoleuca",
     aliasName: "Panda Bear, Panda",
     conservationStatus: ConservationStatus.VULNERABLE,
-    domain: "Eukaryota",
+    domain: "Eukarya",
     kingdom: "Animalia",
     phylum: "Chordata",
     speciesClass: "Mammalia",
@@ -705,12 +705,12 @@ export const speciesSeed = async () => {
     educationalFunFact:
       'Pandas have a "thumb" for better bamboo grip, helping them eat and climb!',
     nativeContinent: Continent.ASIA,
-    nativeBiomes: "Temperate Forests",
+    nativeBiomes: "Grassland,Temperate",
     groupSexualDynamic: GroupSexualDynamic.POLYANDROUS,
     habitatOrExhibit: "Southwest China",
-    generalDietPreference: "Bamboo?? LOL what to put",
-    imageUrl: "img/species/panda.jpeg",
-    lifeExpectancyYears: 14,
+    generalDietPreference: "Folivore",
+    imageUrl: "img/species/panda.jpg",
+    lifeExpectancyYears: 65,
     // foodRemark: "Food remark...",
   } as any;
   let panda1 = await Species.create(panda1Template);
@@ -720,26 +720,26 @@ export const speciesSeed = async () => {
     "SPE001",
     10,
     10,
+    120,
+    20,
+    20,
+    30,
+    50,
+    15,
     10,
+    60,
     10,
+    40,
     10,
+    50,
+    5,
     10,
-    10,
-    10,
-    10,
-    10,
-    10,
-    10,
-    10,
-    10,
-    10,
-    10,
-    10,
-    10,
-    10,
-    10,
-    10,
-    10,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
   );
   console.log(panda1enclosure.toJSON());
 
@@ -794,7 +794,7 @@ export const speciesSeed = async () => {
     scientificName: "Hydrochoerus Hydrochaeris",
     aliasName: "Water pig, Hydrochaeris hydrochaeris",
     conservationStatus: ConservationStatus.LEAST_CONCERN,
-    domain: "Eukaryota",
+    domain: "Eukarya",
     kingdom: "Animalia",
     phylum: "Chordata",
     speciesClass: "Mammalia",
@@ -809,7 +809,7 @@ export const speciesSeed = async () => {
     nativeBiomes: "Grasslands, Savannas, Wetlands, Rainforests",
     groupSexualDynamic: GroupSexualDynamic.POLYANDROUS,
     habitatOrExhibit: "Water bodies",
-    generalDietPreference: "Herbivores",
+    generalDietPreference: "Herbivore",
     imageUrl: "img/species/capybara.jpg",
     lifeExpectancyYears: 10,
     // foodRemark: "Food remark...",
@@ -823,7 +823,7 @@ export const speciesSeed = async () => {
     scientificName: "Ailurus fulgens",
     aliasName: "Lesser Panda, Fire Fox",
     conservationStatus: ConservationStatus.ENDANGERED,
-    domain: "Eukaryota",
+    domain: "Eukarya",
     kingdom: "Animalia",
     phylum: "Chordata",
     speciesClass: "Mammalia",
@@ -837,13 +837,41 @@ export const speciesSeed = async () => {
     nativeBiomes: "Temperate Forests, Bamboo Forests",
     groupSexualDynamic: GroupSexualDynamic.POLYANDROUS,
     habitatOrExhibit: "Forested areas",
-    generalDietPreference: "Herbivores",
-    imageUrl: "img/species/redPanda.jpeg",
+    generalDietPreference: "Herbivore",
+    imageUrl: "img/species/redPanda.jpg",
     lifeExpectancyYears: 14,
     // foodRemark: "Food remark...",
   } as any;
   let redPanda1 = await Species.create(redPanda1Template);
   console.log(redPanda1.toJSON());
+
+  let africanElephant1Template = {
+    speciesCode: await Species.getNextSpeciesCode(),
+    commonName: "African Elephant",
+    scientificName: "Loxodonta africana",
+    aliasName: "African bush elephant",
+    conservationStatus: ConservationStatus.ENDANGERED,
+    domain: "Eukarya",
+    kingdom: "Animalia",
+    phylum: "Chordata",
+    speciesClass: "Mammalia",
+    order: "Proboscidea",
+    family: "	Elephantidae",
+    genus: "Loxodonta",
+    educationalDescription:
+      "The African bush elephant (Loxodonta africana), also known as the African savanna elephant, is one of two extant African elephant species and one of three extant elephant species. It is the largest living terrestrial animal, with bulls reaching a shoulder height of up to 3.96 m (13 ft 0 in) and a body mass of up to 10.4 t (11.5 short tons).",
+    educationalFunFact: "Africa bush elephants use their trunks for tactile communication.",
+    nativeContinent: Continent.ASIA,
+    nativeBiomes: "Temperate Forests, Bamboo Forests",
+    groupSexualDynamic: GroupSexualDynamic.POLYANDROUS,
+    habitatOrExhibit: "Forested areas",
+    generalDietPreference: "Herbivore",
+    imageUrl: "img/species/elephant.jpg",
+    lifeExpectancyYears: 14,
+    // foodRemark: "Food remark...",
+  } as any;
+  let elephant1 = await Species.create(africanElephant1Template);
+  console.log(elephant1.toJSON());
 
   let compatibility1 = await SpeciesService.createCompatibility(
     "SPE001",
@@ -866,21 +894,45 @@ export const speciesSeed = async () => {
 
 export const animalFeedSeed = async () => {
   let carrotTemplate = {
-    animalFeedName: "Carrots",
-    animalFeedImageUrl: "Fake_URL_here",
+    animalFeedName: "Carrot",
+    animalFeedImageUrl: "img/animalFeed/carrot.jpg",
     animalFeedCategory: AnimalFeedCategory.VEGETABLES
   } as any;
   let carrot = await AnimalFeed.create(carrotTemplate);
   console.log(carrot.toJSON());
+
+  let appleTemplate = {
+    animalFeedName: "Apple",
+    animalFeedImageUrl: "img/animalFeed/apple.jpg",
+    animalFeedCategory: AnimalFeedCategory.FRUITS
+  } as any;
+  let apple = await AnimalFeed.create(appleTemplate);
+  console.log(apple.toJSON());
+
+  let beefTemplate = {
+    animalFeedName: "Beef",
+    animalFeedImageUrl: "img/animalFeed/beef.jpg",
+    animalFeedCategory: AnimalFeedCategory.FRUITS
+  } as any;
+  let beef = await AnimalFeed.create(beefTemplate);
+  console.log(beef.toJSON());
 }
 
 export const enrichmentItemSeed = async () => {
-  let puzzleTemplate = {
-    enrichmentItemName: "Puzzle",
-    enrichmentItemImageUrl: "Fake_URL_here",
+  let scratchingPostTemplate = {
+    enrichmentItemName: "Scratching Post",
+    enrichmentItemImageUrl: "img/enrichmentItem/scratchingPost.webp",
   } as any;
-  let puzzle = await EnrichmentItem.create(puzzleTemplate);
-  console.log(puzzle.toJSON());
+  let scratchingPost = await EnrichmentItem.create(scratchingPostTemplate);
+  console.log(scratchingPost.toJSON());
+
+  let yogaBallTemplate = {
+    enrichmentItemName: "Yoga Ball",
+    enrichmentItemImageUrl: "img/enrichmentItem/yogaBall.jpg",
+  } as any;
+  let yogaBall = await EnrichmentItem.create(yogaBallTemplate);
+  console.log(yogaBall.toJSON());
+
 }
 
 export const facilitySeed = async () => {

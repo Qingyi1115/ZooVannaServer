@@ -229,12 +229,12 @@ export async function updateFacility(req: Request, res: Response) {
     }
 
     const facilityAttribute: any = {}
-    
+
     for (const [field, v] of Object.entries({
       facilityName: facilityName,
       xCoordinate: Number(xCoordinate),
       yCoordinate: Number(yCoordinate),
-      isSheltered: isSheltered.toLocaleUpperCase() == "TRUE"
+      isSheltered: isSheltered
     })) {
       if (v !== undefined) {
         facilityAttribute[field] = v;
@@ -341,7 +341,7 @@ export async function assignMaintenanceStaffToFacility(req: Request, res: Respon
 
     return res.status(200).json({ inHouse: inHouse.toFullJSON() });
   } catch (error: any) {
-    console.log("error",error)
+    console.log("error", error)
     res.status(400).json({ error: error.message });
   }
 }
