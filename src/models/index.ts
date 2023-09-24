@@ -123,7 +123,7 @@ export const createDatabase = async (options: any) => {
     as: "maintenanceStaffs",
   });
   GeneralStaff.belongsToMany(InHouse, {
-    foreignKey: "maintainedFacilityId",
+    foreignKey: "maintenanceStaffId",
     through: "generalStaff_inHouse",
     as: "maintainedFacilities",
   });
