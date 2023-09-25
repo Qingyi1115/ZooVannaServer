@@ -914,9 +914,17 @@ export const facilityAssetsSeed = async () => {
     facilityName: "Toilet",
     xCoordinate: 2,
     yCoordinate: 2,
-    facilityDetail: "Test facility"
+    isSheltered: true,
+    inHouse: {
+      lastMaintained: new Date(),
+      isPaid: false,
+      maxAccommodationSize: 5,
+      hasAirCon: false,
+      facilityType: FacilityType.PARKING,
+    } as any,
+
   } as any;
-  let toilet = await Facility.create(toiletTemplate);
+  let toilet = await Facility.create(toiletTemplate, {include:["inHouse"]});
   console.log(toilet.toJSON());
   
   let facility1 = await Facility.create(
