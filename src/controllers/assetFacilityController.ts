@@ -31,6 +31,8 @@ import {
   getAllMaintenanceStaff,
   createMaintenanceLog,
   getAllSensorMaintenanceLogs,
+  getFacilityLogs,
+  createFacilityLog,
 } from "../services/assetFacility";
 import { Facility } from "../models/facility";
 import { Sensor } from "../models/sensor";
@@ -40,6 +42,7 @@ import * as AnimalFeedService from "../services/animalFeed";
 import * as EnrichmentItemService from "../services/enrichmentItem";
 import { compareDates } from "../helpers/others";
 import { InHouse } from "../models/inHouse";
+import { FacilityLog } from "models/faciltiyLog";
 
 export async function createFacility(req: Request, res: Response) {
   try {
@@ -495,6 +498,53 @@ export async function removeOperationStaffFromFacility(req: Request, res: Respon
   }
 }
 
+export async function getFacilityLogsController(req: Request, res: Response) {
+  try {
+    const { email } = (req as any).locals.jwtPayload;
+    // const employee = await findEmployeeByEmail(email);
+
+    const { facilityId } = req.params;
+
+    if (facilityId ===undefined) {
+      return res.status(400).json({ error: "Missing information!" });
+    }
+    
+    let facilityLogs: FacilityLog[] = await getFacilityLogs(
+      Number(facilityId)
+    );
+
+    return res.status(200).json({ facilityLogs: facilityLogs });
+  } catch (error: any) {
+    res.status(400).json({ error: error.message });
+  }
+}
+
+export async function createFacilityLogController(req: Request, res: Response) {
+  try {
+    const { email } = (req as any).locals.jwtPayload;
+    // const employee = await findEmployeeByEmail(email);
+
+    const { facilityId } = req.params;
+    const { title, details, remarks } = req.body;
+
+    if ([facilityId, title, details, remarks].includes(undefined)) {
+      return res.status(400).json({ error: "Missing information!" });
+    }
+
+    let facilityLog: FacilityLog = await createFacilityLog(
+      Number(facilityId),
+      false,
+      title,
+      details,
+      remarks
+    );
+
+    return res.status(200).json({ facilityLog: facilityLog });
+  } catch (error: any) {
+    res.status(400).json({ error: error.message });
+  }
+}
+
 export async function deleteFacility(req: Request, res: Response) {
   try {
     const { email } = (req as any).locals.jwtPayload;
@@ -603,9 +653,9 @@ export async function getHubProcessorController(req: Request, res: Response) {
     let { hubProcessorId } = req.params
     let { includes } = req.body;
     includes = includes || [];
-
+    
     const _includes: string[] = []
-    for (const role of ["hubProcessors"]) {
+    for (const role of ["sensors", "facility"]) {
       if (includes.includes(role)) _includes.push(role)
     }
 

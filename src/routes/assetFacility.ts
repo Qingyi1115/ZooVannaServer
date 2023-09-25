@@ -46,7 +46,9 @@ import {
   createSensorMaintenanceLogController,
   getAllSensorMaintenanceLogsController,
   getMyOperationFacilityController,
-  getMyMaintainedFacilityController
+  getMyMaintainedFacilityController,
+  getFacilityLogsController,
+  createFacilityLogController
 } from "../controllers/assetFacilityController";
 
 const router = express.Router();
@@ -71,6 +73,8 @@ router.put("/assignMaintenanceStaffToFacility/:facilityId", assignMaintenanceSta
 router.put("/removeMaintenanceStaffFromFacility/:facilityId", removeMaintenanceStaffFromFacility);
 router.put("/assignOperationStaffToFacility/:facilityId", assignOperationStaffToFacility);
 router.put("/removeOperationStaffFromFacility/:facilityId", removeOperationStaffFromFacility);
+router.put("/getFacilityLogs/:facilityId", getFacilityLogsController);
+router.put("/createFacilityLog/:facilityId", createFacilityLogController);
 
 //Animal Feed
 router.post("/createNewAnimalFeed", createNewAnimalFeed);

@@ -61,7 +61,7 @@ class InHouse extends Model<
   declare setOperationStaffs: HasManySetAssociationsMixin<GeneralStaff[],number>;
   declare removeOperationStaff: HasManyRemoveAssociationMixin<GeneralStaff,number>;
 
-  declare getFacilityLogs: HasManyGetAssociationsMixin<FacilityLog[]>;
+  declare getFacilityLogs: HasManyGetAssociationsMixin<FacilityLog>;
   declare addFacilityLog: HasManyAddAssociationMixin<FacilityLog, number>;
   declare setFacilityLogs: HasManySetAssociationsMixin<FacilityLog[], number>;
   declare removeFacilityLog: HasManyRemoveAssociationMixin<FacilityLog, number>;

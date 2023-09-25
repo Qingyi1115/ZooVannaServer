@@ -238,6 +238,53 @@ export async function removeOperationStaffFromFacilityById(
   }
 }
 
+export async function getFacilityLogs(
+  facilityId: number
+): Promise<FacilityLog[]> {
+  try {
+    const facility = await Facility.findOne({
+      where: { facilityId: facilityId },
+    });
+    if (!facility) throw { message: "Unable to find facilityId: " + facility };
+    const thirdParty = await facility.getFacilityDetail();
+    if (facility.facilityDetail != "inHouse") throw {message: "Not an in-house facility!"}
+
+    return thirdParty.getFacilityLogs();
+  } catch (error: any) {
+    throw validationErrorHandler(error);
+  }
+}
+
+export async function createFacilityLog(
+  facilityId: number,
+  isMaintenance: boolean,
+  title : string,
+  details : string,
+  remarks: string,
+): Promise<FacilityLog> {
+  try {
+    const facility = await Facility.findOne({
+      where: { facilityId: facilityId },
+    });
+    if (!facility) throw { message: "Unable to find facilityId: " + facility };
+    const thirdParty = await facility.getFacilityDetail();
+    if (facility.facilityDetail != "inHouse") throw {message: "Not an in-house facility!"}
+
+    const facilityLog = await FacilityLog.create({
+      dateTime : new Date(),
+      isMaintenance: isMaintenance,
+      title : title,
+      details : details,
+      remarks: remarks
+    })
+    thirdParty.addFacilityLog(facilityLog);
+
+    return facilityLog;
+  } catch (error: any) {
+    throw validationErrorHandler(error);
+  }
+}
+
 export async function addHubProcessorByFacilityId(
   facilityId: number,
   processorName: string,
