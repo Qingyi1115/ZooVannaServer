@@ -144,6 +144,49 @@ export async function getAllFacilityController(req: Request, res: Response) {
   }
 }
 
+export async function getMyOperationFacilityController(req: Request, res: Response) {
+  try {
+    const { email } = (req as any).locals.jwtPayload;
+    const employee = await findEmployeeByEmail(email);
+
+    if (!(await employee.getGeneralStaff()) || (await employee.getGeneralStaff()).isDisabled){
+      return res
+        .status(403)
+        .json({ error: "Access Denied! General staff only!" });
+      };
+
+    const facility = await (await (await (await employee.getGeneralStaff())?.getOperatedFacility())?.getFacility())?.toFullJson();
+    return res.status(200).json({ facility: (facility ? facility : {}) });
+  } catch (error: any) {
+    console.log(error)
+    res.status(400).json({ error: error.message });
+  }
+}
+
+export async function getMyMaintainedFacilityController(req: Request, res: Response) {
+  try {
+    const { email } = (req as any).locals.jwtPayload;
+    const employee = await findEmployeeByEmail(email);
+
+    if (!(await employee.getGeneralStaff()) || (await employee.getGeneralStaff()).isDisabled){
+      return res
+        .status(403)
+        .json({ error: "Access Denied! General staff only!" });
+      }
+
+    let inHouses = await (await employee.getGeneralStaff())?.getMaintainedFacilities() || [];
+    const facilities = []
+    for (const inHouse of inHouses){
+      facilities.push(await (await inHouse.getFacility()).toFullJson());
+    }
+
+    return res.status(200).json({ facilities: facilities });
+  } catch (error: any) {
+    console.log(error)
+    res.status(400).json({ error: error.message });
+  }
+}
+
 export async function getFacilityController(req: Request, res: Response) {
   try {
     const { email } = (req as any).locals.jwtPayload;
@@ -342,7 +385,7 @@ export async function assignMaintenanceStaffToFacility(req: Request, res: Respon
       employeeIds
     );
 
-    return res.status(200).json({ inHouse: inHouse.toFullJSON() });
+    return res.status(200).json({ inHouse: await inHouse.toFullJSON() });
   } catch (error: any) {
     console.log("error", error)
     res.status(400).json({ error: error.message });
@@ -377,7 +420,7 @@ export async function removeMaintenanceStaffFromFacility(req: Request, res: Resp
       employeeIds
     );
 
-    return res.status(200).json({ inHouse: inHouse.toFullJSON() });
+    return res.status(200).json({ inHouse: await inHouse.toFullJSON() });
   } catch (error: any) {
     console.log(error)
     res.status(400).json({ error: error.message });
@@ -412,7 +455,7 @@ export async function assignOperationStaffToFacility(req: Request, res: Response
       employeeIds
     );
 
-    return res.status(200).json({ inHouse: inHouse.toFullJSON() });
+    return res.status(200).json({ inHouse: await inHouse.toFullJSON() });
   } catch (error: any) {
     res.status(400).json({ error: error.message });
   }
@@ -446,7 +489,7 @@ export async function removeOperationStaffFromFacility(req: Request, res: Respon
       employeeIds
     );
 
-    return res.status(200).json({ inHouse: inHouse.toFullJSON() });
+    return res.status(200).json({ inHouse: await inHouse.toFullJSON() });
   } catch (error: any) {
     res.status(400).json({ error: error.message });
   }

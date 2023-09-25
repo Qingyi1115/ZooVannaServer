@@ -133,7 +133,7 @@ export async function assignMaintenanceStaffToFacilityById(
           throw {message : "Stuff alreadly assigned!"}
         }
       }
-      inHouse.addMaintenanceStaff(staff);
+      await inHouse.addMaintenanceStaff(staff);
     }
 
     return inHouse;
@@ -163,8 +163,7 @@ export async function removeMaintenanceStaffFromFacilityById(
     }
     for (const staff of staffList) {
       await inHouse.removeMaintenanceStaff(staff);
-      console.log(staff)
-      staff.removeMaintainedFacilities(inHouse);
+      // staff.removeMaintainedFacilities(inHouse);
     }
 
     return inHouse;
@@ -185,18 +184,19 @@ export async function assignOperationStaffToFacilityById(
     const inHouse = await facility.getInHouse();
     if (!inHouse) throw { message: "Facility is not In House!" };
 
-    const employees = await getAllEmployees([]);
-    employees.filter(employee => employeeIds.includes(employee.employeeId));
-    employees.map(employee => employee.getGeneralStaff());
+    let employees = await getAllEmployees([]);
+    employees = employees.filter(employee => employeeIds.includes(employee.employeeId));
+    const generalStaffs = employees.map(employee => employee.getGeneralStaff());
     const staffList: GeneralStaff[] = []
-    for (const staffPromise in (employees as any)) {
-      const staff = await (staffPromise as any);
+    for (const staffPromise of generalStaffs) {
+      const staff = await staffPromise;
+      console.log("staff",staff)
       if (staff.generalStaffType != GeneralStaffType.ZOO_OPERATIONS) throw { message: "Not a Operation Staff!" }
       staffList.push(staff)
     }
-    for (const staff in staffList) {
-      inHouse.addOperationStaff(staff as any);
-      (staff as any).setOperatedFacility(inHouse);
+    for (const staff of staffList) {
+      await inHouse.addOperationStaff(staff as any);
+      // staff.setOperatedFacility(inHouse);
     }
 
     return inHouse;
@@ -217,18 +217,19 @@ export async function removeOperationStaffFromFacilityById(
     const inHouse = await facility.getInHouse();
     if (!inHouse) throw { message: "Facility is not In House!" };
 
-    const employees = await getAllEmployees([]);
-    employees.filter(employee => employeeIds.includes(employee.employeeId));
-    employees.map(employee => employee.getGeneralStaff());
+    let employees = await getAllEmployees([]);
+    employees = employees.filter(employee => employeeIds.includes(employee.employeeId));
+    const generalStaffs = employees.map(employee => employee.getGeneralStaff());
     const staffList: GeneralStaff[] = []
-    for (const staffPromise in (employees as any)) {
-      const staff = await (staffPromise as any);
+    for (const staffPromise of generalStaffs) {
+      const staff = await staffPromise;
+      console.log("staff",staff)
       if (staff.generalStaffType != GeneralStaffType.ZOO_OPERATIONS) throw { message: "Not a Operation Staff!" }
       staffList.push(staff)
     }
-    for (const staff in staffList) {
-      inHouse.removeOperationStaff(staff as any);
-      (staff as any).setOperatedFacility(undefined);
+    for (const staff of staffList) {
+      await inHouse.removeOperationStaff(staff as any);
+      // staff.setOperatedFacility(undefined);
     }
 
     return inHouse;
@@ -245,6 +246,7 @@ export async function addHubProcessorByFacilityId(
   try {
     const facility = await Facility.findOne({
       where: { facilityId: facilityId },
+      include: includes
     });
     if (!facility) throw { message: "Unable to find facilityId " + facilityId };
 

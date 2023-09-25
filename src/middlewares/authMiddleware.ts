@@ -1,6 +1,7 @@
 import express from "express";
 import { Request, Response } from "express";
 import jwt from "jsonwebtoken";
+import { findEmployeeByEmail } from "../services/employee";
 
 export const authMiddleware = (
   req: Request,
@@ -20,8 +21,14 @@ export const authMiddleware = (
   }
 
   try {
-    (req as any).locals = { jwtPayload: jwt.verify(token, SECRET_KEY) };
-    next();
+    let jwtPayload = jwt.verify(token, SECRET_KEY);
+
+    findEmployeeByEmail((jwtPayload as any)["email"]).catch(e=>{console.log(e)}).then(employee=>{
+      if (!!employee?.dateOfResignation) return res.status(401).json({ error: "Request is not authorized! Staff resigned!" });
+      (req as any).locals = { jwtPayload: jwtPayload };
+      next();
+    });
+
   } catch (error) {
     console.log(error);
     res.status(401).json({ error: "Request is not authorized" });

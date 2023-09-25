@@ -611,7 +611,7 @@ export const employeeSeed = async () => {
       employeeAddress: "Singapore Kent Ridge LT14",
       employeeEmail: "managerdelete@gmail.com",
       employeePhoneNumber: "0020",
-      employeePasswordHash: Employee.getHash("managerdelete_password", "H3"),
+      employeePasswordHash: Employee.getHash("managerdelete_password", "H35"),
       employeeSalt: "H35",
       employeeDoorAccessCode: "2222222",
       employeeBirthDate: new Date("2001-09-02"),
