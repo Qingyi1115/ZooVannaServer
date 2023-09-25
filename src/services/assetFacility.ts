@@ -65,7 +65,6 @@ export async function getAllFacilityMaintenanceSuggestions() {
     for (const facility in facilities){
       let inHouse = await (facility as any).getFacilityDetail();
       let logs = (await inHouse.getFacilityLogs()) || [];
-      logs = logs.sort((a:FacilityLog,b:FacilityLog)=> compareDates(a.dateTime, b.dateTime));
       logs = logs.map( (log: FacilityLog) => log.dateTime);
       (facility as any).dataValues["predictedMaintenanceDate"] = predictNextDate(logs.slice(0, Math.max(logs.length, 5)));
     }
@@ -327,9 +326,7 @@ export async function getAllSensorMaintenanceSuggestions() {
     let sensors : any[] = await _getAllSensors(["sensorReadings"]);
     let counter = 0
     for (const sensor of sensors){
-      console.log(sensor);
       let logs = (await sensor.getMaintenanceLogs()) || [];
-      logs = logs.sort((a:MaintenanceLog,b:MaintenanceLog)=> compareDates(a.dateTime, b.dateTime));
       let dateLogs = logs.map((log:MaintenanceLog)=>log.dateTime);
       (sensor as any).dataValues["predictedMaintenanceDate"] = predictNextDate(dateLogs.slice(0, Math.max(dateLogs.length, 5)));
       counter = counter + 1
@@ -421,7 +418,7 @@ export async function addSensorByHubProcessorId(
     const hubProcessor = await HubProcessor.findOne({
       where: { hubProcessorId: hubProcessorId },
     });
-    if (!hubProcessor) throw { message: "Unable to find hubProcessorId " + hubProcessor };
+    if (!hubProcessor) throw { message: "Unable to find hubProcessorId " + hubProcessorId };
     if (hubProcessor.hubStatus != HubStatus.CONNECTED) throw { message: "Hub not connected!" };
 
     const newSensor = await Sensor.create({

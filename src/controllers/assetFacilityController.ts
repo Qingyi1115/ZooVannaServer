@@ -557,7 +557,7 @@ export async function getAllSensors(req: Request, res: Response) {
     const { includes = [] } = req.body;
 
     const _includes: string[] = []
-    for (const role of ["hubProcessor", "sensorReading", "generalStaff"]) {
+    for (const role of ["hubProcessor", "sensorReadings", "generalStaff"]) {
       if (includes.includes(role)) _includes.push(role)
     }
 
@@ -688,7 +688,7 @@ export async function deleteHub(req: Request, res: Response) {
 
     await deleteHubById(Number(hubId));
 
-    return res.status(200);
+    return res.status(200).json({result: "success"});
   } catch (error: any) {
     res.status(400).json({ error: error.message });
   }
