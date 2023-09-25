@@ -116,11 +116,10 @@ export async function assignMaintenanceStaffToFacilityById(
       where: { facilityId: facilityId },
     });
     if (!facility) throw { message: "Unable to find facilityId: " + facilityId };
-    const inHouse = await facility.getInHouse();
+    const inHouse = await facility.getFacilityDetail();
     if (!inHouse) throw { message: "Facility is not In House!" };
 
     let employees = await getAllEmployees([]);
-    console.log("all employees", employees)
     employees = employees.filter(employee => employeeIds.includes(employee.employeeId));
     const staffList:GeneralStaff[] = []
     for (const emp of employees){
@@ -129,8 +128,12 @@ export async function assignMaintenanceStaffToFacilityById(
       staffList.push(staff)
     }
     for (const staff of staffList){
+      for (const assigned of (await inHouse.getMaintenanceStaffs())){
+        if ((await assigned.getEmployee()).employeeId == (await staff.getEmployee()).employeeId) {
+          throw {message : "Stuff alreadly assigned!"}
+        }
+      }
       inHouse.addMaintenanceStaff(staff);
-      staff.addMaintainedFacilities(inHouse);
     }
     
     return inHouse;
