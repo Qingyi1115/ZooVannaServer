@@ -372,6 +372,23 @@ export async function getSensorReadingBySensorId(
   }
 }
 
+export async function getSensor(
+  sensorId: number,
+  includes: string[]
+) {
+  try {
+    const sensor = await Sensor.findOne({
+      where: { sensorId: sensorId },
+      include: includes
+    });
+    if (!sensor) throw { message: "Unable to find sensorId: " + sensorId };
+
+    return sensor;
+  } catch (error: any) {
+    throw validationErrorHandler(error);
+  }
+}
+
 export async function getAllSensorMaintenanceSuggestions() {
   try {
 
@@ -474,7 +491,7 @@ export async function deleteSensorById(
   }
 }
 
-export async function createMaintenanceLog(
+export async function createSensorMaintenanceLog(
   sensorId: number,
   date : Date, 
   title : string, 
@@ -495,6 +512,36 @@ export async function createMaintenanceLog(
     })
     sensor.addMaintenanceLog(newLog);
     newLog.setSensor(sensor);
+
+    return newLog;
+  } catch (error: any) {
+    throw validationErrorHandler(error);
+  }
+}
+
+export async function createFacilityMaintenanceLog(
+  facilityId: number,
+  date : Date, 
+  title : string, 
+  details:string, 
+  remarks:string
+): Promise<FacilityLog>{
+  try {
+    const facility = await Facility.findOne({
+      where: { facilityId: facilityId },
+    });
+    if (!facility) throw { message: "Unable to find facilityId: " + facilityId };
+    const inHouse = await facility.getFacilityDetail();
+    if (!inHouse) throw { message: "Not a in-house facility!" };
+
+    const newLog = await FacilityLog.create({
+      dateTime:date,
+      title:title,
+      details:details,
+      remarks:remarks,
+      isMaintenance: true
+    })
+    inHouse.addFacilityLog(newLog);
 
     return newLog;
   } catch (error: any) {

@@ -29,10 +29,12 @@ import {
   updateSensorById,
   getMaintenanceStaffsByFacilityId,
   getAllMaintenanceStaff,
-  createMaintenanceLog,
   getAllSensorMaintenanceLogs,
   getFacilityLogs,
   createFacilityLog,
+  getSensor,
+  createSensorMaintenanceLog,
+  createFacilityMaintenanceLog,
 } from "../services/assetFacility";
 import { Facility } from "../models/facility";
 import { Sensor } from "../models/sensor";
@@ -545,6 +547,38 @@ export async function createFacilityLogController(req: Request, res: Response) {
   }
 }
 
+export async function createFacilityMaintenanceLogController(req: Request, res: Response) {
+  try {
+    const { email } = (req as any).locals.jwtPayload;
+    const employee = await findEmployeeByEmail(email);
+
+    if (
+      !(
+        (await employee.getGeneralStaff())?.generalStaffType ==
+        GeneralStaffType.ZOO_MAINTENANCE
+      ) && !(
+        (await employee.getPlanningStaff())?.plannerType ==
+        PlannerType.OPERATIONS_MANAGER
+      )
+    )
+      return res
+        .status(403)
+        .json({ error: "Access Denied! Operation managers only!" });
+
+    const { facilityId } = req.params;
+    const { title, details, remarks } = req.body;
+    if ([facilityId, title, details, remarks].includes(undefined)) {
+      return res.status(400).json({ error: "Missing information!" });
+    }
+    
+    let maintenanceLog = await createFacilityMaintenanceLog(Number(facilityId),new Date(), title, details, remarks);
+
+    return res.status(200).json({ maintenanceLog: maintenanceLog });
+  } catch (error: any) {
+    res.status(400).json({ error: error.message });
+  }
+}
+
 export async function deleteFacilityController(req: Request, res: Response) {
   try {
     const { email } = (req as any).locals.jwtPayload;
@@ -694,6 +728,41 @@ export async function getAllSensorsController(req: Request, res: Response) {
     sensors.forEach(sensor => sensor.toJSON())
 
     return res.status(200).json({ sensors: sensors });
+  } catch (error: any) {
+    res.status(400).json({ error: error.message });
+  }
+}
+
+export async function getSensorController(req: Request, res: Response) {
+  try {
+    const { email } = (req as any).locals.jwtPayload;
+    const employee = await findEmployeeByEmail(email);
+
+    if (
+      !(
+        (await employee.getPlanningStaff())?.plannerType ==
+        PlannerType.OPERATIONS_MANAGER
+      )
+    )
+      return res
+        .status(403)
+        .json({ error: "Access Denied! Operation managers only!" });
+
+    const { sensorId } = req.params;
+    const { includes = [] } = req.body;
+
+    if (sensorId === undefined) {
+      return res.status(400).json({ error: "Missing information!" });
+    }
+    
+    const _includes: string[] = []
+    for (const role of ["hubProcessor", "sensorReading", "maintenanceLogs", "generalStaff"]) {
+      if (includes.includes(role)) _includes.push(role)
+    }
+
+    let sensor: Sensor = await getSensor(Number(sensorId), includes);
+
+    return res.status(200).json({ sensor: sensor });
   } catch (error: any) {
     res.status(400).json({ error: error.message });
   }
@@ -871,7 +940,7 @@ export async function createSensorMaintenanceLogController(req: Request, res: Re
       return res.status(400).json({ error: "Missing information!" });
     }
 
-    let maintenanceLog = await createMaintenanceLog(Number(sensorId),new Date(), title, details, remarks);
+    let maintenanceLog = await createSensorMaintenanceLog(Number(sensorId),new Date(), title, details, remarks);
 
     return res.status(200).json({ maintenanceLog: maintenanceLog });
   } catch (error: any) {
