@@ -70,10 +70,10 @@ router.delete("/deleteFacility/:facilityId", deleteFacility);
 router.get("/getAssignedMaintenanceStaffOfFacility/:facilityId", getAssignedMaintenanceStaffOfFacilityController);
 router.get("/getAllMaintenanceStaff/", getAllMaintenanceStaffController);
 router.put("/assignMaintenanceStaffToFacility/:facilityId", assignMaintenanceStaffToFacility);
-router.put("/removeMaintenanceStaffFromFacility/:facilityId", removeMaintenanceStaffFromFacility);
+router.delete("/removeMaintenanceStaffFromFacility/:facilityId", removeMaintenanceStaffFromFacility);
 router.put("/assignOperationStaffToFacility/:facilityId", assignOperationStaffToFacility);
-router.put("/removeOperationStaffFromFacility/:facilityId", removeOperationStaffFromFacility);
-router.put("/getFacilityLogs/:facilityId", getFacilityLogsController);
+router.delete("/removeOperationStaffFromFacility/:facilityId", removeOperationStaffFromFacility);
+router.get("/getFacilityLogs/:facilityId", getFacilityLogsController);
 router.put("/createFacilityLog/:facilityId", createFacilityLogController);
 
 //Animal Feed

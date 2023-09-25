@@ -660,7 +660,7 @@ export async function getHubProcessorController(req: Request, res: Response) {
     }
 
     let hubProcessor: HubProcessor = await getHubProcessorById(Number(hubProcessorId), _includes);
-    return res.status(200).json(hubProcessor);
+    return res.status(200).json({hubProcessor:hubProcessor});
   } catch (error: any) {
     console.log(error)
     res.status(400).json({ error: error.message });
