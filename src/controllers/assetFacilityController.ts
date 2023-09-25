@@ -154,11 +154,11 @@ export async function getMyOperationFacilityController(req: Request, res: Respon
     const { email } = (req as any).locals.jwtPayload;
     const employee = await findEmployeeByEmail(email);
 
-    if (!(await employee.getGeneralStaff()) || (await employee.getGeneralStaff()).isDisabled){
+    if (!(await employee.getGeneralStaff()) || (await employee.getGeneralStaff()).isDisabled) {
       return res
         .status(403)
         .json({ error: "Access Denied! General staff only!" });
-      };
+    };
 
     const facility = await (await (await (await employee.getGeneralStaff())?.getOperatedFacility())?.getFacility())?.toFullJson();
     return res.status(200).json({ facility: (facility ? facility : {}) });
@@ -173,15 +173,15 @@ export async function getMyMaintainedFacilityController(req: Request, res: Respo
     const { email } = (req as any).locals.jwtPayload;
     const employee = await findEmployeeByEmail(email);
 
-    if (!(await employee.getGeneralStaff()) || (await employee.getGeneralStaff()).isDisabled){
+    if (!(await employee.getGeneralStaff()) || (await employee.getGeneralStaff()).isDisabled) {
       return res
         .status(403)
         .json({ error: "Access Denied! General staff only!" });
-      }
+    }
 
     let inHouses = await (await employee.getGeneralStaff())?.getMaintainedFacilities() || [];
     const facilities = []
-    for (const inHouse of inHouses){
+    for (const inHouse of inHouses) {
       facilities.push(await (await inHouse.getFacility()).toFullJson());
     }
 
@@ -507,10 +507,10 @@ export async function getFacilityLogsController(req: Request, res: Response) {
 
     const { facilityId } = req.params;
 
-    if (facilityId ===undefined) {
+    if (facilityId === undefined) {
       return res.status(400).json({ error: "Missing information!" });
     }
-    
+
     let facilityLogs: FacilityLog[] = await getFacilityLogs(
       Number(facilityId)
     );
@@ -687,14 +687,14 @@ export async function getHubProcessorController(req: Request, res: Response) {
     let { hubProcessorId } = req.params
     let { includes } = req.body;
     includes = includes || [];
-    
+
     const _includes: string[] = []
     for (const role of ["sensors", "facility"]) {
       if (includes.includes(role)) _includes.push(role)
     }
 
     let hubProcessor: HubProcessor = await getHubProcessorById(Number(hubProcessorId), _includes);
-    return res.status(200).json({hubProcessor:hubProcessor});
+    return res.status(200).json({ hubProcessor: hubProcessor });
   } catch (error: any) {
     console.log(error)
     res.status(400).json({ error: error.message });
@@ -885,7 +885,7 @@ export async function deleteHubController(req: Request, res: Response) {
 
     await deleteHubById(Number(hubId));
 
-    return res.status(200).json({result: "success"});
+    return res.status(200).json({ result: "success" });
   } catch (error: any) {
     res.status(400).json({ error: error.message });
   }
@@ -910,7 +910,7 @@ export async function deleteSensorController(req: Request, res: Response) {
 
     await deleteSensorById(Number(sensorId));
 
-    return res.status(200).json({result:"success"});
+    return res.status(200).json({ result: "success" });
   } catch (error: any) {
     res.status(400).json({ error: error.message });
   }
@@ -972,7 +972,7 @@ export async function getAllSensorMaintenanceLogsController(req: Request, res: R
     }
 
     let maintenanceLogs = await getAllSensorMaintenanceLogs(Number(sensorId));
-    
+
     return res.status(200).json({ maintenanceLog: maintenanceLogs });
   } catch (error: any) {
     res.status(400).json({ error: error.message });
@@ -1185,8 +1185,9 @@ export async function createNewAnimalFeedController(req: Request, res: Response)
 
 export async function getAllAnimalFeedController(req: Request, res: Response) {
   try {
-    const allAnimalFeed = await AnimalFeedService.getAllAnimalFeed();
-    return res.status(200).json(allAnimalFeed);
+    let animalFeeds = await AnimalFeedService.getAllAnimalFeed();
+    animalFeeds.forEach(animalFeed => animalFeed.toJSON())
+    return res.status(200).json({ animalFeeds: animalFeeds });
   } catch (error: any) {
     res.status(400).json({ error: error.message });
   }
