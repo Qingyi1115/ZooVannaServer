@@ -21,6 +21,7 @@ import {
   updateEnrichmentItemController,
   deleteEnrichmentItemByName,
   getAllHubs,
+  getHubProcessorController,
   getAllSensors,
   getSensorReading,
   updateHub,
@@ -87,8 +88,9 @@ router.delete("/deleteEnrichmentItem/:enrichmentItemName", deleteEnrichmentItemB
 // Hubs and Sensors
 router.post("/addHub", addHubToFacility);
 router.get("/getAllHubs", getAllHubs);
-router.put("/updateHub/:hubId", updateHub);
-router.delete("/deleteHub/:hubId", deleteHub);
+router.post("/getHub/:hubProcessorId", getHubProcessorController);
+router.put("/updateHub/:hubProcessorId", updateHub);
+router.delete("/deleteHub/:hubProcessorId", deleteHub);
 
 router.post("/addSensor", addSensorToHub);
 router.get("/getAllSensors", getAllSensors);

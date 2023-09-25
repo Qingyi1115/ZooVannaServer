@@ -19,6 +19,7 @@ import {
   getAuthorizationForCameraById,
   getFacilityById,
   getSensorReadingBySensorId,
+  getHubProcessorById,
   initializeHubProcessor,
   removeMaintenanceStaffFromFacilityById,
   removeMaintenanceStaffFromSensorById,
@@ -541,6 +542,38 @@ export async function getAllHubs(req: Request, res: Response) {
   }
 }
 
+export async function getHubProcessorController(req: Request, res: Response) {
+  try {
+    const { email } = (req as any).locals.jwtPayload;
+    const employee = await findEmployeeByEmail(email);
+
+    if (
+      !(
+        (await employee.getPlanningStaff())?.plannerType ==
+        PlannerType.OPERATIONS_MANAGER
+      )
+    )
+      return res
+        .status(403)
+        .json({ error: "Access Denied! Operation managers only!" });
+
+    let { hubProcessorId } = req.params
+    let { includes } = req.body;
+    includes = includes || [];
+
+    const _includes: string[] = []
+    for (const role of ["hubProcessors"]) {
+      if (includes.includes(role)) _includes.push(role)
+    }
+
+    let hubProcessor: HubProcessor = await getHubProcessorById(Number(hubProcessorId), _includes);
+    return res.status(200).json(hubProcessor);
+  } catch (error: any) {
+    console.log(error)
+    res.status(400).json({ error: error.message });
+  }
+}
+
 export async function getAllSensors(req: Request, res: Response) {
   try {
     const { email } = (req as any).locals.jwtPayload;
@@ -620,13 +653,13 @@ export async function updateHub(req: Request, res: Response) {
         .status(403)
         .json({ error: "Access Denied! Operation managers only!" });
 
-    const { hubId } = req.params;
+    const { hubProcessorId } = req.params;
     const { processorName } = req.body;
-    if ([hubId, processorName].includes(undefined)) {
+    if ([hubProcessorId, processorName].includes(undefined)) {
       return res.status(400).json({ error: "Missing information!" });
     }
 
-    let hubUpdated = await updateHubByHubId(Number(hubId), { processorName: processorName });
+    let hubUpdated = await updateHubByHubId(Number(hubProcessorId), { processorName: processorName });
 
     return res.status(200).json({ hub: hubUpdated });
   } catch (error: any) {
