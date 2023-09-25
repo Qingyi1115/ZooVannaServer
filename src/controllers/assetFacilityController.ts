@@ -44,7 +44,7 @@ import { compareDates } from "../helpers/others";
 import { InHouse } from "../models/inHouse";
 import { FacilityLog } from "models/faciltiyLog";
 
-export async function createFacility(req: Request, res: Response) {
+export async function createFacilityController(req: Request, res: Response) {
   try {
     const { email } = (req as any).locals.jwtPayload;
     const employee = await findEmployeeByEmail(email);
@@ -195,15 +195,15 @@ export async function getFacilityController(req: Request, res: Response) {
     const { email } = (req as any).locals.jwtPayload;
     const employee = await findEmployeeByEmail(email);
 
-    if (
-      !(
-        (await employee.getPlanningStaff())?.plannerType ==
-        PlannerType.OPERATIONS_MANAGER
-      )
-    )
-      return res
-        .status(403)
-        .json({ error: "Access Denied! Operation managers only!" });
+    // if (
+    //   !(
+    //     (await employee.getPlanningStaff())?.plannerType ==
+    //     PlannerType.OPERATIONS_MANAGER
+    //   )
+    // )
+    //   return res
+    //     .status(403)
+    //     .json({ error: "Access Denied! Operation managers only!" });
 
     let { facilityId } = req.params
     let { includes } = req.body;
@@ -222,7 +222,7 @@ export async function getFacilityController(req: Request, res: Response) {
   }
 }
 
-export async function getFacilityMaintenanceSuggestions(req: Request, res: Response) {
+export async function getFacilityMaintenanceSuggestionsController(req: Request, res: Response) {
   try {
     const { email } = (req as any).locals.jwtPayload;
     const employee = await findEmployeeByEmail(email);
@@ -244,7 +244,7 @@ export async function getFacilityMaintenanceSuggestions(req: Request, res: Respo
   }
 }
 
-export async function updateFacility(req: Request, res: Response) {
+export async function updateFacilityController(req: Request, res: Response) {
   try {
     const { email } = (req as any).locals.jwtPayload;
     const employee = await findEmployeeByEmail(email);
@@ -360,7 +360,7 @@ export async function getAllMaintenanceStaffController(req: Request, res: Respon
   }
 }
 
-export async function assignMaintenanceStaffToFacility(req: Request, res: Response) {
+export async function assignMaintenanceStaffToFacilityController(req: Request, res: Response) {
   try {
     const { email } = (req as any).locals.jwtPayload;
     const employee = await findEmployeeByEmail(email);
@@ -395,7 +395,7 @@ export async function assignMaintenanceStaffToFacility(req: Request, res: Respon
   }
 }
 
-export async function removeMaintenanceStaffFromFacility(req: Request, res: Response) {
+export async function removeMaintenanceStaffFromFacilityController(req: Request, res: Response) {
   try {
     const { email } = (req as any).locals.jwtPayload;
     const employee = await findEmployeeByEmail(email);
@@ -430,7 +430,7 @@ export async function removeMaintenanceStaffFromFacility(req: Request, res: Resp
   }
 }
 
-export async function assignOperationStaffToFacility(req: Request, res: Response) {
+export async function assignOperationStaffToFacilityController(req: Request, res: Response) {
   try {
     const { email } = (req as any).locals.jwtPayload;
     const employee = await findEmployeeByEmail(email);
@@ -464,7 +464,7 @@ export async function assignOperationStaffToFacility(req: Request, res: Response
   }
 }
 
-export async function removeOperationStaffFromFacility(req: Request, res: Response) {
+export async function removeOperationStaffFromFacilityController(req: Request, res: Response) {
   try {
     const { email } = (req as any).locals.jwtPayload;
     const employee = await findEmployeeByEmail(email);
@@ -545,7 +545,7 @@ export async function createFacilityLogController(req: Request, res: Response) {
   }
 }
 
-export async function deleteFacility(req: Request, res: Response) {
+export async function deleteFacilityController(req: Request, res: Response) {
   try {
     const { email } = (req as any).locals.jwtPayload;
     const employee = await findEmployeeByEmail(email);
@@ -571,7 +571,7 @@ export async function deleteFacility(req: Request, res: Response) {
   }
 }
 
-export async function addHubToFacility(req: Request, res: Response) {
+export async function addHubToFacilityController(req: Request, res: Response) {
   try {
     const { email } = (req as any).locals.jwtPayload;
     const employee = await findEmployeeByEmail(email);
@@ -603,7 +603,7 @@ export async function addHubToFacility(req: Request, res: Response) {
   }
 }
 
-export async function getAllHubs(req: Request, res: Response) {
+export async function getAllHubsController(req: Request, res: Response) {
   try {
     const { email } = (req as any).locals.jwtPayload;
     const employee = await findEmployeeByEmail(email);
@@ -667,7 +667,7 @@ export async function getHubProcessorController(req: Request, res: Response) {
   }
 }
 
-export async function getAllSensors(req: Request, res: Response) {
+export async function getAllSensorsController(req: Request, res: Response) {
   try {
     const { email } = (req as any).locals.jwtPayload;
     const employee = await findEmployeeByEmail(email);
@@ -699,7 +699,7 @@ export async function getAllSensors(req: Request, res: Response) {
   }
 }
 
-export async function getSensorReading(req: Request, res: Response) {
+export async function getSensorReadingController(req: Request, res: Response) {
   try {
     const { email } = (req as any).locals.jwtPayload;
     const employee = await findEmployeeByEmail(email);
@@ -731,7 +731,7 @@ export async function getSensorReading(req: Request, res: Response) {
   }
 }
 
-export async function updateHub(req: Request, res: Response) {
+export async function updateHubController(req: Request, res: Response) {
   try {
     const { email } = (req as any).locals.jwtPayload;
     const employee = await findEmployeeByEmail(email);
@@ -760,7 +760,7 @@ export async function updateHub(req: Request, res: Response) {
   }
 }
 
-export async function updateSensor(req: Request, res: Response) {
+export async function updateSensorController(req: Request, res: Response) {
   try {
     const { email } = (req as any).locals.jwtPayload;
     const employee = await findEmployeeByEmail(email);
@@ -797,7 +797,7 @@ export async function updateSensor(req: Request, res: Response) {
   }
 }
 
-export async function deleteHub(req: Request, res: Response) {
+export async function deleteHubController(req: Request, res: Response) {
   try {
     const { email } = (req as any).locals.jwtPayload;
     const employee = await findEmployeeByEmail(email);
@@ -822,7 +822,7 @@ export async function deleteHub(req: Request, res: Response) {
   }
 }
 
-export async function deleteSensor(req: Request, res: Response) {
+export async function deleteSensorController(req: Request, res: Response) {
   try {
     const { email } = (req as any).locals.jwtPayload;
     const employee = await findEmployeeByEmail(email);
@@ -910,7 +910,7 @@ export async function getAllSensorMaintenanceLogsController(req: Request, res: R
   }
 }
 
-export async function addSensorToHub(req: Request, res: Response) {
+export async function addSensorToHubController(req: Request, res: Response) {
   try {
     const { email } = (req as any).locals.jwtPayload;
     const employee = await findEmployeeByEmail(email);
@@ -943,7 +943,7 @@ export async function addSensorToHub(req: Request, res: Response) {
   }
 }
 
-export async function initializeHub(req: Request, res: Response) {
+export async function initializeHubController(req: Request, res: Response) {
   try {
     const { processorName } = req.body;
     // const {processorName} = req.body;
@@ -957,7 +957,7 @@ export async function initializeHub(req: Request, res: Response) {
   }
 }
 
-export async function getSensorMaintenanceSuggestions(req: Request, res: Response) {
+export async function getSensorMaintenanceSuggestionsController(req: Request, res: Response) {
   try {
     const { email } = (req as any).locals.jwtPayload;
     const employee = await findEmployeeByEmail(email);
@@ -980,7 +980,7 @@ export async function getSensorMaintenanceSuggestions(req: Request, res: Respons
   }
 }
 
-export async function assignMaintenanceStaffToSensor(req: Request, res: Response) {
+export async function assignMaintenanceStaffToSensorController(req: Request, res: Response) {
   try {
     const { email } = (req as any).locals.jwtPayload;
     const employee = await findEmployeeByEmail(email);
@@ -1013,7 +1013,7 @@ export async function assignMaintenanceStaffToSensor(req: Request, res: Response
   }
 }
 
-export async function removeMaintenanceStaffFromSensor(req: Request, res: Response) {
+export async function removeMaintenanceStaffFromSensorController(req: Request, res: Response) {
   try {
     const { email } = (req as any).locals.jwtPayload;
     const employee = await findEmployeeByEmail(email);
@@ -1046,7 +1046,7 @@ export async function removeMaintenanceStaffFromSensor(req: Request, res: Respon
   }
 }
 
-export async function getAuthorizationForCamera(req: Request, res: Response) {
+export async function getAuthorizationForCameraController(req: Request, res: Response) {
   try {
     const { email } = (req as any).locals.jwtPayload;
     const employee = await findEmployeeByEmail(email);
@@ -1077,7 +1077,7 @@ export async function getAuthorizationForCamera(req: Request, res: Response) {
   }
 }
 
-export async function createNewAnimalFeed(req: Request, res: Response) {
+export async function createNewAnimalFeedController(req: Request, res: Response) {
   try {
     const animalFeedImageUrl = await handleFileUpload(
       req,
@@ -1114,7 +1114,7 @@ export async function createNewAnimalFeed(req: Request, res: Response) {
   }
 }
 
-export async function getAllAnimalFeed(req: Request, res: Response) {
+export async function getAllAnimalFeedController(req: Request, res: Response) {
   try {
     const allAnimalFeed = await AnimalFeedService.getAllAnimalFeed();
     return res.status(200).json(allAnimalFeed);
@@ -1123,7 +1123,7 @@ export async function getAllAnimalFeed(req: Request, res: Response) {
   }
 }
 
-export async function getAnimalFeedByName(req: Request, res: Response) {
+export async function getAnimalFeedByNameController(req: Request, res: Response) {
   const { animalFeedName } = req.params;
 
   if (animalFeedName == undefined) {
@@ -1141,7 +1141,7 @@ export async function getAnimalFeedByName(req: Request, res: Response) {
   }
 }
 
-export async function getAnimalFeedById(req: Request, res: Response) {
+export async function getAnimalFeedByIdController(req: Request, res: Response) {
   const { animalFeedId } = req.params;
 
   if (animalFeedId == undefined) {
@@ -1245,7 +1245,7 @@ export async function updateAnimalFeedImageController(req: Request, res: Respons
   }
 }
 
-export async function deleteAnimalFeedByName(req: Request, res: Response) {
+export async function deleteAnimalFeedByNameController(req: Request, res: Response) {
   const { animalFeedName } = req.params;
 
   if (animalFeedName == undefined) {
@@ -1263,7 +1263,7 @@ export async function deleteAnimalFeedByName(req: Request, res: Response) {
   }
 }
 
-export async function createNewEnrichmentItem(req: Request, res: Response) {
+export async function createNewEnrichmentItemController(req: Request, res: Response) {
   try {
     const enrichmentItemImageUrl = await handleFileUpload(
       req,
@@ -1297,7 +1297,7 @@ export async function createNewEnrichmentItem(req: Request, res: Response) {
   }
 }
 
-export async function getAllEnrichmentItem(req: Request, res: Response) {
+export async function getAllEnrichmentItemController(req: Request, res: Response) {
   try {
     const allEnrichmentItem = await EnrichmentItemService.getAllEnrichmentItem();
     return res.status(200).json(allEnrichmentItem);
@@ -1394,7 +1394,7 @@ export async function updateEnrichmentItemImageController(req: Request, res: Res
   }
 }
 
-export async function deleteEnrichmentItemByName(req: Request, res: Response) {
+export async function deleteEnrichmentItemByNameController(req: Request, res: Response) {
   const { enrichmentItemName } = req.params;
 
   if (enrichmentItemName == undefined) {

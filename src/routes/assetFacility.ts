@@ -3,42 +3,42 @@ import express from "express";
 // Controller functions
 import { authMiddleware } from "../middlewares/authMiddleware";
 import {
-  addHubToFacility,
-  createFacility,
-  updateFacility,
-  addSensorToHub,
-  initializeHub,
-  createNewAnimalFeed,
-  getAllAnimalFeed,
-  getAnimalFeedByName,
+  addHubToFacilityController,
+  createFacilityController,
+  updateFacilityController,
+  addSensorToHubController,
+  initializeHubController,
+  createNewAnimalFeedController,
+  getAllAnimalFeedController,
+  getAnimalFeedByNameController,
   updateAnimalFeedController,
-  deleteAnimalFeedByName,
-  getAnimalFeedById,
-  createNewEnrichmentItem,
-  getAllEnrichmentItem,
+  deleteAnimalFeedByNameController,
+  getAnimalFeedByIdController,
+  createNewEnrichmentItemController,
+  getAllEnrichmentItemController,
   getEnrichmentItemByIdController,
   updateEnrichmentItemImageController,
   updateEnrichmentItemController,
-  deleteEnrichmentItemByName,
-  getAllHubs,
+  deleteEnrichmentItemByNameController,
+  getAllHubsController,
   getHubProcessorController,
-  getAllSensors,
-  getSensorReading,
-  updateHub,
-  updateSensor,
-  deleteHub,
-  deleteSensor,
-  getAuthorizationForCamera,
+  getAllSensorsController,
+  getSensorReadingController,
+  updateHubController,
+  updateSensorController,
+  deleteHubController,
+  deleteSensorController,
+  getAuthorizationForCameraController,
   getAllFacilityController,
-  deleteFacility,
-  assignMaintenanceStaffToSensor,
-  removeMaintenanceStaffFromSensor,
-  assignMaintenanceStaffToFacility,
-  removeMaintenanceStaffFromFacility,
-  assignOperationStaffToFacility,
-  removeOperationStaffFromFacility,
-  getFacilityMaintenanceSuggestions,
-  getSensorMaintenanceSuggestions,
+  deleteFacilityController,
+  assignMaintenanceStaffToSensorController,
+  removeMaintenanceStaffFromSensorController,
+  assignMaintenanceStaffToFacilityController,
+  removeMaintenanceStaffFromFacilityController,
+  assignOperationStaffToFacilityController,
+  removeOperationStaffFromFacilityController,
+  getFacilityMaintenanceSuggestionsController,
+  getSensorMaintenanceSuggestionsController,
   updateAnimalFeedImageController,
   getFacilityController,
   getAssignedMaintenanceStaffOfFacilityController,
@@ -54,63 +54,63 @@ import {
 const router = express.Router();
 
 // IP device API
-router.put("/initializeHub", initializeHub);
+router.put("/initializeHub", initializeHubController);
 
 router.use(authMiddleware);
 
 // Facilities
-router.post("/createFacility", createFacility);
+router.post("/createFacility", createFacilityController);
 router.post("/getAllFacility", getAllFacilityController);
 router.get("/getMyOperationFacility", getMyOperationFacilityController);
 router.get("/getMyMaintainedFacility", getMyMaintainedFacilityController);
 router.post("/getFacility/:facilityId", getFacilityController);
-router.get("/getFacilityMaintenanceSuggestions", getFacilityMaintenanceSuggestions);
-router.put("/updateFacility/:facilityId", updateFacility);
-router.delete("/deleteFacility/:facilityId", deleteFacility);
+router.get("/getFacilityMaintenanceSuggestions", getFacilityMaintenanceSuggestionsController);
+router.put("/updateFacility/:facilityId", updateFacilityController);
+router.delete("/deleteFacility/:facilityId", deleteFacilityController);
 router.get("/getAssignedMaintenanceStaffOfFacility/:facilityId", getAssignedMaintenanceStaffOfFacilityController);
 router.get("/getAllMaintenanceStaff/", getAllMaintenanceStaffController);
-router.put("/assignMaintenanceStaffToFacility/:facilityId", assignMaintenanceStaffToFacility);
-router.delete("/removeMaintenanceStaffFromFacility/:facilityId", removeMaintenanceStaffFromFacility);
-router.put("/assignOperationStaffToFacility/:facilityId", assignOperationStaffToFacility);
-router.delete("/removeOperationStaffFromFacility/:facilityId", removeOperationStaffFromFacility);
+router.put("/assignMaintenanceStaffToFacility/:facilityId", assignMaintenanceStaffToFacilityController);
+router.delete("/removeMaintenanceStaffFromFacility/:facilityId", removeMaintenanceStaffFromFacilityController);
+router.put("/assignOperationStaffToFacility/:facilityId", assignOperationStaffToFacilityController);
+router.delete("/removeOperationStaffFromFacility/:facilityId", removeOperationStaffFromFacilityController);
 router.get("/getFacilityLogs/:facilityId", getFacilityLogsController);
-router.put("/createFacilityLog/:facilityId", createFacilityLogController);
+router.post("/createFacilityLog/:facilityId", createFacilityLogController);
 
 //Animal Feed
-router.post("/createNewAnimalFeed", createNewAnimalFeed);
-router.get("/getAllAnimalFeed", getAllAnimalFeed);
-router.get("/getAnimalFeed/:animalFeedName", getAnimalFeedByName);
-router.get("/getAnimalFeedById/:animalFeedId", getAnimalFeedById);
+router.post("/createNewAnimalFeed", createNewAnimalFeedController);
+router.get("/getAllAnimalFeed", getAllAnimalFeedController);
+router.get("/getAnimalFeed/:animalFeedName", getAnimalFeedByNameController);
+router.get("/getAnimalFeedById/:animalFeedId", getAnimalFeedByIdController);
 router.put("/updateAnimalFeed", updateAnimalFeedController);
 router.put("/updateAnimalFeedImage", updateAnimalFeedImageController); // dont use
-router.delete("/deleteAnimalFeed/:animalFeedName", deleteAnimalFeedByName);
+router.delete("/deleteAnimalFeed/:animalFeedName", deleteAnimalFeedByNameController);
 
 // Enrichment Items
-router.post("/createNewEnrichmentItem", createNewEnrichmentItem);
-router.get("/getAllEnrichmentItem", getAllEnrichmentItem);
+router.post("/createNewEnrichmentItem", createNewEnrichmentItemController);
+router.get("/getAllEnrichmentItem", getAllEnrichmentItemController);
 router.get("/getEnrichmentItem/:enrichmentItemId", getEnrichmentItemByIdController);
 router.put("/updateEnrichmentItem", updateEnrichmentItemController);
 router.put("/updateEnrichmentItemImage", updateEnrichmentItemImageController);
-router.delete("/deleteEnrichmentItem/:enrichmentItemName", deleteEnrichmentItemByName);
+router.delete("/deleteEnrichmentItem/:enrichmentItemName", deleteEnrichmentItemByNameController);
 
 // Hubs and Sensors
-router.post("/addHub", addHubToFacility);
-router.get("/getAllHubs", getAllHubs);
+router.post("/addHub", addHubToFacilityController);
+router.get("/getAllHubs", getAllHubsController);
 router.post("/getHub/:hubProcessorId", getHubProcessorController);
-router.put("/updateHub/:hubProcessorId", updateHub);
-router.delete("/deleteHub/:hubProcessorId", deleteHub);
+router.put("/updateHub/:hubProcessorId", updateHubController);
+router.delete("/deleteHub/:hubProcessorId", deleteHubController);
 
-router.post("/addSensor", addSensorToHub);
-router.get("/getAllSensors", getAllSensors);
-router.get("/getSensorReading/:sensorId", getSensorReading);
-router.get("/getSensorMaintenanceSuggestions", getSensorMaintenanceSuggestions);
-router.put("/assignMaintenanceStaffToSensor/:sensorId", assignMaintenanceStaffToSensor);
-router.put("/removeMaintenanceStaffFromSensor/:sensorId", removeMaintenanceStaffFromSensor);
-router.put("/updateSensor/:sensorId", updateSensor);
-router.delete("/deleteSensor/:sensorId", deleteSensor);
+router.post("/addSensor", addSensorToHubController);
+router.get("/getAllSensors", getAllSensorsController);
+router.get("/getSensorReading/:sensorId", getSensorReadingController);
+router.get("/getSensorMaintenanceSuggestions", getSensorMaintenanceSuggestionsController);
+router.put("/assignMaintenanceStaffToSensor/:sensorId", assignMaintenanceStaffToSensorController);
+router.put("/removeMaintenanceStaffFromSensor/:sensorId", removeMaintenanceStaffFromSensorController);
+router.put("/updateSensor/:sensorId", updateSensorController);
+router.delete("/deleteSensor/:sensorId", deleteSensorController);
 router.post("/createSensorMaintenanceLog/:sensorId", createSensorMaintenanceLogController);
 router.get("/getAllSensorMaintenanceLogsController/:sensorId", getAllSensorMaintenanceLogsController);
 
-router.get("/getAuthorizationForCamera", getAuthorizationForCamera);
+router.get("/getAuthorizationForCamera", getAuthorizationForCameraController);
 
 export default router;
