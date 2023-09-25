@@ -7,7 +7,7 @@ import { hash } from "../helpers/security";
 import { findEmployeeById, getAllEmployees } from "./employee";
 import { GeneralStaff } from "../models/generalStaff";
 import { InHouse } from "../models/inHouse";
-import { FacilityLog } from "../models/faciltiyLog";
+import { FacilityLog } from "../models/facilityLog";
 import { compareDates } from "../helpers/others";
 import { predictNextDate } from "../helpers/predictors";
 import { MaintenanceLog } from "../models/maintenanceLog";
@@ -65,7 +65,7 @@ export async function getAllFacilityMaintenanceSuggestions() {
     for (const facility in facilities) {
       let inHouse = await (facility as any).getFacilityDetail();
       let logs = (await inHouse.getFacilityLogs()) || [];
-      logs = logs.map( (log: FacilityLog) => log.dateTime);
+      logs = logs.map((log: FacilityLog) => log.dateTime);
       (facility as any).dataValues["predictedMaintenanceDate"] = predictNextDate(logs.slice(0, Math.max(logs.length, 5)));
     }
 
@@ -127,10 +127,10 @@ export async function assignMaintenanceStaffToFacilityById(
       if (staff.generalStaffType != GeneralStaffType.ZOO_MAINTENANCE) throw { message: "Not a Maintenance Staff!" }
       staffList.push(staff)
     }
-    for (const staff of staffList){
-      for (const assigned of (await inHouse.getMaintenanceStaffs())){
+    for (const staff of staffList) {
+      for (const assigned of (await inHouse.getMaintenanceStaffs())) {
         if ((await assigned.getEmployee()).employeeId == (await staff.getEmployee()).employeeId) {
-          throw {message : "Stuff alreadly assigned!"}
+          throw { message: "Stuff alreadly assigned!" }
         }
       }
       await inHouse.addMaintenanceStaff(staff);
@@ -190,7 +190,7 @@ export async function assignOperationStaffToFacilityById(
     const staffList: GeneralStaff[] = []
     for (const staffPromise of generalStaffs) {
       const staff = await staffPromise;
-      console.log("staff",staff)
+      console.log("staff", staff)
       if (staff.generalStaffType != GeneralStaffType.ZOO_OPERATIONS) throw { message: "Not a Operation Staff!" }
       staffList.push(staff)
     }
@@ -223,7 +223,7 @@ export async function removeOperationStaffFromFacilityById(
     const staffList: GeneralStaff[] = []
     for (const staffPromise of generalStaffs) {
       const staff = await staffPromise;
-      console.log("staff",staff)
+      console.log("staff", staff)
       if (staff.generalStaffType != GeneralStaffType.ZOO_OPERATIONS) throw { message: "Not a Operation Staff!" }
       staffList.push(staff)
     }
@@ -247,7 +247,7 @@ export async function getFacilityLogs(
     });
     if (!facility) throw { message: "Unable to find facilityId: " + facility };
     const thirdParty = await facility.getFacilityDetail();
-    if (facility.facilityDetail != "inHouse") throw {message: "Not an in-house facility!"}
+    if (facility.facilityDetail != "inHouse") throw { message: "Not an in-house facility!" }
 
     return thirdParty.getFacilityLogs();
   } catch (error: any) {
@@ -258,8 +258,8 @@ export async function getFacilityLogs(
 export async function createFacilityLog(
   facilityId: number,
   isMaintenance: boolean,
-  title : string,
-  details : string,
+  title: string,
+  details: string,
   remarks: string,
 ): Promise<FacilityLog> {
   try {
@@ -268,13 +268,13 @@ export async function createFacilityLog(
     });
     if (!facility) throw { message: "Unable to find facilityId: " + facility };
     const thirdParty = await facility.getFacilityDetail();
-    if (facility.facilityDetail != "inHouse") throw {message: "Not an in-house facility!"}
+    if (facility.facilityDetail != "inHouse") throw { message: "Not an in-house facility!" }
 
     const facilityLog = await FacilityLog.create({
-      dateTime : new Date(),
+      dateTime: new Date(),
       isMaintenance: isMaintenance,
-      title : title,
-      details : details,
+      title: title,
+      details: details,
       remarks: remarks
     })
     thirdParty.addFacilityLog(facilityLog);
@@ -394,9 +394,9 @@ export async function getAllSensorMaintenanceSuggestions() {
 
     let sensors: any[] = await _getAllSensors(["sensorReadings"]);
     let counter = 0
-    for (const sensor of sensors){
+    for (const sensor of sensors) {
       let logs = (await sensor.getMaintenanceLogs()) || [];
-      let dateLogs = logs.map((log:MaintenanceLog)=>log.dateTime);
+      let dateLogs = logs.map((log: MaintenanceLog) => log.dateTime);
       (sensor as any).dataValues["predictedMaintenanceDate"] = predictNextDate(dateLogs.slice(0, Math.max(dateLogs.length, 5)));
       counter = counter + 1
     }
@@ -493,11 +493,11 @@ export async function deleteSensorById(
 
 export async function createSensorMaintenanceLog(
   sensorId: number,
-  date : Date, 
-  title : string, 
-  details:string, 
-  remarks:string
-): Promise<MaintenanceLog>{
+  date: Date,
+  title: string,
+  details: string,
+  remarks: string
+): Promise<MaintenanceLog> {
   try {
     const sensor = await Sensor.findOne({
       where: { sensorId: sensorId },
@@ -505,10 +505,10 @@ export async function createSensorMaintenanceLog(
     if (!sensor) throw { message: "Unable to find sensorId: " + sensorId };
 
     const newLog = await MaintenanceLog.create({
-      dateTime:date,
-      title:title,
-      details:details,
-      remarks:remarks
+      dateTime: date,
+      title: title,
+      details: details,
+      remarks: remarks
     })
     sensor.addMaintenanceLog(newLog);
     newLog.setSensor(sensor);
@@ -521,11 +521,11 @@ export async function createSensorMaintenanceLog(
 
 export async function createFacilityMaintenanceLog(
   facilityId: number,
-  date : Date, 
-  title : string, 
-  details:string, 
-  remarks:string
-): Promise<FacilityLog>{
+  date: Date,
+  title: string,
+  details: string,
+  remarks: string
+): Promise<FacilityLog> {
   try {
     const facility = await Facility.findOne({
       where: { facilityId: facilityId },
@@ -535,10 +535,10 @@ export async function createFacilityMaintenanceLog(
     if (!inHouse) throw { message: "Not a in-house facility!" };
 
     const newLog = await FacilityLog.create({
-      dateTime:date,
-      title:title,
-      details:details,
-      remarks:remarks,
+      dateTime: date,
+      title: title,
+      details: details,
+      remarks: remarks,
       isMaintenance: true
     })
     inHouse.addFacilityLog(newLog);
@@ -551,7 +551,7 @@ export async function createFacilityMaintenanceLog(
 
 export async function getAllSensorMaintenanceLogs(
   sensorId: number
-): Promise<MaintenanceLog[]>{
+): Promise<MaintenanceLog[]> {
   try {
     const sensor = await Sensor.findOne({
       where: { sensorId: sensorId },
@@ -620,14 +620,14 @@ export async function assignMaintenanceStaffToSensorById(
       where: { sensorId: sensorId },
     });
     if (!sensor) throw { message: "Unable to find sensorId: " + sensorId };
-    
+
     const generalStaff = await (await findEmployeeById(employeeId)).getGeneralStaff();
     if (!generalStaff) throw { message: "Unable to find generalStaff with employeeId: " + employeeId };
 
     sensor.setGeneralStaff(generalStaff);
     generalStaff.addSensor(sensor);
     await sensor.save();
-    
+
     return sensor;
   } catch (error: any) {
     throw validationErrorHandler(error);
@@ -643,7 +643,7 @@ export async function removeMaintenanceStaffFromSensorById(
       where: { sensorId: sensorId },
     });
     if (!sensor) throw { message: "Unable to find sensorId: " + sensorId };
-    
+
     const generalStaff = await (await findEmployeeById(employeeId)).getGeneralStaff();
     if (!generalStaff) throw { message: "Unable to find generalStaff with employeeId: " + employeeId };
 

@@ -16,7 +16,7 @@ class FacilityLog extends Model<
 > {
   declare logId: CreationOptional<number>;
   declare dateTime: Date;
-  declare isMaintenance:boolean;
+  declare isMaintenance: boolean;
   declare title: string;
   // declare type: Type;
   declare details: string;

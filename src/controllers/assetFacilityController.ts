@@ -44,7 +44,7 @@ import * as AnimalFeedService from "../services/animalFeed";
 import * as EnrichmentItemService from "../services/enrichmentItem";
 import { compareDates } from "../helpers/others";
 import { InHouse } from "../models/inHouse";
-import { FacilityLog } from "models/faciltiyLog";
+import { FacilityLog } from "models/facilityLog";
 
 export async function createFacilityController(req: Request, res: Response) {
   try {
@@ -570,8 +570,8 @@ export async function createFacilityMaintenanceLogController(req: Request, res: 
     if ([facilityId, title, details, remarks].includes(undefined)) {
       return res.status(400).json({ error: "Missing information!" });
     }
-    
-    let maintenanceLog = await createFacilityMaintenanceLog(Number(facilityId),new Date(), title, details, remarks);
+
+    let maintenanceLog = await createFacilityMaintenanceLog(Number(facilityId), new Date(), title, details, remarks);
 
     return res.status(200).json({ maintenanceLog: maintenanceLog });
   } catch (error: any) {
@@ -754,7 +754,7 @@ export async function getSensorController(req: Request, res: Response) {
     if (sensorId === undefined) {
       return res.status(400).json({ error: "Missing information!" });
     }
-    
+
     const _includes: string[] = []
     for (const role of ["hubProcessor", "sensorReading", "maintenanceLogs", "generalStaff"]) {
       if (includes.includes(role)) _includes.push(role)
@@ -940,7 +940,7 @@ export async function createSensorMaintenanceLogController(req: Request, res: Re
       return res.status(400).json({ error: "Missing information!" });
     }
 
-    let maintenanceLog = await createSensorMaintenanceLog(Number(sensorId),new Date(), title, details, remarks);
+    let maintenanceLog = await createSensorMaintenanceLog(Number(sensorId), new Date(), title, details, remarks);
 
     return res.status(200).json({ maintenanceLog: maintenanceLog });
   } catch (error: any) {

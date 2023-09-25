@@ -20,7 +20,7 @@ import { conn } from "../db";
 import { Facility } from "./facility";
 import { FacilityType } from "./enumerated";
 import { GeneralStaff } from "./generalStaff";
-import { FacilityLog } from "./faciltiyLog";
+import { FacilityLog } from "./facilityLog";
 import { CustomerReportLog } from "./customerReportLog";
 
 class InHouse extends Model<
@@ -40,7 +40,7 @@ class InHouse extends Model<
   declare operationStaffs?: GeneralStaff[];
   declare facilityLogs?: FacilityLog[];
   declare events?: Event[];
-  declare customerReportLogs?:CustomerReportLog[];
+  declare customerReportLogs?: CustomerReportLog[];
 
   declare getFacility: BelongsToGetAssociationMixin<Facility>;
   declare setFacility: BelongsToSetAssociationMixin<Facility, number>;
@@ -57,9 +57,9 @@ class InHouse extends Model<
   declare removeMaintenanceStaff: BelongsToManyRemoveAssociationMixin<GeneralStaff, number>;
 
   declare getOperationStaffs: HasManyGetAssociationsMixin<GeneralStaff[]>;
-  declare addOperationStaff: HasManyAddAssociationMixin<GeneralStaff,number>;
-  declare setOperationStaffs: HasManySetAssociationsMixin<GeneralStaff[],number>;
-  declare removeOperationStaff: HasManyRemoveAssociationMixin<GeneralStaff,number>;
+  declare addOperationStaff: HasManyAddAssociationMixin<GeneralStaff, number>;
+  declare setOperationStaffs: HasManySetAssociationsMixin<GeneralStaff[], number>;
+  declare removeOperationStaff: HasManyRemoveAssociationMixin<GeneralStaff, number>;
 
   declare getFacilityLogs: HasManyGetAssociationsMixin<FacilityLog>;
   declare addFacilityLog: HasManyAddAssociationMixin<FacilityLog, number>;
@@ -70,7 +70,7 @@ class InHouse extends Model<
   declare addEvent: HasManyAddAssociationMixin<Event, number>;
   declare setEvents: HasManySetAssociationsMixin<Event[], number>;
   declare removeEvent: HasManyRemoveAssociationMixin<Event, number>;
-  
+
   declare getCustomerReportLogs: HasManyGetAssociationsMixin<CustomerReportLog[]>;
   declare addCustomerReportLog: HasManyAddAssociationMixin<CustomerReportLog, number>;
   declare setCustomerReportLogs: HasManySetAssociationsMixin<CustomerReportLog[], number>;
@@ -82,7 +82,7 @@ class InHouse extends Model<
     }
   }
 
-  public async toFullJSON(){
+  public async toFullJSON() {
     return {
       ...this.get(),
       facility: (await this.getFacility()),
