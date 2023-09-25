@@ -115,7 +115,7 @@ export async function assignMaintenanceStaffToFacilityById(
     const facility = await Facility.findOne({
       where: { facilityId: facilityId },
     });
-    if (!facility) throw { message: "Unable to find facilityId: " + facility };
+    if (!facility) throw { message: "Unable to find facilityId: " + facilityId };
     const inHouse = await facility.getInHouse();
     if (!inHouse) throw { message: "Facility is not In House!" };
 
@@ -147,7 +147,7 @@ export async function removeMaintenanceStaffFromFacilityById(
     const facility = await Facility.findOne({
       where: { facilityId: facilityId },
     });
-    if (!facility) throw { message: "Unable to find facilityId: " + facility };
+    if (!facility) throw { message: "Unable to find facilityId: " + facilityId };
     const inHouse = await facility.getInHouse();
     if (!inHouse) throw { message: "Facility is not In House!" };
 
@@ -178,7 +178,7 @@ export async function assignOperationStaffToFacilityById(
     const facility = await Facility.findOne({
       where: { facilityId: facilityId },
     });
-    if (!facility) throw { message: "Unable to find facilityId: " + facility };
+    if (!facility) throw { message: "Unable to find facilityId: " + facilityId };
     const inHouse = await facility.getInHouse();
     if (!inHouse) throw { message: "Facility is not In House!" };
 
@@ -281,7 +281,7 @@ export async function deleteFacilityById(
       where: { facilityId: facilityId },
     });
 
-    if (!facility) throw { message: "Unable to find facilityId: " + facility };
+    if (!facility) throw { message: "Unable to find facilityId: " + facilityId };
 
     return facility.destroy();
   } catch (error: any) {
@@ -312,7 +312,7 @@ export async function getSensorReadingBySensorId(
     const sensor = await Sensor.findOne({
       where: { sensorId: sensorId },
     });
-    if (!sensor) throw { message: "Unable to find sensorId: " + sensor };
+    if (!sensor) throw { message: "Unable to find sensorId: " + sensorId };
 
     return sensor.getSensorReadings();
   } catch (error: any) {
@@ -345,7 +345,7 @@ export async function updateHubByHubId(
     const hubProcessor = await HubProcessor.findOne({
       where: { hubProcessorId: hubId },
     }) as any;
-    if (!hubProcessor) throw { message: "Unable to find HubProcessorId: " + hubProcessor };
+    if (!hubProcessor) throw { message: "Unable to find HubProcessorId: " + hubId };
 
     for (const [key, value] of Object.entries(data)) {
       hubProcessor[key] = value;
@@ -366,7 +366,7 @@ export async function updateSensorById(
     const sensor = await Sensor.findOne({
       where: { sensorId: sensorId },
     }) as any;
-    if (!sensor) throw { message: "Unable to find sensorId: " + sensor };
+    if (!sensor) throw { message: "Unable to find sensorId: " + sensorId };
 
     for (const [key, value] of Object.entries(data)) {
       sensor[key] = value;
@@ -386,7 +386,7 @@ export async function deleteHubById(
     const hubProcessor = await HubProcessor.findOne({
       where: { hubProcessorId: hubId },
     });
-    if (!hubProcessor) throw { message: "Unable to find HubProcessorId: " + hubProcessor };
+    if (!hubProcessor) throw { message: "Unable to find HubProcessorId: " + hubId };
 
     return hubProcessor.destroy();
   } catch (error: any) {
@@ -401,9 +401,52 @@ export async function deleteSensorById(
     const sensor = await Sensor.findOne({
       where: { sensorId: sensorId },
     });
-    if (!sensor) throw { message: "Unable to find sensorId: " + sensor };
+    if (!sensor) throw { message: "Unable to find sensorId: " + sensorId };
 
     return sensor.destroy();
+  } catch (error: any) {
+    throw validationErrorHandler(error);
+  }
+}
+
+export async function createMaintenanceLog(
+  sensorId: number,
+  date : Date, 
+  title : string, 
+  details:string, 
+  remarks:string
+): Promise<MaintenanceLog>{
+  try {
+    const sensor = await Sensor.findOne({
+      where: { sensorId: sensorId },
+    });
+    if (!sensor) throw { message: "Unable to find sensorId: " + sensorId };
+
+    const newLog = await MaintenanceLog.create({
+      dateTime:date,
+      title:title,
+      details:details,
+      remarks:remarks
+    })
+    sensor.addMaintenanceLog(newLog);
+    newLog.setSensor(sensor);
+
+    return newLog;
+  } catch (error: any) {
+    throw validationErrorHandler(error);
+  }
+}
+
+export async function getAllSensorMaintenanceLogs(
+  sensorId: number
+): Promise<MaintenanceLog[]>{
+  try {
+    const sensor = await Sensor.findOne({
+      where: { sensorId: sensorId },
+    });
+    if (!sensor) throw { message: "Unable to find sensorId: " + sensorId };
+
+    return sensor.getMaintenanceLogs();
   } catch (error: any) {
     throw validationErrorHandler(error);
   }
@@ -441,7 +484,7 @@ export async function initializeHubProcessor(
     const hubProcessor = await HubProcessor.findOne({
       where: { processorName:processorName },
     });
-    if (!hubProcessor) throw { message: "Unable to find hubProcessorId " + hubProcessor };
+    if (!hubProcessor) throw { message: "Unable to find processorName " + processorName };
     if (hubProcessor.hubStatus != HubStatus.PENDING) throw { message: "Hub has alreadly been initizlized!" };
 
     const newtoken = hubProcessor.generateHubSecret();
@@ -464,14 +507,14 @@ export async function assignMaintenanceStaffToSensorById(
     const sensor = await Sensor.findOne({
       where: { sensorId: sensorId },
     });
-    if (!sensor) throw { message: "Unable to find sensorId: " + sensor };
+    if (!sensor) throw { message: "Unable to find sensorId: " + sensorId };
     
     const generalStaff = await (await findEmployeeById(employeeId)).getGeneralStaff();
     if (!generalStaff) throw { message: "Unable to find generalStaff with employeeId: " + employeeId };
 
     sensor.setGeneralStaff(generalStaff);
     generalStaff.addSensor(sensor);
-    sensor.save();
+    await sensor.save();
     
     return sensor;
   } catch (error: any) {
@@ -487,7 +530,7 @@ export async function removeMaintenanceStaffFromSensorById(
     const sensor = await Sensor.findOne({
       where: { sensorId: sensorId },
     });
-    if (!sensor) throw { message: "Unable to find sensorId: " + sensor };
+    if (!sensor) throw { message: "Unable to find sensorId: " + sensorId };
     
     const generalStaff = await (await findEmployeeById(employeeId)).getGeneralStaff();
     if (!generalStaff) throw { message: "Unable to find generalStaff with employeeId: " + employeeId };

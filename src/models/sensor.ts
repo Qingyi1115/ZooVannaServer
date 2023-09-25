@@ -53,8 +53,8 @@ class Sensor extends Model<
   public async toFullJSON(){
     return {
       ...this.get(),
-      hubProcessor: (await this.getHubProcessor())?.toJSON(),
-      generalStaff: (await this.getGeneralStaff())?.toJSON(),
+      hubProcessor: (await this.getHubProcessor()),
+      generalStaff: (await this.getGeneralStaff()),
     };
   }
 }

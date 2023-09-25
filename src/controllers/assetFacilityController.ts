@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { findEmployeeByEmail } from "../services/employee";
-import { PlannerType } from "../models/enumerated";
+import { GeneralStaffType, PlannerType } from "../models/enumerated";
 import {
   getAllFacility,
   _getAllHubs,
@@ -28,6 +28,8 @@ import {
   updateSensorById,
   getMaintenanceStaffsByFacilityId,
   getAllMaintenanceStaff,
+  createMaintenanceLog,
+  getAllSensorMaintenanceLogs,
 } from "../services/assetFacility";
 import { Facility } from "../models/facility";
 import { Sensor } from "../models/sensor";
@@ -713,7 +715,70 @@ export async function deleteSensor(req: Request, res: Response) {
 
     await deleteSensorById(Number(sensorId));
 
-    return res.status(200);
+    return res.status(200).json({result:"success"});
+  } catch (error: any) {
+    res.status(400).json({ error: error.message });
+  }
+}
+
+export async function createSensorMaintenanceLogController(req: Request, res: Response) {
+  try {
+    const { email } = (req as any).locals.jwtPayload;
+    const employee = await findEmployeeByEmail(email);
+
+    if (
+      !(
+        (await employee.getGeneralStaff())?.generalStaffType ==
+        GeneralStaffType.ZOO_MAINTENANCE
+      ) && !(
+        (await employee.getPlanningStaff())?.plannerType ==
+        PlannerType.OPERATIONS_MANAGER
+      )
+    )
+      return res
+        .status(403)
+        .json({ error: "Access Denied! Operation managers only!" });
+
+    const { sensorId } = req.params;
+    const { title, details, remarks } = req.body;
+    if ([sensorId, title, details, remarks].includes(undefined)) {
+      return res.status(400).json({ error: "Missing information!" });
+    }
+
+    let maintenanceLog = await createMaintenanceLog(Number(sensorId),new Date(), title, details, remarks);
+
+    return res.status(200).json({ maintenanceLog: maintenanceLog });
+  } catch (error: any) {
+    res.status(400).json({ error: error.message });
+  }
+}
+
+export async function getAllSensorMaintenanceLogsController(req: Request, res: Response) {
+  try {
+    const { email } = (req as any).locals.jwtPayload;
+    const employee = await findEmployeeByEmail(email);
+
+    if (
+      !(
+        (await employee.getGeneralStaff())?.generalStaffType ==
+        GeneralStaffType.ZOO_MAINTENANCE
+      ) && !(
+        (await employee.getPlanningStaff())?.plannerType ==
+        PlannerType.OPERATIONS_MANAGER
+      )
+    )
+      return res
+        .status(403)
+        .json({ error: "Access Denied! Operation managers only!" });
+
+    const { sensorId } = req.params;
+    if (sensorId === undefined) {
+      return res.status(400).json({ error: "Missing information!" });
+    }
+
+    let maintenanceLogs = await getAllSensorMaintenanceLogs(Number(sensorId));
+    
+    return res.status(200).json({ maintenanceLog: maintenanceLogs });
   } catch (error: any) {
     res.status(400).json({ error: error.message });
   }
@@ -816,7 +881,7 @@ export async function assignMaintenanceStaffToSensor(req: Request, res: Response
       Number(employeeId)
     );
 
-    return res.status(200).json({ sensor: sensor.toFullJSON() });
+    return res.status(200).json({ sensor: await sensor.toFullJSON() });
   } catch (error: any) {
     res.status(400).json({ error: error.message });
   }

@@ -41,7 +41,9 @@ import {
   updateAnimalFeedImageController,
   getFacilityController,
   getAssignedMaintenanceStaffOfFacilityController,
-  getAllMaintenanceStaffController
+  getAllMaintenanceStaffController,
+  createSensorMaintenanceLogController,
+  getAllSensorMaintenanceLogsController
 } from "../controllers/assetFacilityController";
 
 const router = express.Router();
@@ -62,8 +64,8 @@ router.get("/getAssignedMaintenanceStaffOfFacility/:facilityId", getAssignedMain
 router.get("/getAllMaintenanceStaff/", getAllMaintenanceStaffController);
 router.put("/assignMaintenanceStaffToFacility/:facilityId", assignMaintenanceStaffToFacility);
 router.put("/removeMaintenanceStaffFromFacility/:facilityId", removeMaintenanceStaffFromFacility);
-router.get("/assignOperationStaffToFacility/:facilityId", assignOperationStaffToFacility);
-router.get("/removeOperationStaffFromFacility/:facilityId", removeOperationStaffFromFacility);
+router.put("/assignOperationStaffToFacility/:facilityId", assignOperationStaffToFacility);
+router.put("/removeOperationStaffFromFacility/:facilityId", removeOperationStaffFromFacility);
 
 //Animal Feed
 router.post("/createNewAnimalFeed", createNewAnimalFeed);
@@ -92,10 +94,12 @@ router.post("/addSensor", addSensorToHub);
 router.get("/getAllSensors", getAllSensors);
 router.get("/getSensorReading/:sensorId", getSensorReading);
 router.get("/getSensorMaintenanceSuggestions", getSensorMaintenanceSuggestions);
-router.get("/assignMaintenanceStaffToSensor/:sensorId", assignMaintenanceStaffToSensor);
-router.get("/removeMaintenanceStaffFromSensor/:sensorId", removeMaintenanceStaffFromSensor);
+router.put("/assignMaintenanceStaffToSensor/:sensorId", assignMaintenanceStaffToSensor);
+router.put("/removeMaintenanceStaffFromSensor/:sensorId", removeMaintenanceStaffFromSensor);
 router.put("/updateSensor/:sensorId", updateSensor);
 router.delete("/deleteSensor/:sensorId", deleteSensor);
+router.post("/createSensorMaintenanceLog/:sensorId", createSensorMaintenanceLogController);
+router.get("/getAllSensorMaintenanceLogsController/:sensorId", getAllSensorMaintenanceLogsController);
 
 router.get("/getAuthorizationForCamera", getAuthorizationForCamera);
 
