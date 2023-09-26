@@ -756,7 +756,7 @@ export async function getSensorController(req: Request, res: Response) {
     }
 
     const _includes: string[] = []
-    for (const role of ["hubProcessor", "sensorReading", "maintenanceLogs", "generalStaff"]) {
+    for (const role of ["hubProcessor", "sensorReadings", "maintenanceLogs", "generalStaff"]) {
       if (includes.includes(role)) _includes.push(role)
     }
 
