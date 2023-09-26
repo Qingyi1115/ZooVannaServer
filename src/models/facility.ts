@@ -107,12 +107,10 @@ Facility.init(
       unique: true,
     },
     xCoordinate: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
+      type: DataTypes.INTEGER
     },
     yCoordinate: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
+      type: DataTypes.INTEGER
     },
     facilityDetail: {
       type: DataTypes.STRING,
