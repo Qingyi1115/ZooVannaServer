@@ -15,8 +15,8 @@ import { Employee } from "models/employee";
 
 export async function createNewFacility(
   facilityName: string,
-  xCoordinate: number,
-  yCoordinate: number,
+  xCoordinate: number | undefined,
+  yCoordinate: number| undefined,
   isSheltered: boolean,
   facilityDetail: string,
   facilityDetailJson: any,

@@ -64,16 +64,12 @@ export async function createFacilityController(req: Request, res: Response) {
 
     const {
       facilityName,
-      xCoordinate,
-      yCoordinate,
       isSheltered,
       facilityDetail,
       facilityDetailJson,
     } = req.body;
     console.log({
       facilityName,
-      xCoordinate,
-      yCoordinate,
       isSheltered,
       facilityDetail,
       facilityDetailJson,
@@ -81,8 +77,6 @@ export async function createFacilityController(req: Request, res: Response) {
     if (
       [
         facilityName,
-        xCoordinate,
-        yCoordinate,
         isSheltered,
         facilityDetail,
         facilityDetailJson,
@@ -90,8 +84,6 @@ export async function createFacilityController(req: Request, res: Response) {
     ) {
       console.log("Missing field(s): ", {
         facilityName,
-        xCoordinate,
-        yCoordinate,
         isSheltered,
         facilityDetail,
         facilityDetailJson,
@@ -101,8 +93,8 @@ export async function createFacilityController(req: Request, res: Response) {
 
     let facility = await createNewFacility(
       facilityName,
-      xCoordinate,
-      yCoordinate,
+      undefined,
+      undefined,
       isSheltered,
       facilityDetail,
       facilityDetailJson,
@@ -1016,11 +1008,15 @@ export async function initializeHubController(req: Request, res: Response) {
   try {
     const { processorName } = req.body;
     // const {processorName} = req.body;
+    console.log("processorName",processorName)
 
     let ipaddress = req.socket.remoteAddress || "127.0.0.1";
-    ipaddress = ipaddress == "::1" ? "127.0.0.1" : ipaddress
-
-    return res.status(200).json({ token: await initializeHubProcessor(processorName, ipaddress) });
+    console.log("ipaddress",ipaddress)
+    ipaddress = ipaddress == "::1" ? "127.0.0.1" : ipaddress.split(":")[3]
+    console.log("ipaddress",ipaddress)
+    const token = await initializeHubProcessor(processorName, ipaddress);
+    console.log("token",token)
+    return res.status(200).json({ token: token });
   } catch (error: any) {
     res.status(400).json({ error: error.message });
   }
