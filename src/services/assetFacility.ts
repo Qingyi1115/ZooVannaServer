@@ -593,10 +593,7 @@ export async function initializeHubProcessor(
   ipAddress: string
 ): Promise<string> {
   try {
-    const hubProcessor = await HubProcessor.findOne({
-      where: { processorName: processorName },
-    });
-    if (!hubProcessor) throw { message: "Unable to find processorName " + processorName };
+    const hubProcessor = await findProcessorByName(processorName);
     if (hubProcessor.hubStatus != HubStatus.PENDING) throw { message: "Hub has alreadly been initizlized!" };
 
     const newtoken = hubProcessor.generateHubSecret();
@@ -606,6 +603,21 @@ export async function initializeHubProcessor(
     hubProcessor.save();
 
     return newtoken;
+  } catch (error: any) {
+    throw validationErrorHandler(error);
+  }
+}
+
+export async function findProcessorByName(
+  processorName: string
+): Promise<HubProcessor> {
+  try {
+    const hubProcessor = await HubProcessor.findOne({
+      where: { processorName: processorName },
+    });
+    if (!hubProcessor) throw { message: "Unable to find processorName " + processorName };
+
+    return hubProcessor;
   } catch (error: any) {
     throw validationErrorHandler(error);
   }

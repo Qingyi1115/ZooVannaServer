@@ -35,6 +35,7 @@ import {
   getSensor,
   createSensorMaintenanceLog,
   createFacilityMaintenanceLog,
+  findProcessorByName,
 } from "../services/assetFacility";
 import { Facility } from "../models/facility";
 import { Sensor } from "../models/sensor";
@@ -1008,16 +1009,45 @@ export async function initializeHubController(req: Request, res: Response) {
   try {
     const { processorName } = req.body;
     // const {processorName} = req.body;
-    console.log("processorName",processorName)
 
     let ipaddress = req.socket.remoteAddress || "127.0.0.1";
-    console.log("ipaddress",ipaddress)
     ipaddress = ipaddress == "::1" ? "127.0.0.1" : ipaddress.split(":")[3]
-    console.log("ipaddress",ipaddress)
     const token = await initializeHubProcessor(processorName, ipaddress);
-    console.log("token",token)
     return res.status(200).json({ token: token });
   } catch (error: any) {
+    console.log(error);
+    res.status(400).json({ error: error.message });
+  }
+}
+
+export async function pushSensorReadingsController(req: Request, res: Response) {
+  try {
+    const { jsonPayloadString, sha256 } = req.body;
+    const { processorName } = req.params;
+
+    let ipaddress = req.socket.remoteAddress || "127.0.0.1";
+    ipaddress = ipaddress == "::1" ? "127.0.0.1" : ipaddress.split(":")[3]
+
+    const processor = await  findProcessorByName(processorName);
+    if (!processor.validatePayload(jsonPayloadString, sha256)){
+      try{return res.status(417).json({ error: "Json validation failed. Digest does not match!" });}
+      catch(err:any){return console.log(err)}
+    }
+    const payload = JSON.parse(jsonPayloadString);
+
+    // {sensor name 8 digit
+    //   '00000001': [ 
+    //     { readingDate: '2023-09-26 23:09:44', reading: 33 },
+    //     { readingDate: '2023-09-26 23:09:55', reading: 33.6 }
+    //   ]
+    // }
+    // Add payload to backend
+    processor.ipAddressName = ipaddress;
+    processor.lastDataUpdate = new Date();
+    processor.save();
+    return res.status(200).json({ sensors: (await processor.getSensors()).map(sensor=>sensor.sensorName) });
+  } catch (error: any) {
+    console.log(error);
     res.status(400).json({ error: error.message });
   }
 }
@@ -1074,6 +1104,7 @@ export async function assignMaintenanceStaffToSensorController(req: Request, res
 
     return res.status(200).json({ sensor: await sensor.toFullJSON() });
   } catch (error: any) {
+    console.log(error);
     res.status(400).json({ error: error.message });
   }
 }
@@ -1107,6 +1138,7 @@ export async function removeMaintenanceStaffFromSensorController(req: Request, r
 
     return res.status(200).json({ sensor: await sensor.toFullJSON() });
   } catch (error: any) {
+    console.log(error);
     res.status(400).json({ error: error.message });
   }
 }
@@ -1138,6 +1170,7 @@ export async function getAuthorizationForCameraController(req: Request, res: Res
         String(employee.employeeId),
       ));
   } catch (error: any) {
+    console.log(error);
     res.status(400).json({ error: error.message });
   }
 }
@@ -1185,6 +1218,7 @@ export async function getAllAnimalFeedController(req: Request, res: Response) {
     animalFeeds.forEach(animalFeed => animalFeed.toJSON())
     return res.status(200).json({ animalFeeds: animalFeeds });
   } catch (error: any) {
+    console.log(error);
     res.status(400).json({ error: error.message });
   }
 }
@@ -1203,6 +1237,7 @@ export async function getAnimalFeedByNameController(req: Request, res: Response)
     const animalFeed = await AnimalFeedService.getAnimalFeedByName(animalFeedName);
     return res.status(200).json(animalFeed);
   } catch (error: any) {
+    console.log(error);
     res.status(400).json({ error: error.message });
   }
 }

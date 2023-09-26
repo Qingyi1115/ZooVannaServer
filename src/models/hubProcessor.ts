@@ -15,6 +15,7 @@ import { conn } from "../db";
 import { Facility } from "./facility";
 import { Sensor } from "./sensor";
 import { HubStatus } from "./enumerated";
+import { hash } from "../helpers/security";
 
 class HubProcessor extends Model<
   InferAttributes<HubProcessor>,
@@ -41,6 +42,10 @@ class HubProcessor extends Model<
   public generateHubSecret() {
     this.hubSecret = (Math.random() + 1).toString(36).substring(7) + (Math.random() + 1).toString(36).substring(7);
     return this.hubSecret;
+  }
+
+  public validatePayload(jsonPayload:string, sha256:string) {
+    return sha256 == hash(jsonPayload + this.hubSecret);
   }
   
   public toJSON() {

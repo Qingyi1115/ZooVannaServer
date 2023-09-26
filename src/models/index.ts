@@ -1033,7 +1033,7 @@ export const facilityAssetsSeed = async () => {
         sensorName: "Camera2",
         sensorType: SensorType.CAMERA
       }, {
-        sensorName: "Camera3",
+        sensorName: "00000001",
         sensorType: SensorType.CAMERA
       }, {
         sensorName: "Camera4",

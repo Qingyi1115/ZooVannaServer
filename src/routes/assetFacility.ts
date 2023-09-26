@@ -50,13 +50,15 @@ import {
   getFacilityLogsController,
   createFacilityLogController,
   getSensorController,
-  createFacilityMaintenanceLogController
+  createFacilityMaintenanceLogController,
+  pushSensorReadingsController
 } from "../controllers/assetFacilityController";
 
 const router = express.Router();
 
 // IP device API
 router.put("/initializeHub", initializeHubController);
+router.post("/pushSensorReadings/:processorName", pushSensorReadingsController);
 
 router.use(authMiddleware);
 
