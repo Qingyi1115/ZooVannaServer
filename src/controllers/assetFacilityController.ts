@@ -36,6 +36,7 @@ import {
   createSensorMaintenanceLog,
   createFacilityMaintenanceLog,
   findProcessorByName,
+  createNewSensorReading,
 } from "../services/assetFacility";
 import { Facility } from "../models/facility";
 import { Sensor } from "../models/sensor";
@@ -1035,13 +1036,12 @@ export async function pushSensorReadingsController(req: Request, res: Response) 
     }
     const payload = JSON.parse(jsonPayloadString);
 
-    // {sensor name 8 digit
-    //   '00000001': [ 
-    //     { readingDate: '2023-09-26 23:09:44', reading: 33 },
-    //     { readingDate: '2023-09-26 23:09:55', reading: 33.6 }
-    //   ]
-    // }
-    // Add payload to backend
+    for (const sensor of payload){
+      for (const sensorReading of payload[sensor]){
+        await createNewSensorReading(sensor, sensorReading.readingDate, sensorReading.reading);
+      }
+    }
+    
     processor.ipAddressName = ipaddress;
     processor.lastDataUpdate = new Date();
     processor.save();

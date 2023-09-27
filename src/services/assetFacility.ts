@@ -12,6 +12,7 @@ import { compareDates } from "../helpers/others";
 import { predictNextDate } from "../helpers/predictors";
 import { MaintenanceLog } from "../models/maintenanceLog";
 import { Employee } from "models/employee";
+import { SensorReading } from "models/sensorReading";
 
 export async function createNewFacility(
   facilityName: string,
@@ -618,6 +619,29 @@ export async function findProcessorByName(
     if (!hubProcessor) throw { message: "Unable to find processorName " + processorName };
 
     return hubProcessor;
+  } catch (error: any) {
+    throw validationErrorHandler(error);
+  }
+}
+
+export async function createNewSensorReading(
+  sensorName: string,
+  date : Date,
+  value : number
+): Promise<Sensor> {
+  try {
+    const sensor = await Sensor.findOne({
+      where: { sensorName: sensorName },
+    });
+    if (!sensor) throw { message: "Unable to find sensor: " + sensor };
+
+    const sensorReading = await SensorReading.create({
+      readingDate:date,
+      value:value
+    });
+    sensorReading.setSensor(sensor);
+
+    return sensor;
   } catch (error: any) {
     throw validationErrorHandler(error);
   }
