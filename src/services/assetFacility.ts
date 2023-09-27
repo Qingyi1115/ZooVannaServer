@@ -316,11 +316,15 @@ export async function getAllFacility(
   facilityDetail: boolean
 ): Promise<Facility[]> {
   try {
-    const all_Facilities = await Facility.findAll({ include: includes });
+    const allFacilities = await Facility.findAll({ include: includes });
 
-    if (facilityDetail) all_Facilities.forEach(async facility => (facility as any)["facilityDetails"] = await facility.getFacilityDetail());
+    if (facilityDetail) {
+      for (const facility of allFacilities){
+        (facility as any).dataValues["facilityDetailJson"] = await facility.getFacilityDetail();
+      }
+    }
 
-    return all_Facilities;
+    return allFacilities;
   } catch (error: any) {
     throw validationErrorHandler(error);
   }
