@@ -133,7 +133,6 @@ export async function getAllFacilityController(req: Request, res: Response) {
     }
 
     let facilities: Facility[] = await getAllFacility(_includes, includes.includes("facilityDetail"));
-    console.log("facilities", facilities)
     facilities.forEach(facility => facility.toJSON())
 
     return res.status(200).json({ facilities: facilities });
