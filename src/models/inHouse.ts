@@ -63,7 +63,7 @@ class InHouse extends Model<
 
   declare getFacilityLogs: HasManyGetAssociationsMixin<FacilityLog>;
   declare addFacilityLog: HasManyAddAssociationMixin<FacilityLog, number>;
-  declare setFacilityLogs: HasManySetAssociationsMixin<FacilityLog[], number>;
+  declare setFacilityLogs: HasManySetAssociationsMixin<FacilityLog, number>;
   declare removeFacilityLog: HasManyRemoveAssociationMixin<FacilityLog, number>;
 
   declare getEvents: HasManyGetAssociationsMixin<Event[]>;

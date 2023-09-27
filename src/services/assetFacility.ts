@@ -715,7 +715,7 @@ export async function getAuthorizationForCameraById(
 
     return {
       userId: userId,
-      hubId: hub.hubProcessorId,
+      hubId: hub.hubProcessorId.toString(),
       date: currentDT,
       ipAddressName: hub.ipAddressName,
       signature: hash(userId + hub.hubProcessorId.toString() + currentDT + hub.hubSecret)
