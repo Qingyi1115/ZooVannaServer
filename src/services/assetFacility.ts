@@ -11,8 +11,8 @@ import { FacilityLog } from "../models/facilityLog";
 import { compareDates } from "../helpers/others";
 import { predictNextDate } from "../helpers/predictors";
 import { MaintenanceLog } from "../models/maintenanceLog";
-import { Employee } from "models/employee";
-import { SensorReading } from "models/sensorReading";
+import { Employee } from "../models/employee";
+import { SensorReading } from "../models/sensorReading";
 
 export async function createNewFacility(
   facilityName: string,

@@ -46,7 +46,7 @@ import * as AnimalFeedService from "../services/animalFeed";
 import * as EnrichmentItemService from "../services/enrichmentItem";
 import { compareDates } from "../helpers/others";
 import { InHouse } from "../models/inHouse";
-import { FacilityLog } from "models/facilityLog";
+import { FacilityLog } from "../models/facilityLog";
 
 export async function createFacilityController(req: Request, res: Response) {
   try {
