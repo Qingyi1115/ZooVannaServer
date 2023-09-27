@@ -947,6 +947,7 @@ export const facilityAssetsSeed = async () => {
         hasAirCon: false,
         facilityType: FacilityType.PARKING,
       } as any,
+      
     },
     {
       include: [
@@ -960,6 +961,24 @@ export const facilityAssetsSeed = async () => {
     },
   );
   console.log(facility1);
+  const ih1 = await (await facility1.getInHouse());
+  ih1.setFacilityLogs([
+    await FacilityLog.create({
+    dateTime: new Date(),
+    isMaintenance: false,
+    title: "log1",
+    details: "string",
+    remarks: "string"
+  }),
+  await FacilityLog.create({
+  dateTime: new Date(),
+  isMaintenance: false,
+  title: "log2",
+  details: "string",
+  remarks: "string"
+}),
+
+])
   // facility1.destroy();
 
   let maintenanceStaff = await (await Employee.findOne({ where: { employeeName: "managerDelete" } }))?.getGeneralStaff();
@@ -1007,7 +1026,6 @@ export const facilityAssetsSeed = async () => {
     xCoordinate: 123,
     yCoordinate: 321,
     isSheltered: true,
-
     //@ts-ignore
     inHouse: {
       isPaid: true,
@@ -1025,6 +1043,7 @@ export const facilityAssetsSeed = async () => {
   let hub1 = await HubProcessor.create({
     processorName: "tramCam1",
     ipAddressName: "172.25.99.172",
+    hubStatus: HubStatus.CONNECTED,
     sensors: [
       {
         sensorName: "Camera1",
@@ -1050,6 +1069,7 @@ export const facilityAssetsSeed = async () => {
       },
     ],
   });
+  await hub1.setFacility(tram2);
 
   let sensors: Sensor[] = await hub1.getSensors();
 
