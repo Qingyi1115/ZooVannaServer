@@ -4,13 +4,7 @@ import { handleFileUpload } from "../helpers/multerProcessFile";
 
 export async function createPromotion(req: Request, res: Response) {
   try {
-    // const { email } = (req as any).locals.jwtPayload
-    // const employee = await findEmployeeByEmail(email);
-
-    // if (!((await employee.getPlanningStaff())?.plannerType == PlannerType.OPERATIONS_MANAGER)) {
-    //     return res.status(403).json({error: "Access Denied! Operation managers only!"});
-    // }
-
+    console.log("in create promotion controller");
     const imageUrl = await handleFileUpload(
       req,
       process.env.IMG_URL_ROOT! + "promotion", //"D:/capstoneUploads/promotion",

@@ -9,12 +9,13 @@ import cors from "cors";
 // import multer, { FileFilterCallback } from 'multer';
 // import "dotenv/config";
 import * as dotenv from "dotenv";
-dotenv.config({ path: __dirname+'/.env' }); // For my laptop
+dotenv.config({ path: __dirname + "/.env" }); // For my laptop
 
 import employeeRoutes from "./routes/employee";
 import customerRoutes from "./routes/customer";
 import assetFacilityRoutes from "./routes/assetFacility";
 import speciesRoutes from "./routes/species";
+import promotionRoutes from "./routes/promotion";
 import { seedDatabase, createDatabase } from "./models/index";
 import { conn } from "./db";
 
@@ -29,7 +30,7 @@ app.use(
 app.use(compression());
 app.use(cookieParser());
 app.use(bodyParser.json());
-app.use('/img', express.static('img'));
+app.use("/img", express.static("img"));
 
 const server = http.createServer(app);
 
@@ -63,3 +64,4 @@ app.use("/api/employee/", employeeRoutes);
 app.use("/api/customer/", customerRoutes);
 app.use("/api/assetFacility/", assetFacilityRoutes);
 app.use("/api/species", speciesRoutes);
+app.use("/api/promotion", promotionRoutes);

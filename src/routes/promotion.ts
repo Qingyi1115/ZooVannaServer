@@ -1,9 +1,8 @@
 import express from "express";
-
+import { authMiddleware } from "../middlewares/authMiddleware";
 //Controller functions
 import { createPromotion } from "../controllers/promotionController";
 
-import { authMiddleware } from "../middlewares/authMiddleware";
 const router = express.Router();
 
 router.use(authMiddleware);
