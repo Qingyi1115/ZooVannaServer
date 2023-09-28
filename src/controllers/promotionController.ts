@@ -59,3 +59,52 @@ export async function createPromotion(req: Request, res: Response) {
     res.status(400).json({ error: error.message });
   }
 }
+
+export async function getAllPromotion(req: Request, res: Response) {
+  const { includes = "" } = req.body;
+
+  const _includes: string[] = [];
+  for (const role of ["customerOrder"]) {
+    if (includes.includes(role)) _includes.push(role);
+  }
+
+  try {
+    const allPromotions = await PromotionService.getAllPromotions(_includes);
+    return res.status(200).json(allPromotions);
+  } catch (error: any) {
+    res.status(400).json({ error: error.message });
+  }
+}
+
+export async function getPromotionByPromotionId(req: Request, res: Response) {
+  const { promotionId } = req.params;
+  const { includes = "" } = req.body;
+
+  const _includes: string[] = [];
+  for (const role of ["customerOrder"]) {
+    if (includes.includes(role)) _includes.push(role);
+  }
+
+  if (promotionId == undefined) {
+    console.log("Missing field(s): ", {
+      promotionId,
+    });
+    return res.status(400).json({ error: "Missing promotion id!" });
+  }
+
+  try {
+    const promotionIdInt = parseInt(promotionId);
+    if (!isNaN(promotionIdInt)) {
+      const promotion = await PromotionService.getPromotionByPromotionId(
+        promotionIdInt,
+        _includes,
+      );
+      return res.status(200).json(promotion);
+      return res.status(400).json({ error: "Invalid promotion ID!" });
+    } else {
+      return res.status(400).json({ error: "Invalid customer ID!" });
+    }
+  } catch (error: any) {
+    res.status(400).json({ error: error.message });
+  }
+}

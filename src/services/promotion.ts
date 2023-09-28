@@ -33,7 +33,7 @@ export async function createNewPromotion(
   }
 }
 
-export async function getAllPromotion(includes: string[]) {
+export async function getAllPromotions(includes: string[]) {
   try {
     const allPromo = await Promotion.findAll({ include: includes });
     return allPromo;
