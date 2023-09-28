@@ -16,7 +16,7 @@ import { Country, OrderStatus } from "./enumerated";
 import { Promotion } from "./promotion";
 import { Payment } from "./payment";
 import { Customer } from "./customer";
-import { LineItem } from "./lineItem";
+import { OrderItem } from "./orderItem";
   
   class CustomerOrder extends Model<
     InferAttributes<CustomerOrder>,
@@ -24,18 +24,20 @@ import { LineItem } from "./lineItem";
   > {
     declare customerOrderId: CreationOptional<number>;
     declare timeCreated: Date;
+    declare bookingReference: string;
     declare totalAmount: number;
-    declare status: OrderStatus;
+    declare orderStatus: OrderStatus;
     declare entryDate: Date;
-    declare isBoughtOnline:boolean;
-    declare customerEmail: string | null;
-    declare customerBirthday: Date | null;
-    declare customerNationality: Country | null;
+    declare customerFirstName: string;
+    declare customerLastName: string;
+    declare customerContactNo: string;
+    declare customerEmail: string;
+    declare country: Country | null;
 
     declare promotion?: Promotion;
     declare customer?: Customer;
     declare payments?: Payment[];
-    declare lineItems?: LineItem[];
+    declare orderItem?: OrderItem[];
   
     declare getPromotion: BelongsToGetAssociationMixin<Promotion>;
     declare setPromotion: BelongsToSetAssociationMixin<Promotion, number>;
@@ -43,15 +45,15 @@ import { LineItem } from "./lineItem";
     declare getCustomer: BelongsToGetAssociationMixin<Customer>;
     declare setCustomer: BelongsToSetAssociationMixin<Customer, number>;
 
-    declare getPayments: HasManyGetAssociationsMixin<Payment[]>;
+    declare getPayments: HasManyGetAssociationsMixin<Payment>;
     declare addPayment: HasManyAddAssociationMixin<Payment, number>;
-    declare setPayments: HasManySetAssociationsMixin<Payment[], number>;
+    declare setPayments: HasManySetAssociationsMixin<Payment, number>;
     declare removePayment: HasManyRemoveAssociationMixin<Payment, number>;
 
-    declare getLineItems: HasManyGetAssociationsMixin<LineItem[]>;
-    declare addLineItem: HasManyAddAssociationMixin<LineItem, number>;
-    declare setLineItems: HasManySetAssociationsMixin<LineItem[], number>;
-    declare removeLineItem: HasManyRemoveAssociationMixin<LineItem, number>;
+    declare getOrderItems: HasManyGetAssociationsMixin<OrderItem>;
+    declare addOrderItem: HasManyAddAssociationMixin<OrderItem, number>;
+    declare setOrderItemms: HasManySetAssociationsMixin<OrderItem, number>;
+    declare removeOrderItem: HasManyRemoveAssociationMixin<OrderItem, number>;
 
 }
   
@@ -65,11 +67,16 @@ CustomerOrder.init({
         type: DataTypes.DATE,
         allowNull: false,
       },
+      bookingReference:{
+        type: DataTypes.STRING,
+        unique:true,
+        allowNull: false,
+      },
       totalAmount: {
         type: DataTypes.DECIMAL,
         allowNull: false,
       },
-      status: {
+      orderStatus: {
           type:   DataTypes.ENUM,
           values: Object.values(OrderStatus),
           allowNull: false
@@ -78,17 +85,20 @@ CustomerOrder.init({
         type: DataTypes.DATE,
         allowNull: false,
       },
-      isBoughtOnline: {
-        type: DataTypes.BOOLEAN,
-        allowNull: false,
-      },
-      customerEmail: {
+      customerFirstName: {
         type: DataTypes.STRING
       },
-      customerBirthday: {
-        type: DataTypes.DATE
+      customerLastName: {
+        type: DataTypes.STRING
       },
-      customerNationality: {
+      customerContactNo: {
+        type: DataTypes.STRING
+      },
+      customerEmail: {
+        type: DataTypes.STRING,
+        allowNull: false,
+      },
+      country: {
           type:   DataTypes.ENUM,
           values: Object.values(Country)
       },

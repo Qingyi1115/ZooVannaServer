@@ -8,11 +8,16 @@ import {
   HasManySetAssociationsMixin,
   HasManyAddAssociationMixin,
   HasManyRemoveAssociationMixin,
+  BelongsToManyGetAssociationsMixin,
+  BelongsToManyAddAssociationMixin,
+  BelongsToManySetAssociationsMixin,
+  BelongsToManyRemoveAssociationMixin,
 } from "Sequelize";
 import { conn } from "../db";
 import crypto from "crypto";
 import { Country } from "./enumerated";
 import { CustomerOrder } from "./customerOrder";
+import { Species } from "./species";
 
 function hash(string: string): string {
   return crypto.createHash("sha256").update(string).digest("hex");
@@ -34,15 +39,20 @@ class Customer extends Model<
   declare email: string;
   declare contactNo: string;
   declare birthday: Date;
-  declare address: string;
   declare nationality: Country;
 
-  declare orders?: CustomerOrder[];
+  declare customerOrders?: CustomerOrder[];
+  declare species?: Species[];
 
-  declare getOrders: HasManyGetAssociationsMixin<CustomerOrder[]>;
-  declare addOrder: HasManyAddAssociationMixin<CustomerOrder, number>;
-  declare setOrders: HasManySetAssociationsMixin<CustomerOrder[], number>;
-  declare removeOrder: HasManyRemoveAssociationMixin<CustomerOrder, number>;
+  declare getCustomerOrders: HasManyGetAssociationsMixin<CustomerOrder>;
+  declare addCustomerOrder: HasManyAddAssociationMixin<CustomerOrder, number>;
+  declare setCustomerOrders: HasManySetAssociationsMixin<CustomerOrder, number>;
+  declare removeCustomerOrder: HasManyRemoveAssociationMixin<CustomerOrder, number>;
+
+  declare getSpecies: BelongsToManyGetAssociationsMixin<Species>;
+  declare addSpecies: BelongsToManyAddAssociationMixin<Species, number>;
+  declare setSpecies: BelongsToManySetAssociationsMixin<Species, number>;
+  declare removeSpecies: BelongsToManyRemoveAssociationMixin<Species, number>;
 
   static getTotalCustomer() {
     // Example for static class functions
@@ -140,13 +150,6 @@ Customer.init(
     birthday: {
       type: DataTypes.DATE,
       allowNull: false,
-    },
-    address: {
-      type: DataTypes.STRING,
-      allowNull: false,
-      validate: {
-        len: [5, 1000], // At least 5 characters long
-      },
     },
     nationality: {
       type: DataTypes.ENUM,

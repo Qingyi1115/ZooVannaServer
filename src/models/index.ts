@@ -40,7 +40,7 @@ import { Plantation } from "./plantation";
 import { AnimalLog } from "./animalLog";
 import { Event } from "./event";
 import { Listing } from "./listing";
-import { LineItem } from "./lineItem";
+import { OrderItem } from "./orderItem";
 import { Promotion } from "./promotion";
 import { CustomerOrder } from "./customerOrder";
 import { Customer } from "./customer";
@@ -52,6 +52,7 @@ import { EnrichmentItem } from "./enrichmentItem";
 import { AnimalFeed } from "./animalFeed";
 import { MaintenanceLog } from "./maintenanceLog";
 import * as SpeciesService from "../services/species";
+import { Payment } from "./payment";
 
 function addCascadeOptions(options: object) {
   return { ...options, onDelete: "CASCADE", onUpdate: "CASCADE" };
@@ -228,6 +229,17 @@ export const createDatabase = async (options: any) => {
     as: "children",
   });
 
+  Species.belongsToMany(Customer, {
+    foreignKey: "speciesId",
+    through: "customerFravouriteSpecies",
+    as: "species",
+  });
+  Customer.belongsToMany(Species, {
+    foreignKey: "customerId",
+    through: "customerFravouriteSpecies",
+    as: "customers",
+  });
+
   Animal.hasMany(AnimalLog, addCascadeOptions({ foreignKey: "animalId" }));
   AnimalLog.belongsTo(Animal, addCascadeOptions({ foreignKey: "animalId" }));
 
@@ -317,8 +329,8 @@ export const createDatabase = async (options: any) => {
     addCascadeOptions({ foreignKey: "animalClinicId" }),
   );
 
-  Listing.hasMany(LineItem, addCascadeOptions({ foreignKey: "listingId" }));
-  LineItem.belongsTo(Listing, addCascadeOptions({ foreignKey: "listingId" }));
+  Listing.hasMany(OrderItem, addCascadeOptions({ foreignKey: "listingId" }));
+  OrderItem.belongsTo(Listing, addCascadeOptions({ foreignKey: "listingId" }));
 
   Promotion.hasMany(
     CustomerOrder,
@@ -338,10 +350,16 @@ export const createDatabase = async (options: any) => {
     addCascadeOptions({ foreignKey: "customerId" }),
   );
 
-  LineItem.hasMany(CustomerOrder, addCascadeOptions({ foreignKey: "orderId" }));
-  CustomerOrder.belongsTo(
-    LineItem,
-    addCascadeOptions({ foreignKey: "orderId" }),
+  CustomerOrder.hasMany(
+    OrderItem,
+    addCascadeOptions({ foreignKey: "orderItemId" }),
+  );
+  OrderItem.belongsTo(CustomerOrder, addCascadeOptions({ foreignKey: "orderItemId" }));
+
+  CustomerOrder.hasMany(Payment, addCascadeOptions({ foreignKey: "customerOrderId" }));
+  Payment.belongsTo(
+    CustomerOrder,
+    addCascadeOptions({ foreignKey: "customerOrderId" }),
   );
 
   ThirdParty.hasMany(

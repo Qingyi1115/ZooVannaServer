@@ -11,7 +11,7 @@ import {
   } from "Sequelize";
   import { conn } from "../db";
 import { ListingStatus, ListingType } from "./enumerated";
-import { LineItem } from "./lineItem";
+import { OrderItem } from "./orderItem";
   
   class Listing extends Model<
     InferAttributes<Listing>,
@@ -19,20 +19,21 @@ import { LineItem } from "./lineItem";
   > {
     declare listingId: CreationOptional<number>;
     declare name: string;
-    declare listingType: ListingType;
     declare description: string;
     declare criteria: string;
     declare price: number;
-    declare listingStatus: ListingStatus;
     declare dateCreated: Date;
     declare dateLastUpdated: Date;
+    declare imageUrl: string;
+    declare listingType: ListingType;
+    declare listingStatus: ListingStatus;
   
-    declare lineItems?: LineItem[];
+    declare orderItems?: OrderItem[];
   
-    declare getLineItems: HasManyGetAssociationsMixin<LineItem[]>;
-    declare addLineItem: HasManyAddAssociationsMixin<LineItem, number>;
-    declare setLineItems: HasManySetAssociationsMixin<LineItem[], number>;
-    declare removeLineItem: HasManyRemoveAssociationMixin<LineItem, number>;
+    declare getOrderItems: HasManyGetAssociationsMixin<OrderItem>;
+    declare addOrderItem: HasManyAddAssociationsMixin<OrderItem, number>;
+    declare setOrderItems: HasManySetAssociationsMixin<OrderItem, number>;
+    declare removeOrderItem: HasManyRemoveAssociationMixin<OrderItem, number>;
   }
   
   Listing.init(
@@ -46,11 +47,6 @@ import { LineItem } from "./lineItem";
         type: DataTypes.STRING,
         allowNull: false,
       },
-      listingType: {
-          type:   DataTypes.ENUM,
-          values: Object.values(ListingType),
-          allowNull: false
-      },
       description: {
         type: DataTypes.STRING,
         allowNull: false,
@@ -63,11 +59,6 @@ import { LineItem } from "./lineItem";
         type: DataTypes.DECIMAL,
         allowNull: false,
       },
-      listingStatus: {
-          type:   DataTypes.ENUM,
-          values: Object.values(ListingStatus),
-          allowNull: false
-      },
       dateCreated: {
         type: DataTypes.DATE,
         allowNull: false,
@@ -77,6 +68,19 @@ import { LineItem } from "./lineItem";
         type: DataTypes.DATE,
         allowNull: false,
         defaultValue: DataTypes.NOW,
+      },
+      imageUrl: {
+        type: DataTypes.STRING
+      },
+      listingType: {
+          type:   DataTypes.ENUM,
+          values: Object.values(ListingType),
+          allowNull: false
+      },
+      listingStatus: {
+          type:   DataTypes.ENUM,
+          values: Object.values(ListingStatus),
+          allowNull: false
       },
     },
     {
