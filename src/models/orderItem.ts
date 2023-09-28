@@ -11,15 +11,15 @@ import {
 import { Listing } from "./listing";
 import { CustomerOrder } from "./customerOrder";
   
-  class LineItem extends Model<
-    InferAttributes<LineItem>,
-    InferCreationAttributes<LineItem>
+  class OrderItem extends Model<
+    InferAttributes<OrderItem>,
+    InferCreationAttributes<OrderItem>
   > {
     
-    declare lineItemId: CreationOptional<number>;
-    declare quantityPurchased: number;
-    declare unitPrice: number;
-    declare subTotal: number;
+    declare orderItemId: CreationOptional<number>;
+    declare verificationCode: string;
+    declare isRedeemed: boolean;
+    declare timeRedeemed: Date;
   
     declare listing?: Listing;
     declare customerOrder?: CustomerOrder;
@@ -31,24 +31,23 @@ import { CustomerOrder } from "./customerOrder";
     declare setCustomerOrder: BelongsToSetAssociationMixin<CustomerOrder, number>;
   }
   
-  LineItem.init(
+  OrderItem.init(
     {
-        lineItemId: {
+      orderItemId: {
         type: DataTypes.BIGINT,
         autoIncrement: true,
         primaryKey: true,
       },
-      quantityPurchased: {
-        type: DataTypes.INTEGER,
+      verificationCode: {
+        type: DataTypes.STRING,
         allowNull: false,
       },
-      unitPrice: {
-        type: DataTypes.DECIMAL,
+      isRedeemed: {
+        type: DataTypes.BOOLEAN,
         allowNull: false,
       },
-      subTotal: {
-        type: DataTypes.DECIMAL,
-        allowNull: false,
+      timeRedeemed: {
+        type: DataTypes.DATE
       },
     },
     {
@@ -57,9 +56,9 @@ import { CustomerOrder } from "./customerOrder";
       createdAt: true,
       updatedAt: "updateTimestamp",
       sequelize: conn, // We need to pass the connection instance
-      modelName: "lineItem", // We need to choose the model name
+      modelName: "orderItem", // We need to choose the model name
     },
   );
   
-  export { LineItem };
+  export { OrderItem };
   

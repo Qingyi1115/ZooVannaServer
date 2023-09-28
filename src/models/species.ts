@@ -13,6 +13,10 @@ import {
   HasManyRemoveAssociationMixin,
   CreationOptional,
   Op,
+  BelongsToManyGetAssociationsMixin,
+  BelongsToManyAddAssociationMixin,
+  BelongsToManySetAssociationsMixin,
+  BelongsToManyRemoveAssociationMixin,
 } from "Sequelize";
 import { conn } from "../db";
 import {
@@ -25,6 +29,7 @@ import { SpeciesDietNeed } from "./speciesDietNeed";
 import { SpeciesEnclosureNeed } from "./speciesEnclosureNeed";
 import { PhysiologicalReferenceNorms } from "./physiologicalReferenceNorms";
 import { Compatibility } from "./compatibility";
+import { Customer } from "./customer";
 
 class Species extends Model<
   InferAttributes<Species>,
@@ -58,6 +63,7 @@ class Species extends Model<
   declare physiologicalReferenceNorms?: PhysiologicalReferenceNorms[];
   declare speciesDietNeeds?: SpeciesDietNeed[];
   declare compatibilities?: Compatibility[];
+  declare customers?:Customer[];
 
   declare getSpeciesEnclosureNeed: HasOneGetAssociationMixin<SpeciesEnclosureNeed>;
   declare setSpeciesEnclosureNeed: HasOneSetAssociationMixin<
@@ -66,14 +72,14 @@ class Species extends Model<
   >;
 
   declare getPhysiologicalRefNorm: HasManyGetAssociationsMixin<
-    PhysiologicalReferenceNorms[]
+    PhysiologicalReferenceNorms
   >;
   declare addPhysiologicalRefNorm: HasManyAddAssociationMixin<
     PhysiologicalReferenceNorms,
     number
   >;
   declare setPhysiologicalRefNorm: HasManySetAssociationsMixin<
-    PhysiologicalReferenceNorms[],
+    PhysiologicalReferenceNorms,
     number
   >;
   declare removePhysiologicalRefNorm: HasManyRemoveAssociationMixin<
@@ -81,13 +87,13 @@ class Species extends Model<
     number
   >;
 
-  declare getSpeciesDietNeed: HasManyGetAssociationsMixin<SpeciesDietNeed[]>;
+  declare getSpeciesDietNeed: HasManyGetAssociationsMixin<SpeciesDietNeed>;
   declare addSpeciesDietNeed: HasManyAddAssociationMixin<
     SpeciesDietNeed,
     number
   >;
   declare setSpeciesDietNeed: HasManySetAssociationsMixin<
-    SpeciesDietNeed[],
+    SpeciesDietNeed,
     number
   >;
   declare removeSpeciesDietNeed: HasManyRemoveAssociationMixin<
@@ -95,16 +101,21 @@ class Species extends Model<
     number
   >;
 
-  declare getCompatibilities: HasManyGetAssociationsMixin<Compatibility[]>;
+  declare getCompatibilities: HasManyGetAssociationsMixin<Compatibility>;
   declare addCompatibilities: HasManyAddAssociationMixin<Compatibility, number>;
   declare setCompatibilities: HasManySetAssociationsMixin<
-    Compatibility[],
+    Compatibility,
     number
   >;
   declare removeCompatibilities: HasManyRemoveAssociationMixin<
     Compatibility,
     number
   >;
+
+  declare getCustomers: BelongsToManyGetAssociationsMixin<Customer>;
+  declare addCustomer: BelongsToManyAddAssociationMixin<Customer, number>;
+  declare setCustomers: BelongsToManySetAssociationsMixin<Customer, number>;
+  declare removeCustomer: BelongsToManyRemoveAssociationMixin<Customer, number>;
 
   static async getNextSpeciesCode() {
     try {
