@@ -130,9 +130,9 @@ class Employee extends Model<
       ...this.get(),
       employeePasswordHash: undefined,
       employeeSalt: undefined,
-      keeper: (await this.getKeeper())?.toJSON(),
-      generalStaff: (await this.getGeneralStaff())?.toJSON(),
-      planningStaff: (await this.getPlanningStaff())?.toJSON(),
+      keeper: (await this.getKeeper()),
+      generalStaff: (await this.getGeneralStaff()),
+      planningStaff: (await this.getPlanningStaff()),
     };
   }
 }
