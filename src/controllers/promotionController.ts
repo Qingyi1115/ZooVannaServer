@@ -60,7 +60,7 @@ export async function createPromotion(req: Request, res: Response) {
   }
 }
 
-export async function getAllPromotion(req: Request, res: Response) {
+export async function getAllPromotions(req: Request, res: Response) {
   const { includes = "" } = req.body;
 
   const _includes: string[] = [];
