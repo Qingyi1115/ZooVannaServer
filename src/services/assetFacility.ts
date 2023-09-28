@@ -63,7 +63,7 @@ export async function getAllFacilityMaintenanceSuggestions() {
     facilities = facilities.filter(facility => facility.facilityDetail == "inHouse");
     const suggested = []
 
-    for (const facility in facilities) {
+    for (const facility of facilities) {
       let inHouse = await (facility as any).getFacilityDetail();
       let logs = (await inHouse.getFacilityLogs()) || [];
       logs = logs.map((log: FacilityLog) => log.dateTime);
@@ -419,7 +419,6 @@ export async function getFacilityMaintenanceSuggestions(
     let facility: Facility = await getFacilityById(facilityId, []);
     let inHouse = await facility.getInHouse();
     if (!inHouse) throw {message:"InHouse not found, facility Id: " + facilityId}
-    console.log("inHouse", inHouse)
     
     let logs = (await inHouse.getFacilityLogs()) || [];
     logs = logs.filter((log: FacilityLog) => log.isMaintenance);
