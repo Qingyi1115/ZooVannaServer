@@ -231,9 +231,7 @@ export async function getFacilityMaintenanceSuggestionsController(req: Request, 
         PlannerType.OPERATIONS_MANAGER
       )
     )
-      return res
-        .status(403)
-        .json({ error: "Access Denied! Operation managers only!" });
+      return res.status(403).json({ error: "Access Denied! Operation managers only!" });
     let facilities = await getAllFacilityMaintenanceSuggestions();
     return res.status(200).json({ facilities: facilities });
   } catch (error: any) {

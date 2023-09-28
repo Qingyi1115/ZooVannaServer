@@ -12,7 +12,7 @@ export function predictNextDate(dates:Date[]):Date|void{
             compareDates(dateSorted[i-1], dateSorted[i])/ MS_TO_DAYS
         )
     }
-    if (dateSorted.length>10){
+    if (dateSorted.length>7){
         const results = (getAugumentedDataset(intervals, 1)as any) ["augumentedDataset"];
         return new Date(dateSorted[0].getTime() + results[results.length - 1] * MS_TO_DAYS);
     }else{
