@@ -301,7 +301,6 @@ export async function addHubProcessorByFacilityId(
     const newHub = await HubProcessor.create({
       processorName: processorName,
       // hubStatus: HubStatus.PENDING,
-      hubStatus: HubStatus.CONNECTED
     } as any);
 
     await facility.addHubProcessor(newHub);
@@ -654,7 +653,7 @@ export async function createNewSensorReading(
 export async function assignMaintenanceStaffToSensorById(
   sensorId: number,
   employeeId: number
-): Promise<Sensor> {
+): Promise<GeneralStaff> {
   try {
     const sensor = await Sensor.findOne({
       where: { sensorId: sensorId },
@@ -663,12 +662,12 @@ export async function assignMaintenanceStaffToSensorById(
 
     const generalStaff = await (await findEmployeeById(employeeId)).getGeneralStaff();
     if (!generalStaff) throw { message: "Unable to find generalStaff with employeeId: " + employeeId };
+    if (generalStaff.generalStaffType != GeneralStaffType.ZOO_MAINTENANCE) throw { message: "Not a maintenance Staff!" };
 
-    sensor.setGeneralStaff(generalStaff);
     generalStaff.addSensor(sensor);
-    await sensor.save();
+    await generalStaff.save();
 
-    return sensor;
+    return generalStaff;
   } catch (error: any) {
     throw validationErrorHandler(error);
   }
@@ -677,7 +676,7 @@ export async function assignMaintenanceStaffToSensorById(
 export async function removeMaintenanceStaffFromSensorById(
   sensorId: number,
   employeeId: number
-): Promise<Sensor> {
+): Promise<GeneralStaff> {
   try {
     const sensor = await Sensor.findOne({
       where: { sensorId: sensorId },
@@ -688,10 +687,9 @@ export async function removeMaintenanceStaffFromSensorById(
     if (!generalStaff) throw { message: "Unable to find generalStaff with employeeId: " + employeeId };
 
     generalStaff.removeSensor(sensor);
-    sensor.setGeneralStaff(undefined);
-    sensor.save();
+    generalStaff.save();
 
-    return sensor;
+    return generalStaff;
   } catch (error: any) {
     throw validationErrorHandler(error);
   }

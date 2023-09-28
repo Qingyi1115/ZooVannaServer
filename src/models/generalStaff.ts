@@ -52,6 +52,16 @@ class GeneralStaff extends Model<
     return this.get();
   }
 
+  public async toFullJSON(){
+    return {
+      ...this.get(),
+      employee: (await this.getEmployee())?.toJSON(),
+      maintainedFacilities: (await this.getMaintainedFacilities()),
+      operatedFacility: (await this.getOperatedFacility()),
+      sensors: (await this.getSensors())
+    };
+  }
+
   public enable() {
     this.isDisabled = false;
     this.save();

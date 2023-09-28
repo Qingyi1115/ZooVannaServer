@@ -1086,6 +1086,11 @@ export const facilityAssetsSeed = async () => {
   sensor.addMaintenanceLog(await MaintenanceLog.create({ dateTime: new Date(Date.now() - 1000 * 60 * 60 * 24 * 19), title: "string", details: "string", remarks: "string" }))
   sensor.addMaintenanceLog(await MaintenanceLog.create({ dateTime: new Date(Date.now() - 1000 * 60 * 60 * 24 * 21), title: "string", details: "string", remarks: "string" }))
   sensor.addMaintenanceLog(await MaintenanceLog.create({ dateTime: new Date(Date.now() - 1000 * 60 * 60 * 24 * 24), title: "string", details: "string", remarks: "string" }))
+  sensor.addSensorReading(await SensorReading.create({readingDate: new Date(Date.now() - 1000 * 60 * 60 * 24 * 1), value: 1}));
+  sensor.addSensorReading(await SensorReading.create({readingDate: new Date(Date.now() - 1000 * 60 * 60 * 24 * 2), value: 2}));
+  sensor.addSensorReading(await SensorReading.create({readingDate: new Date(Date.now() - 1000 * 60 * 60 * 24 * 3), value: 3}));
+  sensor.addSensorReading(await SensorReading.create({readingDate: new Date(Date.now() - 1000 * 60 * 60 * 24 * 4), value: 4}));
+  sensor.addSensorReading(await SensorReading.create({readingDate: new Date(Date.now() - 1000 * 60 * 60 * 24 * 5), value: 5}));
 
   sensor = sensors[1];
   sensor.addMaintenanceLog(await MaintenanceLog.create({ dateTime: new Date(Date.now() - 1000 * 60 * 60 * 24 * 3), title: "string", details: "string", remarks: "string" }))

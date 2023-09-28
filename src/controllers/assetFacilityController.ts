@@ -47,6 +47,7 @@ import * as EnrichmentItemService from "../services/enrichmentItem";
 import { compareDates } from "../helpers/others";
 import { InHouse } from "../models/inHouse";
 import { FacilityLog } from "../models/facilityLog";
+import { GeneralStaff } from "models/generalStaff";
 
 export async function createFacilityController(req: Request, res: Response) {
   try {
@@ -407,7 +408,6 @@ export async function removeMaintenanceStaffFromFacilityController(req: Request,
 
     const { employeeIds } = req.body;
     const { facilityId } = req.params;
-    console.log("removeMaintenanceStaffFromFacility")
     if ([facilityId, employeeIds].includes(undefined)) {
       return res.status(400).json({ error: "Missing information!" });
     }
@@ -874,9 +874,8 @@ export async function deleteHubController(req: Request, res: Response) {
         .status(403)
         .json({ error: "Access Denied! Operation managers only!" });
 
-    const { hubId } = req.params;
-
-    await deleteHubById(Number(hubId));
+    const { hubProcessorId } = req.params;
+    await deleteHubById(Number(hubProcessorId));
 
     return res.status(200).json({ result: "success" });
   } catch (error: any) {
@@ -1096,12 +1095,12 @@ export async function assignMaintenanceStaffToSensorController(req: Request, res
       return res.status(400).json({ error: "Missing information!" });
     }
 
-    let sensor: Sensor = await assignMaintenanceStaffToSensorById(
+    let generalStaff: GeneralStaff = await assignMaintenanceStaffToSensorById(
       Number(sensorId),
       Number(employeeId)
     );
 
-    return res.status(200).json({ sensor: await sensor.toFullJSON() });
+    return res.status(200).json({ generalStaff: await generalStaff.toFullJSON() });
   } catch (error: any) {
     console.log(error);
     res.status(400).json({ error: error.message });
@@ -1130,12 +1129,12 @@ export async function removeMaintenanceStaffFromSensorController(req: Request, r
       return res.status(400).json({ error: "Missing information!" });
     }
 
-    let sensor: Sensor = await removeMaintenanceStaffFromSensorById(
+    let generalStaff: GeneralStaff = await removeMaintenanceStaffFromSensorById(
       Number(sensorId),
       Number(employeeId)
     );
 
-    return res.status(200).json({ sensor: await sensor.toFullJSON() });
+    return res.status(200).json({ generalStaff: await generalStaff.toFullJSON() });
   } catch (error: any) {
     console.log(error);
     res.status(400).json({ error: error.message });
