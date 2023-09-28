@@ -70,6 +70,7 @@ Promotion.init(
     promotionCode: {
       type: DataTypes.STRING,
       allowNull: false,
+      unique: true,
     },
     maxRedeemNum: {
       type: DataTypes.BIGINT,
