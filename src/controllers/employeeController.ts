@@ -16,8 +16,11 @@ import {
   // updateGeneralStaffType,
   // updatePlanningStaffType,
   updateRoleType,
-  updateSpecializationType
+  updateSpecializationType,
+  getAllGeneralStaffs
 } from "../services/employee";
+import { PlannerType } from "models/enumerated";
+import { GeneralStaff } from "models/generalStaff";
 
 export async function login(req: Request, res: Response) {
   try {
@@ -241,6 +244,33 @@ export async function getAllEmployeesController(req: Request, res: Response) {
 
     let result = await getAllEmployees(_includes);
     return res.status(200).json({employees: result});
+
+  } catch (error: any) {
+    console.log(error.message);
+    return res.status(400).json({error: error.message});
+  } 
+}
+
+export async function getAllGeneralStaffsController(req: Request, res: Response) {
+  try {
+    const { email } = (req as any).locals.jwtPayload;
+    const employee = await findEmployeeByEmail(email);
+
+    if (!employee.isAccountManager || (await employee.getPlanningStaff())?.plannerType == PlannerType.OPERATIONS_MANAGER) {
+      return res
+        .status(403)
+        .json({ error: "Access Denied!" });
+    }
+
+    const {includes=[] } = req.body;
+    const _includes : string[] = ["employee"]
+    for (const role of ["maintainedFacilities", "operatedFacility", "sensors"]){
+      if (includes.includes(role)) _includes.push(role)
+    }
+
+    let generalStaffs: GeneralStaff[] = await getAllGeneralStaffs(_includes);
+
+    return res.status(200).json({generalStaffs: generalStaffs});
 
   } catch (error: any) {
     console.log(error.message);

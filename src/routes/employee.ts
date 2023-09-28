@@ -20,6 +20,7 @@ import {
   getSelfController,
   updateRoleTypeController,
   updateSpecializationTypeController,
+  getAllGeneralStaffsController,
 } from "../controllers/employeeController";
 import {
   addEnclosureToKeeperController,
@@ -48,6 +49,7 @@ router.put("/setAccountManager/:employeeId", setAccountManagerController);
 router.put("/unsetAccountManager/:employeeId", unsetAccountManagerController);
 
 router.post("/getAllEmployees", getAllEmployeesController);
+router.post("/getAllGeneralStaffs", getAllGeneralStaffsController);
 router.put("/resetPassword/:employeeId", resetPasswordController ); //reset password by account manager (sent to employee's email)
 router.put("/disableEmployee/:employeeId", disableEmployeeAccountController);
 
