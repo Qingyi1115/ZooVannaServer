@@ -47,6 +47,7 @@ server.listen(port, async () => {
     await seedDatabase();
     console.log("Database seeded!");
   } else {
+    await createDatabase({ forced: false });
     console.log("Database left untouched!");
   }
 });
