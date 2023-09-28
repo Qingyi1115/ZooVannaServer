@@ -410,6 +410,27 @@ export async function getAllSensorMaintenanceSuggestions() {
   }
 }
 
+export async function getFacilityMaintenanceSuggestions(
+  facilityId:number,
+  predictionLength: number
+) {
+  try {
+
+    let facility: Facility = await getFacilityById(facilityId, []);
+    let inHouse = await facility.getInHouse();
+    if (!inHouse) throw {message:"InHouse not found, facility Id: " + facilityId}
+    console.log("inHouse", inHouse)
+    
+    let logs = (await inHouse.getFacilityLogs()) || [];
+    logs = logs.filter((log: FacilityLog) => log.isMaintenance);
+    let dateLogs = logs.map((log: FacilityLog) => log.dateTime);
+    
+    return predictCycleLength(dateLogs, predictionLength);
+  } catch (error: any) {
+    throw validationErrorHandler(error);
+  }
+}
+
 export async function getSensorMaintenanceSuggestions(
   sensorId:number,
   predictionLength: number

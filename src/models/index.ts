@@ -993,6 +993,21 @@ export const facilityAssetsSeed = async () => {
 
   } as any;
   let toilet = await Facility.create(toiletTemplate, { include: ["inHouse"] });
+  let toiletInhouse: InHouse = await toilet.getFacilityDetail();
+  
+  let _day = new Date();
+  for (const days of [1,2,3,2,1,2,3,2,1,2,3,2,1,2]){
+    _day = new Date(_day.getTime() - days * 1000 * 60 * 60 * 24)
+    
+  toiletInhouse.addFacilityLog(await FacilityLog.create({
+    dateTime: _day,
+    isMaintenance: true,
+    title: "string",
+    details: "string",
+    remarks: "string",
+    }))
+  }
+
   console.log(toilet.toJSON());
 
   let facility1 = await Facility.create(
@@ -1143,10 +1158,10 @@ export const facilityAssetsSeed = async () => {
 
   let sensor = sensors[0];
   sensor.addMaintenanceLog(await MaintenanceLog.create({ dateTime: new Date(Date.now()), title: "string", details: "string", remarks: "string" }))
-  let day = new Date();
+  _day = new Date();
   for (const days of [1,2,3,2,1,2,3,2,1,2,3,2,1,2]){
-    day = new Date(day.getTime() - days * 1000 * 60 * 60 * 24)
-    sensor.addMaintenanceLog(await MaintenanceLog.create({ dateTime: day, title: "string", details: "string", remarks: "string" }))
+    _day = new Date(_day.getTime() - days * 1000 * 60 * 60 * 24)
+    sensor.addMaintenanceLog(await MaintenanceLog.create({ dateTime: _day, title: "string", details: "string", remarks: "string" }))
   }
   
   sensor.addSensorReading(await SensorReading.create({readingDate: new Date(Date.now() - 1000 * 60 * 60 * 24 * 1), value: 1}));

@@ -38,6 +38,7 @@ import {
   findProcessorByName,
   createNewSensorReading,
   getSensorMaintenanceSuggestions,
+  getFacilityMaintenanceSuggestions,
 } from "../services/assetFacility";
 import { Facility } from "../models/facility";
 import { Sensor } from "../models/sensor";
@@ -235,6 +236,38 @@ export async function getFacilityMaintenanceSuggestionsController(req: Request, 
         .json({ error: "Access Denied! Operation managers only!" });
     let facilities = await getAllFacilityMaintenanceSuggestions();
     return res.status(200).json({ facilities: facilities });
+  } catch (error: any) {
+    console.log("error", error);
+    res.status(400).json({ error: error.message });
+  }
+}
+
+export async function getFacilityMaintenancePredictionValuesController(req: Request, res: Response) {
+  try {
+    const { email } = (req as any).locals.jwtPayload;
+    const employee = await findEmployeeByEmail(email);
+
+    if (
+      !(
+        (await employee.getPlanningStaff())?.plannerType ==
+        PlannerType.OPERATIONS_MANAGER
+      )
+    )
+      return res
+        .status(403)
+        .json({ error: "Access Denied! Operation managers only!" });
+        
+    const { facilityId } = req.params;
+    let values = undefined;
+    for (let i = 4; i > 0; i--){
+      try{
+        values = await getFacilityMaintenanceSuggestions(Number(facilityId), i);
+        break;
+      }catch(err:any){
+        console.log(err)
+      }
+    }
+    return res.status(200).json(values);
   } catch (error: any) {
     console.log("error", error);
     res.status(400).json({ error: error.message });
