@@ -19,8 +19,8 @@ import {
   updateSpecializationType,
   getAllGeneralStaffs
 } from "../services/employee";
-import { PlannerType } from "models/enumerated";
-import { GeneralStaff } from "models/generalStaff";
+import { PlannerType } from "../models/enumerated";
+import { GeneralStaff } from "../models/generalStaff";
 
 export async function login(req: Request, res: Response) {
   try {
