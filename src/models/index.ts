@@ -530,12 +530,62 @@ export const employeeSeed = async () => {
       employeeName: "lalaboi",
       employeeAddress: "Singapore Kent Ridge LT17",
       employeeEmail: "jsonBoi@gmail.com",
-      employeePhoneNumber: "2218818",
-      employeePasswordHash: Employee.getHash("joason_password", "NaAg"),
+      employeePhoneNumber: "24218818",
+      employeePasswordHash: Employee.getHash("joason_password", "NaAg33"),
       employeeSalt: "NaAg33",
       employeeDoorAccessCode: "2345632127",
       employeeEducation: "PHD in not sleeping",
       employeeBirthDate: new Date("2001-09-02"),
+      isAccountManager: false,
+      // @ts-ignore
+      generalStaff: {
+        generalStaffType: GeneralStaffType.ZOO_OPERATIONS,
+        isDisabled: false,
+      },
+    },
+    {
+      include: {
+        association: "generalStaff",
+      },
+    },
+
+  );
+  await Employee.create(
+    {
+      employeeName: "operation guy1",
+      employeeAddress: "Singapore Kent Ridge LT173",
+      employeeEmail: "ops_guy1password@gmail.com",
+      employeePhoneNumber: "22318818",
+      employeePasswordHash: Employee.getHash("ops_password", "NaAg33"),
+      employeeSalt: "NaAg33",
+      employeeDoorAccessCode: "23456321237",
+      employeeEducation: "PHD in not sleeping",
+      employeeBirthDate: new Date("2002-09-02"),
+      isAccountManager: false,
+      // @ts-ignore
+      generalStaff: {
+        generalStaffType: GeneralStaffType.ZOO_OPERATIONS,
+        isDisabled: false,
+      },
+    },
+    {
+      include: {
+        association: "generalStaff",
+      },
+    },
+  );
+
+  await Employee.create(
+    {
+      employeeName: "operation guy2",
+      employeeAddress: "Singapore Kent Ridge LT1731",
+      employeeEmail: "ops_guy2password@gmail.com",
+      employeePhoneNumber: "22218818",
+      employeePasswordHash: Employee.getHash("ops2_password", "NaAg33"),
+      employeeSalt: "NaAg33",
+      employeeDoorAccessCode: "23456321227",
+      employeeEducation: "PHD in not sleeping",
+      employeeBirthDate: new Date("2002-09-02"),
       isAccountManager: false,
       // @ts-ignore
       generalStaff: {

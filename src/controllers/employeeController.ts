@@ -256,7 +256,7 @@ export async function getAllGeneralStaffsController(req: Request, res: Response)
     const { email } = (req as any).locals.jwtPayload;
     const employee = await findEmployeeByEmail(email);
 
-    if (!employee.isAccountManager || (await employee.getPlanningStaff())?.plannerType == PlannerType.OPERATIONS_MANAGER) {
+    if (!employee.isAccountManager && (await employee.getPlanningStaff())?.plannerType != PlannerType.OPERATIONS_MANAGER) {
       return res
         .status(403)
         .json({ error: "Access Denied!" });
@@ -269,6 +269,12 @@ export async function getAllGeneralStaffsController(req: Request, res: Response)
     }
 
     let generalStaffs: GeneralStaff[] = await getAllGeneralStaffs(_includes);
+    for (const staff of generalStaffs){
+      let opFacility = await staff.getOperatedFacility();
+      if (opFacility){
+        (staff as any).dataValues["operatedFacilityName"] = (await (opFacility).getFacility()).facilityName;
+      }
+    }
 
     return res.status(200).json({generalStaffs: generalStaffs});
 
