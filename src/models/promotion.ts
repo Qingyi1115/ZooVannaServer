@@ -24,6 +24,7 @@ class Promotion extends Model<
   declare minimumSpending: number;
   declare promotionCode: string;
   declare maxRedeemNum: number;
+  declare currentRedeemNum: number;
   declare imageUrl: string;
 
   declare customerOrder?: CustomerOrder[];
@@ -70,10 +71,15 @@ Promotion.init(
     promotionCode: {
       type: DataTypes.STRING,
       allowNull: false,
+      unique: true,
     },
     maxRedeemNum: {
       type: DataTypes.BIGINT,
       allowNull: true,
+    },
+    currentRedeemNum: {
+      type: DataTypes.BIGINT,
+      allowNull: false,
     },
     imageUrl: {
       type: DataTypes.STRING,

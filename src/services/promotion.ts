@@ -13,6 +13,7 @@ export async function createNewPromotion(
   maxRedeemNum: number,
   imageUrl: string,
 ) {
+  const currentRedeemNum = 0;
   let newPromotion = {
     description: description,
     startDate: startDate,
@@ -22,6 +23,7 @@ export async function createNewPromotion(
     promotionCode: promotionCode,
     maxRedeemNum: maxRedeemNum,
     imageUrl: imageUrl,
+    currentRedeemNum: currentRedeemNum,
   } as any;
 
   // console.log(newSpecies);
@@ -31,4 +33,27 @@ export async function createNewPromotion(
   } catch (error: any) {
     throw validationErrorHandler(error);
   }
+}
+
+export async function getAllPromotions(includes: string[]) {
+  try {
+    const allPromo = await Promotion.findAll({ include: includes });
+    return allPromo;
+  } catch (error: any) {
+    throw validationErrorHandler(error);
+  }
+}
+
+export async function getPromotionByPromotionId(
+  promotionId: number,
+  includes: string[],
+) {
+  let result = await Promotion.findOne({
+    where: { promotionId: promotionId },
+    include: includes,
+  });
+  if (result) {
+    return result;
+  }
+  throw { message: "Invalid promotion ID!" };
 }
