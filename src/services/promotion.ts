@@ -13,6 +13,7 @@ export async function createNewPromotion(
   maxRedeemNum: number,
   imageUrl: string,
 ) {
+  const currentRedeemNum = 0;
   let newPromotion = {
     description: description,
     startDate: startDate,
@@ -22,6 +23,7 @@ export async function createNewPromotion(
     promotionCode: promotionCode,
     maxRedeemNum: maxRedeemNum,
     imageUrl: imageUrl,
+    currentRedeemNum: currentRedeemNum,
   } as any;
 
   // console.log(newSpecies);
