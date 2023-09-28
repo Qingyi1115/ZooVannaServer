@@ -28,7 +28,7 @@ export async function login(req: Request, res: Response) {
         return res.status(403).json({ error: "Invalid credentials!" });
       }
       const token = createToken(email);
-      return res.status(200).json({ token, employeeData: employeeData.toJSON() });
+      return res.status(200).json({ token, employeeData: await employeeData.toFullJSON() });
     }
   } catch (error: any) {
     res.status(400).json({ error: error.message });
