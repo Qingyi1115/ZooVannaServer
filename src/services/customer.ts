@@ -174,7 +174,7 @@ export async function resetPassword(token: string, password: string) {
     if (customer) {
       if (realToken.expiresAt.getTime() > Date.now()) {
         realToken.destroy();
-        console.log("customer update")
+        console.log("customer update");
         return customer.updatePasswordWithToken(password);
       }
       realToken.destroy();
@@ -184,7 +184,7 @@ export async function resetPassword(token: string, password: string) {
     realToken.destroy();
     throw { message: "Customer does not exist" };
   }
-  throw {message: "Invalid Token!"}
+  throw { message: "Invalid Token!" };
 }
 
 export async function sendResetPasswordLink(customerId: number) {
@@ -238,10 +238,10 @@ export async function sendResetPasswordLink(customerId: number) {
 
 export async function deleteCustomerByEmail(customerEmail: string) {
   let result = await Customer.destroy({
-      where: { email: customerEmail },
+    where: { email: customerEmail },
   });
   if (result) {
-      return result;
+    return result;
   }
   throw { message: "Invalid Customer Email!" };
 }

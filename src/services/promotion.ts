@@ -32,3 +32,26 @@ export async function createNewPromotion(
     throw validationErrorHandler(error);
   }
 }
+
+export async function getAllPromotion(includes: string[]) {
+  try {
+    const allPromo = await Promotion.findAll({ include: includes });
+    return allPromo;
+  } catch (error: any) {
+    throw validationErrorHandler(error);
+  }
+}
+
+export async function getPromotionByPromotionId(
+  promotionId: number,
+  includes: string[],
+) {
+  let result = await Promotion.findOne({
+    where: { promotionId: promotionId },
+    include: includes,
+  });
+  if (result) {
+    return result;
+  }
+  throw { message: "Invalid promotion ID!" };
+}
