@@ -3,8 +3,8 @@ import { findEmployeeByEmail } from "../services/employee";
 import { GeneralStaffType, PlannerType } from "../models/enumerated";
 import {
   getAllFacility,
-  _getAllHubs,
-  _getAllSensors,
+  getAllHubs,
+  getAllSensors,
   addHubProcessorByFacilityId,
   addSensorByHubProcessorId,
   assignMaintenanceStaffToFacilityById,
@@ -37,6 +37,7 @@ import {
   createFacilityMaintenanceLog,
   findProcessorByName,
   createNewSensorReading,
+  getSensorMaintenanceSuggestions,
 } from "../services/assetFacility";
 import { Facility } from "../models/facility";
 import { Sensor } from "../models/sensor";
@@ -652,7 +653,7 @@ export async function getAllHubsController(req: Request, res: Response) {
       if (includes.includes(role)) _includes.push(role)
     }
 
-    let hubs: HubProcessor[] = await _getAllHubs(_includes);
+    let hubs: HubProcessor[] = await getAllHubs(_includes);
 
     hubs.forEach(hub => hub.toJSON())
 
@@ -716,7 +717,7 @@ export async function getAllSensorsController(req: Request, res: Response) {
       if (includes.includes(role)) _includes.push(role)
     }
 
-    let sensors: Sensor[] = await _getAllSensors(_includes);
+    let sensors: Sensor[] = await getAllSensors(_includes);
 
     sensors.forEach(sensor => sensor.toJSON())
 
@@ -1067,6 +1068,40 @@ export async function getSensorMaintenanceSuggestionsController(req: Request, re
 
     let sensors = await getAllSensorMaintenanceSuggestions();
     return res.status(200).json({ sensors: sensors });
+  } catch (error: any) {
+    console.log("error", error);
+    res.status(400).json({ error: error.message });
+  }
+}
+
+export async function getSensorMaintenancePredictionValuesController(req: Request, res: Response) {
+  try {
+    const { email } = (req as any).locals.jwtPayload;
+    const employee = await findEmployeeByEmail(email);
+
+    if (
+      !(
+        (await employee.getPlanningStaff())?.plannerType ==
+        PlannerType.OPERATIONS_MANAGER
+      )
+    )
+      return res
+        .status(403)
+        .json({ error: "Access Denied! Operation managers only!" });
+        
+    const { sensorId } = req.params;
+    let values = undefined;
+    for (let i = 4; i > 0; i--){
+      try{
+        values = await getSensorMaintenanceSuggestions(Number(sensorId), i);
+        break;
+      }catch(err:any){
+        console.log(err)
+      }
+    }
+
+
+    return res.status(200).json(values);
   } catch (error: any) {
     console.log("error", error);
     res.status(400).json({ error: error.message });

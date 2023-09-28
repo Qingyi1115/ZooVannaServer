@@ -9,7 +9,7 @@ import { GeneralStaff } from "../models/generalStaff";
 import { InHouse } from "../models/inHouse";
 import { FacilityLog } from "../models/facilityLog";
 import { compareDates } from "../helpers/others";
-import { predictNextDate } from "../helpers/predictors";
+import { predictCycleLength, predictNextDate } from "../helpers/predictors";
 import { MaintenanceLog } from "../models/maintenanceLog";
 import { Employee } from "../models/employee";
 import { SensorReading } from "../models/sensorReading";
@@ -67,7 +67,7 @@ export async function getAllFacilityMaintenanceSuggestions() {
       let inHouse = await (facility as any).getFacilityDetail();
       let logs = (await inHouse.getFacilityLogs()) || [];
       logs = logs.map((log: FacilityLog) => log.dateTime);
-      (facility as any).dataValues["predictedMaintenanceDate"] = predictNextDate(logs.slice(0, Math.max(logs.length, 5)));
+      (facility as any).dataValues["predictedMaintenanceDate"] = predictNextDate(logs);
     }
 
     return facilities;
@@ -345,7 +345,7 @@ export async function deleteFacilityById(
   }
 }
 
-export async function _getAllHubs(includes: string[] = []): Promise<HubProcessor[]> {
+export async function getAllHubs(includes: string[] = []): Promise<HubProcessor[]> {
   try {
     return HubProcessor.findAll({ include: includes });
   } catch (error: any) {
@@ -353,7 +353,7 @@ export async function _getAllHubs(includes: string[] = []): Promise<HubProcessor
   }
 }
 
-export async function _getAllSensors(includes: string[] = []): Promise<Sensor[]> {
+export async function getAllSensors(includes: string[] = []): Promise<Sensor[]> {
   try {
     return Sensor.findAll({ include: includes });
   } catch (error: any) {
@@ -396,15 +396,32 @@ export async function getSensor(
 export async function getAllSensorMaintenanceSuggestions() {
   try {
 
-    let sensors: any[] = await _getAllSensors(["sensorReadings"]);
+    let sensors: any[] = await getAllSensors(["sensorReadings"]);
     let counter = 0
     for (const sensor of sensors) {
       let logs = (await sensor.getMaintenanceLogs()) || [];
       let dateLogs = logs.map((log: MaintenanceLog) => log.dateTime);
-      (sensor as any).dataValues["predictedMaintenanceDate"] = predictNextDate(dateLogs.slice(0, Math.max(dateLogs.length, 5)));
+      (sensor as any).dataValues["predictedMaintenanceDate"] = predictNextDate(dateLogs);
       counter = counter + 1
     }
     return sensors;
+  } catch (error: any) {
+    throw validationErrorHandler(error);
+  }
+}
+
+export async function getSensorMaintenanceSuggestions(
+  sensorId:number,
+  predictionLength: number
+) {
+  try {
+
+    let sensor: Sensor = await getSensor(sensorId, ["sensorReadings"]);
+    
+    let logs = (await sensor.getMaintenanceLogs()) || [];
+    let dateLogs = logs.map((log: MaintenanceLog) => log.dateTime);
+    
+    return predictCycleLength(dateLogs, predictionLength);
   } catch (error: any) {
     throw validationErrorHandler(error);
   }

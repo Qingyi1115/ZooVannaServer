@@ -51,7 +51,8 @@ import {
   createFacilityLogController,
   getSensorController,
   createFacilityMaintenanceLogController,
-  pushSensorReadingsController
+  pushSensorReadingsController,
+  getSensorMaintenancePredictionValuesController
 } from "../controllers/assetFacilityController";
 
 const router = express.Router();
@@ -110,6 +111,7 @@ router.get("/getAllSensors", getAllSensorsController);
 router.post("/getSensor/:sensorId", getSensorController);
 router.get("/getSensorReading/:sensorId", getSensorReadingController);
 router.get("/getSensorMaintenanceSuggestions", getSensorMaintenanceSuggestionsController);
+router.get("/getSensorMaintenancePredictionValues/:sensorId", getSensorMaintenancePredictionValuesController);
 router.put("/assignMaintenanceStaffToSensor/:sensorId", assignMaintenanceStaffToSensorController);
 router.put("/removeMaintenanceStaffFromSensor/:sensorId", removeMaintenanceStaffFromSensorController);
 router.put("/updateSensor/:sensorId", updateSensorController);
