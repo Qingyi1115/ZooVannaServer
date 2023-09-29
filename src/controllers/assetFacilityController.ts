@@ -117,15 +117,15 @@ export async function getAllFacilityController(req: Request, res: Response) {
     const { email } = (req as any).locals.jwtPayload;
     const employee = await findEmployeeByEmail(email);
 
-    if (
-      !(
-        (await employee.getPlanningStaff())?.plannerType ==
-        PlannerType.OPERATIONS_MANAGER
-      )
-    )
-      return res
-        .status(403)
-        .json({ error: "Access Denied! Operation managers only!" });
+    // if (
+    //   !(
+    //     (await employee.getPlanningStaff())?.plannerType ==
+    //     PlannerType.OPERATIONS_MANAGER
+    //   ) && !(await employee.getGeneralStaff())
+    // )
+    //   return res
+    //     .status(403)
+    //     .json({ error: "Access Denied! Operation managers and general staffs only!" });
 
     let { includes } = req.body;
     includes = includes || [];
@@ -134,11 +134,25 @@ export async function getAllFacilityController(req: Request, res: Response) {
     for (const role of ["hubProcessors"]) {
       if (includes.includes(role)) _includes.push(role)
     }
+    if ((await employee.getPlanningStaff())?.plannerType ==
+    PlannerType.OPERATIONS_MANAGER){
+      let facilities: Facility[] = [];
+      for (const facility of await getAllFacility(_includes, includes.includes("facilityDetail"))){
+        facilities.push(await facility.toFullJson());
+      }
+      return res.status(200).json({ facilities: facilities });
+    }
 
-    let facilities: Facility[] = await getAllFacility(_includes, includes.includes("facilityDetail"));
-    facilities.forEach(facility => facility.toJSON())
+    let facilities: Facility[] = []
 
-    return res.status(200).json({ facilities: facilities });
+    for (const inHouse of (await (await employee.getGeneralStaff()).getMaintainedFacilities())){
+      facilities.push(await (await inHouse.getFacility()).toFullJson());
+    }
+    const inHouse =  await (await employee.getGeneralStaff()).getOperatedFacility();
+    if (inHouse) facilities.push(await (await inHouse.getFacility()).toFullJson());
+    
+    return res.status(200).json({facilities:facilities})
+
   } catch (error: any) {
     console.log(error)
     res.status(400).json({ error: error.message });
@@ -229,10 +243,10 @@ export async function getFacilityMaintenanceSuggestionsController(req: Request, 
       !(
         (await employee.getPlanningStaff())?.plannerType ==
         PlannerType.OPERATIONS_MANAGER
-      )
+      ) && !(await employee.getGeneralStaff())
     )
       return res.status(403).json({ error: "Access Denied! Operation managers only!" });
-    let facilities = await getAllFacilityMaintenanceSuggestions();
+    let facilities = await getAllFacilityMaintenanceSuggestions(employee);
     return res.status(200).json({ facilities: facilities });
   } catch (error: any) {
     console.log("error", error);
@@ -1091,13 +1105,13 @@ export async function getSensorMaintenanceSuggestionsController(req: Request, re
       !(
         (await employee.getPlanningStaff())?.plannerType ==
         PlannerType.OPERATIONS_MANAGER
-      )
+      ) && !(await employee.getGeneralStaff())
     )
       return res
         .status(403)
         .json({ error: "Access Denied! Operation managers only!" });
 
-    let sensors = await getAllSensorMaintenanceSuggestions();
+    let sensors = await getAllSensorMaintenanceSuggestions(employee);
     return res.status(200).json({ sensors: sensors });
   } catch (error: any) {
     console.log("error", error);
@@ -1241,6 +1255,19 @@ export async function getAuthorizationForCameraController(req: Request, res: Res
 
 export async function createNewAnimalFeedController(req: Request, res: Response) {
   try {
+    const { email } = (req as any).locals.jwtPayload;
+    const employee = await findEmployeeByEmail(email);
+  
+    if (
+      !(
+        (await employee.getPlanningStaff())?.plannerType ==
+        PlannerType.CURATOR
+      )
+    )
+      return res
+        .status(403)
+        .json({ error: "Access Denied! Operation managers only!" });
+
     const animalFeedImageUrl = await handleFileUpload(
       req,
       process.env.IMG_URL_ROOT! + "animalFeed", //"D:/capstoneUploads/animalFeed",
@@ -1327,6 +1354,19 @@ export async function getAnimalFeedByIdController(req: Request, res: Response) {
 
 export async function updateAnimalFeedController(req: Request, res: Response) {
   try {
+  const { email } = (req as any).locals.jwtPayload;
+  const employee = await findEmployeeByEmail(email);
+
+  if (
+    !(
+      (await employee.getPlanningStaff())?.plannerType ==
+      PlannerType.CURATOR
+    )
+  )
+    return res
+      .status(403)
+      .json({ error: "Access Denied! Operation managers only!" });
+      
     let animalFeedImageUrl;
     if (
       req.headers["content-type"] &&
@@ -1378,6 +1418,20 @@ export async function updateAnimalFeedController(req: Request, res: Response) {
 export async function updateAnimalFeedImageController(req: Request, res: Response) {
   try {
     // req has image??
+    
+  const { email } = (req as any).locals.jwtPayload;
+  const employee = await findEmployeeByEmail(email);
+
+  if (
+    !(
+      (await employee.getPlanningStaff())?.plannerType ==
+      PlannerType.CURATOR
+    )
+  )
+    return res
+      .status(403)
+      .json({ error: "Access Denied! Operation managers only!" });
+
     const imageUrl = await handleFileUpload(
       req,
       process.env.IMG_URL_ROOT! + "animalFeed", //"D:/capstoneUploads/animalFeed",
@@ -1411,6 +1465,20 @@ export async function updateAnimalFeedImageController(req: Request, res: Respons
 }
 
 export async function deleteAnimalFeedByNameController(req: Request, res: Response) {
+
+  const { email } = (req as any).locals.jwtPayload;
+  const employee = await findEmployeeByEmail(email);
+
+  if (
+    !(
+      (await employee.getPlanningStaff())?.plannerType ==
+      PlannerType.CURATOR
+    )
+  )
+    return res
+      .status(403)
+      .json({ error: "Access Denied! Operation managers only!" });
+
   const { animalFeedName } = req.params;
 
   if (animalFeedName == undefined) {
@@ -1430,6 +1498,20 @@ export async function deleteAnimalFeedByNameController(req: Request, res: Respon
 
 export async function createNewEnrichmentItemController(req: Request, res: Response) {
   try {
+    
+  const { email } = (req as any).locals.jwtPayload;
+  const employee = await findEmployeeByEmail(email);
+
+  if (
+    !(
+      (await employee.getPlanningStaff())?.plannerType ==
+      PlannerType.CURATOR
+    )
+  )
+    return res
+      .status(403)
+      .json({ error: "Access Denied! Operation managers only!" });
+
     const enrichmentItemImageUrl = await handleFileUpload(
       req,
       process.env.IMG_URL_ROOT! + "enrichmentItem", //"D:/capstoneUploads/enrichmentItem",
@@ -1494,6 +1576,20 @@ export async function getEnrichmentItemByIdController(req: Request, res: Respons
 
 export async function updateEnrichmentItemController(req: Request, res: Response) {
   try {
+    
+  const { email } = (req as any).locals.jwtPayload;
+  const employee = await findEmployeeByEmail(email);
+
+  if (
+    !(
+      (await employee.getPlanningStaff())?.plannerType ==
+      PlannerType.CURATOR
+    )
+  )
+    return res
+      .status(403)
+      .json({ error: "Access Denied! Operation managers only!" });
+
     const {
       enrichmentItemId,
       enrichmentItemName
@@ -1524,6 +1620,20 @@ export async function updateEnrichmentItemController(req: Request, res: Response
 
 export async function updateEnrichmentItemImageController(req: Request, res: Response) {
   try {
+    
+  const { email } = (req as any).locals.jwtPayload;
+  const employee = await findEmployeeByEmail(email);
+
+  if (
+    !(
+      (await employee.getPlanningStaff())?.plannerType ==
+      PlannerType.CURATOR
+    )
+  )
+    return res
+      .status(403)
+      .json({ error: "Access Denied! Operation managers only!" });
+
     const imageUrl = await handleFileUpload(
       req,
       process.env.IMG_URL_ROOT! + "enrichmentItem", //"D:/capstoneUploads/enrichmentItem",
@@ -1560,6 +1670,20 @@ export async function updateEnrichmentItemImageController(req: Request, res: Res
 }
 
 export async function deleteEnrichmentItemByNameController(req: Request, res: Response) {
+  
+  const { email } = (req as any).locals.jwtPayload;
+  const employee = await findEmployeeByEmail(email);
+
+  if (
+    !(
+      (await employee.getPlanningStaff())?.plannerType ==
+      PlannerType.CURATOR
+    )
+  )
+    return res
+      .status(403)
+      .json({ error: "Access Denied! Operation managers only!" });
+      
   const { enrichmentItemName } = req.params;
 
   if (enrichmentItemName == undefined) {

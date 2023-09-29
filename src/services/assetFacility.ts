@@ -1,4 +1,4 @@
-import { GeneralStaffType, HubStatus, SensorType } from "../models/enumerated";
+import { GeneralStaffType, HubStatus, PlannerType, SensorType } from "../models/enumerated";
 import { validationErrorHandler } from "../helpers/errorHandler";
 import { Facility } from "../models/facility";
 import { Sensor } from "../models/sensor";
@@ -56,18 +56,32 @@ export async function getFacilityById(facilityId: number, includes: string[] = [
   }
 }
 
-export async function getAllFacilityMaintenanceSuggestions() {
+export async function getAllFacilityMaintenanceSuggestions(employee:Employee) {
   try {
+    let facilities: Facility[] = [];
 
-    let facilities: Facility[] = await getAllFacility([], true);
-    facilities = facilities.filter(facility => facility.facilityDetail == "inHouse");
-    const suggested = []
+
+    if ((await employee.getPlanningStaff())?.plannerType == PlannerType.OPERATIONS_MANAGER){
+      const allFacilities = (await getAllFacility([], true));
+      for (const facility of allFacilities){
+        const ih = await facility.getFacilityDetail();
+        if (facility.facilityDetail == "inHouse") facilities.push(facility);
+      }
+    }else if (!(await employee.getGeneralStaff())){
+      throw {message:"No access!"}
+    }else{
+      const allInHouses = (await (await employee.getGeneralStaff()).getMaintainedFacilities());
+      for (const inHouse of allInHouses){
+        facilities.push(await inHouse.getFacility());
+      }
+    }
 
     for (const facility of facilities) {
       let inHouse = await (facility as any).getFacilityDetail();
       let logs = (await inHouse.getFacilityLogs()) || [];
       logs = logs.map((log: FacilityLog) => log.dateTime);
       (facility as any).dataValues["predictedMaintenanceDate"] = predictNextDate(logs);
+      (facility as any).dataValues["facilityDetailJson"] = inHouse;
     }
 
     return facilities;
@@ -318,9 +332,7 @@ export async function getAllFacility(
     const allFacilities = await Facility.findAll({ include: includes });
 
     if (facilityDetail) {
-      for (const facility of allFacilities){
-        (facility as any).dataValues["facilityDetailJson"] = await facility.getFacilityDetail();
-      }
+      for (const facility of allFacilities) (facility as any).dataValues["facilityDetailJson"] = await facility.getFacilityDetail();
     }
 
     return allFacilities;
@@ -393,16 +405,22 @@ export async function getSensor(
   }
 }
 
-export async function getAllSensorMaintenanceSuggestions() {
+export async function getAllSensorMaintenanceSuggestions(employee:Employee) {
   try {
+    let sensors: any[] = [];
 
-    let sensors: any[] = await getAllSensors(["sensorReadings"]);
-    let counter = 0
+    if ((await employee.getPlanningStaff())?.plannerType == PlannerType.OPERATIONS_MANAGER){
+      sensors = await getAllSensors(["sensorReadings"]);
+    }else if (!(await employee.getGeneralStaff())){
+      throw {message:"No access!"}
+    }else{
+      sensors = await (await employee.getGeneralStaff()).getSensors();
+    }
+
     for (const sensor of sensors) {
       let logs = (await sensor.getMaintenanceLogs()) || [];
       let dateLogs = logs.map((log: MaintenanceLog) => log.dateTime);
-      (sensor as any).dataValues["predictedMaintenanceDate"] = predictNextDate(dateLogs);
-      counter = counter + 1
+      (sensor as any).dataValues["predictedMaintenanceDate"] = predictNextDate(dateLogs.slice(0, Math.max(dateLogs.length, 5)));
     }
     return sensors;
   } catch (error: any) {
@@ -552,7 +570,8 @@ export async function createSensorMaintenanceLog(
       remarks: remarks
     })
     sensor.addMaintenanceLog(newLog);
-    newLog.setSensor(sensor);
+    sensor.dateOfLastMaintained = date;
+    await sensor.save();
 
     return newLog;
   } catch (error: any) {
@@ -572,7 +591,7 @@ export async function createFacilityMaintenanceLog(
       where: { facilityId: facilityId },
     });
     if (!facility) throw { message: "Unable to find facilityId: " + facilityId };
-    const inHouse = await facility.getFacilityDetail();
+    const inHouse : InHouse = await facility.getFacilityDetail();
     if (!inHouse) throw { message: "Not a in-house facility!" };
 
     const newLog = await FacilityLog.create({
@@ -583,6 +602,8 @@ export async function createFacilityMaintenanceLog(
       isMaintenance: true
     })
     inHouse.addFacilityLog(newLog);
+    inHouse.lastMaintained = date;
+    await inHouse.save();
 
     return newLog;
   } catch (error: any) {
