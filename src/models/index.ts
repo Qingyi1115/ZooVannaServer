@@ -625,16 +625,16 @@ export const employeeSeed = async () => {
 
   let manager3 = await Employee.create(
     {
-      employeeName: "managerDelete",
+      employeeName: "maint1",
       employeeAddress: "Singapore Kent Ridge LT14",
-      employeeEmail: "managerdelete@gmail.com",
+      employeeEmail: "maint1@gmail.com",
       employeePhoneNumber: "0020",
-      employeePasswordHash: Employee.getHash("managerdelete_password", "H35"),
+      employeePasswordHash: Employee.getHash("main_password", "H35"),
       employeeSalt: "H35",
       employeeDoorAccessCode: "2222222",
       employeeBirthDate: new Date("2001-09-02"),
       employeeEducation: "Math Major",
-      isAccountManager: true,
+      isAccountManager: false,
       // @ts-ignore
       generalStaff: {
         generalStaffType: GeneralStaffType.ZOO_MAINTENANCE,
