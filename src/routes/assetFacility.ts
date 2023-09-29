@@ -114,6 +114,7 @@ router.post("/getSensor/:sensorId", getSensorController);
 router.get("/getSensorReading/:sensorId", getSensorReadingController);
 router.get("/getSensorMaintenanceSuggestions", getSensorMaintenanceSuggestionsController);
 router.get("/getSensorMaintenancePredictionValues/:sensorId", getSensorMaintenancePredictionValuesController);
+// router.get("/getAssignedMaintenanceStaffOfSensor/:sensorId", getAssignedMaintenanceStaffOfSensorController);
 router.put("/assignMaintenanceStaffToSensor/:sensorId", assignMaintenanceStaffToSensorController);
 router.put("/removeMaintenanceStaffFromSensor/:sensorId", removeMaintenanceStaffFromSensorController);
 router.put("/updateSensor/:sensorId", updateSensorController);

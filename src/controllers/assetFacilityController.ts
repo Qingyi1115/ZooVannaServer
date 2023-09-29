@@ -717,7 +717,7 @@ export async function getHubProcessorController(req: Request, res: Response) {
       !(
         (await employee.getPlanningStaff())?.plannerType ==
         PlannerType.OPERATIONS_MANAGER
-      )
+      ) && !(await employee.getGeneralStaff())
     )
       return res
         .status(403)
@@ -781,7 +781,7 @@ export async function getSensorController(req: Request, res: Response) {
       !(
         (await employee.getPlanningStaff())?.plannerType ==
         PlannerType.OPERATIONS_MANAGER
-      )
+      ) && !(await employee.getGeneralStaff())
     )
       return res
         .status(403)
@@ -1152,6 +1152,38 @@ export async function getSensorMaintenancePredictionValuesController(req: Reques
     res.status(400).json({ error: error.message });
   }
 }
+
+// export async function getAssignedMaintenanceStaffOfSensorController(req: Request, res: Response) {
+//   try {
+//     const { email } = (req as any).locals.jwtPayload;
+//     const employee = await findEmployeeByEmail(email);
+
+//     if (
+//       !(
+//         (await employee.getPlanningStaff())?.plannerType ==
+//         PlannerType.OPERATIONS_MANAGER
+//       )
+//     )
+//       return res
+//         .status(403)
+//         .json({ error: "Access Denied! Operation managers only!" });
+
+//     const { sensorId } = req.params;
+
+//     if (sensorId === undefined) {
+//       return res.status(400).json({ error: "Missing information!" });
+//     }
+
+//     let staffs = await getMaintenanceStaffBySensorId(
+//       Number(sensorId)
+//     );
+    
+//     return res.status(200).json({ maintenanceStaff: staffs });
+//   } catch (error: any) {
+//     console.log(error)
+//     res.status(400).json({ error: error.message });
+//   }
+// }
 
 export async function assignMaintenanceStaffToSensorController(req: Request, res: Response) {
   try {

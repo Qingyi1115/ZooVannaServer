@@ -801,6 +801,17 @@ export async function getMaintenanceStaffsByFacilityId(
   }
 }
 
+// export async function getMaintenanceStaffBySensorId(
+//   sensorId: number
+// ) {
+//   try {
+//     const sensor = await getSensor(sensorId, []);
+//     return sensor.getGeneralStaff();
+//   } catch (error: any) {
+//     throw validationErrorHandler(error);
+//   }
+// }
+
 export async function getAllMaintenanceStaff(
   includes: string[]
 ) {
