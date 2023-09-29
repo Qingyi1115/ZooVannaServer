@@ -263,7 +263,7 @@ export async function getFacilityMaintenancePredictionValuesController(req: Requ
       !(
         (await employee.getPlanningStaff())?.plannerType ==
         PlannerType.OPERATIONS_MANAGER
-      )
+      ) && !(await employee.getGeneralStaff())
     )
       return res
         .status(403)
@@ -1128,7 +1128,7 @@ export async function getSensorMaintenancePredictionValuesController(req: Reques
       !(
         (await employee.getPlanningStaff())?.plannerType ==
         PlannerType.OPERATIONS_MANAGER
-      )
+      ) && !(await employee.getGeneralStaff())
     )
       return res
         .status(403)
