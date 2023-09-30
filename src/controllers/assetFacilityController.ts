@@ -610,7 +610,8 @@ export async function createFacilityMaintenanceLogController(req: Request, res: 
       return res.status(400).json({ error: "Missing information!" });
     }
 
-    let maintenanceLog = await createFacilityMaintenanceLog(Number(facilityId), new Date(), title, details, remarks);
+    let maintenanceLog = await createFacilityMaintenanceLog(
+      Number(facilityId), new Date(), title, details, remarks);
 
     return res.status(200).json({ maintenanceLog: maintenanceLog });
   } catch (error: any) {
