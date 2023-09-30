@@ -1129,19 +1129,19 @@ export const facilityAssetsSeed = async () => {
     hubStatus: HubStatus.CONNECTED,
     sensors: [
       {
-        sensorName: "Camera1",
-        sensorType: SensorType.CAMERA
+        sensorName: "HUMIDITY1",
+        sensorType: SensorType.HUMIDITY
       }, {
-        sensorName: "Camera2",
-        sensorType: SensorType.CAMERA
+        sensorName: "LIGHT1",
+        sensorType: SensorType.LIGHT
       }, {
-        sensorName: "00000001",
-        sensorType: SensorType.CAMERA
+        sensorName: "TEMPERATURE1",
+        sensorType: SensorType.TEMPERATURE
       }, {
-        sensorName: "Camera4",
-        sensorType: SensorType.CAMERA
+        sensorName: "TEMPERATURE2",
+        sensorType: SensorType.TEMPERATURE
       }, {
-        sensorName: "Camera5",
+        sensorName: "Camera",
         sensorType: SensorType.CAMERA
       }
     ]
@@ -1165,7 +1165,7 @@ export const facilityAssetsSeed = async () => {
   }
   
   for (let i = 1; i < 100; i++){
-    sensor.addSensorReading(await SensorReading.create({readingDate: new Date(Date.now() - 1000 * 60 * i), value: Math.random()*5 + 30}));
+    sensor.addSensorReading(await SensorReading.create({readingDate: new Date(Date.now() - 1000 * 60 * i), value: Math.random()*5 + 30 + i/20}));
   }
   
 
@@ -1183,7 +1183,7 @@ export const facilityAssetsSeed = async () => {
   sensor.addMaintenanceLog(await MaintenanceLog.create({ dateTime: new Date(Date.now() - 1000 * 60 * 60 * 24 * 78), title: "string", details: "string", remarks: "string" }))
 
   for (let i = 1; i < 100; i++){
-    sensor.addSensorReading(await SensorReading.create({readingDate: new Date(Date.now() - 1000 * 60 * i), value: Math.random()*2 + 10}));
+    sensor.addSensorReading(await SensorReading.create({readingDate: new Date(Date.now() - 1000 * 60 * i), value: Math.random()*2 + 10 + i/20}));
   }
 
   sensor = sensors[2];
@@ -1203,7 +1203,7 @@ export const facilityAssetsSeed = async () => {
   // sensor.addMaintenanceLog(await MaintenanceLog.create({ dateTime: new Date(Date.now() - 1000 * 60 * 60 * 24 * 22), title: "string", details: "string", remarks: "string" }))
 
   for (let i = 1; i < 100; i++){
-    sensor.addSensorReading(await SensorReading.create({readingDate: new Date(Date.now() - 1000 * 60 * i), value: Math.random()*1 + 30}));
+    sensor.addSensorReading(await SensorReading.create({readingDate: new Date(Date.now() - 1000 * 60 * i), value: Math.random()*1 + 30 - i/100}));
   }
 
   sensor = sensors[3];
@@ -1215,7 +1215,7 @@ export const facilityAssetsSeed = async () => {
   sensor.addMaintenanceLog(await MaintenanceLog.create({ dateTime: new Date(Date.now() - 1000 * 60 * 60 * 24 * 8), title: "string", details: "string", remarks: "string" }))
 
   for (let i = 1; i < 100; i++){
-    sensor.addSensorReading(await SensorReading.create({readingDate: new Date(Date.now() - 1000 * 60 * i), value: Math.random()*5}));
+    sensor.addSensorReading(await SensorReading.create({readingDate: new Date(Date.now() - 1000 * 60 * i), value: Math.random()*5 - i/50}));
   }
 
   sensor = sensors[4];[1, 5, 2, 4, 8, 5, 7, 11, 8, 10, 14, 11, 13, 17]
@@ -1236,7 +1236,7 @@ export const facilityAssetsSeed = async () => {
   sensor.addMaintenanceLog(await MaintenanceLog.create({ dateTime: new Date(Date.now() - 1000 * 60 * 60 * 24 * 116), title: "string", details: "string", remarks: "string" }))
 
   for (let i = 1; i < 100; i++){
-    sensor.addSensorReading(await SensorReading.create({readingDate: new Date(Date.now() - 1000 * 60 * i), value: Math.random()*15 + 3}));
+    sensor.addSensorReading(await SensorReading.create({readingDate: new Date(Date.now() - 1000 * 60 * i), value: Math.random()*15 + 3 + i}));
   }
 
   let hub2 = await HubProcessor.create({

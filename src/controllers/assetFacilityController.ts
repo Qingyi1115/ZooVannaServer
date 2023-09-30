@@ -813,28 +813,27 @@ export async function getSensorReadingController(req: Request, res: Response) {
     const { email } = (req as any).locals.jwtPayload;
     const employee = await findEmployeeByEmail(email);
 
-    if (
-      !(
-        (await employee.getPlanningStaff())?.plannerType ==
-        PlannerType.OPERATIONS_MANAGER
-      )
-    )
-      return res
-        .status(403)
-        .json({ error: "Access Denied! Operation managers only!" });
+    // if (
+    //   !(
+    //     (await employee.getPlanningStaff())?.plannerType ==
+    //     PlannerType.OPERATIONS_MANAGER
+    //   )
+    // )
+    //   return res
+    //     .status(403)
+    //     .json({ error: "Access Denied! Operation managers only!" });
 
     const { sensorId } = req.params;
     const { startDate, endDate } = req.body;
 
     let sensorReadings = await getSensorReadingBySensorId(Number(sensorId));
+    let sensor = await getSensor(Number(sensorId), []);
 
     sensorReadings = sensorReadings.filter(reading =>
       compareDates(reading.readingDate, new Date(startDate)) >= 0 &&
       compareDates(reading.readingDate, new Date(endDate)) <= 0);
 
-    sensorReadings.forEach(reading => reading.toJSON())
-
-    return res.status(200).json({ sensorReadings: sensorReadings });
+    return res.status(200).json({ sensorReadings: sensorReadings, sensor: sensor });
   } catch (error: any) {
     res.status(400).json({ error: error.message });
   }

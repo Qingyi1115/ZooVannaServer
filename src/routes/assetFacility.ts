@@ -111,7 +111,7 @@ router.delete("/deleteHub/:hubProcessorId", deleteHubController);
 router.post("/addSensor", addSensorToHubController);
 router.get("/getAllSensors", getAllSensorsController);
 router.post("/getSensor/:sensorId", getSensorController);
-router.get("/getSensorReading/:sensorId", getSensorReadingController);
+router.post("/getSensorReading/:sensorId", getSensorReadingController);
 router.get("/getSensorMaintenanceSuggestions", getSensorMaintenanceSuggestionsController);
 router.get("/getSensorMaintenancePredictionValues/:sensorId", getSensorMaintenancePredictionValuesController);
 // router.get("/getAssignedMaintenanceStaffOfSensor/:sensorId", getAssignedMaintenanceStaffOfSensorController);
