@@ -16,6 +16,7 @@ import customerRoutes from "./routes/customer";
 import assetFacilityRoutes from "./routes/assetFacility";
 import speciesRoutes from "./routes/species";
 import promotionRoutes from "./routes/promotion";
+import listingRoutes from "./routes/listing";
 import { seedDatabase, createDatabase } from "./models/index";
 import { conn } from "./db";
 
@@ -66,3 +67,4 @@ app.use("/api/customer/", customerRoutes);
 app.use("/api/assetFacility/", assetFacilityRoutes);
 app.use("/api/species", speciesRoutes);
 app.use("/api/promotion", promotionRoutes);
+app.use("/api/listing", listingRoutes);
