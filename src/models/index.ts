@@ -572,7 +572,7 @@ export const employeeSeed = async () => {
     {
       employeeName: "operation guy1",
       employeeAddress: "Singapore Kent Ridge LT173",
-      employeeEmail: "ops_guy1password@gmail.com",
+      employeeEmail: "ops@gmail.com",
       employeePhoneNumber: "22318818",
       employeePasswordHash: Employee.getHash("ops_password", "NaAg33"),
       employeeSalt: "NaAg33",
