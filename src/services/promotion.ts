@@ -4,6 +4,7 @@ import { validationErrorHandler } from "../helpers/errorHandler";
 import { Promotion } from "../models/promotion";
 
 export async function createNewPromotion(
+  title: string,
   description: string,
   startDate: Date,
   endDate: Date,
@@ -15,6 +16,7 @@ export async function createNewPromotion(
 ) {
   const currentRedeemNum = 0;
   let newPromotion = {
+    title: title,
     description: description,
     startDate: startDate,
     endDate: endDate,
@@ -69,6 +71,7 @@ export async function deletePromotion(promotionId: number) {
 
 export async function updatePromotion(
   promotionId: number,
+  title: string,
   description: string,
   startDate: Date,
   endDate: Date,
@@ -82,6 +85,7 @@ export async function updatePromotion(
 
   let updatedPromotion = {
     promotionId: promotionId,
+    title: title,
     description: description,
     startDate: startDate,
     endDate: endDate,
