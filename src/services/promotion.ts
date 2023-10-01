@@ -26,7 +26,6 @@ export async function createNewPromotion(
     currentRedeemNum: currentRedeemNum,
   } as any;
 
-  // console.log(newSpecies);
 
   try {
     return await Promotion.create(newPromotion);
@@ -56,4 +55,50 @@ export async function getPromotionByPromotionId(
     return result;
   }
   throw { message: "Invalid promotion ID!" };
+}
+
+export async function deletePromotion(promotionId: number) {
+  let result = await Promotion.destroy({
+    where: { promotionId: promotionId },
+  });
+  if (result) {
+    return result;
+  }
+  throw new Error("Invalid Promotion ID!");
+}
+
+export async function editPromotion(
+  promotionId: number,
+  description: string,
+  startDate: Date,
+  endDate: Date,
+  percentage: number,
+  minimumSpending: number,
+  promotionCode: string,
+  maxRedeemNum: number,
+  imageUrl: string,
+  currentRedeemNum: number,
+) {
+
+  let updatedPromotion = {
+    promotionId: promotionId,
+    description: description,
+    startDate: startDate,
+    endDate: endDate,
+    percentage: percentage,
+    minimumSpending: minimumSpending,
+    promotionCode: promotionCode,
+    maxRedeemNum: maxRedeemNum,
+    imageUrl: imageUrl,
+    currentRedeemNum: currentRedeemNum,
+  } as any;
+
+
+  try {
+    let promotion = await Promotion.update(updatedPromotion, {
+      where: { promotionId: promotionId },
+    });
+  } catch (error: any) {
+    throw validationErrorHandler(error);
+  }
 }
