@@ -67,7 +67,7 @@ export async function deletePromotion(promotionId: number) {
   throw new Error("Invalid Promotion ID!");
 }
 
-export async function editPromotion(
+export async function updatePromotion(
   promotionId: number,
   description: string,
   startDate: Date,
