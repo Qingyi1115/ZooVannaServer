@@ -10,6 +10,7 @@ export async function createPromotion(req: Request, res: Response) {
       process.env.IMG_URL_ROOT! + "promotion", //"D:/capstoneUploads/promotion",
     );
     const {
+      title,
       description,
       startDate,
       endDate,
@@ -21,6 +22,7 @@ export async function createPromotion(req: Request, res: Response) {
 
     if (
       [
+        title,
         description,
         startDate,
         endDate,
@@ -31,6 +33,7 @@ export async function createPromotion(req: Request, res: Response) {
       ].includes(undefined)
     ) {
       console.log("Missing field(s): ", {
+        title,
         description,
         startDate,
         endDate,
@@ -44,6 +47,7 @@ export async function createPromotion(req: Request, res: Response) {
 
     // have to pass in req for image uploading
     let promotion = await PromotionService.createNewPromotion(
+      title,
       description,
       startDate,
       endDate,
@@ -147,6 +151,7 @@ export async function updatePromotion(req: Request, res: Response) {
       imageUrl = req.body.imageUrl;
     }
     const {
+      title,
       description,
       startDate,
       endDate,
@@ -159,6 +164,7 @@ export async function updatePromotion(req: Request, res: Response) {
 
     if (
       [
+        title,
         promotionId,
         description,
         startDate,
@@ -172,6 +178,7 @@ export async function updatePromotion(req: Request, res: Response) {
       ].includes(undefined)
     ) {
       console.log("Missing field(s): ", {
+        title,
         promotionId,
         description,
         startDate,
@@ -190,6 +197,7 @@ export async function updatePromotion(req: Request, res: Response) {
     if (!isNaN(promotionIdInt)) {
       let promotion = await PromotionService.updatePromotion(
         promotionIdInt,
+        title,
         description,
         startDate,
         endDate,

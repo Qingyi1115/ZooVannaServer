@@ -17,6 +17,7 @@ class Promotion extends Model<
   InferCreationAttributes<Promotion>
 > {
   declare promotionId: CreationOptional<number>;
+  declare title: string;
   declare description: string;
   declare startDate: Date;
   declare endDate: Date;
@@ -47,6 +48,10 @@ Promotion.init(
       type: DataTypes.BIGINT,
       autoIncrement: true,
       primaryKey: true,
+    },
+    title: {
+      type: DataTypes.STRING,
+      allowNull: false,
     },
     description: {
       type: DataTypes.STRING,
