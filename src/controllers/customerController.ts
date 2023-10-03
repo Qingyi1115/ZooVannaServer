@@ -303,7 +303,9 @@ export async function deleteCustomerByEmail(req: Request, res: Response) {
 }
 
 export async function purchaseTicketController(req: Request, res: Response) {
+  console.log("here");
   const { customerId } = req.params;
+  console.log(customerId);
   if (!customerId) {
     console.log("Missing field(s): ", {
       customerId,

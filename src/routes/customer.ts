@@ -36,6 +36,6 @@ router.put("/updateCustomer/:customerId", updateCustomer);
 router.put("/updatePassword/:customerId", updatePassword);
 router.delete("/deleteCustomer", deleteCustomerByEmail);
 
-router.post("/createTicke/:customerId", purchaseTicketController);
+router.post("/createTicket/:customerId", purchaseTicketController);
 
 export default router;
