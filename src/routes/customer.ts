@@ -26,6 +26,7 @@ router.post("/createCustomer", createCustomer);
 
 // log in
 router.post("/login", login);
+router.post("/createTicket/:customerId", purchaseTicketController);
 
 router.use(authMiddleware);
 
@@ -35,7 +36,5 @@ router.get("/getCustomer", getCustomerByEmail);
 router.put("/updateCustomer/:customerId", updateCustomer);
 router.put("/updatePassword/:customerId", updatePassword);
 router.delete("/deleteCustomer", deleteCustomerByEmail);
-
-router.post("/createTicket/:customerId", purchaseTicketController);
 
 export default router;
