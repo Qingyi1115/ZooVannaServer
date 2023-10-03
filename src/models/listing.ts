@@ -6,7 +6,7 @@ import {
   CreationOptional,
   HasManyGetAssociationsMixin,
   HasManySetAssociationsMixin,
-  HasManyAddAssociationsMixin,
+  HasManyAddAssociationMixin,
   HasManyRemoveAssociationMixin,
 } from "Sequelize";
 import { conn } from "../db";
@@ -27,7 +27,7 @@ class Listing extends Model<
   declare orderItems?: OrderItem[];
 
   declare getOrderItems: HasManyGetAssociationsMixin<OrderItem>;
-  declare addOrderItem: HasManyAddAssociationsMixin<OrderItem, number>;
+  declare addOrderItem: HasManyAddAssociationMixin<OrderItem, number>;
   declare setOrderItems: HasManySetAssociationsMixin<OrderItem, number>;
   declare removeOrderItem: HasManyRemoveAssociationMixin<OrderItem, number>;
 

@@ -5,6 +5,11 @@ import { Customer } from "../models/customer";
 import { Country } from "../models/enumerated";
 import * as nodemailer from "nodemailer";
 import { v4 as uuidv4 } from "uuid";
+import { OrderItem } from "../models/orderItem";
+import { Listing } from "../models/listing";
+import { CustomerOrder } from "../models/customerOrder";
+import { Payment } from "../models/payment";
+const { Sequelize } = require("sequelize");
 
 export async function createNewCustomer(
   customerPassword: string,
@@ -244,4 +249,56 @@ export async function deleteCustomerByEmail(customerEmail: string) {
     return result;
   }
   throw { message: "Invalid Customer Email!" };
+}
+
+export async function purchaseTicket(
+  customerId: number,
+  listings: any,
+  customerOrder: any,
+  payment: any,
+) {
+  try {
+    await Sequelize.transaction(async (t: any) => {
+      let result = await Customer.findOne({
+        where: { customerId: customerId },
+      });
+
+      if (result) {
+        let custOrder = await CustomerOrder.create(customerOrder, {
+          transaction: t,
+        });
+
+        for (const listing of listings) {
+          let queriedListing = await Listing.findOne({
+            where: { listingId: listing.listingId },
+          });
+
+          if (queriedListing) {
+            for (const orderItem of listing.orderItems) {
+              let newOrderItem = await OrderItem.create(orderItem, {
+                transaction: t,
+              });
+              queriedListing.addOrderItem(newOrderItem);
+              newOrderItem.setListing(queriedListing);
+              custOrder.addOrderItem(newOrderItem);
+              newOrderItem.setCustomerOrder(custOrder);
+            }
+          } else {
+            throw { message: "Invalid listing" };
+          }
+        }
+        result.addCustomerOrder(custOrder);
+        custOrder.setCustomer(result);
+
+        let pay = await Payment.create(payment, { transaction: t });
+        pay.setCustomerOrder(custOrder);
+        custOrder.addPayment(pay);
+        return custOrder;
+      } else {
+        throw { message: "Invalid customer Id" };
+      }
+    });
+  } catch (error) {
+    throw { message: "The transaction failed" };
+  }
 }
