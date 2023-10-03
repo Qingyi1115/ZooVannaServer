@@ -30,6 +30,7 @@ import { SpeciesEnclosureNeed } from "./speciesEnclosureNeed";
 import { PhysiologicalReferenceNorms } from "./physiologicalReferenceNorms";
 import { Compatibility } from "./compatibility";
 import { Customer } from "./customer";
+import { Animal } from "./animal";
 
 class Species extends Model<
   InferAttributes<Species>,
@@ -63,7 +64,8 @@ class Species extends Model<
   declare physiologicalReferenceNorms?: PhysiologicalReferenceNorms[];
   declare speciesDietNeeds?: SpeciesDietNeed[];
   declare compatibilities?: Compatibility[];
-  declare customers?:Customer[];
+  declare customers?: Customer[];
+  declare animals?: Animal[];
 
   declare getSpeciesEnclosureNeed: HasOneGetAssociationMixin<SpeciesEnclosureNeed>;
   declare setSpeciesEnclosureNeed: HasOneSetAssociationMixin<
@@ -71,9 +73,7 @@ class Species extends Model<
     number
   >;
 
-  declare getPhysiologicalRefNorm: HasManyGetAssociationsMixin<
-    PhysiologicalReferenceNorms
-  >;
+  declare getPhysiologicalRefNorm: HasManyGetAssociationsMixin<PhysiologicalReferenceNorms>;
   declare addPhysiologicalRefNorm: HasManyAddAssociationMixin<
     PhysiologicalReferenceNorms,
     number
@@ -111,6 +111,11 @@ class Species extends Model<
     Compatibility,
     number
   >;
+
+  declare getAnimals: HasManyGetAssociationsMixin<Animal>;
+  declare addAnimals: HasManyAddAssociationMixin<Animal, number>;
+  declare setAnimals: HasManySetAssociationsMixin<Animal, number>;
+  declare removeAnimals: HasManyRemoveAssociationMixin<Animal, number>;
 
   declare getCustomers: BelongsToManyGetAssociationsMixin<Customer>;
   declare addCustomer: BelongsToManyAddAssociationMixin<Customer, number>;

@@ -38,8 +38,8 @@ enum FacilityType {
   PLAYGROUND = "PLAYGROUND",
   TRAMSTOP = "TRAMSTOP",
   PARKING = "PARKING",
-  RESTAURANT="RESTAURANT",
-  SHOP_SOUVENIR="SHOP_SOUVENIR"
+  RESTAURANT = "RESTAURANT",
+  SHOP_SOUVENIR = "SHOP_SOUVENIR",
 }
 
 enum Specialization {
@@ -129,11 +129,9 @@ enum AnimalSex {
 }
 
 enum AcquisitionMethod {
-  INFANT = "INFANT",
-  JUVENILE = "JUVENILE",
-  ADOLESCENT = "ADOLESCENT",
-  ADULT = "ADULT",
-  ELDER = "ELDER",
+  CAPTIVE_BRED = "CAPTIVE_BRED",
+  WILD_CAPTURED = "WILD_CAPTURED",
+  ADOLESCENT = "TRANSFERRED_IN",
 }
 
 enum AnimalFeedCategory {
@@ -153,6 +151,7 @@ enum AnimalFeedCategory {
 }
 
 enum AnimalGrowthStage {
+  UNKNOWN = "UNKNOWN",
   INFANT = "INFANT",
   JUVENILE = "JUVENILE",
   ADOLESCENT = "ADOLESCENT",
@@ -160,8 +159,12 @@ enum AnimalGrowthStage {
   ELDER = "ELDER",
 }
 
-enum AnimalStatusType {
-  TEST = "TEST",
+enum AnimalStatus {
+  NORMAL = "NORMAL",
+  PREGNANT = "PREGNANT",
+  SICK = "SICK",
+  INJURED = "INJURED",
+  DECEASED = "DECEASED",
 }
 
 enum Biome {
@@ -172,6 +175,10 @@ enum Biome {
   TEMPERATE = "TEMPERATE",
   TROPICAL = "TROPICAL",
   TUNDRA = "TUNDRA",
+}
+
+enum IdentifierType {
+  TYPE = "TYPE",
 }
 
 enum EventType {
@@ -502,7 +509,7 @@ export {
   AnimalSex,
   AcquisitionMethod,
   AnimalGrowthStage,
-  AnimalStatusType,
+  AnimalStatus,
   Biome,
   EventType,
   EventTimingType,
@@ -514,4 +521,5 @@ export {
   OrderStatus,
   EnclosureStatus,
   HubStatus,
+  IdentifierType,
 };
