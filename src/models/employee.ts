@@ -11,11 +11,7 @@ import { conn } from "../db";
 import { Keeper } from "./keeper";
 import { PlanningStaff } from "./planningStaff";
 import { GeneralStaff } from "./generalStaff";
-import crypto from "crypto";
-
-function hash(string: string): string {
-  return crypto.createHash("sha256").update(string).digest("hex");
-}
+import { hash } from "../helpers/security";
 
 function uppercaseFirst(str: string) {
   return `${str[0].toUpperCase()}${str.substr(1)}`;
@@ -130,9 +126,9 @@ class Employee extends Model<
       ...this.get(),
       employeePasswordHash: undefined,
       employeeSalt: undefined,
-      keeper: (await this.getKeeper())?.toJSON(),
-      generalStaff: (await this.getGeneralStaff())?.toJSON(),
-      planningStaff: (await this.getPlanningStaff())?.toJSON(),
+      keeper: (await this.getKeeper()),
+      generalStaff: (await this.getGeneralStaff()),
+      planningStaff: (await this.getPlanningStaff()),
     };
   }
 }

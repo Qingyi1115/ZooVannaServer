@@ -16,8 +16,11 @@ import {
   // updateGeneralStaffType,
   // updatePlanningStaffType,
   updateRoleType,
-  updateSpecializationType
+  updateSpecializationType,
+  getAllGeneralStaffs,
 } from "../services/employee";
+import { PlannerType } from "../models/enumerated";
+import { GeneralStaff } from "../models/generalStaff";
 
 export async function login(req: Request, res: Response) {
   try {
@@ -28,75 +31,80 @@ export async function login(req: Request, res: Response) {
         return res.status(403).json({ error: "Invalid credentials!" });
       }
       const token = createToken(email);
-      return res.status(200).json({ token, employeeData: employeeData.toJSON() });
+      return res
+        .status(200)
+        .json({ token, employeeData: await employeeData.toFullJSON() });
     }
   } catch (error: any) {
     res.status(400).json({ error: error.message });
   }
-};
+}
 
-export async function updateEmployeeAccountController(req: Request, res: Response) {
+export async function updateEmployeeAccountController(
+  req: Request,
+  res: Response,
+) {
   try {
     const { email } = (req as any).locals.jwtPayload;
     const employee = await findEmployeeByEmail(email);
 
-    const { 
-      employeeAddress, 
-      employeeEmail, 
+    const {
+      employeeAddress,
+      employeeEmail,
       employeePhoneNumber,
-      employeeEducation
+      employeeEducation,
     } = req.body;
 
     for (const [field, v] of Object.entries({
-      employeeAddress:employeeAddress, 
-      employeeEmail:employeeEmail, 
-      employeePhoneNumber:employeePhoneNumber,
-      employeeEducation:employeeEducation})){
-        
-        if (v !== undefined){
-          (employee as any)[field] = v;
-        } 
+      employeeAddress: employeeAddress,
+      employeeEmail: employeeEmail,
+      employeePhoneNumber: employeePhoneNumber,
+      employeeEducation: employeeEducation,
+    })) {
+      if (v !== undefined) {
+        (employee as any)[field] = v;
       }
+    }
     employee.save();
-    
+
     let token = undefined;
-    if (employeeEmail !== undefined){
+    if (employeeEmail !== undefined) {
       token = createToken(employee.employeeEmail);
     }
-    
-    return res.status(200).json({newToken: token, employee: employee.toJSON()});
-  } catch (error: any) {
-    console.log("errore",error);
-    return res.status(400).json({error: error.message});
-  }
-};
 
-export async function updateEmployeePasswordController(req: Request, res: Response) {
+    return res
+      .status(200)
+      .json({ newToken: token, employee: employee.toJSON() });
+  } catch (error: any) {
+    console.log("errore", error);
+    return res.status(400).json({ error: error.message });
+  }
+}
+
+export async function updateEmployeePasswordController(
+  req: Request,
+  res: Response,
+) {
   try {
     const { email } = (req as any).locals.jwtPayload;
     const employee = await findEmployeeByEmail(email);
 
-    const { 
-      newPassword,
-      oldPassword
-    } = req.body;
+    const { newPassword, oldPassword } = req.body;
 
-    if ([newPassword, oldPassword].every(
-        (field) => field === undefined,
-      )
-    ) {
+    if ([newPassword, oldPassword].every((field) => field === undefined)) {
       return res.status(400).json({ error: "Missing information!" });
     }
-    if (!employee.testPassword(oldPassword)) throw {message: "Wrong password!"}
+    if (!employee.testPassword(oldPassword))
+      throw { message: "Wrong password!" };
 
     employee.updatePassword(newPassword);
-    
-    return res.status(200).json({result: "Success!"});
+
+    return res.status(200).json({ result: "Success!" });
   } catch (error: any) {
     console.log(error.message);
-    return res.status(400).json({error: error.message});
+    return res.status(400).json({ error: error.message });
   }
-};
+}
 
 export const getSelfController = async (req: Request, res: Response) => {
   try {
@@ -192,15 +200,18 @@ export async function setAccountManagerController(req: Request, res: Response) {
     const { employeeId } = req.params;
 
     let result = await setAsAccountManager(Number(employeeId));
-    
-    return res.status(200).json({employee: result});
-} catch (error: any) {
-  console.log(error.message);
-  return res.status(400).json({error: error.message});
-}
-};
 
-export async function unsetAccountManagerController(req: Request, res: Response) {
+    return res.status(200).json({ employee: result });
+  } catch (error: any) {
+    console.log(error.message);
+    return res.status(400).json({ error: error.message });
+  }
+}
+
+export async function unsetAccountManagerController(
+  req: Request,
+  res: Response,
+) {
   try {
     const { email } = (req as any).locals.jwtPayload;
     const employee = await findEmployeeByEmail(email);
@@ -214,13 +225,13 @@ export async function unsetAccountManagerController(req: Request, res: Response)
     const { employeeId } = req.params;
 
     let result = await unsetAsAccountManager(Number(employeeId));
-    
-    return res.status(200).json({employee: result});
+
+    return res.status(200).json({ employee: result });
   } catch (error: any) {
     console.log(error.message);
-    return res.status(400).json({error: error.message});
+    return res.status(400).json({ error: error.message });
   }
-};
+}
 
 export async function getAllEmployeesController(req: Request, res: Response) {
   try {
@@ -233,19 +244,61 @@ export async function getAllEmployeesController(req: Request, res: Response) {
         .json({ error: "Access Denied! Account managers only!" });
     }
 
-    const {includes=[] } = req.body;
-    const _includes : string[] = []
-    for (const role of ["keeper", "generalStaff", "planningStaff"]){
-      if (includes.includes(role)) _includes.push(role)
+    const { includes = [] } = req.body;
+    const _includes: string[] = [];
+    for (const role of ["keeper", "generalStaff", "planningStaff"]) {
+      if (includes.includes(role)) _includes.push(role);
     }
 
     let result = await getAllEmployees(_includes);
-    return res.status(200).json({employees: result});
-
+    return res.status(200).json({ employees: result });
   } catch (error: any) {
     console.log(error.message);
-    return res.status(400).json({error: error.message});
-  } 
+    return res.status(400).json({ error: error.message });
+  }
+}
+
+export async function getAllGeneralStaffsController(
+  req: Request,
+  res: Response,
+) {
+  try {
+    const { email } = (req as any).locals.jwtPayload;
+    const employee = await findEmployeeByEmail(email);
+
+    if (
+      !employee.isAccountManager &&
+      (await employee.getPlanningStaff())?.plannerType !=
+        PlannerType.OPERATIONS_MANAGER
+    ) {
+      return res.status(403).json({ error: "Access Denied!" });
+    }
+
+    const { includes = [] } = req.body;
+    const _includes: string[] = ["employee"];
+    for (const role of [
+      "maintainedFacilities",
+      "operatedFacility",
+      "sensors",
+    ]) {
+      if (includes.includes(role)) _includes.push(role);
+    }
+
+    let generalStaffs: GeneralStaff[] = await getAllGeneralStaffs(_includes);
+    for (const staff of generalStaffs) {
+      let opFacility = await staff.getOperatedFacility();
+      if (opFacility) {
+        (staff as any).dataValues["operatedFacilityName"] = (
+          await opFacility.getFacility()
+        ).facilityName;
+      }
+    }
+
+    return res.status(200).json({ generalStaffs: generalStaffs });
+  } catch (error: any) {
+    console.log(error.message);
+    return res.status(400).json({ error: error.message });
+  }
 }
 
 export async function getEmployeeController(req: Request, res: Response) {
@@ -259,16 +312,15 @@ export async function getEmployeeController(req: Request, res: Response) {
         .json({ error: "Access Denied! Account managers only!" });
     }
 
-    const {employeeId} = req.params;
+    const { employeeId } = req.params;
 
-    let result = await getEmployee(Number(employeeId));     
-    return res.status(200).json({employee: result});
-    
+    let result = await getEmployee(Number(employeeId));
+    return res.status(200).json({ employee: result });
   } catch (error: any) {
     console.log(error.message);
-    return res.status(400).json({error: error.message});
+    return res.status(400).json({ error: error.message });
   }
-};
+}
 
 export async function resetPasswordController(req: Request, res: Response) {
   try {
@@ -281,21 +333,28 @@ export async function resetPasswordController(req: Request, res: Response) {
         .json({ error: "Access Denied! Account managers only!" });
     }
 
-    const {employeeId} = req.params;
+    const { employeeId } = req.params;
 
-    resetPassword(Number(employeeId), (error:string) =>{
-      res.status(200).json({ message: "Failed to send email!\n" + error });
-    }, () =>{
-      res.status(200).json({message: "Email for reset password has been sent"});
-    }
+    resetPassword(
+      Number(employeeId),
+      (error: string) => {
+        res.status(200).json({ message: "Failed to send email!\n" + error });
+      },
+      () => {
+        res
+          .status(200)
+          .json({ message: "Email for reset password has been sent" });
+      },
     );
-  }
-  catch (error: any) {
-    return res.status(400).json({error: error.message});
+  } catch (error: any) {
+    return res.status(400).json({ error: error.message });
   }
 }
 
-export async function disableEmployeeAccountController(req: Request, res: Response) {
+export async function disableEmployeeAccountController(
+  req: Request,
+  res: Response,
+) {
   try {
     const { email } = (req as any).locals.jwtPayload;
     const employee = await findEmployeeByEmail(email);
@@ -306,42 +365,38 @@ export async function disableEmployeeAccountController(req: Request, res: Respon
         .json({ error: "Access Denied! Account managers only!" });
     }
 
-    const {employeeId} = req.params;
+    const { employeeId } = req.params;
     const dateOfResignation = new Date();
 
-    let result = await disableEmployeeAccount(Number(employeeId), dateOfResignation);
-    return res.status(200).json({date: result});
-  }
-  catch (error: any) {
-    return res.status(400).json({error: error.message});
+    let result = await disableEmployeeAccount(
+      Number(employeeId),
+      dateOfResignation,
+    );
+    return res.status(200).json({ date: result });
+  } catch (error: any) {
+    return res.status(400).json({ error: error.message });
   }
 }
 
-export async function resetForgottenPasswordController(req: Request, res: Response) {
+export async function resetForgottenPasswordController(
+  req: Request,
+  res: Response,
+) {
   try {
-    const {
-      token,
-      password
-    } = req.body;
+    const { token, password } = req.body;
 
-    if (
-      [
-        token,
-        password
-      ].includes(undefined)
-    ) {
+    if ([token, password].includes(undefined)) {
       console.log("Missing field(s): ", {
         token,
-        password
+        password,
       });
       return res.status(400).json({ error: "Missing information!" });
     }
 
     let result = await setPassword(token, password);
-    return res.status(200).json({employee: result});
-  }
-  catch (error: any) {
-    return res.status(400).json({error: error.message});
+    return res.status(200).json({ employee: result });
+  } catch (error: any) {
+    return res.status(400).json({ error: error.message });
   }
 }
 
@@ -356,18 +411,22 @@ export async function enableRoleController(req: Request, res: Response) {
         .json({ error: "Access Denied! Account managers only!" });
     }
 
-    const {employeeId} = req.params;
+    const { employeeId } = req.params;
     const result = req.body;
     console.log(result);
     console.log(employeeId);
-    
 
-    const ress = await enableRole(Number(employeeId), result.role, result.roleJson);
+    const ress = await enableRole(
+      Number(employeeId),
+      result.role,
+      result.roleJson,
+    );
     console.log(ress + "hereeee");
-    return res.status(200).json({message: `The ${result.role} role has been enabled`});
-  }
-  catch (error: any) {
-    return res.status(400).json({error: error.message});
+    return res
+      .status(200)
+      .json({ message: `The ${result.role} role has been enabled` });
+  } catch (error: any) {
+    return res.status(400).json({ error: error.message });
   }
 }
 
@@ -382,23 +441,20 @@ export async function disableRoleController(req: Request, res: Response) {
         .json({ error: "Access Denied! Account managers only!" });
     }
 
-    const {employeeId} = req.params;
+    const { employeeId } = req.params;
     const roleJson = req.body;
     console.log(roleJson, roleJson.role);
 
     await disableRole(Number(employeeId), roleJson.role);
-    return res.status(200).json({message: `The ${roleJson.role} role has been disabled`});
-
-  }
-  catch (error: any) {
-    return res.status(400).json({error: error.message});
+    return res
+      .status(200)
+      .json({ message: `The ${roleJson.role} role has been disabled` });
+  } catch (error: any) {
+    return res.status(400).json({ error: error.message });
   }
 }
 
-export const updateRoleTypeController = async (
-  req: Request, 
-  res: Response,
-) => {
+export const updateRoleTypeController = async (req: Request, res: Response) => {
   try {
     const { email } = (req as any).locals.jwtPayload;
     const employee = await findEmployeeByEmail(email);
@@ -409,21 +465,21 @@ export const updateRoleTypeController = async (
         .json({ error: "Access Denied! Account managers only!" });
     }
 
-    const {employeeId} = req.params;
+    const { employeeId } = req.params;
     const result = req.body;
     console.log(result.role, result.roleType);
 
     await updateRoleType(Number(employeeId), result.role, result.roleType);
-    return res.status(200).json({message: `The ${result.role} roleType has been updated`});
-
+    return res
+      .status(200)
+      .json({ message: `The ${result.role} roleType has been updated` });
+  } catch (error: any) {
+    return res.status(400).json({ error: error.message });
   }
-  catch (error: any) {
-    return res.status(400).json({error: error.message});
-  }
-}
+};
 
 export const updateSpecializationTypeController = async (
-  req: Request, 
+  req: Request,
   res: Response,
 ) => {
   try {
@@ -436,18 +492,22 @@ export const updateSpecializationTypeController = async (
         .json({ error: "Access Denied! Account managers only!" });
     }
 
-    const {employeeId} = req.params;
+    const { employeeId } = req.params;
     const result = req.body;
     console.log(result.role, result.specializationType);
 
-    await updateSpecializationType(Number(employeeId), result.role, result.specializationType);
-    return res.status(200).json({message: `The ${result.role} specialization has been updated`});
-
+    await updateSpecializationType(
+      Number(employeeId),
+      result.role,
+      result.specializationType,
+    );
+    return res
+      .status(200)
+      .json({ message: `The ${result.role} specialization has been updated` });
+  } catch (error: any) {
+    return res.status(400).json({ error: error.message });
   }
-  catch (error: any) {
-    return res.status(400).json({error: error.message});
-  }
-}
+};
 
 // export async function updateGeneralStaffTypeController(req: Request, res: Response) {
 //   try {
@@ -496,4 +556,3 @@ export const updateSpecializationTypeController = async (
 //       return res.status(400).json({error: error.message});
 //   }
 // }
-

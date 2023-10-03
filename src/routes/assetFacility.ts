@@ -50,13 +50,17 @@ import {
   getFacilityLogsController,
   createFacilityLogController,
   getSensorController,
-  createFacilityMaintenanceLogController
+  createFacilityMaintenanceLogController,
+  pushSensorReadingsController,
+  getSensorMaintenancePredictionValuesController,
+  getFacilityMaintenancePredictionValuesController
 } from "../controllers/assetFacilityController";
 
 const router = express.Router();
 
 // IP device API
 router.put("/initializeHub", initializeHubController);
+router.post("/pushSensorReadings/:processorName", pushSensorReadingsController);
 
 router.use(authMiddleware);
 
@@ -67,6 +71,7 @@ router.get("/getMyOperationFacility", getMyOperationFacilityController);
 router.get("/getMyMaintainedFacility", getMyMaintainedFacilityController);
 router.post("/getFacility/:facilityId", getFacilityController);
 router.get("/getFacilityMaintenanceSuggestions", getFacilityMaintenanceSuggestionsController);
+router.get("/getFacilityMaintenancePredictionValues/:facilityId", getFacilityMaintenancePredictionValuesController);
 router.put("/updateFacility/:facilityId", updateFacilityController);
 router.delete("/deleteFacility/:facilityId", deleteFacilityController);
 router.get("/getAssignedMaintenanceStaffOfFacility/:facilityId", getAssignedMaintenanceStaffOfFacilityController);
@@ -106,8 +111,10 @@ router.delete("/deleteHub/:hubProcessorId", deleteHubController);
 router.post("/addSensor", addSensorToHubController);
 router.get("/getAllSensors", getAllSensorsController);
 router.post("/getSensor/:sensorId", getSensorController);
-router.get("/getSensorReading/:sensorId", getSensorReadingController);
+router.post("/getSensorReading/:sensorId", getSensorReadingController);
 router.get("/getSensorMaintenanceSuggestions", getSensorMaintenanceSuggestionsController);
+router.get("/getSensorMaintenancePredictionValues/:sensorId", getSensorMaintenancePredictionValuesController);
+// router.get("/getAssignedMaintenanceStaffOfSensor/:sensorId", getAssignedMaintenanceStaffOfSensorController);
 router.put("/assignMaintenanceStaffToSensor/:sensorId", assignMaintenanceStaffToSensorController);
 router.put("/removeMaintenanceStaffFromSensor/:sensorId", removeMaintenanceStaffFromSensorController);
 router.put("/updateSensor/:sensorId", updateSensorController);
@@ -115,6 +122,6 @@ router.delete("/deleteSensor/:sensorId", deleteSensorController);
 router.post("/createSensorMaintenanceLog/:sensorId", createSensorMaintenanceLogController);
 router.post("/getAllSensorMaintenanceLogsController/:sensorId", getAllSensorMaintenanceLogsController);
 
-router.get("/getAuthorizationForCamera", getAuthorizationForCameraController);
+router.post("/getAuthorizationForCamera", getAuthorizationForCameraController);
 
 export default router;

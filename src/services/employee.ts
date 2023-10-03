@@ -276,6 +276,20 @@ export async function getAllEmployees(includes: string[] = []): Promise<Employee
   });
 }
 
+export async function getAllGeneralStaffs(includes: string[] = []): Promise<GeneralStaff[]> {
+
+   let generalStaffs = await GeneralStaff.findAll({
+    include: includes,
+  });
+
+  const valid_staff = []
+  for (const staff of generalStaffs){
+    if (!staff.employee?.dateOfResignation && !staff.isDisabled) valid_staff.push(staff);
+  }
+
+  return valid_staff;
+}
+
 export async function getEmployee(
   employeeId: CreationOptional<number>
 ): Promise<Employee>

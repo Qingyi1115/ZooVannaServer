@@ -43,13 +43,23 @@ class GeneralStaff extends Model<
   declare getOperatedFacility: BelongsToGetAssociationMixin<InHouse>;
   declare setOperatedFacility: BelongsToSetAssociationMixin<InHouse, number>;
 
-  declare getSensors: HasManyGetAssociationsMixin<Sensor[]>;
+  declare getSensors: HasManyGetAssociationsMixin<Sensor>;
   declare addSensor: HasManyAddAssociationMixin<Sensor, number>;
-  declare setSensors: HasManySetAssociationsMixin<Sensor[], number>;
+  declare setSensors: HasManySetAssociationsMixin<Sensor, number>;
   declare removeSensor: HasManyRemoveAssociationMixin<Sensor, number>;
   
   public toJSON() {
     return this.get();
+  }
+
+  public async toFullJSON(){
+    return {
+      ...this.get(),
+      employee: (await this.getEmployee())?.toJSON(),
+      maintainedFacilities: (await this.getMaintainedFacilities()),
+      operatedFacility: (await this.getOperatedFacility()),
+      sensors: (await this.getSensors())
+    };
   }
 
   public enable() {
