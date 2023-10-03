@@ -582,7 +582,7 @@ export const employeeSeed = async () => {
     {
       employeeName: "operation guy1",
       employeeAddress: "Singapore Kent Ridge LT173",
-      employeeEmail: "ops_guy1password@gmail.com",
+      employeeEmail: "ops@gmail.com",
       employeePhoneNumber: "22318818",
       employeePasswordHash: Employee.getHash("ops_password", "NaAg33"),
       employeeSalt: "NaAg33",
@@ -1230,6 +1230,15 @@ export const facilityAssetsSeed = async () => {
     }),
   );
 
+  for (let i = 1; i < 100; i++) {
+    sensor.addSensorReading(
+      await SensorReading.create({
+        readingDate: new Date(Date.now() - 1000 * 60 * i),
+        value: Math.random() * 5 + 30 + i / 20,
+      }),
+    );
+  }
+
   sensor = sensors[1];
   sensor.addMaintenanceLog(
     await MaintenanceLog.create({
@@ -1320,6 +1329,15 @@ export const facilityAssetsSeed = async () => {
     }),
   );
 
+  for (let i = 1; i < 100; i++) {
+    sensor.addSensorReading(
+      await SensorReading.create({
+        readingDate: new Date(Date.now() - 1000 * 60 * i),
+        value: Math.random() * 2 + 10 + i / 20,
+      }),
+    );
+  }
+
   sensor = sensors[2];
   sensor.addMaintenanceLog(
     await MaintenanceLog.create({
@@ -1406,6 +1424,10 @@ export const facilityAssetsSeed = async () => {
   // sensor.addMaintenanceLog(await MaintenanceLog.create({ dateTime: new Date(Date.now() - 1000 * 60 * 60 * 24 * 21), title: "string", details: "string", remarks: "string" }))
   // sensor.addMaintenanceLog(await MaintenanceLog.create({ dateTime: new Date(Date.now() - 1000 * 60 * 60 * 24 * 22), title: "string", details: "string", remarks: "string" }))
 
+  /*for (let i = 1; i < 100; i++){
+    sensor.addSensorReading(await SensorReading.create({readingDate: new Date(Date.now() - 1000 * 60 * i), value: Math.random()*1 + 30 - i/100}));
+  }*/
+
   sensor = sensors[3];
   sensor.addMaintenanceLog(
     await MaintenanceLog.create({
@@ -1455,6 +1477,15 @@ export const facilityAssetsSeed = async () => {
       remarks: "string",
     }),
   );
+
+  for (let i = 1; i < 100; i++) {
+    sensor.addSensorReading(
+      await SensorReading.create({
+        readingDate: new Date(Date.now() - 1000 * 60 * i),
+        value: Math.random() * 5 - i / 50,
+      }),
+    );
+  }
 
   sensor = sensors[4];
   [1, 5, 2, 4, 8, 5, 7, 11, 8, 10, 14, 11, 13, 17];
@@ -1579,6 +1610,15 @@ export const facilityAssetsSeed = async () => {
     }),
   );
 
+  for (let i = 1; i < 100; i++) {
+    sensor.addSensorReading(
+      await SensorReading.create({
+        readingDate: new Date(Date.now() - 1000 * 60 * i),
+        value: Math.random() * 15 + 3 + i,
+      }),
+    );
+  }
+
   let hub2 = await HubProcessor.create(
     {
       processorName: "tramCam2",
@@ -1615,6 +1655,166 @@ export const facilityAssetsSeed = async () => {
         .getInHouse()
         .then((tramstop2) => tramstop.setNextTramStop(tramstop2)),
     );
+
+  sensor = sensors[4];
+  [1, 5, 2, 4, 8, 5, 7, 11, 8, 10, 14, 11, 13, 17];
+  sensor.addMaintenanceLog(
+    await MaintenanceLog.create({
+      dateTime: new Date(Date.now()),
+      title: "string",
+      details: "string",
+      remarks: "string",
+    }),
+  );
+  sensor.addMaintenanceLog(
+    await MaintenanceLog.create({
+      dateTime: new Date(Date.now() - 1000 * 60 * 60 * 24 * 17),
+      title: "string",
+      details: "string",
+      remarks: "string",
+    }),
+  );
+  sensor.addMaintenanceLog(
+    await MaintenanceLog.create({
+      dateTime: new Date(Date.now() - 1000 * 60 * 60 * 24 * 30),
+      title: "string",
+      details: "string",
+      remarks: "string",
+    }),
+  );
+  sensor.addMaintenanceLog(
+    await MaintenanceLog.create({
+      dateTime: new Date(Date.now() - 1000 * 60 * 60 * 24 * 41),
+      title: "string",
+      details: "string",
+      remarks: "string",
+    }),
+  );
+  sensor.addMaintenanceLog(
+    await MaintenanceLog.create({
+      dateTime: new Date(Date.now() - 1000 * 60 * 60 * 24 * 55),
+      title: "string",
+      details: "string",
+      remarks: "string",
+    }),
+  );
+  sensor.addMaintenanceLog(
+    await MaintenanceLog.create({
+      dateTime: new Date(Date.now() - 1000 * 60 * 60 * 24 * 65),
+      title: "string",
+      details: "string",
+      remarks: "string",
+    }),
+  );
+  sensor.addMaintenanceLog(
+    await MaintenanceLog.create({
+      dateTime: new Date(Date.now() - 1000 * 60 * 60 * 24 * 73),
+      title: "string",
+      details: "string",
+      remarks: "string",
+    }),
+  );
+  sensor.addMaintenanceLog(
+    await MaintenanceLog.create({
+      dateTime: new Date(Date.now() - 1000 * 60 * 60 * 24 * 84),
+      title: "string",
+      details: "string",
+      remarks: "string",
+    }),
+  );
+  sensor.addMaintenanceLog(
+    await MaintenanceLog.create({
+      dateTime: new Date(Date.now() - 1000 * 60 * 60 * 24 * 91),
+      title: "string",
+      details: "string",
+      remarks: "string",
+    }),
+  );
+  sensor.addMaintenanceLog(
+    await MaintenanceLog.create({
+      dateTime: new Date(Date.now() - 1000 * 60 * 60 * 24 * 96),
+      title: "string",
+      details: "string",
+      remarks: "string",
+    }),
+  );
+  sensor.addMaintenanceLog(
+    await MaintenanceLog.create({
+      dateTime: new Date(Date.now() - 1000 * 60 * 60 * 24 * 104),
+      title: "string",
+      details: "string",
+      remarks: "string",
+    }),
+  );
+  sensor.addMaintenanceLog(
+    await MaintenanceLog.create({
+      dateTime: new Date(Date.now() - 1000 * 60 * 60 * 24 * 108),
+      title: "string",
+      details: "string",
+      remarks: "string",
+    }),
+  );
+  sensor.addMaintenanceLog(
+    await MaintenanceLog.create({
+      dateTime: new Date(Date.now() - 1000 * 60 * 60 * 24 * 110),
+      title: "string",
+      details: "string",
+      remarks: "string",
+    }),
+  );
+  sensor.addMaintenanceLog(
+    await MaintenanceLog.create({
+      dateTime: new Date(Date.now() - 1000 * 60 * 60 * 24 * 115),
+      title: "string",
+      details: "string",
+      remarks: "string",
+    }),
+  );
+  sensor.addMaintenanceLog(
+    await MaintenanceLog.create({
+      dateTime: new Date(Date.now() - 1000 * 60 * 60 * 24 * 116),
+      title: "string",
+      details: "string",
+      remarks: "string",
+    }),
+  );
+
+  /*let hub2 = await HubProcessor.create(
+    {
+      processorName: "tramCam2",
+      ipAddressName: "172.25.99.173",
+      HubStatus: HubStatus.CONNECTED,
+      sensors: [
+        {
+          sensorName: "Camera3",
+          dateOfActivation: new Date("01-01-2023"),
+          dateOfLastMaintained: new Date("09-09-2023"),
+          sensorType: SensorType.CAMERA,
+        },
+        {
+          sensorName: "Camera4",
+          dateOfActivation: new Date("01-01-2023"),
+          dateOfLastMaintained: new Date("09-09-2023"),
+          sensorType: SensorType.CAMERA,
+        },
+      ],
+    } as any,
+    {
+      include: [
+        {
+          association: "sensors",
+        },
+      ],
+    },
+  );
+
+  tram2
+    .getInHouse()
+    .then((tramstop) =>
+      tram1
+        .getInHouse()
+        .then((tramstop2) => tramstop.setNextTramStop(tramstop2)),
+    );*/
 
   let cameraTemplate = {
     sensorName: "Camera5",

@@ -10,6 +10,7 @@ export async function createPromotion(req: Request, res: Response) {
       process.env.IMG_URL_ROOT! + "promotion", //"D:/capstoneUploads/promotion",
     );
     const {
+      title,
       description,
       startDate,
       endDate,
@@ -21,6 +22,7 @@ export async function createPromotion(req: Request, res: Response) {
 
     if (
       [
+        title,
         description,
         startDate,
         endDate,
@@ -31,6 +33,7 @@ export async function createPromotion(req: Request, res: Response) {
       ].includes(undefined)
     ) {
       console.log("Missing field(s): ", {
+        title,
         description,
         startDate,
         endDate,
@@ -44,6 +47,7 @@ export async function createPromotion(req: Request, res: Response) {
 
     // have to pass in req for image uploading
     let promotion = await PromotionService.createNewPromotion(
+      title,
       description,
       startDate,
       endDate,
@@ -100,9 +104,114 @@ export async function getPromotionByPromotionId(req: Request, res: Response) {
         _includes,
       );
       return res.status(200).json(promotion);
-      return res.status(400).json({ error: "Invalid promotion ID!" });
     } else {
-      return res.status(400).json({ error: "Invalid customer ID!" });
+      return res.status(400).json({ error: "Invalid promotion ID!" });
+    }
+  } catch (error: any) {
+    res.status(400).json({ error: error.message });
+  }
+}
+
+export async function deletePromotion(req: Request, res: Response) {
+  const { promotionId } = req.params;
+
+  if (promotionId == undefined) {
+    console.log("Missing field(s): ", {
+      promotionId,
+    });
+    return res.status(400).json({ error: "Missing promotion ID!" });
+  }
+
+  try {
+    const promotionIdInt = parseInt(promotionId);
+    if (!isNaN(promotionIdInt)) {
+      const promotion = await PromotionService.deletePromotion(promotionIdInt);
+      return res.status(200).json(promotion);
+    } else {
+      return res.status(400).json({ error: "Invalid promotion ID!" });
+    }
+  } catch (error: any) {
+    res.status(400).json({ error: error.message });
+  }
+}
+
+export async function updatePromotion(req: Request, res: Response) {
+  try {
+    const { promotionId } = req.params;
+    let imageUrl;
+    if (
+      req.headers["content-type"] &&
+      req.headers["content-type"].includes("multipart/form-data")
+    ) {
+      imageUrl = await handleFileUpload(
+        req,
+        process.env.IMG_URL_ROOT! + "promotion", //"D:/capstoneUploads/species",
+      );
+    } else {
+      imageUrl = req.body.imageUrl;
+    }
+    const {
+      title,
+      description,
+      startDate,
+      endDate,
+      percentage,
+      minimumSpending,
+      promotionCode,
+      maxRedeemNum,
+      currentRedeemNum,
+    } = req.body;
+
+    if (
+      [
+        title,
+        promotionId,
+        description,
+        startDate,
+        endDate,
+        percentage,
+        minimumSpending,
+        promotionCode,
+        maxRedeemNum,
+        imageUrl,
+        currentRedeemNum,
+      ].includes(undefined)
+    ) {
+      console.log("Missing field(s): ", {
+        title,
+        promotionId,
+        description,
+        startDate,
+        endDate,
+        percentage,
+        minimumSpending,
+        promotionCode,
+        maxRedeemNum,
+        imageUrl,
+        currentRedeemNum,
+      });
+      return res.status(400).json({ error: "Missing information!" });
+    }
+
+    const promotionIdInt = parseInt(promotionId);
+    if (!isNaN(promotionIdInt)) {
+      let promotion = await PromotionService.updatePromotion(
+        promotionIdInt,
+        title,
+        description,
+        startDate,
+        endDate,
+        percentage,
+        minimumSpending,
+        promotionCode,
+        maxRedeemNum,
+        imageUrl,
+        currentRedeemNum,
+      );
+
+      return res.status(200).json({ promotion });
+    } else {
+      return res.status(400).json({ error: "Invalid promotion ID!" });
     }
   } catch (error: any) {
     res.status(400).json({ error: error.message });
