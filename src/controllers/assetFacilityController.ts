@@ -595,10 +595,7 @@ export async function createFacilityMaintenanceLogController(req: Request, res: 
       !(
         (await employee.getGeneralStaff())?.generalStaffType ==
         GeneralStaffType.ZOO_MAINTENANCE
-      ) && !(
-        (await employee.getPlanningStaff())?.plannerType ==
-        PlannerType.OPERATIONS_MANAGER
-      )
+      ) && !(await employee.getPlanningStaff())
     )
       return res
         .status(403)
@@ -612,6 +609,12 @@ export async function createFacilityMaintenanceLogController(req: Request, res: 
 
     let maintenanceLog = await createFacilityMaintenanceLog(
       Number(facilityId), new Date(), title, details, remarks);
+    const generalStaff = await employee.getGeneralStaff();
+    const facilities = (await generalStaff.getMaintainedFacilities());
+    for (const facility of facilities){
+      if ((await facility.getFacility()).facilityId == Number(facilityId)) generalStaff.removeMaintainedFacilities(facility);
+    }
+    generalStaff.save();
 
     return res.status(200).json({ maintenanceLog: maintenanceLog });
   } catch (error: any) {
@@ -979,6 +982,12 @@ export async function createSensorMaintenanceLogController(req: Request, res: Re
     }
 
     let maintenanceLog = await createSensorMaintenanceLog(Number(sensorId), new Date(), title, details, remarks);
+    const generalStaff = (await employee.getGeneralStaff());
+    let sensors = await generalStaff?.getSensors();
+    for (const sensor of sensors){
+      if (sensor.sensorId == Number(sensorId)) generalStaff.removeSensor(sensor);
+    }
+    generalStaff.save();
 
     return res.status(200).json({ maintenanceLog: maintenanceLog });
   } catch (error: any) {

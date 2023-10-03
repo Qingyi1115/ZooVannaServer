@@ -43,9 +43,9 @@ class GeneralStaff extends Model<
   declare getOperatedFacility: BelongsToGetAssociationMixin<InHouse>;
   declare setOperatedFacility: BelongsToSetAssociationMixin<InHouse, number>;
 
-  declare getSensors: HasManyGetAssociationsMixin<Sensor[]>;
+  declare getSensors: HasManyGetAssociationsMixin<Sensor>;
   declare addSensor: HasManyAddAssociationMixin<Sensor, number>;
-  declare setSensors: HasManySetAssociationsMixin<Sensor[], number>;
+  declare setSensors: HasManySetAssociationsMixin<Sensor, number>;
   declare removeSensor: HasManyRemoveAssociationMixin<Sensor, number>;
   
   public toJSON() {
