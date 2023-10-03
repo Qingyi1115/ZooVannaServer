@@ -12,6 +12,7 @@ export async function createPromotion(req: Request, res: Response) {
     const {
       title,
       description,
+      publishDate,
       startDate,
       endDate,
       percentage,
@@ -24,6 +25,7 @@ export async function createPromotion(req: Request, res: Response) {
       [
         title,
         description,
+        publishDate,
         startDate,
         endDate,
         percentage,
@@ -35,6 +37,7 @@ export async function createPromotion(req: Request, res: Response) {
       console.log("Missing field(s): ", {
         title,
         description,
+        publishDate,
         startDate,
         endDate,
         percentage,
@@ -49,6 +52,7 @@ export async function createPromotion(req: Request, res: Response) {
     let promotion = await PromotionService.createNewPromotion(
       title,
       description,
+      publishDate,
       startDate,
       endDate,
       percentage,
@@ -153,6 +157,7 @@ export async function updatePromotion(req: Request, res: Response) {
     const {
       title,
       description,
+      publishDate,
       startDate,
       endDate,
       percentage,
@@ -167,6 +172,7 @@ export async function updatePromotion(req: Request, res: Response) {
         title,
         promotionId,
         description,
+        publishDate,
         startDate,
         endDate,
         percentage,
@@ -181,6 +187,7 @@ export async function updatePromotion(req: Request, res: Response) {
         title,
         promotionId,
         description,
+        publishDate,
         startDate,
         endDate,
         percentage,
@@ -199,6 +206,7 @@ export async function updatePromotion(req: Request, res: Response) {
         promotionIdInt,
         title,
         description,
+        publishDate,
         startDate,
         endDate,
         percentage,
