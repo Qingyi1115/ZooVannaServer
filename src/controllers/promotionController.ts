@@ -61,6 +61,9 @@ export async function createPromotion(req: Request, res: Response) {
       maxRedeemNum,
       imageUrl,
     );
+    // console.log("publishDate: " + publishDate);
+    // console.log("startDate: " + startDate);
+    // console.log("endDate:" + endDate);
 
     return res.status(200).json({ promotion });
   } catch (error: any) {
@@ -216,6 +219,10 @@ export async function updatePromotion(req: Request, res: Response) {
         imageUrl,
         currentRedeemNum,
       );
+
+      // console.log("publishDate: " + publishDate);
+      // console.log("startDate: " + startDate);
+      // console.log("endDate:" + endDate);
 
       return res.status(200).json({ promotion });
     } else {
