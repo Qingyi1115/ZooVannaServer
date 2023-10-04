@@ -753,6 +753,10 @@ export const speciesSeed = async () => {
     generalDietPreference: "Folivore",
     imageUrl: "img/species/panda.jpg",
     lifeExpectancyYears: 65,
+    ageToJuvenile: 2,
+    ageToAdolescent: 5,
+    ageToAdult: 7,
+    ageToElder: 50,
     // foodRemark: "Food remark...",
   } as any;
   let panda1 = await Species.create(panda1Template);
@@ -856,6 +860,10 @@ export const speciesSeed = async () => {
     generalDietPreference: "Herbivore",
     imageUrl: "img/species/capybara.jpg",
     lifeExpectancyYears: 10,
+    ageToJuvenile: 2,
+    ageToAdolescent: 5,
+    ageToAdult: 7,
+    ageToElder: 50,
     // foodRemark: "Food remark...",
   } as any;
   let capybara1 = await Species.create(capybara1Template);
@@ -884,6 +892,10 @@ export const speciesSeed = async () => {
     generalDietPreference: "Herbivore",
     imageUrl: "img/species/redPanda.jpg",
     lifeExpectancyYears: 14,
+    ageToJuvenile: 2,
+    ageToAdolescent: 5,
+    ageToAdult: 7,
+    ageToElder: 50,
     // foodRemark: "Food remark...",
   } as any;
   let redPanda1 = await Species.create(redPanda1Template);
@@ -913,6 +925,10 @@ export const speciesSeed = async () => {
     generalDietPreference: "Herbivore",
     imageUrl: "img/species/elephant.jpg",
     lifeExpectancyYears: 14,
+    ageToJuvenile: 2,
+    ageToAdolescent: 5,
+    ageToAdult: 7,
+    ageToElder: 50,
     // foodRemark: "Food remark...",
   } as any;
   let elephant1 = await Species.create(africanElephant1Template);

@@ -60,6 +60,10 @@ export async function createNewSpecies(
   generalDietPreference: string,
   imageUrl: string,
   lifeExpectancyYears: number,
+  ageToJuvenile: number,
+  ageToAdolescent: number,
+  ageToAdult: number,
+  ageToElder: number,
   // foodRemark: string,
 ) {
   let newSpecies = {
@@ -81,7 +85,11 @@ export async function createNewSpecies(
     habitatOrExhibit: habitatOrExhibit,
     generalDietPreference: generalDietPreference,
     imageUrl: imageUrl,
-    lifeExpectancyYears,
+    lifeExpectancyYears: lifeExpectancyYears,
+    ageToJuvenile: ageToJuvenile,
+    ageToAdolescent: ageToAdolescent,
+    ageToAdult: ageToAdult,
+    ageToElder: ageToElder,
     // foodRemark nullable now
   } as any;
 
@@ -114,6 +122,10 @@ export async function updateSpecies(
   generalDietPreference: string,
   imageUrl: string,
   lifeExpectancyYears: number,
+  ageToJuvenile: number,
+  ageToAdolescent: number,
+  ageToAdult: number,
+  ageToElder: number,
 ) {
   let updatedSpecies = {
     speciesCode: speciesCode,
@@ -135,6 +147,10 @@ export async function updateSpecies(
     generalDietPreference: generalDietPreference,
     imageUrl: imageUrl,
     lifeExpectancyYears: lifeExpectancyYears,
+    ageToJuvenile: ageToJuvenile,
+    ageToAdolescent: ageToAdolescent,
+    ageToAdult: ageToAdult,
+    ageToElder: ageToElder,
   } as any;
 
   console.log(updatedSpecies);

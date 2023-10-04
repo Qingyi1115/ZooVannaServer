@@ -84,6 +84,10 @@ export async function createSpecies(req: Request, res: Response) {
       habitatOrExhibit,
       generalDietPreference,
       lifeExpectancyYears,
+      ageToJuvenile,
+      ageToAdolescent,
+      ageToAdult,
+      ageToElder,
     } = req.body;
 
     if (
@@ -105,6 +109,10 @@ export async function createSpecies(req: Request, res: Response) {
         habitatOrExhibit,
         generalDietPreference,
         lifeExpectancyYears,
+        ageToJuvenile,
+        ageToAdolescent,
+        ageToAdult,
+        ageToElder,
       ].includes(undefined)
     ) {
       console.log("Missing field(s): ", {
@@ -125,6 +133,10 @@ export async function createSpecies(req: Request, res: Response) {
         habitatOrExhibit,
         generalDietPreference,
         lifeExpectancyYears,
+        ageToJuvenile,
+        ageToAdolescent,
+        ageToAdult,
+        ageToElder,
       });
       return res.status(400).json({ error: "Missing information!" });
     }
@@ -149,6 +161,10 @@ export async function createSpecies(req: Request, res: Response) {
       generalDietPreference,
       imageUrl,
       lifeExpectancyYears,
+      ageToJuvenile,
+      ageToAdolescent,
+      ageToAdult,
+      ageToElder,
     );
 
     return res.status(200).json({ species });
@@ -190,6 +206,10 @@ export async function updateSpecies(req: Request, res: Response) {
       habitatOrExhibit,
       generalDietPreference,
       lifeExpectancyYears,
+      ageToJuvenile,
+      ageToAdolescent,
+      ageToAdult,
+      ageToElder,
     } = req.body;
 
     if (
@@ -212,6 +232,10 @@ export async function updateSpecies(req: Request, res: Response) {
         habitatOrExhibit,
         generalDietPreference,
         lifeExpectancyYears,
+        ageToJuvenile,
+        ageToAdolescent,
+        ageToAdult,
+        ageToElder,
         imageUrl,
       ].includes(undefined)
     ) {
@@ -234,6 +258,10 @@ export async function updateSpecies(req: Request, res: Response) {
         habitatOrExhibit,
         generalDietPreference,
         lifeExpectancyYears,
+        ageToJuvenile,
+        ageToAdolescent,
+        ageToAdult,
+        ageToElder,
         imageUrl,
       });
       return res.status(400).json({ error: "Missing information!" });
@@ -260,6 +288,10 @@ export async function updateSpecies(req: Request, res: Response) {
       generalDietPreference,
       imageUrl,
       lifeExpectancyYears,
+      ageToJuvenile,
+      ageToAdolescent,
+      ageToAdult,
+      ageToElder,
     );
 
     return res.status(200).json({ species });
