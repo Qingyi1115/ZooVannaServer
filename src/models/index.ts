@@ -791,7 +791,8 @@ export const speciesSeed = async () => {
     100,
     100,
     100,
-    100,
+    0,
+    5,
     AnimalGrowthStage.INFANT,
   );
   console.log(panda1phy1.toJSON());
@@ -802,7 +803,8 @@ export const speciesSeed = async () => {
     200,
     200,
     200,
-    200,
+    2,
+    5,
     AnimalGrowthStage.ADULT,
   );
   console.log(panda1phy2.toJSON());
@@ -943,7 +945,7 @@ export const animalSeed = async () => {
     AnimalSex.FEMALE,
     new Date("2021-03-04"),
     "Singapore",
-    IdentifierType.TYPE,
+    IdentifierType.MAGNETIC_TAG,
     "identifierValue 001",
     AcquisitionMethod.CAPTIVE_BRED,
     new Date("2021-03-04"),
@@ -989,7 +991,7 @@ export const animalSeed = async () => {
     AnimalSex.FEMALE,
     new Date("2021-03-04"),
     "Singapore",
-    IdentifierType.TYPE,
+    IdentifierType.RFID_TAG,
     "identifierValue 001",
     AcquisitionMethod.CAPTIVE_BRED,
     new Date("2021-03-04"),

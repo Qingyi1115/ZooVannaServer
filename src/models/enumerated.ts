@@ -178,7 +178,15 @@ enum Biome {
 }
 
 enum IdentifierType {
-  TYPE = "TYPE",
+  NONE = "NONE",
+  RFID_TAG = "RFID_TAG",
+  MAGNETIC_TAG = "MAGNETIC_TAG",
+  BARCODE_TAG = "BARCODE_TAG",
+  EAR_TAG = "EAR_TAG",
+  COLLAR = "COLLAR",
+  TATTOOS = "TATTOOS",
+  COLORED_BAND = "COLORED_BAND",
+  BRACELETS_ANKLETS = "BRACELETS_ANKLETS",
 }
 
 enum EventType {
