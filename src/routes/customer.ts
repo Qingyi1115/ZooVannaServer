@@ -13,6 +13,7 @@ import {
   sendForgetPasswordLink,
   resetForgottenPasswordController,
   deleteCustomerByEmail,
+  purchaseTicketController,
 } from "../controllers/customerController";
 import { authMiddleware } from "../middlewares/authMiddleware";
 
@@ -25,6 +26,7 @@ router.post("/createCustomer", createCustomer);
 
 // log in
 router.post("/login", login);
+router.post("/createTicket/:customerId", purchaseTicketController);
 
 router.use(authMiddleware);
 

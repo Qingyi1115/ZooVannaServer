@@ -77,28 +77,29 @@ export const login = async (req: Request, res: Response) => {
 };
 
 export async function getCustomerByEmail(req: Request, res: Response) {
-  try{
+  try {
     const { email } = (req as any).locals.jwtPayload;
     const customer = await CustomerService.findCustomerByEmail(email);
 
-    if (!customer) return res.status(400).json({ message: "Customer not found!" });
+    if (!customer)
+      return res.status(400).json({ message: "Customer not found!" });
 
     return res.status(200).json(customer);
-  }catch(error:any){
-    return res.status(400).json({error : error.message});
+  } catch (error: any) {
+    return res.status(400).json({ error: error.message });
   }
 }
 
 export async function getCustomerByCustomerId(req: Request, res: Response) {
-  try{
+  try {
     const { customerId } = req.params;
 
     if (customerId == undefined) {
-    console.log("Missing field(s): ", {
-      customerId,
-    });
-    return res.status(400).json({ error: "Missing information!" });
-  }
+      console.log("Missing field(s): ", {
+        customerId,
+      });
+      return res.status(400).json({ error: "Missing information!" });
+    }
     const customerIdInt = parseInt(customerId);
     if (!isNaN(customerIdInt)) {
       let customer =
@@ -114,14 +115,14 @@ export async function getCustomerByCustomerId(req: Request, res: Response) {
 
 export async function deleteCustomer(req: Request, res: Response) {
   try {
-  const { customerId } = req.params;
+    const { customerId } = req.params;
 
-  if (customerId == undefined) {
-    console.log("Missing field(s): ", {
-      customerId,
-    });
-    return res.status(400).json({ error: "Missing information!" });
-  }
+    if (customerId == undefined) {
+      console.log("Missing field(s): ", {
+        customerId,
+      });
+      return res.status(400).json({ error: "Missing information!" });
+    }
 
     const customerIdInt = parseInt(customerId);
     if (!isNaN(customerIdInt)) {
@@ -287,16 +288,43 @@ export async function deleteCustomerByEmail(req: Request, res: Response) {
   const { customerCode } = req.params;
 
   if (customerCode == undefined) {
-      console.log("Missing field(s): ", {
-          customerCode,
-      });
-      return res.status(400).json({ error: "Missing information!" });
+    console.log("Missing field(s): ", {
+      customerCode,
+    });
+    return res.status(400).json({ error: "Missing information!" });
   }
 
   try {
-      const customer = await CustomerService.deleteCustomerByEmail(customerCode);
-      return res.status(200).json(customer);
+    const customer = await CustomerService.deleteCustomerByEmail(customerCode);
+    return res.status(200).json(customer);
   } catch (error: any) {
-      res.status(400).json({ error: error.message });
+    return res.status(400).json({ error: error.message });
+  }
+}
+
+export async function purchaseTicketController(req: Request, res: Response) {
+  console.log("here");
+  const { customerId } = req.params;
+  console.log(customerId);
+  if (!customerId) {
+    console.log("Missing field(s): ", {
+      customerId,
+    });
+    console.log("missing customer id");
+    return res.status(400).json({ error: "Missing customer ID!" });
+  }
+  const { listings, customerOrder, payment } = req.body;
+
+  try {
+    const result = await CustomerService.purchaseTicket(
+      Number(customerId),
+      listings,
+      customerOrder,
+      payment,
+    );
+
+    return res.status(200).json({ result: result });
+  } catch (error: any) {
+    return res.status(400).json({ error: error.message });
   }
 }
