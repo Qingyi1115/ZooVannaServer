@@ -30,7 +30,7 @@ class Sensor extends Model<
   declare sensorType: SensorType;
 
   declare hubProcessor?: HubProcessor;
-  declare sensorReading? :SensorReading[];
+  declare sensorReadings? :SensorReading[];
   declare maintenanceLog? :MaintenanceLog[];
   declare generalStaff?: GeneralStaff;
 

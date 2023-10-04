@@ -8,11 +8,11 @@ import { findEmployeeById, getAllEmployees } from "./employee";
 import { GeneralStaff } from "../models/generalStaff";
 import { InHouse } from "../models/inHouse";
 import { FacilityLog } from "../models/facilityLog";
-import { compareDates } from "../helpers/others";
 import { predictCycleLength, predictNextDate } from "../helpers/predictors";
 import { MaintenanceLog } from "../models/maintenanceLog";
 import { Employee } from "../models/employee";
 import { SensorReading } from "../models/sensorReading";
+import { Op } from "Sequelize";
 
 export async function createNewFacility(
   facilityName: string,
@@ -375,14 +375,48 @@ export async function getAllSensors(includes: string[] = []): Promise<Sensor[]> 
 
 export async function getSensorReadingBySensorId(
   sensorId: number,
+  startDate: Date,
+  endDate: Date
 ) {
   try {
     const sensor = await Sensor.findOne({
       where: { sensorId: sensorId },
+      include: [{
+        association: "sensorReadings",
+        as: "sensorReadings",
+        where: {
+          readingDate: {
+            [Op.lt]: endDate,
+            [Op.gt]: startDate
+          }
+        }
+      }]
     });
     if (!sensor) throw { message: "Unable to find sensorId: " + sensorId };
 
-    return sensor.getSensorReadings();
+    return sensor.sensorReadings;
+  } catch (error: any) {
+    throw validationErrorHandler(error);
+  }
+}
+
+export async function getEarliestReadingBySensorId(
+  sensorId: number
+) {
+  try {
+    const reading = await SensorReading.findOne({
+      order: [ ["readingDate", 'ASC'], ],
+      include: [{
+        association: "sensor",
+        where: {
+          sensorId: sensorId
+        },
+        required: true,
+      }]
+    });
+    console.log("getEarliestReadingBySensorId reading", reading)
+
+    return reading?.readingDate;
   } catch (error: any) {
     throw validationErrorHandler(error);
   }

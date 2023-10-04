@@ -39,6 +39,7 @@ import {
   createNewSensorReading,
   getSensorMaintenanceSuggestions,
   getFacilityMaintenanceSuggestions,
+  getEarliestReadingBySensorId,
 } from "../services/assetFacility";
 import { Facility } from "../models/facility";
 import { Sensor } from "../models/sensor";
@@ -829,15 +830,14 @@ export async function getSensorReadingController(req: Request, res: Response) {
     const { sensorId } = req.params;
     const { startDate, endDate } = req.body;
 
-    let sensorReadings = await getSensorReadingBySensorId(Number(sensorId));
+    let sensorReadings = await getSensorReadingBySensorId(Number(sensorId), new Date(startDate), new Date(endDate));
     let sensor = await getSensor(Number(sensorId), []);
 
-    sensorReadings = sensorReadings.filter(reading =>
-      compareDates(reading.readingDate, new Date(startDate)) >= 0 &&
-      compareDates(reading.readingDate, new Date(endDate)) <= 0);
-
-    return res.status(200).json({ sensorReadings: sensorReadings, sensor: sensor });
+    let earliestDate = await getEarliestReadingBySensorId(Number(sensorId));
+    
+    return res.status(200).json({ sensorReadings: sensorReadings, sensor: sensor, earlestDate:earliestDate });
   } catch (error: any) {
+    console.log("error", error)
     res.status(400).json({ error: error.message });
   }
 }

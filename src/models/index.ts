@@ -110,10 +110,10 @@ export const createDatabase = async (options: any) => {
     addCascadeOptions({ foreignKey: "sensorId" }),
   );
 
-  Sensor.hasMany(SensorReading, addCascadeOptions({ foreignKey: "sensorId" }));
+  Sensor.hasMany(SensorReading, addCascadeOptions({ foreignKey: "sensorId", as :"sensorReadings"}));
   SensorReading.belongsTo(
     Sensor,
-    addCascadeOptions({ foreignKey: "sensorId" }),
+    addCascadeOptions({ foreignKey: "sensorId", as :"sensor" }),
   );
 
   Facility.hasOne(InHouse, addCascadeOptions({ foreignKey: "facilityId" }));
@@ -1268,41 +1268,36 @@ export const facilityAssetsSeed = async () => {
   let sensors: Sensor[] = await hub1.getSensors();
 
   let sensor = sensors[0];
-  sensor.addMaintenanceLog(
-    await MaintenanceLog.create({
-      dateTime: new Date(Date.now()),
-      title: "string",
-      details: "string",
-      remarks: "string",
-    }),
-  );
-  _day = new Date();
+  
+  _day = new Date(Date.now() - 1000 * 60 * 60 * 24 * 10);
   for (const days of [1, 2, 3, 2, 1, 2, 3, 2, 1, 2, 3, 2, 1, 2]) {
     _day = new Date(_day.getTime() - days * 1000 * 60 * 60 * 24);
     sensor.addMaintenanceLog(
       await MaintenanceLog.create({
         dateTime: _day,
-        title: "string",
+        title: "Maint",
         details: "string",
         remarks: "string",
       }),
     );
   }
+  sensor.dateOfLastMaintained = _day;
 
-  for (let i = 1; i < 100; i++) {
+  for (let i = 1; i < 1000; i++) {
     sensor.addSensorReading(
       await SensorReading.create({
-        readingDate: new Date(Date.now() - 1000 * 60 * i),
+        readingDate: new Date(Date.now() - 1000 * 60 * 30 * i),
         value: Math.random() * 5 + 30 + i / 20,
       }),
     );
   }
+  sensor.save();
 
   sensor = sensors[1];
   sensor.addMaintenanceLog(
     await MaintenanceLog.create({
       dateTime: new Date(Date.now() - 1000 * 60 * 60 * 24 * 3),
-      title: "string",
+      title: "Maint",
       details: "string",
       remarks: "string",
     }),
@@ -1310,7 +1305,7 @@ export const facilityAssetsSeed = async () => {
   sensor.addMaintenanceLog(
     await MaintenanceLog.create({
       dateTime: new Date(Date.now() - 1000 * 60 * 60 * 24 * 6),
-      title: "string",
+      title: "Maint",
       details: "string",
       remarks: "string",
     }),
@@ -1318,7 +1313,7 @@ export const facilityAssetsSeed = async () => {
   sensor.addMaintenanceLog(
     await MaintenanceLog.create({
       dateTime: new Date(Date.now() - 1000 * 60 * 60 * 24 * 10),
-      title: "string",
+      title: "Maint",
       details: "string",
       remarks: "string",
     }),
@@ -1326,7 +1321,7 @@ export const facilityAssetsSeed = async () => {
   sensor.addMaintenanceLog(
     await MaintenanceLog.create({
       dateTime: new Date(Date.now() - 1000 * 60 * 60 * 24 * 15),
-      title: "string",
+      title: "Maint",
       details: "string",
       remarks: "string",
     }),
@@ -1334,7 +1329,7 @@ export const facilityAssetsSeed = async () => {
   sensor.addMaintenanceLog(
     await MaintenanceLog.create({
       dateTime: new Date(Date.now() - 1000 * 60 * 60 * 24 * 21),
-      title: "string",
+      title: "Maint",
       details: "string",
       remarks: "string",
     }),
@@ -1342,7 +1337,7 @@ export const facilityAssetsSeed = async () => {
   sensor.addMaintenanceLog(
     await MaintenanceLog.create({
       dateTime: new Date(Date.now() - 1000 * 60 * 60 * 24 * 28),
-      title: "string",
+      title: "Maint",
       details: "string",
       remarks: "string",
     }),
@@ -1350,7 +1345,7 @@ export const facilityAssetsSeed = async () => {
   sensor.addMaintenanceLog(
     await MaintenanceLog.create({
       dateTime: new Date(Date.now() - 1000 * 60 * 60 * 24 * 36),
-      title: "string",
+      title: "Maint",
       details: "string",
       remarks: "string",
     }),
@@ -1358,7 +1353,7 @@ export const facilityAssetsSeed = async () => {
   sensor.addMaintenanceLog(
     await MaintenanceLog.create({
       dateTime: new Date(Date.now() - 1000 * 60 * 60 * 24 * 45),
-      title: "string",
+      title: "Maint",
       details: "string",
       remarks: "string",
     }),
@@ -1366,7 +1361,7 @@ export const facilityAssetsSeed = async () => {
   sensor.addMaintenanceLog(
     await MaintenanceLog.create({
       dateTime: new Date(Date.now() - 1000 * 60 * 60 * 24 * 55),
-      title: "string",
+      title: "Maint",
       details: "string",
       remarks: "string",
     }),
@@ -1374,7 +1369,7 @@ export const facilityAssetsSeed = async () => {
   sensor.addMaintenanceLog(
     await MaintenanceLog.create({
       dateTime: new Date(Date.now() - 1000 * 60 * 60 * 24 * 66),
-      title: "string",
+      title: "Maint",
       details: "string",
       remarks: "string",
     }),

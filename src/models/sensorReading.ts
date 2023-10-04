@@ -16,7 +16,7 @@ import { Sensor } from "./sensor";
     declare readingDate: Date;
     declare value: number;
     
-    declare Sensor? :Sensor;
+    declare sensor? :Sensor;
   
     declare getSensor: BelongsToGetAssociationMixin<Sensor>;
     declare setSensor: BelongsToSetAssociationMixin<Sensor, number>;
