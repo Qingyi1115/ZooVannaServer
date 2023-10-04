@@ -298,24 +298,24 @@ export async function updateAnimalStatus(req: Request, res: Response) {
 }
 
 //-- Animal Lineage
-// export async function getLineageByAnimalCode(req: Request, res: Response) {
-//   const { animalCode } = req.params;
+export async function getLineageByAnimalCode(req: Request, res: Response) {
+  const { animalCode } = req.params;
 
-//   if (animalCode == undefined) {
-//     console.log("Missing field(s): ", {
-//       animalCode,
-//     });
-//     return res.status(400).json({ error: "Missing information!" });
-//   }
+  if (animalCode == undefined) {
+    console.log("Missing field(s): ", {
+      animalCode,
+    });
+    return res.status(400).json({ error: "Missing information!" });
+  }
 
-//   try {
-//     const animalLineageCode =
-//       await AnimalService.getLineageByAnimalCode(animalCode);
-//     return res.status(200).json(animalLineageCode);
-//   } catch (error: any) {
-//     res.status(400).json({ error: error.message });
-//   }
-// }
+  try {
+    const animalLineageCode =
+      await AnimalService.getLineageByAnimalCode(animalCode);
+    return res.status(200).json(animalLineageCode);
+  } catch (error: any) {
+    res.status(400).json({ error: error.message });
+  }
+}
 
 export async function addAnimalLineage(req: Request, res: Response) {
   try {
@@ -390,6 +390,78 @@ export async function deleteAnimalLineage(req: Request, res: Response) {
     );
 
     return res.status(200).json({ deletedAnimalLineage });
+  } catch (error: any) {
+    res.status(400).json({ error: error.message });
+  }
+}
+//checkIsSafeBreeding
+export async function checkIsSafeBreeding(req: Request, res: Response) {
+  const { animalCode1, animalCode2 } = req.params;
+  try {
+    const isCompatible = await AnimalService.checkIsSafeBreeding(
+      animalCode1,
+      animalCode2,
+    );
+    return res.status(200).json(isCompatible);
+  } catch (error: any) {
+    res.status(400).json({ error: error.message });
+  }
+}
+
+//-- Animal Weight
+export async function getAllAnimalWeightsByAnimalCode(
+  req: Request,
+  res: Response,
+) {
+  const { animalCode } = req.params;
+  try {
+    const allAnimalWeights =
+      await AnimalService.getAllAnimalWeightsByAnimalCode(animalCode);
+    return res.status(200).json(allAnimalWeights);
+  } catch (error: any) {
+    res.status(400).json({ error: error.message });
+  }
+}
+
+export async function addAnimalWeight(req: Request, res: Response) {
+  try {
+    const { animalCode, weightInKg, dateOfMeasure } = req.body;
+
+    if ([animalCode, weightInKg, dateOfMeasure].includes(undefined)) {
+      console.log("Missing field(s): ", {
+        animalCode,
+        weightInKg,
+        dateOfMeasure,
+      });
+      return res.status(400).json({ error: "Missing information!" });
+    }
+
+    // have to pass in req for image uploading
+    let animalWeight = await AnimalService.addAnimalWeight(
+      animalCode,
+      weightInKg,
+      dateOfMeasure,
+    );
+
+    return res.status(200).json({ animalWeight });
+  } catch (error: any) {
+    res.status(400).json({ error: error.message });
+  }
+}
+
+export async function deleteAnimalWeight(req: Request, res: Response) {
+  const { animalWeightId } = req.params;
+
+  if (animalWeightId == undefined) {
+    console.log("Missing field(s): ", {
+      animalWeightId,
+    });
+    return res.status(400).json({ error: "Missing information!" });
+  }
+
+  try {
+    const animalWeight = await AnimalService.deleteAnimalWeight(animalWeightId);
+    return res.status(200).json(animalWeight);
   } catch (error: any) {
     res.status(400).json({ error: error.message });
   }

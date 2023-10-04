@@ -285,10 +285,60 @@ export async function addAnimalLineage(
   }
 }
 
-// export async function getLineageByAnimalCode(animalCode: string) {
-//   let animalId = getAnimalIdByCode(animalCode);
-//   throw new Error("Invalid Animal Code!");
-// }
+export async function getLineageByAnimalCode(animalCode: string) {
+  let animalRecord = await Animal.findOne({
+    where: { animalCode: animalCode },
+    include: [
+      {
+        model: Animal, // Self-reference to represent parent-child relationships
+        as: "children",
+        required: false,
+        include: [
+          {
+            model: Animal,
+            as: "children",
+            required: false,
+            include: [
+              {
+                model: Animal,
+                as: "children",
+                required: false,
+              },
+            ],
+          },
+        ],
+      },
+      {
+        model: Animal, // Self-reference to represent parent-child relationships
+        as: "parents",
+        required: false,
+        include: [
+          {
+            model: Animal,
+            as: "parents",
+            required: false,
+            include: [
+              {
+                model: Animal,
+                as: "parents",
+                required: false,
+              },
+            ],
+          },
+        ],
+      },
+    ],
+    attributes: {
+      // Include the 'age' virtual field
+      include: ["age"],
+    },
+  });
+
+  if (animalRecord) {
+    return animalRecord;
+  }
+  throw new Error("Invalid Animal Code!");
+}
 
 export async function updateAnimalLineage(
   childAnimalCode: string,
@@ -349,4 +399,102 @@ export async function deleteAnimalLineage(
   } else {
     throw new Error("Child animal has no such parent.");
   }
+}
+
+export async function checkIsSafeBreeding( // <--NOT WORKING, need recursion
+  animalCode1: string,
+  animalCode2: string,
+) {
+  if (!animalCode1 || !animalCode2) {
+    return false; // At least one animal not found
+  }
+
+  let animal1 = await getLineageByAnimalCode(animalCode1);
+  let animal2 = await getLineageByAnimalCode(animalCode2);
+
+  if (animal1 && animal2) {
+    // check if animal1 is animal2's parent
+    // if (await animal1.isParentOf(animal2.animalId)) {
+    //   return false;
+    // }
+    // // check if animal2 is animal1's parent
+    // if (await animal2.isParentOf(animal1.animalId)) {
+    //   return false;
+    // }
+
+    // check if have same parents
+    let parentIds1 = animal1.parents!.map((parent: any) => parent.animalId);
+    parentIds1.push(animal1.animalId);
+
+    console.log("parentIds1: " + parentIds1);
+    let parentIds2 = animal2.parents!.map((parent: any) => parent.animalId);
+    parentIds2.push(animal2.animalId);
+    console.log("parentIds2: " + parentIds2);
+
+    let commonParents = parentIds1.filter((parentId) =>
+      parentIds2.includes(parentId),
+    );
+    if (commonParents.length > 0) {
+      return false; // Found common parents within three degrees
+    }
+
+    commonParents = parentIds2.filter((parentId) =>
+      parentIds1.includes(parentId),
+    );
+
+    if (commonParents.length > 0) {
+      return false; // Found common parents within three degrees
+    }
+
+    return true;
+  }
+}
+
+//-- Animal Weight
+export async function addAnimalWeight(
+  animalCode: string,
+  weightInKg: number,
+  dateOfMeasure: Date,
+) {
+  let newWeight = {
+    animalCode: animalCode,
+    weightInKg: weightInKg,
+    dateOfMeasure: dateOfMeasure,
+  } as any;
+
+  console.log(newWeight);
+
+  try {
+    let newWeightEntry = await AnimalWeight.create(newWeight);
+
+    newWeightEntry.setAnimal(await getAnimalByAnimalCode(animalCode));
+
+    return newWeightEntry;
+  } catch (error: any) {
+    console.log(error);
+    throw validationErrorHandler(error);
+  }
+}
+
+export async function deleteAnimalWeight(animalWeightId: string) {
+  let result = await AnimalWeight.destroy({
+    where: { animalWeightId: animalWeightId },
+  });
+  if (result) {
+    return result;
+  }
+  throw new Error("Invalid Animal Weight Id!");
+}
+
+export async function getAllAnimalWeightsByAnimalCode(animalCode: string) {
+  let result = await Animal.findOne({
+    where: { animalCode: animalCode },
+    include: AnimalWeight, //eager fetch here
+  });
+
+  if (result) {
+    let resultAnimalWeights = await result.animalWeights;
+    return resultAnimalWeights;
+  }
+  throw new Error("Invalid Animal Code!");
 }

@@ -12,6 +12,11 @@ import {
   addAnimalLineage,
   updateAnimalLineage,
   deleteAnimalLineage,
+  getLineageByAnimalCode,
+  checkIsSafeBreeding,
+  getAllAnimalWeightsByAnimalCode,
+  addAnimalWeight,
+  deleteAnimalWeight,
 } from "../controllers/animalController";
 
 const router = express.Router();
@@ -31,8 +36,21 @@ router.delete("/deleteAnimal/:animalCode", deleteAnimal);
 router.put("/updateAnimalStatus", updateAnimalStatus);
 
 // -- Animal Lineage
-// router.get("/getLineageByAnimalCode/:animalCode", getLineageByAnimalCode);
+router.get("/getLineageByAnimalCode/:animalCode", getLineageByAnimalCode);
 router.post("/addAnimalLineage", addAnimalLineage);
 router.put("/updateAnimalLineage", updateAnimalLineage);
 router.put("/deleteAnimalLineage", deleteAnimalLineage);
+router.get(
+  "/checkIsSafeBreeding/:animalCode1/:animalCode2",
+  checkIsSafeBreeding,
+);
+
+// -- Animal Weight
+router.get(
+  "/getAllAnimalWeightsByAnimalCode/:animalCode",
+  getAllAnimalWeightsByAnimalCode,
+);
+router.post("/addAnimalWeight", addAnimalWeight);
+router.delete("/deleteAnimalWeight/:animalWeightId", deleteAnimalWeight);
+
 export default router;

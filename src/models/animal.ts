@@ -160,6 +160,20 @@ class Animal extends Model<
       return (await this.parents.length) < 2;
     }
   }
+
+  public async isParentOf(childId: number): Promise<boolean> {
+    let result = await Animal.findByPk(childId, {
+      include: [
+        {
+          model: Animal,
+          as: "parents",
+          where: { animalId: this.animalId },
+        },
+      ],
+    });
+    if (result) return true;
+    return false;
+  }
 }
 
 Animal.init(
