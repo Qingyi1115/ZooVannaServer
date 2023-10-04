@@ -4,7 +4,7 @@ import { handleFileUpload } from "../helpers/multerProcessFile";
 
 // -- Animal Basic Info
 export async function getAllAnimals(req: Request, res: Response) {
-  const {} = req.body;
+  const { } = req.body;
   try {
     const allAnimals = await AnimalService.getAllAnimals();
     return res.status(200).json(allAnimals);
@@ -92,9 +92,9 @@ export async function createAnimal(req: Request, res: Response) {
         acquisitionRemarks,
         physicalDefiningCharacteristics,
         behavioralDefiningCharacteristics,
-        dateOfDeath,
-        locationOfDeath,
-        causeOfDeath,
+        // dateOfDeath,
+        // locationOfDeath,
+        // causeOfDeath,
         growthStage,
         animalStatus,
       ].includes(undefined)
