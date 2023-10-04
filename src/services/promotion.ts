@@ -6,6 +6,7 @@ import { Promotion } from "../models/promotion";
 export async function createNewPromotion(
   title: string,
   description: string,
+  publishDate: Date,
   startDate: Date,
   endDate: Date,
   percentage: number,
@@ -18,6 +19,7 @@ export async function createNewPromotion(
   let newPromotion = {
     title: title,
     description: description,
+    publishDate: publishDate,
     startDate: startDate,
     endDate: endDate,
     percentage: percentage,
@@ -72,6 +74,7 @@ export async function updatePromotion(
   promotionId: number,
   title: string,
   description: string,
+  publishDate: Date,
   startDate: Date,
   endDate: Date,
   percentage: number,
@@ -85,6 +88,7 @@ export async function updatePromotion(
     promotionId: promotionId,
     title: title,
     description: description,
+    publishDate: publishDate,
     startDate: startDate,
     endDate: endDate,
     percentage: percentage,

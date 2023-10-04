@@ -8,6 +8,7 @@ import {
   HasManySetAssociationsMixin,
   HasManyAddAssociationMixin,
   HasManyRemoveAssociationMixin,
+  Op,
 } from "Sequelize";
 import { conn } from "../db";
 import { CustomerOrder } from "./customerOrder";
@@ -19,6 +20,7 @@ class Promotion extends Model<
   declare promotionId: CreationOptional<number>;
   declare title: string;
   declare description: string;
+  declare publishDate: Date;
   declare startDate: Date;
   declare endDate: Date;
   declare percentage: number;
@@ -40,6 +42,30 @@ class Promotion extends Model<
     CustomerOrder,
     number
   >;
+
+  // async getCurrentRedeemNum() {
+  //   try {
+  //     // Use the association method to get related CustomerOrders
+  //     const customerOrders = await this.getCustomerOrders({
+  //       where: {
+  //         [Op.or]: [{ status: "ACTIVE" }, { status: "COMPLETED" }],
+  //       },
+  //     });
+
+  //     // Check if customerOrders is null or an empty array
+  //     if (!customerOrders || customerOrders.length === 0) {
+  //       return 0;
+  //     }
+
+  //     // Count the number of retrieved CustomerOrders
+  //     const count = customerOrders.length;
+  //     return count;
+  //   } catch (error) {
+  //     // Handle any potential errors here
+  //     console.error("Error counting customerOrders:", error);
+  //     throw error;
+  //   }
+  // }
 }
 
 Promotion.init(
@@ -55,6 +81,10 @@ Promotion.init(
     },
     description: {
       type: DataTypes.STRING,
+      allowNull: false,
+    },
+    publishDate: {
+      type: DataTypes.DATE,
       allowNull: false,
     },
     startDate: {

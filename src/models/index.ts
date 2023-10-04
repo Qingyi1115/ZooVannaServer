@@ -1,61 +1,66 @@
 //  Import models
 import { conn } from "../db";
-import { Employee } from "./employee";
-import { Keeper } from "./keeper";
-import { PlanningStaff } from "./planningStaff";
-import { Facility } from "./facility";
+import * as SpeciesService from "../services/species";
+import * as AnimalService from "../services/animal";
+import { Animal } from "./animal";
+import { AnimalClinic } from "./animalClinics";
+import { AnimalFeed } from "./animalFeed";
+import { AnimalLog } from "./animalLog";
+import { AnimalWeight } from "./animalWeight";
+import { BarrierType } from "./barrierType";
 import { Compatibility } from "./compatibility";
-import { Sensor } from "./sensor";
-import { GeneralStaff } from "./generalStaff";
-import { InHouse } from "./inHouse";
+import { Customer } from "./customer";
+import { CustomerOrder } from "./customerOrder";
+import { CustomerReportLog } from "./customerReportLog";
+import { Employee } from "./employee";
+import { Enclosure } from "./enclosure";
+import { EnrichmentItem } from "./enrichmentItem";
 import {
-  KeeperType,
-  PlannerType,
-  GeneralStaffType,
-  Specialization,
-  FacilityType,
-  HubStatus,
+  AcquisitionMethod,
+  AnimalFeedCategory,
+  AnimalGrowthStage,
   ConservationStatus,
   Continent,
+  FacilityType,
+  GeneralStaffType,
   GroupSexualDynamic,
-  AnimalGrowthStage,
+  HubStatus,
+  IdentifierType,
+  KeeperType,
+  PlannerType,
   PresentationContainer,
   PresentationLocation,
   PresentationMethod,
-  AnimalFeedCategory,
   SensorType,
   EventType,
   ListingType,
   ListingStatus,
+  Specialization,
+  AnimalSex,
 } from "./enumerated";
-import { ThirdParty } from "./thirdParty";
-import { AnimalClinic } from "./animalClinics";
-import { MedicalSupply } from "./medicalSupply";
-import { FacilityLog } from "./facilityLog";
-import { SpeciesDietNeed } from "./speciesDietNeed";
-import { Species } from "./species";
-import { SpeciesEnclosureNeed } from "./speciesEnclosureNeed";
-import { Animal } from "./animal";
-import { TerrainDistribution } from "./terrainDistribution";
-import { Enclosure } from "./enclosure";
-import { BarrierType } from "./barrierType";
-import { Plantation } from "./plantation";
-import { AnimalLog } from "./animalLog";
 import { Event } from "./event";
-import { Listing } from "./listing";
-import { OrderItem } from "../models/orderItem";
-import { Promotion } from "./promotion";
-import { CustomerOrder } from "./customerOrder";
-import { Customer } from "./customer";
+import { Facility } from "./facility";
+import { FacilityLog } from "./facilityLog";
+import { GeneralStaff } from "./generalStaff";
 import { HubProcessor } from "./hubProcessor";
-import { CustomerReportLog } from "./customerReportLog";
-import { SensorReading } from "./sensorReading";
-import { PhysiologicalReferenceNorms } from "./physiologicalReferenceNorms";
-import { EnrichmentItem } from "./enrichmentItem";
-import { AnimalFeed } from "./animalFeed";
+import { InHouse } from "./inHouse";
+import { Keeper } from "./keeper";
+import { Listing } from "./listing";
 import { MaintenanceLog } from "./maintenanceLog";
-import * as SpeciesService from "../services/species";
+import { MedicalSupply } from "./medicalSupply";
+import { OrderItem } from "./orderItem";
 import { Payment } from "./payment";
+import { PhysiologicalReferenceNorms } from "./physiologicalReferenceNorms";
+import { PlanningStaff } from "./planningStaff";
+import { Plantation } from "./plantation";
+import { Promotion } from "./promotion";
+import { Sensor } from "./sensor";
+import { SensorReading } from "./sensorReading";
+import { Species } from "./species";
+import { SpeciesDietNeed } from "./speciesDietNeed";
+import { SpeciesEnclosureNeed } from "./speciesEnclosureNeed";
+import { TerrainDistribution } from "./terrainDistribution";
+import { ThirdParty } from "./thirdParty";
 
 function addCascadeOptions(options: object) {
   return { ...options, onDelete: "CASCADE", onUpdate: "CASCADE" };
@@ -221,19 +226,30 @@ export const createDatabase = async (options: any) => {
     onDelete: "CASCADE",
   });
 
-  Species.hasMany(Animal, addCascadeOptions({ foreignKey: "speciesId" }));
-  Animal.belongsTo(Species, addCascadeOptions({ foreignKey: "speciesId" }));
+  // ------------ Animal Relation --------------
+
+  // Species.hasMany(Animal, addCascadeOptions({ foreignKey: "speciesId" }));
+  // Animal.belongsTo(Species, addCascadeOptions({ foreignKey: "speciesId" }));
+
+  Species.hasMany(Animal, { onDelete: "CASCADE" });
+  Animal.belongsTo(Species);
 
   Animal.belongsToMany(Animal, {
     foreignKey: "parentId",
     through: "parent_child",
     as: "parents",
+    onDelete: "CASCADE",
   });
+
   Animal.belongsToMany(Animal, {
     foreignKey: "childId",
     through: "parent_child",
     as: "children",
+    onDelete: "CASCADE",
   });
+
+  Animal.hasMany(AnimalWeight, { onDelete: "CASCADE" });
+  AnimalWeight.belongsTo(Animal);
 
   Species.belongsToMany(Customer, {
     foreignKey: "speciesId",
@@ -249,14 +265,16 @@ export const createDatabase = async (options: any) => {
   Animal.hasMany(AnimalLog, addCascadeOptions({ foreignKey: "animalId" }));
   AnimalLog.belongsTo(Animal, addCascadeOptions({ foreignKey: "animalId" }));
 
-  AnimalClinic.hasMany(
-    Animal,
-    addCascadeOptions({ foreignKey: "animalClinicId" }),
-  );
-  Animal.belongsTo(
-    AnimalClinic,
-    addCascadeOptions({ foreignKey: "animalClinicId" }),
-  );
+  // AnimalClinic.hasMany(
+  //   Animal,
+  //   addCascadeOptions({ foreignKey: "animalClinicId" }),
+  // );
+  // Animal.belongsTo(
+  //   AnimalClinic,
+  //   addCascadeOptions({ foreignKey: "animalClinicId" }),
+  // );
+
+  // ------------ End of Animal Relation --------------
 
   TerrainDistribution.hasMany(
     Enclosure,
@@ -358,11 +376,11 @@ export const createDatabase = async (options: any) => {
 
   CustomerOrder.hasMany(
     OrderItem,
-    addCascadeOptions({ foreignKey: "customerId" }),
+    addCascadeOptions({ foreignKey: "customerOrderId" }),
   );
   OrderItem.belongsTo(
     CustomerOrder,
-    addCascadeOptions({ foreignKey: "customerId" }),
+    addCascadeOptions({ foreignKey: "customerOrderId" }),
   );
 
   CustomerOrder.hasMany(
@@ -416,6 +434,7 @@ export const seedDatabase = async () => {
   await enrichmentItemSeed();
   await facilityAssetsSeed();
   await speciesSeed();
+  await animalSeed();
 };
 
 export const employeeSeed = async () => {
@@ -967,6 +986,77 @@ export const speciesSeed = async () => {
   console.log(compatibility3.toJSON());
 };
 
+export const animalSeed = async () => {
+  let panda1Template = await AnimalService.createNewAnimal(
+    "SPE001",
+    false,
+    "Pang Pang",
+    AnimalSex.FEMALE,
+    new Date("2021-03-04"),
+    "Singapore",
+    IdentifierType.TYPE,
+    "identifierValue 001",
+    AcquisitionMethod.CAPTIVE_BRED,
+    new Date("2021-03-04"),
+    "N.A.",
+    "Big face, black spot at the back",
+    "active, friendly",
+    null,
+    null,
+    null,
+    "UNKNOWN",
+    "NORMAL",
+    "img/animal/pangPang.jpg",
+  );
+  console.log(panda1Template.toJSON());
+
+  let panda2Template = await AnimalService.createNewAnimal(
+    "SPE001",
+    true,
+    "Panda Group 01",
+    null,
+    null,
+    null,
+    null,
+    null,
+    AcquisitionMethod.WILD_CAPTURED,
+    new Date("2021-03-04"),
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    "UNKNOWN",
+    "NORMAL",
+    "img/animal/pandaGroup01.jpg",
+  );
+  console.log(panda2Template.toJSON());
+
+  let panda3Template = await AnimalService.createNewAnimal(
+    "SPE001",
+    true,
+    "Panda 3",
+    AnimalSex.FEMALE,
+    new Date("2021-03-04"),
+    "Singapore",
+    IdentifierType.TYPE,
+    "identifierValue 001",
+    AcquisitionMethod.CAPTIVE_BRED,
+    new Date("2021-03-04"),
+    "N.A.",
+    "Big face, black spot at the back",
+    "active, friendly",
+    null,
+    null,
+    null,
+    "UNKNOWN",
+    "NORMAL",
+    "img/animal/pangPang.jpg",
+  );
+  console.log(panda3Template.toJSON());
+};
+
 export const animalFeedSeed = async () => {
   // let carrotTemplate = {
   //   animalFeedName: "Carrot",
@@ -1195,23 +1285,23 @@ export const facilityAssetsSeed = async () => {
       hubStatus: HubStatus.CONNECTED,
       sensors: [
         {
-          sensorName: "Camera1",
-          sensorType: SensorType.CAMERA,
+          sensorName: "HUMIDITY1",
+          sensorType: SensorType.HUMIDITY,
         },
         {
-          sensorName: "Camera2",
-          sensorType: SensorType.CAMERA,
+          sensorName: "LIGHT1",
+          sensorType: SensorType.LIGHT,
         },
         {
-          sensorName: "00000001",
-          sensorType: SensorType.CAMERA,
+          sensorName: "TEMPERATURE1",
+          sensorType: SensorType.TEMPERATURE,
         },
         {
-          sensorName: "Camera4",
-          sensorType: SensorType.CAMERA,
+          sensorName: "TEMPERATURE2",
+          sensorType: SensorType.TEMPERATURE,
         },
         {
-          sensorName: "Camera5",
+          sensorName: "Camera",
           sensorType: SensorType.CAMERA,
         },
       ],
@@ -1478,6 +1568,14 @@ export const facilityAssetsSeed = async () => {
   /*for (let i = 1; i < 100; i++){
     sensor.addSensorReading(await SensorReading.create({readingDate: new Date(Date.now() - 1000 * 60 * i), value: Math.random()*1 + 30 - i/100}));
   }*/
+  for (let i = 1; i < 100; i++) {
+    sensor.addSensorReading(
+      await SensorReading.create({
+        readingDate: new Date(Date.now() - 1000 * 60 * i),
+        value: Math.random() * 1 + 30 - i / 100,
+      }),
+    );
+  }
 
   sensor = sensors[3];
   sensor.addMaintenanceLog(
@@ -1866,6 +1964,7 @@ export const facilityAssetsSeed = async () => {
         .getInHouse()
         .then((tramstop2) => tramstop.setNextTramStop(tramstop2)),
     );*/
+  //);
 
   let cameraTemplate = {
     sensorName: "Camera5",

@@ -1089,7 +1089,7 @@ export async function pushSensorReadingsController(req: Request, res: Response) 
     }
     const payload = JSON.parse(jsonPayloadString);
 
-    for (const sensor of payload){
+    for (const sensor of Object.keys(payload)){
       for (const sensorReading of payload[sensor]){
         await createNewSensorReading(sensor, sensorReading.readingDate, sensorReading.reading);
       }
