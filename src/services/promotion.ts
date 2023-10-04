@@ -30,7 +30,6 @@ export async function createNewPromotion(
     currentRedeemNum: currentRedeemNum,
   } as any;
 
-
   try {
     return await Promotion.create(newPromotion);
   } catch (error: any) {
@@ -85,7 +84,6 @@ export async function updatePromotion(
   imageUrl: string,
   currentRedeemNum: number,
 ) {
-
   let updatedPromotion = {
     promotionId: promotionId,
     title: title,
@@ -100,7 +98,6 @@ export async function updatePromotion(
     imageUrl: imageUrl,
     currentRedeemNum: currentRedeemNum,
   } as any;
-
 
   try {
     let promotion = await Promotion.update(updatedPromotion, {

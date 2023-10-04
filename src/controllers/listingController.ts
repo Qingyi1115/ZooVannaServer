@@ -5,6 +5,8 @@ import {
   enableListing,
   getAllListings,
   getListing,
+  getLocalListing,
+  getForeignerListing,
 } from "../services/listing";
 import { Request, Response } from "express";
 
@@ -87,6 +89,27 @@ export async function getListingController(req: Request, res: Response) {
 export async function getAllListingsController(req: Request, res: Response) {
   try {
     let result = await getAllListings();
+    return res.status(200).json({ result: result });
+  } catch (error: any) {
+    return res.status(400).json({ error: error.message });
+  }
+}
+
+export async function getLocalListingController(req: Request, res: Response) {
+  try {
+    const result = await getLocalListing();
+    return res.status(200).json({ result: result });
+  } catch (error: any) {
+    return res.status(400).json({ error: error.message });
+  }
+}
+
+export async function getForeignerListingController(
+  req: Request,
+  res: Response,
+) {
+  try {
+    const result = await getForeignerListing();
     return res.status(200).json({ result: result });
   } catch (error: any) {
     return res.status(400).json({ error: error.message });

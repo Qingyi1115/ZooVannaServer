@@ -32,6 +32,9 @@ import {
   PresentationLocation,
   PresentationMethod,
   SensorType,
+  EventType,
+  ListingType,
+  ListingStatus,
   Specialization,
   AnimalSex,
 } from "./enumerated";
@@ -373,11 +376,11 @@ export const createDatabase = async (options: any) => {
 
   CustomerOrder.hasMany(
     OrderItem,
-    addCascadeOptions({ foreignKey: "orderItemId" }),
+    addCascadeOptions({ foreignKey: "customerOrderId" }),
   );
   OrderItem.belongsTo(
     CustomerOrder,
-    addCascadeOptions({ foreignKey: "orderItemId" }),
+    addCascadeOptions({ foreignKey: "customerOrderId" }),
   );
 
   CustomerOrder.hasMany(
@@ -726,6 +729,54 @@ export const employeeSeed = async () => {
       },
     },
   );
+
+  let listing1 = await Listing.create({
+    name: "Adult",
+    description: "Listing for local adult",
+    price: 20,
+    listingType: ListingType.LOCAL_ADULT_ONETIME,
+    listingStatus: ListingStatus.ACTIVE,
+  });
+
+  let listing2 = await Listing.create({
+    name: "Student",
+    description: "Listing for local student (including university student)",
+    price: 15,
+    listingType: ListingType.LOCAL_STUDENT_ONETIME,
+    listingStatus: ListingStatus.ACTIVE,
+  });
+
+  let listing3 = await Listing.create({
+    name: "Child",
+    description: "Listing for local child (aged <= 12 years old)",
+    price: 15,
+    listingType: ListingType.LOCAL_CHILD_ONETIME,
+    listingStatus: ListingStatus.ACTIVE,
+  });
+
+  let listing4 = await Listing.create({
+    name: "Senior",
+    description: "Listing for local senior (aged >= 65 years old)",
+    price: 10,
+    listingType: ListingType.LOCAL_SENIOR_ONETIME,
+    listingStatus: ListingStatus.ACTIVE,
+  });
+
+  let listing5 = await Listing.create({
+    name: "Adult",
+    description: "Listing for foreigner adult",
+    price: 30,
+    listingType: ListingType.FOREIGNER_ADULT_ONETIME,
+    listingStatus: ListingStatus.ACTIVE,
+  });
+
+  let listing6 = await Listing.create({
+    name: "Child",
+    description: "Listing for foreigner child",
+    price: 30,
+    listingType: ListingType.FOREIGNER_CHILD_ONETIME,
+    listingStatus: ListingStatus.ACTIVE,
+  });
 };
 
 export const speciesSeed = async () => {
@@ -1289,6 +1340,37 @@ export const facilityAssetsSeed = async () => {
     );
   }
 
+  sensor.addSensorReading(
+    await SensorReading.create({
+      readingDate: new Date(Date.now() - 1000 * 60 * 60 * 24 * 1),
+      value: 1,
+    }),
+  );
+  sensor.addSensorReading(
+    await SensorReading.create({
+      readingDate: new Date(Date.now() - 1000 * 60 * 60 * 24 * 2),
+      value: 2,
+    }),
+  );
+  sensor.addSensorReading(
+    await SensorReading.create({
+      readingDate: new Date(Date.now() - 1000 * 60 * 60 * 24 * 3),
+      value: 3,
+    }),
+  );
+  sensor.addSensorReading(
+    await SensorReading.create({
+      readingDate: new Date(Date.now() - 1000 * 60 * 60 * 24 * 4),
+      value: 4,
+    }),
+  );
+  sensor.addSensorReading(
+    await SensorReading.create({
+      readingDate: new Date(Date.now() - 1000 * 60 * 60 * 24 * 5),
+      value: 5,
+    }),
+  );
+
   for (let i = 1; i < 100; i++) {
     sensor.addSensorReading(
       await SensorReading.create({
@@ -1483,6 +1565,9 @@ export const facilityAssetsSeed = async () => {
   // sensor.addMaintenanceLog(await MaintenanceLog.create({ dateTime: new Date(Date.now() - 1000 * 60 * 60 * 24 * 21), title: "string", details: "string", remarks: "string" }))
   // sensor.addMaintenanceLog(await MaintenanceLog.create({ dateTime: new Date(Date.now() - 1000 * 60 * 60 * 24 * 22), title: "string", details: "string", remarks: "string" }))
 
+  /*for (let i = 1; i < 100; i++){
+    sensor.addSensorReading(await SensorReading.create({readingDate: new Date(Date.now() - 1000 * 60 * i), value: Math.random()*1 + 30 - i/100}));
+  }*/
   for (let i = 1; i < 100; i++) {
     sensor.addSensorReading(
       await SensorReading.create({
@@ -1719,6 +1804,167 @@ export const facilityAssetsSeed = async () => {
         .getInHouse()
         .then((tramstop2) => tramstop.setNextTramStop(tramstop2)),
     );
+
+  sensor = sensors[4];
+  [1, 5, 2, 4, 8, 5, 7, 11, 8, 10, 14, 11, 13, 17];
+  sensor.addMaintenanceLog(
+    await MaintenanceLog.create({
+      dateTime: new Date(Date.now()),
+      title: "string",
+      details: "string",
+      remarks: "string",
+    }),
+  );
+  sensor.addMaintenanceLog(
+    await MaintenanceLog.create({
+      dateTime: new Date(Date.now() - 1000 * 60 * 60 * 24 * 17),
+      title: "string",
+      details: "string",
+      remarks: "string",
+    }),
+  );
+  sensor.addMaintenanceLog(
+    await MaintenanceLog.create({
+      dateTime: new Date(Date.now() - 1000 * 60 * 60 * 24 * 30),
+      title: "string",
+      details: "string",
+      remarks: "string",
+    }),
+  );
+  sensor.addMaintenanceLog(
+    await MaintenanceLog.create({
+      dateTime: new Date(Date.now() - 1000 * 60 * 60 * 24 * 41),
+      title: "string",
+      details: "string",
+      remarks: "string",
+    }),
+  );
+  sensor.addMaintenanceLog(
+    await MaintenanceLog.create({
+      dateTime: new Date(Date.now() - 1000 * 60 * 60 * 24 * 55),
+      title: "string",
+      details: "string",
+      remarks: "string",
+    }),
+  );
+  sensor.addMaintenanceLog(
+    await MaintenanceLog.create({
+      dateTime: new Date(Date.now() - 1000 * 60 * 60 * 24 * 65),
+      title: "string",
+      details: "string",
+      remarks: "string",
+    }),
+  );
+  sensor.addMaintenanceLog(
+    await MaintenanceLog.create({
+      dateTime: new Date(Date.now() - 1000 * 60 * 60 * 24 * 73),
+      title: "string",
+      details: "string",
+      remarks: "string",
+    }),
+  );
+  sensor.addMaintenanceLog(
+    await MaintenanceLog.create({
+      dateTime: new Date(Date.now() - 1000 * 60 * 60 * 24 * 84),
+      title: "string",
+      details: "string",
+      remarks: "string",
+    }),
+  );
+  sensor.addMaintenanceLog(
+    await MaintenanceLog.create({
+      dateTime: new Date(Date.now() - 1000 * 60 * 60 * 24 * 91),
+      title: "string",
+      details: "string",
+      remarks: "string",
+    }),
+  );
+  sensor.addMaintenanceLog(
+    await MaintenanceLog.create({
+      dateTime: new Date(Date.now() - 1000 * 60 * 60 * 24 * 96),
+      title: "string",
+      details: "string",
+      remarks: "string",
+    }),
+  );
+  sensor.addMaintenanceLog(
+    await MaintenanceLog.create({
+      dateTime: new Date(Date.now() - 1000 * 60 * 60 * 24 * 104),
+      title: "string",
+      details: "string",
+      remarks: "string",
+    }),
+  );
+  sensor.addMaintenanceLog(
+    await MaintenanceLog.create({
+      dateTime: new Date(Date.now() - 1000 * 60 * 60 * 24 * 108),
+      title: "string",
+      details: "string",
+      remarks: "string",
+    }),
+  );
+  sensor.addMaintenanceLog(
+    await MaintenanceLog.create({
+      dateTime: new Date(Date.now() - 1000 * 60 * 60 * 24 * 110),
+      title: "string",
+      details: "string",
+      remarks: "string",
+    }),
+  );
+  sensor.addMaintenanceLog(
+    await MaintenanceLog.create({
+      dateTime: new Date(Date.now() - 1000 * 60 * 60 * 24 * 115),
+      title: "string",
+      details: "string",
+      remarks: "string",
+    }),
+  );
+  sensor.addMaintenanceLog(
+    await MaintenanceLog.create({
+      dateTime: new Date(Date.now() - 1000 * 60 * 60 * 24 * 116),
+      title: "string",
+      details: "string",
+      remarks: "string",
+    }),
+  );
+
+  /*let hub2 = await HubProcessor.create(
+    {
+      processorName: "tramCam2",
+      ipAddressName: "172.25.99.173",
+      HubStatus: HubStatus.CONNECTED,
+      sensors: [
+        {
+          sensorName: "Camera3",
+          dateOfActivation: new Date("01-01-2023"),
+          dateOfLastMaintained: new Date("09-09-2023"),
+          sensorType: SensorType.CAMERA,
+        },
+        {
+          sensorName: "Camera4",
+          dateOfActivation: new Date("01-01-2023"),
+          dateOfLastMaintained: new Date("09-09-2023"),
+          sensorType: SensorType.CAMERA,
+        },
+      ],
+    } as any,
+    {
+      include: [
+        {
+          association: "sensors",
+        },
+      ],
+    },
+  );
+
+  tram2
+    .getInHouse()
+    .then((tramstop) =>
+      tram1
+        .getInHouse()
+        .then((tramstop2) => tramstop.setNextTramStop(tramstop2)),
+    );*/
+  //);
 
   let cameraTemplate = {
     sensorName: "Camera5",
