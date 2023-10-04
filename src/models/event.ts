@@ -9,6 +9,9 @@ import {
   BelongsToManySetAssociationsMixin,
   BelongsToManyAddAssociationMixin,
   HasManyRemoveAssociationMixin,
+  HasManyGetAssociationsMixin,
+  HasManySetAssociationsMixin,
+  HasManyAddAssociationMixin,
   CreationOptional,
 } from "Sequelize";
 import { conn } from "../db";
@@ -19,6 +22,7 @@ import { Keeper } from "./keeper";
 import { Animal } from "./animal";
 import { InHouse } from "./inHouse";
 import { AnimalClinic } from "./animalClinics";
+import { Listing } from "./listing";
 
 class Event extends Model<
   InferAttributes<Event>,
@@ -28,10 +32,10 @@ class Event extends Model<
   declare eventName: String;
   declare eventNotificationDate: Date;
   declare eventStartDateTime: Date;
-  declare eventEndDateTime: Date;
+  declare eventEndDateTime: Date | null;
   declare eventDurationHrs: number;
   declare isFlexible: boolean;
-  declare eventTiming: EventTimingType;
+  declare eventTiming: EventTimingType | null;
   declare eventDescription: string;
   declare eventIsPublic: boolean;
   declare eventType: EventType;
@@ -83,7 +87,6 @@ Event.init(
     },
     eventNotificationDate: {
       type: DataTypes.DATE,
-      allowNull: false,
     },
     eventStartDateTime: {
       type: DataTypes.DATE,

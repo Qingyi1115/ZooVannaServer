@@ -1,6 +1,7 @@
 import { Listing } from "../models/listing";
 import { validationErrorHandler } from "../helpers/errorHandler";
 import { ListingStatus } from "../models/enumerated";
+const Sequelize = require("sequelize");
 
 export async function createListing(
   name: string,
@@ -98,5 +99,37 @@ export async function getAllListings() {
     return listing;
   } catch (error: any) {
     throw { error: "Listings do not exist" };
+  }
+}
+
+export async function getLocalListing() {
+  const op = Sequelize.Op;
+  try {
+    let result = await Listing.findAll({
+      where: {
+        listingType: {
+          [op.like]: "%LOCAL%",
+        },
+      },
+    });
+    return result;
+  } catch (error: any) {
+    throw { message: "No listing found" };
+  }
+}
+
+export async function getForeignerListing() {
+  const op = Sequelize.Op;
+  try {
+    let result = await Listing.findAll({
+      where: {
+        listingType: {
+          [op.like]: "%FOREIGNER%",
+        },
+      },
+    });
+    return result;
+  } catch (error: any) {
+    throw { message: "No listing found" };
   }
 }

@@ -274,16 +274,34 @@ export async function purchaseTicket(
             where: { listingId: listing.listingId },
             transaction: t,
           });
+          console.log("does it go here again?");
 
           if (queriedListing) {
             for (const orderItem of listing.orderItems) {
-              let newOrderItem = await OrderItem.create(orderItem, {
-                transaction: t,
-              });
-              queriedListing.addOrderItem(newOrderItem);
-              newOrderItem.setListing(queriedListing);
-              custOrder.addOrderItem(newOrderItem);
-              newOrderItem.setCustomerOrder(custOrder);
+              console.log("hmmmmmm");
+              console.log(orderItem);
+              console.log(queriedListing);
+              console.log(listing);
+              try {
+                let newOrderItem = await OrderItem.create(orderItem, {
+                  transaction: t,
+                });
+                console.log(newOrderItem.toJSON());
+
+                console.log("is it okay here?");
+                queriedListing.addOrderItem(newOrderItem);
+                console.log("here");
+                newOrderItem.setListing(queriedListing);
+                console.log("yes here");
+                custOrder.addOrderItem(newOrderItem);
+                console.log("hereeeeee");
+                newOrderItem.setCustomerOrder(custOrder);
+                console.log("hmm??");
+              } catch (error: any) {
+                console.log("yes");
+                console.log(error);
+                throw error;
+              }
             }
           } else {
             throw { message: "Invalid listing" };
@@ -301,6 +319,7 @@ export async function purchaseTicket(
       }
     });
   } catch (error) {
+    console.log(error);
     throw error;
   }
 }
