@@ -11,10 +11,10 @@ import { conn } from "../db";
 import { InHouse } from "./inHouse";
 import { ThirdParty } from "./thirdParty";
   
-  class CustomerReportLog extends Model<
-    InferAttributes<CustomerReportLog>,
-    InferCreationAttributes<CustomerReportLog>
-  > {
+class CustomerReportLog extends Model<
+  InferAttributes<CustomerReportLog>,
+  InferCreationAttributes<CustomerReportLog>
+> {
     declare CustomerReportLogId : CreationOptional<number>;
     declare dateTime : Date;
     declare title : string;
@@ -29,7 +29,14 @@ import { ThirdParty } from "./thirdParty";
 
     declare getThirdParty: BelongsToGetAssociationMixin<ThirdParty>;
     declare setThirdParty: BelongsToSetAssociationMixin<ThirdParty, number>;
+    
+  public toJSON() {
+    return {
+      ...this.get(),
+      dateTime:this.dateTime?.getTime(),
+    }
   }
+}
   
   CustomerReportLog.init(
     {

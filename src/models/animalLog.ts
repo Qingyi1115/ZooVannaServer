@@ -24,6 +24,13 @@ class AnimalLog extends Model<
 
   declare getAnimal: BelongsToGetAssociationMixin<Animal>;
   declare setAnimal: BelongsToSetAssociationMixin<Animal, number>;
+  
+  public toJSON() {
+    return {
+      ...this.get(),
+      dateTime:this.dateTime?.getTime(),
+    }
+  }
 }
 
 AnimalLog.init(

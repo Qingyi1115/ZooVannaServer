@@ -14,7 +14,6 @@ import {
 import { conn } from "../db";
 import { ListingStatus, ListingType } from "./enumerated";
 import { OrderItem } from "./orderItem";
-import { Event } from "./event";
 
 class Listing extends Model<
   InferAttributes<Listing>,
@@ -42,6 +41,12 @@ class Listing extends Model<
   public setEnabled() {
     this.listingStatus = ListingStatus.ACTIVE;
     this.save();
+  }
+  
+  public toJSON() {
+    return {
+      ...this.get()
+    }
   }
 }
 

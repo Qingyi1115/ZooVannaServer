@@ -49,7 +49,9 @@ class GeneralStaff extends Model<
   declare removeSensor: HasManyRemoveAssociationMixin<Sensor, number>;
   
   public toJSON() {
-    return this.get();
+    return {
+      ...this.get(),
+    }
   }
 
   public async toFullJSON(){

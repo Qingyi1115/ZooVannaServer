@@ -14,7 +14,7 @@ import { conn } from "../db";
 import { Employee } from "./employee";
 import { Enclosure } from "./enclosure";
 import { KeeperType, Specialization } from "./enumerated";
-import { Event } from "./event";
+import { ZooEvent } from "./zooEvent";
 
 class Keeper extends Model<
   InferAttributes<Keeper>,
@@ -25,35 +25,34 @@ class Keeper extends Model<
   declare isDisabled: boolean; 
 
   declare employee?: Employee;
-  declare publicEvents?: Event[];
-  declare internalEvents?:Event[];
+  declare publicEvents?: ZooEvent[];
+  declare internalEvents?:ZooEvent[];
   declare enclosures?: Enclosure[];
 
 
   declare getEmployee: BelongsToGetAssociationMixin<Employee>;
   declare setEmployee: BelongsToSetAssociationMixin<Employee, number>;
 
-  declare getPublicEvents: BelongsToManyGetAssociationsMixin<Event[]>;
-  declare addPublicEvent: BelongsToManyAddAssociationMixin<Event, number>;
-  declare setPublicEvents: BelongsToManySetAssociationsMixin<Event[], number>;
-  declare removePublicEvent: BelongsToManyRemoveAssociationMixin<Event, number>;
+  declare getPublicEvents: BelongsToManyGetAssociationsMixin<ZooEvent>;
+  declare addPublicEvent: BelongsToManyAddAssociationMixin<ZooEvent, number>;
+  declare setPublicEvents: BelongsToManySetAssociationsMixin<ZooEvent, number>;
+  declare removePublicEvent: BelongsToManyRemoveAssociationMixin<ZooEvent, number>;
 
-  declare getInternalEvents: BelongsToManyGetAssociationsMixin<Event[]>;
-  declare addInternalEvent: BelongsToManyAddAssociationMixin<Event, number>;
-  declare setInternalEvents: BelongsToManySetAssociationsMixin<Event[], number>;
-  declare removeInternalEvent: BelongsToManyRemoveAssociationMixin<Event, number>;
+  declare getInternalEvents: BelongsToManyGetAssociationsMixin<ZooEvent>;
+  declare addInternalEvent: BelongsToManyAddAssociationMixin<ZooEvent, number>;
+  declare setInternalEvents: BelongsToManySetAssociationsMixin<ZooEvent, number>;
+  declare removeInternalEvent: BelongsToManyRemoveAssociationMixin<ZooEvent, number>;
 
-  declare getEnclosures: BelongsToManyGetAssociationsMixin<Enclosure[]>;
+  declare getEnclosures: BelongsToManyGetAssociationsMixin<Enclosure>;
   declare addEnclosure: BelongsToManyAddAssociationMixin<Enclosure, number>;
-  declare setEnclosure: BelongsToManySetAssociationsMixin<Enclosure[], number>;
+  declare setEnclosure: BelongsToManySetAssociationsMixin<Enclosure, number>;
   declare removeEnclosure: BelongsToManyRemoveAssociationMixin<Enclosure, number>;
 
-
-  // public toJSON() {
-  //     // Can control default values returned rather than manually populating json, removing secrets
-  //     // Similar idea albert more useful when compared to java's toString
-  //     return {...this.get(), EmployeeEmployeeId: undefined}
-  // }
+  public toJSON() {
+    return {
+      ...this.get()
+    }
+  }
 
   public enable() {
     this.isDisabled = false;

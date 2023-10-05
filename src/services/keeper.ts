@@ -5,7 +5,7 @@ import { Employee } from "../models/employee";
 import { Enclosure } from "../models/enclosure";
 import { Token } from "../models/token";
 import { CreationOptional, literal } from "Sequelize";
-import { Event } from "../models/event";
+import { Event } from "../models/zooEvent";
 
 //might need to change implementation
 export async function updateDetails(

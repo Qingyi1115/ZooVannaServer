@@ -46,6 +46,12 @@ class SpeciesEnclosureNeed extends Model<
   // declare setSpecies: HasManySetAssociationsMixin<Species, number>;
   declare getSpecies: BelongsToGetAssociationMixin<Species>;
   declare setSpecies: BelongsToSetAssociationMixin<Species, number>;
+  
+  public toJSON() {
+    return {
+      ...this.get(),
+    }
+  }
 }
 
 SpeciesEnclosureNeed.init(

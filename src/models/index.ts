@@ -38,7 +38,7 @@ import {
   Specialization,
   AnimalSex,
 } from "./enumerated";
-import { Event } from "./event";
+import { ZooEvent } from "./zooEvent";
 import { Facility } from "./facility";
 import { FacilityLog } from "./facilityLog";
 import { GeneralStaff } from "./generalStaff";
@@ -316,39 +316,39 @@ export const createDatabase = async (options: any) => {
   );
 
   PlanningStaff.hasMany(
-    Event,
+    ZooEvent,
     addCascadeOptions({ foreignKey: "planningStaffId" }),
   );
-  Event.belongsTo(
+  ZooEvent.belongsTo(
     PlanningStaff,
     addCascadeOptions({ foreignKey: "planningStaffId" }),
   );
 
-  Keeper.belongsToMany(Event, {
+  Keeper.belongsToMany(ZooEvent, {
     foreignKey: "keeperId",
     through: "responsibleFor",
     as: "keepers",
   });
-  Event.belongsToMany(Keeper, {
-    foreignKey: "eventId",
+  ZooEvent.belongsToMany(Keeper, {
+    foreignKey: "zooEventId",
     through: "responsibleFor",
-    as: "events",
+    as: "zooEvents",
   });
 
-  Enclosure.hasMany(Event, addCascadeOptions({ foreignKey: "enclosureId" }));
-  Event.belongsTo(Enclosure, addCascadeOptions({ foreignKey: "enclosureId" }));
+  Enclosure.hasMany(ZooEvent, addCascadeOptions({ foreignKey: "enclosureId" }));
+  ZooEvent.belongsTo(Enclosure, addCascadeOptions({ foreignKey: "enclosureId" }));
 
-  Animal.hasMany(Event, addCascadeOptions({ foreignKey: "animalId" }));
-  Event.belongsTo(Animal, addCascadeOptions({ foreignKey: "animalId" }));
+  Animal.hasMany(ZooEvent, addCascadeOptions({ foreignKey: "animalId" }));
+  ZooEvent.belongsTo(Animal, addCascadeOptions({ foreignKey: "animalId" }));
 
-  InHouse.hasMany(Event, addCascadeOptions({ foreignKey: "inHouseId" }));
-  Event.belongsTo(InHouse, addCascadeOptions({ foreignKey: "inHouseId" }));
+  InHouse.hasMany(ZooEvent, addCascadeOptions({ foreignKey: "inHouseId" }));
+  ZooEvent.belongsTo(InHouse, addCascadeOptions({ foreignKey: "inHouseId" }));
 
   AnimalClinic.hasMany(
-    Event,
+    ZooEvent,
     addCascadeOptions({ foreignKey: "animalClinicId" }),
   );
-  Event.belongsTo(
+  ZooEvent.belongsTo(
     AnimalClinic,
     addCascadeOptions({ foreignKey: "animalClinicId" }),
   );

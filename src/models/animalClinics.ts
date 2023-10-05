@@ -15,6 +15,7 @@ import { Facility } from "./facility";
 import { Specialization } from "./enumerated";
 import { MedicalSupply } from "./medicalSupply";
 import { Animal } from "./animal";
+import { ZooEvent } from "./zooEvent";
 
 class AnimalClinic extends Model<
   InferAttributes<AnimalClinic>,
@@ -25,7 +26,7 @@ class AnimalClinic extends Model<
   declare facility?: Facility;
   declare medicalSupply?: MedicalSupply;
   declare animals?: Animal[];
-  declare events?: Event[];
+  declare zooEvents?: ZooEvent[];
 
   declare getFacility: BelongsToGetAssociationMixin<Facility>;
   declare setFacility: BelongsToSetAssociationMixin<Facility, number>;
@@ -33,15 +34,15 @@ class AnimalClinic extends Model<
   declare getMedicalSupply: BelongsToGetAssociationMixin<MedicalSupply>;
   declare setMedicalSupply: BelongsToSetAssociationMixin<MedicalSupply, number>;
 
-  declare getAnimals: HasManyGetAssociationsMixin<Animal[]>;
+  declare getAnimals: HasManyGetAssociationsMixin<Animal>;
   declare addAnimal: HasManyAddAssociationMixin<Animal, number>;
-  declare setAnimals: HasManySetAssociationsMixin<Animal[], number>;
+  declare setAnimals: HasManySetAssociationsMixin<Animal, number>;
   declare removeAnimal: HasManyRemoveAssociationMixin<Animal, number>;
 
-  declare getEvents: HasManyGetAssociationsMixin<Event[]>;
-  declare addEvents: HasManyAddAssociationMixin<Event, number>;
-  declare setEvents: HasManySetAssociationsMixin<Event[], number>;
-  declare removeEvent: HasManyRemoveAssociationMixin<Event, number>;
+  declare getZooEvents: HasManyGetAssociationsMixin<ZooEvent>;
+  declare addZooEvent: HasManyAddAssociationMixin<ZooEvent, number>;
+  declare setZooEvents: HasManySetAssociationsMixin<ZooEvent, number>;
+  declare removeZooEvent: HasManyRemoveAssociationMixin<ZooEvent, number>;
 
   public toJSON() {
     return {

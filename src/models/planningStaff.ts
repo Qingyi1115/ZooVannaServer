@@ -13,6 +13,7 @@ import {
 import { conn } from "../db";
 import { Employee } from "./employee";
 import { PlannerType, Specialization } from "./enumerated";
+import { ZooEvent } from "./zooEvent";
 
 class PlanningStaff extends Model<
   InferAttributes<PlanningStaff>,
@@ -23,15 +24,15 @@ class PlanningStaff extends Model<
   declare isDisabled: boolean; 
 
   declare employee?: Employee;
-  declare events?: Event[];
+  declare zooEvents?: ZooEvent[];
 
   declare getEmployee: BelongsToGetAssociationMixin<Employee>;
   declare setEmployee: BelongsToSetAssociationMixin<Employee, number>;
 
-  declare getEvents: HasManyGetAssociationsMixin<Event[]>;
-  declare addEvents: HasManyAddAssociationMixin<Event, number>;
-  declare setEvents: HasManySetAssociationsMixin<Event[], number>;
-  declare removeEvent: HasManyRemoveAssociationMixin<Event, number>;
+  declare getZooEvents: HasManyGetAssociationsMixin<ZooEvent>;
+  declare addZooEvent: HasManyAddAssociationMixin<ZooEvent, number>;
+  declare setZooEvents: HasManySetAssociationsMixin<ZooEvent, number>;
+  declare removeZooEvent: HasManyRemoveAssociationMixin<ZooEvent, number>;
 
   public enable() {
     this.isDisabled = false;
@@ -98,6 +99,11 @@ class PlanningStaff extends Model<
     this.save();
   }
 
+  public toJSON() {
+    return {
+      ...this.get(),
+    }
+  }
 }
 
 PlanningStaff.init(

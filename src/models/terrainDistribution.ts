@@ -27,6 +27,12 @@ class TerrainDistribution extends Model<
 
   declare getEnclosure: HasManyGetAssociationsMixin<Enclosure>;
   declare setEnclosure: HasManySetAssociationsMixin<Enclosure, number>;
+  
+  public toJSON() {
+    return {
+      ...this.get(),
+    }
+  }
 }
 
 TerrainDistribution.init(

@@ -49,11 +49,10 @@ class HubProcessor extends Model<
   }
   
   public toJSON() {
-    // Can control default values returned rather than manually populating json, removing secrets
-    // Similar idea albert more useful when compared to java's toString
     return {
       ...this.get(),
       hubSecret: undefined,
+      lastDataUpdate:this.lastDataUpdate?.getTime(),
     };
   }
 }

@@ -7,17 +7,24 @@ import {
   } from "Sequelize";
   import { conn } from "../db";
   
-  class Announcement extends Model<
-    InferAttributes<Announcement>,
-    InferCreationAttributes<Announcement>
-  > {
-    declare announcementId: CreationOptional<number>;
-    declare title: string;
-    declare content: string;
-    declare isPublished: boolean; 
-    declare scheduledStartPublish: Date;
-    declare scheduledEndPublish: Date;
-  
+class Announcement extends Model<
+  InferAttributes<Announcement>,
+  InferCreationAttributes<Announcement>
+> {
+  declare announcementId: CreationOptional<number>;
+  declare title: string;
+  declare content: string;
+  declare isPublished: boolean; 
+  declare scheduledStartPublish: Date;
+  declare scheduledEndPublish: Date;
+
+  public toJSON() {
+    return {
+      ...this.get(),
+      scheduledStartPublish:this.scheduledStartPublish?.getTime(),
+      scheduledEndPublish:this.scheduledEndPublish?.getTime(),
+    }
+  }
 }
   
 Announcement.init({

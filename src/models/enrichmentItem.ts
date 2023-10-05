@@ -14,6 +14,12 @@ class EnrichmentItem extends Model<
   declare enrichmentItemId: CreationOptional<number>;
   declare enrichmentItemName: string;
   declare enrichmentItemImageUrl: string;
+  
+  public toJSON() {
+    return {
+      ...this.get()
+    }
+  }
 }
 
 EnrichmentItem.init(

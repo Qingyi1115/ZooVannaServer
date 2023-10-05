@@ -10,21 +10,28 @@ import {
   import { conn } from "../db";
 import { Sensor } from "./sensor";
   
-  class MaintenanceLog extends Model<
-    InferAttributes<MaintenanceLog>,
-    InferCreationAttributes<MaintenanceLog>
-  > {
-    declare maintenanceLogId : CreationOptional<number>;
-    declare dateTime : Date;
-    declare title : string;
-    declare details : string;
-    declare remarks: string;
-    
-    declare Sensor? :Sensor;
+class MaintenanceLog extends Model<
+  InferAttributes<MaintenanceLog>,
+  InferCreationAttributes<MaintenanceLog>
+> {
+  declare maintenanceLogId : CreationOptional<number>;
+  declare dateTime : Date;
+  declare title : string;
+  declare details : string;
+  declare remarks: string;
   
-    declare getSensor: BelongsToGetAssociationMixin<Sensor>;
-    declare setSensor: BelongsToSetAssociationMixin<Sensor, number>;
+  declare Sensor? :Sensor;
+
+  declare getSensor: BelongsToGetAssociationMixin<Sensor>;
+  declare setSensor: BelongsToSetAssociationMixin<Sensor, number>;
+    
+  public toJSON() {
+    return {
+      ...this.get(),
+      dateTime:this.dateTime?.getTime(),
+    }
   }
+}
   
   MaintenanceLog.init(
     {

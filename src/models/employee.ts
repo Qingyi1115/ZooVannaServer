@@ -118,17 +118,17 @@ class Employee extends Model<
       generalStaff: this.generalStaff?.toJSON(),
       employeePasswordHash: undefined,
       employeeSalt: undefined,
+      employeeBirthDate:this.employeeBirthDate?.getTime(),
+      dateOfResignation:this.dateOfResignation?.getTime(),
     };
   }
 
   public async toFullJSON(){
     return {
-      ...this.get(),
-      employeePasswordHash: undefined,
-      employeeSalt: undefined,
-      keeper: (await this.getKeeper()),
-      generalStaff: (await this.getGeneralStaff()),
-      planningStaff: (await this.getPlanningStaff()),
+      ...this.toJSON(),
+      keeper: (await this.getKeeper())?.toJSON(),
+      generalStaff: (await this.getGeneralStaff())?.toJSON(),
+      planningStaff: (await this.getPlanningStaff())?.toJSON(),
     };
   }
 }

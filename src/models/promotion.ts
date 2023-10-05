@@ -66,6 +66,15 @@ class Promotion extends Model<
   //     throw error;
   //   }
   // }
+  
+  public toJSON() {
+    return {
+      ...this.get(),
+      publishDate:this.publishDate?.getTime(),
+      startDate:this.startDate?.getTime(),
+      endDate:this.endDate?.getTime(),
+    }
+  }
 }
 
 Promotion.init(

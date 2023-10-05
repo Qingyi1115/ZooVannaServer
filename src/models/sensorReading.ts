@@ -9,18 +9,25 @@ import {
   import { conn } from "../db";
 import { Sensor } from "./sensor";
   
-  class SensorReading extends Model<
-    InferAttributes<SensorReading>,
-    InferCreationAttributes<SensorReading>
-  > {
-    declare readingDate: Date;
-    declare value: number;
-    
-    declare sensor? :Sensor;
+class SensorReading extends Model<
+  InferAttributes<SensorReading>,
+  InferCreationAttributes<SensorReading>
+> {
+  declare readingDate: Date;
+  declare value: number;
   
-    declare getSensor: BelongsToGetAssociationMixin<Sensor>;
-    declare setSensor: BelongsToSetAssociationMixin<Sensor, number>;
+  declare sensor? :Sensor;
+
+  declare getSensor: BelongsToGetAssociationMixin<Sensor>;
+  declare setSensor: BelongsToSetAssociationMixin<Sensor, number>;
+  
+  public toJSON() {
+    return {
+      ...this.get(),
+      readingDate:this.readingDate?.getTime(),
+    }
   }
+}
   
   SensorReading.init(
     {

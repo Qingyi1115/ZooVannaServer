@@ -28,6 +28,13 @@ class OrderItem extends Model<
 
   declare getCustomerOrder: BelongsToGetAssociationMixin<CustomerOrder>;
   declare setCustomerOrder: BelongsToSetAssociationMixin<CustomerOrder, number>;
+  
+  public toJSON() {
+    return {
+      ...this.get(),
+      timeRedeemed:this.timeRedeemed?.getTime(),
+    }
+  }
 }
 
 OrderItem.init(

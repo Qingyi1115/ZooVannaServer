@@ -52,6 +52,13 @@ class CustomerOrder extends Model<
   declare addOrderItem: HasManyAddAssociationMixin<OrderItem, number>;
   declare setOrderItemms: HasManySetAssociationsMixin<OrderItem, number>;
   declare removeOrderItem: HasManyRemoveAssociationMixin<OrderItem, number>;
+  
+  public toJSON() {
+    return {
+      ...this.get(),
+      entryDate:this.entryDate?.getTime(),
+    }
+  }
 }
 
 CustomerOrder.init(

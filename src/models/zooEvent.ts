@@ -9,9 +9,6 @@ import {
   BelongsToManySetAssociationsMixin,
   BelongsToManyAddAssociationMixin,
   HasManyRemoveAssociationMixin,
-  HasManyGetAssociationsMixin,
-  HasManySetAssociationsMixin,
-  HasManyAddAssociationMixin,
   CreationOptional,
 } from "Sequelize";
 import { conn } from "../db";
@@ -22,11 +19,10 @@ import { Keeper } from "./keeper";
 import { Animal } from "./animal";
 import { InHouse } from "./inHouse";
 import { AnimalClinic } from "./animalClinics";
-import { Listing } from "./listing";
 
-class Event extends Model<
-  InferAttributes<Event>,
-  InferCreationAttributes<Event>
+class ZooEvent extends Model<
+  InferAttributes<ZooEvent>,
+  InferCreationAttributes<ZooEvent>
 > {
   declare eventId: CreationOptional<number>;
   declare eventName: String;
@@ -41,7 +37,7 @@ class Event extends Model<
   declare eventType: EventType;
 
   declare planningStaff?: PlanningStaff;
-  declare keepers?: Keeper[];
+  declare keepers?: Keeper[]; // work
   declare enclosure?: Enclosure;
   declare animal?: Animal;
   declare inHouse?: InHouse;
@@ -50,9 +46,9 @@ class Event extends Model<
   declare getPlanningStaff: BelongsToGetAssociationMixin<PlanningStaff>;
   declare setPlanningStaff: BelongsToSetAssociationMixin<PlanningStaff, number>;
 
-  declare getKeepers: BelongsToManyGetAssociationsMixin<Keeper[]>;
+  declare getKeepers: BelongsToManyGetAssociationsMixin<Keeper>;
   declare addKeeper: BelongsToManyAddAssociationMixin<Keeper, number>;
-  declare setKeepers: BelongsToManySetAssociationsMixin<Keeper[], number>;
+  declare setKeepers: BelongsToManySetAssociationsMixin<Keeper, number>;
   declare removeKeeper: HasManyRemoveAssociationMixin<Keeper, number>;
 
   declare getEnclosure: BelongsToGetAssociationMixin<Enclosure>;
@@ -67,14 +63,17 @@ class Event extends Model<
   declare getAnimalClinic: BelongsToGetAssociationMixin<AnimalClinic>;
   declare setAnimalClinic: BelongsToSetAssociationMixin<AnimalClinic, number>;
 
-  // public toJSON() {
-  //     // Can control default values returned rather than manually populating json, removing secrets
-  //     // Similar idea albert more useful when compared to java's toString
-  //     return {...this.get(), age: this.getAge()}
-  // }
+  public toJSON() {
+      return {
+        ...this.get(),
+        eventNotificationDate:this.eventNotificationDate?.getTime(),
+        eventStartDateTime:this.eventStartDateTime?.getTime(),
+        eventEndDateTime:this.eventEndDateTime?.getTime(),
+      }
+  }
 }
 
-Event.init(
+ZooEvent.init(
   {
     eventId: {
       type: DataTypes.BIGINT,
@@ -124,8 +123,8 @@ Event.init(
     createdAt: true,
     updatedAt: "updateTimestamp",
     sequelize: conn, // We need to pass the connection instance
-    modelName: "event", // We need to choose the model name
+    modelName: "zooEvent", // We need to choose the model name
   },
 );
 
-export { Event };
+export { ZooEvent };

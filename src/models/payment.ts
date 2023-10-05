@@ -27,6 +27,13 @@ import { CustomerOrder } from "./customerOrder";
   
     declare getCustomerOrder: BelongsToGetAssociationMixin<CustomerOrder>;
     declare setCustomerOrder: BelongsToSetAssociationMixin<CustomerOrder, number>;
+    
+  public toJSON() {
+    return {
+      ...this.get(),
+      time:this.time?.getTime(),
+    }
+  }
   
 }
   
