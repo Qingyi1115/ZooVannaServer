@@ -38,6 +38,7 @@ export function predictCycleLength(dates:Date[], predictionLength:number){
     if (dateSorted.length>7){
         console.log("Holt winters used")
         let results : number[] = (getAugumentedDataset(intervals, predictionLength)as any) ["augumentedDataset"];
+        console.log("results",results)
         results.reverse()
         results = results.map(no => Math.max(no, 0))
         
