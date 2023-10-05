@@ -10,10 +10,14 @@ import {
   verifyPromotionCode,
   usePromotionCode,
   cancelUsePromotionCode,
+  getAllActivePromotions,
+  getAllPublishedPromotions,
 } from "../controllers/promotionController";
 
 const router = express.Router();
 
+router.get("/getAllPublishedPromotions", getAllPublishedPromotions);
+router.get("/getAllActivePromotions", getAllActivePromotions);
 router.get("/verifyPromotionCode/:promotionCode", verifyPromotionCode);
 router.put("/usePromotionCode/:promotionCode", usePromotionCode);
 router.put("/cancelUsePromotionCode/:promotionCode", cancelUsePromotionCode);

@@ -46,6 +46,36 @@ export async function getAllPromotions(includes: string[]) {
   }
 }
 
+export async function getAllPublishedPromotions(includes: string[]) {
+  try {
+    const allPromo = await Promotion.findAll({ include: includes });
+    const currentDate = new Date(new Date().toUTCString());
+    const publishedPromotions = allPromo.filter((promotion) => {
+      return (
+        promotion.publishDate <= currentDate && promotion.endDate >= currentDate
+      );
+    });
+    return publishedPromotions;
+  } catch (error: any) {
+    throw validationErrorHandler(error);
+  }
+}
+
+export async function getAllActivePromotions(includes: string[]) {
+  try {
+    const allPromo = await Promotion.findAll({ include: includes });
+    const currentDate = new Date(new Date().toUTCString());
+    const publishedPromotions = allPromo.filter((promotion) => {
+      return (
+        promotion.startDate <= currentDate && promotion.endDate >= currentDate
+      );
+    });
+    return publishedPromotions;
+  } catch (error: any) {
+    throw validationErrorHandler(error);
+  }
+}
+
 export async function getPromotionByPromotionId(
   promotionId: number,
   includes: string[],
@@ -168,7 +198,6 @@ export async function cancelUsePromotionCode(promotionCode: string) {
 
     promotion.decrementCurrentRedeemNum();
     return true;
-    
   } catch (error) {
     throw error;
   }
