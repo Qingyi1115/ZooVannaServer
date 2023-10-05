@@ -580,10 +580,32 @@ export async function getAllAnimalWeightsByAnimalCode(animalCode: string) {
 
 export async function getAllAbnormalWeights() {
   // --> hvnt do, need to discuss with Jason
-  //   let result = await Animal.findOne({
-  //     where: { animalCode: animalCode },
-  //     include: AnimalWeight, //eager fetch here
-  //   });
+  // let animal = await Animal.findOne({
+  //   where: { animalCode: animalCode },
+  //   include: AnimalWeight, //eager fetch here
+  // });
+  //   if (result) {
+  //     let resultAnimalWeights = await result.animalWeights;
+  //     return resultAnimalWeights;
+  //   }
+  //   throw new Error("Invalid Animal Code!");
+}
+
+export async function checkIfAbnormalWeight(animalCode: string) {
+  let animal = await Animal.findOne({
+    where: { animalCode: animalCode },
+    include: [
+      {
+        model: PhysiologicalReferenceNorms,
+        required: false, // Include only if they exist
+      },
+      {
+        model: AnimalWeight,
+        required: false, // Include only if they exist
+      },
+    ],
+  });
+
   //   if (result) {
   //     let resultAnimalWeights = await result.animalWeights;
   //     return resultAnimalWeights;
