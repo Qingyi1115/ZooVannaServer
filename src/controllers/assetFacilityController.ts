@@ -141,7 +141,7 @@ export async function getAllFacilityController(req: Request, res: Response) {
       for (const facility of await getAllFacility(_includes, includes.includes("facilityDetail"))){
         facilities.push(await facility.toFullJson());
       }
-      return res.status(200).json({ facilities: facilities?.map(facility=>facility.toJSON()) });
+      return res.status(200).json({ facilities: facilities });
     }
 
     let facilities: Facility[] = []
@@ -152,7 +152,7 @@ export async function getAllFacilityController(req: Request, res: Response) {
     const inHouse =  await (await employee.getGeneralStaff()).getOperatedFacility();
     if (inHouse) facilities.push(await (await inHouse.getFacility()).toFullJson());
     
-    return res.status(200).json({ facilities: facilities?.map(facility=>facility.toJSON()) })
+    return res.status(200).json({ facilities: facilities })
 
   } catch (error: any) {
     console.log(error)
@@ -172,7 +172,7 @@ export async function getMyOperationFacilityController(req: Request, res: Respon
     };
 
     const facility = await (await (await (await employee.getGeneralStaff())?.getOperatedFacility())?.getFacility())?.toFullJson();
-    return res.status(200).json({ facility: (facility ? facility.toJSON() : {}) });
+    return res.status(200).json({ facility: (facility ? facility : {}) });
   } catch (error: any) {
     console.log(error)
     res.status(400).json({ error: error.message });
