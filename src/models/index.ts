@@ -34,6 +34,8 @@ import {
   SensorType,
   Specialization,
   AnimalSex,
+  ActivityType,
+  EventTimingType,
 } from "./enumerated";
 import { Event } from "./event";
 import { Facility } from "./facility";
@@ -58,6 +60,7 @@ import { SpeciesDietNeed } from "./speciesDietNeed";
 import { SpeciesEnclosureNeed } from "./speciesEnclosureNeed";
 import { TerrainDistribution } from "./terrainDistribution";
 import { ThirdParty } from "./thirdParty";
+import { AnimalActivity } from "./animalActivity";
 
 function addCascadeOptions(options: object) {
   return { ...options, onDelete: "CASCADE", onUpdate: "CASCADE" };
@@ -85,6 +88,10 @@ export const createDatabase = async (options: any) => {
     Employee,
     addCascadeOptions({ foreignKey: "employeeId" }),
   );
+
+  // added by qy for animal activity 5 Oct
+  Employee.hasMany(AnimalActivity);
+  AnimalActivity.belongsTo(Employee);
 
   Facility.hasMany(
     HubProcessor,
@@ -225,9 +232,6 @@ export const createDatabase = async (options: any) => {
 
   // ------------ Animal Relation --------------
 
-  // Species.hasMany(Animal, addCascadeOptions({ foreignKey: "speciesId" }));
-  // Animal.belongsTo(Species, addCascadeOptions({ foreignKey: "speciesId" }));
-
   Species.hasMany(Animal, { onDelete: "CASCADE" });
   Animal.belongsTo(Species);
 
@@ -248,6 +252,28 @@ export const createDatabase = async (options: any) => {
   Animal.hasMany(AnimalWeight, { onDelete: "CASCADE" });
   AnimalWeight.belongsTo(Animal);
 
+  Animal.belongsToMany(AnimalActivity, {
+    foreignKey: "animalId",
+    through: "animal_animalActivity",
+    as: "animalActivity",
+  });
+  AnimalActivity.belongsToMany(Animal, {
+    foreignKey: "animalActivityId",
+    through: "animal_animalActivity",
+    as: "animalActivityAnimal",
+  });
+
+  AnimalActivity.belongsToMany(EnrichmentItem, {
+    foreignKey: "animalActivityId",
+    through: "animalActivity_enrichmentItem",
+    as: "animalActivityEnrichmentItem",
+  });
+  EnrichmentItem.belongsToMany(AnimalActivity, {
+    foreignKey: "enrichmentItemId",
+    through: "animalActivity_enrichmentItem",
+    as: "enrichmentItem",
+  });
+
   Species.belongsToMany(Customer, {
     foreignKey: "speciesId",
     through: "customerFravouriteSpecies",
@@ -261,15 +287,6 @@ export const createDatabase = async (options: any) => {
 
   Animal.hasMany(AnimalLog, addCascadeOptions({ foreignKey: "animalId" }));
   AnimalLog.belongsTo(Animal, addCascadeOptions({ foreignKey: "animalId" }));
-
-  // AnimalClinic.hasMany(
-  //   Animal,
-  //   addCascadeOptions({ foreignKey: "animalClinicId" }),
-  // );
-  // Animal.belongsTo(
-  //   AnimalClinic,
-  //   addCascadeOptions({ foreignKey: "animalClinicId" }),
-  // );
 
   // ------------ End of Animal Relation --------------
 
@@ -729,7 +746,7 @@ export const employeeSeed = async () => {
 };
 
 export const speciesSeed = async () => {
-  let panda1Template = {
+  let pandaTemplate = {
     speciesCode: await Species.getNextSpeciesCode(),
     commonName: "Giant Panda",
     scientificName: "Ailuropoda Melanoleuca",
@@ -753,12 +770,16 @@ export const speciesSeed = async () => {
     generalDietPreference: "Folivore",
     imageUrl: "img/species/panda.jpg",
     lifeExpectancyYears: 65,
+    ageToJuvenile: 2,
+    ageToAdolescent: 5,
+    ageToAdult: 7,
+    ageToElder: 50,
     // foodRemark: "Food remark...",
   } as any;
-  let panda1 = await Species.create(panda1Template);
-  console.log(panda1.toJSON());
+  let panda = await Species.create(pandaTemplate);
+  console.log(panda.toJSON());
 
-  let panda1enclosure = await SpeciesService.createEnclosureNeeds(
+  let pandaEnclosure = await SpeciesService.createEnclosureNeeds(
     "SPE001",
     10,
     10,
@@ -783,9 +804,9 @@ export const speciesSeed = async () => {
     0,
     0,
   );
-  console.log(panda1enclosure.toJSON());
+  console.log(pandaEnclosure.toJSON());
 
-  let panda1phy1 = await SpeciesService.createPhysiologicalReferenceNorms(
+  let pandaPhy1 = await SpeciesService.createPhysiologicalReferenceNorms(
     "SPE001",
     100,
     100,
@@ -795,9 +816,9 @@ export const speciesSeed = async () => {
     5,
     AnimalGrowthStage.INFANT,
   );
-  console.log(panda1phy1.toJSON());
+  console.log(pandaPhy1.toJSON());
 
-  let panda1phy2 = await SpeciesService.createPhysiologicalReferenceNorms(
+  let pandaPhy2 = await SpeciesService.createPhysiologicalReferenceNorms(
     "SPE001",
     200,
     200,
@@ -807,9 +828,9 @@ export const speciesSeed = async () => {
     5,
     AnimalGrowthStage.ADULT,
   );
-  console.log(panda1phy2.toJSON());
+  console.log(pandaPhy2.toJSON());
 
-  let panda1DietNeed1 = await SpeciesService.createDietNeed(
+  let pandaDietNeed1 = await SpeciesService.createDietNeed(
     "SPE001",
     AnimalFeedCategory.FISH,
     100,
@@ -819,9 +840,9 @@ export const speciesSeed = async () => {
     PresentationLocation.IN_CONTAINER,
     AnimalGrowthStage.ADULT,
   );
-  console.log(panda1DietNeed1.toJSON());
+  console.log(pandaDietNeed1.toJSON());
 
-  let panda1DietNeed2 = await SpeciesService.createDietNeed(
+  let pandaDietNeed2 = await SpeciesService.createDietNeed(
     "SPE001",
     AnimalFeedCategory.HAY,
     1000,
@@ -831,7 +852,7 @@ export const speciesSeed = async () => {
     PresentationLocation.IN_CONTAINER,
     AnimalGrowthStage.JUVENILE,
   );
-  console.log(panda1DietNeed2.toJSON());
+  console.log(pandaDietNeed2.toJSON());
   let capybara1Template = {
     speciesCode: await Species.getNextSpeciesCode(),
     commonName: "Capybara",
@@ -856,12 +877,16 @@ export const speciesSeed = async () => {
     generalDietPreference: "Herbivore",
     imageUrl: "img/species/capybara.jpg",
     lifeExpectancyYears: 10,
+    ageToJuvenile: 2,
+    ageToAdolescent: 5,
+    ageToAdult: 7,
+    ageToElder: 50,
     // foodRemark: "Food remark...",
   } as any;
   let capybara1 = await Species.create(capybara1Template);
   console.log(capybara1.toJSON());
 
-  let redPanda1Template = {
+  let redPandaTemplate = {
     speciesCode: await Species.getNextSpeciesCode(),
     commonName: "Red Panda",
     scientificName: "Ailurus fulgens",
@@ -884,12 +909,16 @@ export const speciesSeed = async () => {
     generalDietPreference: "Herbivore",
     imageUrl: "img/species/redPanda.jpg",
     lifeExpectancyYears: 14,
+    ageToJuvenile: 2,
+    ageToAdolescent: 5,
+    ageToAdult: 7,
+    ageToElder: 50,
     // foodRemark: "Food remark...",
   } as any;
-  let redPanda1 = await Species.create(redPanda1Template);
-  console.log(redPanda1.toJSON());
+  let redPanda = await Species.create(redPandaTemplate);
+  console.log(redPanda.toJSON());
 
-  let africanElephant1Template = {
+  let africanElephantTemplate = {
     speciesCode: await Species.getNextSpeciesCode(),
     commonName: "African Elephant",
     scientificName: "Loxodonta africana",
@@ -913,10 +942,14 @@ export const speciesSeed = async () => {
     generalDietPreference: "Herbivore",
     imageUrl: "img/species/elephant.jpg",
     lifeExpectancyYears: 14,
+    ageToJuvenile: 2,
+    ageToAdolescent: 5,
+    ageToAdult: 7,
+    ageToElder: 50,
     // foodRemark: "Food remark...",
   } as any;
-  let elephant1 = await Species.create(africanElephant1Template);
-  console.log(elephant1.toJSON());
+  let elephant = await Species.create(africanElephantTemplate);
+  console.log(elephant.toJSON());
 
   let compatibility1 = await SpeciesService.createCompatibility(
     "SPE001",
@@ -943,7 +976,7 @@ export const animalSeed = async () => {
     false,
     "Pang Pang",
     AnimalSex.FEMALE,
-    new Date("2021-03-04"),
+    new Date("1990-03-04"),
     "Singapore",
     IdentifierType.MAGNETIC_TAG,
     "identifierValue 001",
@@ -955,39 +988,35 @@ export const animalSeed = async () => {
     null,
     null,
     null,
-    "UNKNOWN",
     "NORMAL",
     "img/animal/pangPang.jpg",
   );
-  console.log(panda1Template.toJSON());
 
   let panda2Template = await AnimalService.createNewAnimal(
     "SPE001",
-    true,
-    "Panda Group 01",
-    null,
-    null,
-    null,
-    null,
-    null,
-    AcquisitionMethod.PRIVATELY_BRED,
+    false,
+    "Yuan Yuan",
+    AnimalSex.FEMALE,
+    new Date("1997-03-04"),
+    "Singapore",
+    IdentifierType.MAGNETIC_TAG,
+    "identifierValue 001",
+    AcquisitionMethod.FROM_THE_WILD,
     new Date("2021-03-04"),
+    "N.A.",
+    "Big face, black spot at the back",
+    "active, friendly",
     null,
     null,
     null,
-    null,
-    null,
-    null,
-    "UNKNOWN",
     "NORMAL",
-    "img/animal/pandaGroup01.jpg",
+    "img/animal/yuanYuan.jpg",
   );
-  console.log(panda2Template.toJSON());
 
   let panda3Template = await AnimalService.createNewAnimal(
     "SPE001",
-    true,
-    "Panda 3",
+    false,
+    "Du Du",
     AnimalSex.FEMALE,
     new Date("2021-03-04"),
     "Singapore",
@@ -1001,11 +1030,185 @@ export const animalSeed = async () => {
     null,
     null,
     null,
-    "UNKNOWN",
     "NORMAL",
-    "img/animal/pangPang.jpg",
+    "img/animal/duDu.jpg",
   );
-  console.log(panda3Template.toJSON());
+
+  let panda4Template = await AnimalService.createNewAnimal(
+    "SPE001",
+    false,
+    "Fu Fu",
+    AnimalSex.MALE,
+    new Date("2021-03-04"),
+    "Singapore",
+    IdentifierType.RFID_TAG,
+    "identifierValue 001",
+    AcquisitionMethod.INHOUSE_CAPTIVE_BRED,
+    new Date("2021-03-04"),
+    "N.A.",
+    "Big face, black spot at the back",
+    "active, friendly",
+    null,
+    null,
+    null,
+    "NORMAL",
+    "img/animal/fuFu.jpg",
+  );
+
+  let panda5Template = await AnimalService.createNewAnimal(
+    "SPE001",
+    false,
+    "Tuan Tuan",
+    AnimalSex.MALE,
+    new Date("2021-03-04"),
+    "Singapore",
+    IdentifierType.RFID_TAG,
+    "identifierValue 001",
+    AcquisitionMethod.INHOUSE_CAPTIVE_BRED,
+    new Date("2021-03-04"),
+    "N.A.",
+    "Big face, black spot at the back",
+    "active, friendly",
+    null,
+    null,
+    null,
+    "NORMAL",
+    "img/animal/tuanTuan.jpg",
+  );
+
+  let panda6Template = await AnimalService.createNewAnimal(
+    "SPE001",
+    false,
+    "Huan Huan",
+    AnimalSex.MALE,
+    new Date("2021-03-04"),
+    "Singapore",
+    IdentifierType.RFID_TAG,
+    "identifierValue 001",
+    AcquisitionMethod.INHOUSE_CAPTIVE_BRED,
+    new Date("2021-03-04"),
+    "N.A.",
+    "Big face, black spot at the back",
+    "active, friendly",
+    null,
+    null,
+    null,
+    "NORMAL",
+    "img/animal/huanHuan.jpg",
+  );
+
+  let panda7Template = await AnimalService.createNewAnimal(
+    "SPE001",
+    false,
+    "Yin Yin",
+    AnimalSex.FEMALE,
+    new Date("2021-03-04"),
+    "Singapore",
+    IdentifierType.RFID_TAG,
+    "identifierValue 001",
+    AcquisitionMethod.INHOUSE_CAPTIVE_BRED,
+    new Date("2021-03-04"),
+    "N.A.",
+    "Big face, black spot at the back",
+    "active, friendly",
+    null,
+    null,
+    null,
+    "NORMAL",
+    "img/animal/yinYin.jpg",
+  );
+  let panda8Template = await AnimalService.createNewAnimal(
+    "SPE001",
+    false,
+    "Ni Ni",
+    AnimalSex.FEMALE,
+    new Date("2021-03-04"),
+    "Singapore",
+    IdentifierType.RFID_TAG,
+    "identifierValue 001",
+    AcquisitionMethod.INHOUSE_CAPTIVE_BRED,
+    new Date("2021-03-04"),
+    "N.A.",
+    "Big face, black spot at the back",
+    "active, friendly",
+    null,
+    null,
+    null,
+    "NORMAL",
+    "img/animal/niNi.jpg",
+  );
+  let panda9Template = await AnimalService.createNewAnimal(
+    "SPE001",
+    false,
+    "Bei Bei",
+    AnimalSex.MALE,
+    new Date("2021-03-04"),
+    "Singapore",
+    IdentifierType.RFID_TAG,
+    "identifierValue 001",
+    AcquisitionMethod.INHOUSE_CAPTIVE_BRED,
+    new Date("2021-03-04"),
+    "N.A.",
+    "Big face, black spot at the back",
+    "active, friendly",
+    null,
+    null,
+    null,
+    "NORMAL",
+    "img/animal/beiBei.jpg",
+  );
+
+  let panda10Template = await AnimalService.createNewAnimal(
+    "SPE001",
+    false,
+    "La La",
+    AnimalSex.MALE,
+    new Date("2021-03-04"),
+    "Singapore",
+    IdentifierType.RFID_TAG,
+    "identifierValue 001",
+    AcquisitionMethod.INHOUSE_CAPTIVE_BRED,
+    new Date("2021-03-04"),
+    "N.A.",
+    "Big face, black spot at the back",
+    "active, friendly",
+    null,
+    null,
+    null,
+    "NORMAL",
+    "img/animal/laLa.jpg",
+  );
+
+  // -- add lineage
+  await AnimalService.addAnimalLineage("ANM00002", "ANM00001");
+  await AnimalService.addAnimalLineage("ANM00002", "ANM00004");
+  await AnimalService.addAnimalLineage("ANM00010", "ANM00001");
+  await AnimalService.addAnimalLineage("ANM00010", "ANM00004");
+  await AnimalService.addAnimalLineage("ANM00003", "ANM00002");
+  await AnimalService.addAnimalLineage("ANM00003", "ANM00005");
+  await AnimalService.addAnimalLineage("ANM00006", "ANM00003");
+  await AnimalService.addAnimalLineage("ANM00006", "ANM00009");
+  await AnimalService.addAnimalLineage("ANM00008", "ANM00006");
+  await AnimalService.addAnimalLineage("ANM00008", "ANM00007");
+
+  // -- create animal activity
+  let animalActivity1 = await AnimalService.createAnimalActivity(
+    ActivityType.ENRICHMENT,
+    "Bamboo Bonanza",
+    "Treat our pandas to a bamboo feast! We'll scatter bamboo leaves and shoots throughout their habitat to encourage natural foraging behavior.",
+    new Date("2021-03-04"),
+    EventTimingType.AFTERNOON,
+    45,
+  );
+
+  let animalActivity2 = await AnimalService.createAnimalActivity(
+    ActivityType.TRAINING,
+    "Target Training",
+    "Use a target stick to teach pandas to touch a designated spot. This aids in directing their movement and helps with medical check-ups.",
+    new Date("2021-03-04"),
+    EventTimingType.MORNING,
+    60,
+  );
 };
 
 export const animalFeedSeed = async () => {
@@ -1028,7 +1231,7 @@ export const animalFeedSeed = async () => {
   let beefTemplate = {
     animalFeedName: "Beef",
     animalFeedImageUrl: "img/animalFeed/beef.jpg",
-    animalFeedCategory: AnimalFeedCategory.FRUITS,
+    animalFeedCategory: AnimalFeedCategory.RED_MEAT,
   } as any;
   let beef = await AnimalFeed.create(beefTemplate);
   console.log(beef.toJSON());
@@ -1051,7 +1254,7 @@ export const animalFeedSeed = async () => {
 export const enrichmentItemSeed = async () => {
   let scratchingPostTemplate = {
     enrichmentItemName: "Scratching Post",
-    enrichmentItemImageUrl: "img/enrichmentItem/scratchingPost.webp",
+    enrichmentItemImageUrl: "img/enrichmentItem/scratchingPost.jpg",
   } as any;
   let scratchingPost = await EnrichmentItem.create(scratchingPostTemplate);
   console.log(scratchingPost.toJSON());
@@ -1071,7 +1274,7 @@ export const enrichmentItemSeed = async () => {
 
   let Feeder = await EnrichmentItem.create({
     enrichmentItemName: "Feeder",
-    enrichmentItemImageUrl: "img/enrichmentItem/Feeder.jpeg",
+    enrichmentItemImageUrl: "img/enrichmentItem/feeder.jpg",
   });
   console.log(Feeder.toJSON());
 };

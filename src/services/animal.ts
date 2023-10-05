@@ -8,6 +8,9 @@ import { PhysiologicalReferenceNorms } from "../models/physiologicalReferenceNor
 import { AnimalGrowthStage, AnimalStatus } from "../models/enumerated";
 import { AnimalWeight } from "../models/animalWeight";
 import * as SpeciesService from "../services/species";
+import { AnimalActivity } from "../models/animalActivity";
+import { EnrichmentItem } from "../models/enrichmentItem";
+import { Employee } from "../models/employee";
 
 //-- Animal Basic Info
 export async function getAnimalIdByCode(animalCode: string) {
@@ -120,7 +123,6 @@ export async function createNewAnimal(
   dateOfDeath: Date | null,
   locationOfDeath: string | null,
   causeOfDeath: string | null,
-  growthStage: string,
   animalStatus: string,
   imageUrl: string,
 ) {
@@ -141,7 +143,6 @@ export async function createNewAnimal(
     dateOfDeath: dateOfDeath,
     locationOfDeath: locationOfDeath,
     causeOfDeath: causeOfDeath,
-    growthStage: growthStage,
     animalStatus: animalStatus,
     imageUrl: imageUrl,
   } as any;
@@ -152,7 +153,9 @@ export async function createNewAnimal(
     let newAnimalEntry = await Animal.create(newAnimal);
 
     newAnimalEntry.setSpecies(
-      await SpeciesService.getSpeciesByCode(speciesCode, []),
+      await SpeciesService.getSpeciesByCode(speciesCode, [
+        "physiologicalReferenceNorms",
+      ]),
     );
 
     return newAnimalEntry;
@@ -177,7 +180,6 @@ export async function updateAnimal(
   dateOfDeath: Date | null,
   locationOfDeath: string | null,
   causeOfDeath: string | null,
-  growthStage: string,
   animalStatus: string,
   imageUrl: string,
 ) {
@@ -196,7 +198,6 @@ export async function updateAnimal(
     dateOfDeath: dateOfDeath,
     locationOfDeath: locationOfDeath,
     causeOfDeath: causeOfDeath,
-    growthStage: growthStage,
     animalStatus: animalStatus,
     imageUrl: imageUrl,
   } as any;
@@ -401,53 +402,108 @@ export async function deleteAnimalLineage(
   }
 }
 
-export async function checkIsSafeBreeding( // <--NOT WORKING, need recursion
+export async function checkInbreeding( // Check if two animals are related through common ancestors within given degrees
   animalCode1: string,
   animalCode2: string,
-) {
-  if (!animalCode1 || !animalCode2) {
-    return false; // At least one animal not found
+  // depth: number,
+): Promise<boolean> {
+  // if (depth === 0) {
+  //   return false; // Stop recursion at depth 0
+  // }
+
+  let animal1 = await Animal.findOne({
+    where: { animalCode: animalCode1 },
+    include: {
+      model: Animal, // Self-reference to represent parent-child relationships
+      as: "parents",
+      required: false,
+      include: [
+        {
+          model: Animal,
+          as: "parents",
+          required: false,
+          include: [
+            {
+              model: Animal,
+              as: "parents",
+              required: false,
+            },
+          ],
+        },
+      ],
+    },
+  });
+
+  let animal2 = await Animal.findOne({
+    where: { animalCode: animalCode2 },
+    include: {
+      model: Animal, // Self-reference to represent parent-child relationships
+      as: "parents",
+      required: false,
+      include: [
+        {
+          model: Animal,
+          as: "parents",
+          required: false,
+          include: [
+            {
+              model: Animal,
+              as: "parents",
+              required: false,
+            },
+          ],
+        },
+      ],
+    },
+  });
+
+  if (!animal1 || !animal2) {
+    throw new Error("Invalid Animal Code!");
   }
 
-  let animal1 = await getLineageByAnimalCode(animalCode1);
-  let animal2 = await getLineageByAnimalCode(animalCode2);
+  // Check if animal1 is an ancestor of animal2 and vice versa
+  const isAncestorOf1 = isAncestor(animal1, animal2.animalId);
+  const isAncestorOf2 = isAncestor(animal2, animal1.animalId);
 
-  if (animal1 && animal2) {
-    // check if animal1 is animal2's parent
-    // if (await animal1.isParentOf(animal2.animalId)) {
-    //   return false;
-    // }
-    // // check if animal2 is animal1's parent
-    // if (await animal2.isParentOf(animal1.animalId)) {
-    //   return false;
-    // }
+  // Check if animal1 and animal2 have the same parents
+  const haveSameParents = haveSameParentsCheck(animal1, animal2);
+  console.log("isAncestorOf1 --> " + isAncestorOf1);
+  console.log("isAncestorOf2 --> " + isAncestorOf2);
+  console.log("haveSameParents --> " + haveSameParents);
+  console.log(
+    "result --> " + (isAncestorOf1 || isAncestorOf2 || haveSameParents),
+  );
+  // Return true if all false
+  return isAncestorOf1 || isAncestorOf2 || haveSameParents;
+}
 
-    // check if have same parents
-    let parentIds1 = animal1.parents!.map((parent: any) => parent.animalId);
-    parentIds1.push(animal1.animalId);
+// Helper function to check if one animal is an ancestor of another
+function isAncestor(animal: any, targetId: number): boolean {
+  if (!animal || !animal.parents || animal.parents.length === 0) {
+    return false;
+  }
 
-    console.log("parentIds1: " + parentIds1);
-    let parentIds2 = animal2.parents!.map((parent: any) => parent.animalId);
-    parentIds2.push(animal2.animalId);
-    console.log("parentIds2: " + parentIds2);
-
-    let commonParents = parentIds1.filter((parentId) =>
-      parentIds2.includes(parentId),
-    );
-    if (commonParents.length > 0) {
-      return false; // Found common parents within three degrees
-    }
-
-    commonParents = parentIds2.filter((parentId) =>
-      parentIds1.includes(parentId),
-    );
-
-    if (commonParents.length > 0) {
-      return false; // Found common parents within three degrees
-    }
-
+  if (animal.parents.some((parent: any) => parent.animalId === targetId)) {
     return true;
   }
+
+  return animal.parents.some((parent: any) => isAncestor(parent, targetId));
+}
+
+// Helper function to check if two animals have the same parents
+function haveSameParentsCheck(animal1: any, animal2: any): boolean {
+  if (animal1.parents.length === 0 || animal2.parents.length === 0) {
+    console.log("here--1");
+    return false;
+  }
+
+  console.log("here--2");
+  const parentIds1 = animal1.parents.map((parent: any) => parent.animalId);
+  const parentIds2 = animal2.parents.map((parent: any) => parent.animalId);
+
+  console.log("here--parentIds1: " + parentIds1);
+  console.log("here--parentIds2: " + parentIds2);
+  return parentIds1.every((animalId: any) => parentIds2.includes(animalId));
 }
 
 //-- Animal Weight
@@ -497,4 +553,184 @@ export async function getAllAnimalWeightsByAnimalCode(animalCode: string) {
     return resultAnimalWeights;
   }
   throw new Error("Invalid Animal Code!");
+}
+
+export async function getAllAbnormalWeights() {
+  // --> hvnt do, need to discuss with Jason
+  //   let result = await Animal.findOne({
+  //     where: { animalCode: animalCode },
+  //     include: AnimalWeight, //eager fetch here
+  //   });
+  //   if (result) {
+  //     let resultAnimalWeights = await result.animalWeights;
+  //     return resultAnimalWeights;
+  //   }
+  //   throw new Error("Invalid Animal Code!");
+}
+
+//-- Animal Activity
+export async function getAllAnimalActivities() {
+  try {
+    const allAnimalActivities = await AnimalActivity.findAll({
+      include: [
+        {
+          model: Animal,
+          required: false, // Include only if they exist
+          as: "animalActivityAnimal",
+        },
+        {
+          model: EnrichmentItem,
+          required: false, // Include only if they exist
+          as: "animalActivityEnrichmentItem",
+        },
+        {
+          model: Employee,
+          required: false, // Include only if they exist
+        },
+      ],
+    });
+
+    return allAnimalActivities;
+  } catch (error: any) {
+    throw validationErrorHandler(error);
+  }
+}
+
+export async function getAnimalActivityById(animalActivityId: string) {
+  let animalActivityRecord = await AnimalActivity.findOne({
+    where: { animalActivityId: animalActivityId },
+    include: [
+      {
+        model: Animal,
+        required: false, // Include only if they exist
+        as: "animalActivityAnimal",
+      },
+      {
+        model: EnrichmentItem,
+        required: false, // Include only if they exist
+        as: "animalActivityEnrichmentItem",
+      },
+      {
+        model: Employee,
+        required: false, // Include only if they exist
+      },
+    ],
+  });
+
+  if (animalActivityRecord) {
+    return animalActivityRecord;
+  }
+  throw new Error("Invalid Animal Activity Id!");
+}
+
+export async function getAnimalActivityByAnimalCode(animalCode: string) {
+  let animalActivities = await Animal.findAll({
+    where: { animalCode: animalCode },
+    include: {
+      model: AnimalActivity,
+      required: false, // Include only if they exist
+      as: "animalActivity",
+    },
+  });
+
+  if (animalActivities) {
+    return animalActivities;
+  }
+  throw new Error("Invalid Animal Code!");
+}
+
+export async function createAnimalActivity(
+  activityType: string,
+  title: string,
+  details: string,
+  date: Date,
+  session: string,
+  durationInMinutes: number,
+) {
+  let newActivity = {
+    activityType: activityType,
+    title: title,
+    details: details,
+    date: date,
+    session: session,
+    durationInMinutes: durationInMinutes,
+  } as any;
+
+  console.log(newActivity);
+
+  try {
+    let newActivityEntry = await AnimalActivity.create(newActivity);
+
+    // for (let a in animalCodes) {
+    //   newActivityEntry.addAnimal(await getAnimalByAnimalCode(a));
+    // }
+
+    // for (let a in animalCodes) {
+    //   newActivityEntry.addAnimal(await getAnimalByAnimalCode(a));
+    // }
+
+    return newActivityEntry;
+  } catch (error: any) {
+    console.log(error);
+    throw validationErrorHandler(error);
+  }
+}
+
+export async function updateAnimalActivity(
+  animalActivityId: number,
+  activityType: string,
+  title: string,
+  details: string,
+  date: Date,
+  session: string,
+  durationInMinutes: number,
+) {
+  let updatedAnimalActivity = {
+    activityType: activityType,
+    title: title,
+    details: details,
+    date: date,
+    session: session,
+    durationInMinutes: durationInMinutes,
+  } as any;
+
+  console.log(updatedAnimalActivity);
+
+  try {
+    await AnimalActivity.update(updatedAnimalActivity, {
+      where: { animalActivityId: animalActivityId },
+    });
+  } catch (error: any) {
+    throw validationErrorHandler(error);
+  }
+}
+
+export async function deleteAnimalActivity(animalActivityId: string) {
+  let result = await AnimalActivity.destroy({
+    where: { animalActivityId: animalActivityId },
+  });
+  if (result) {
+    return result;
+  }
+  throw new Error("Invalid Animal Activity Id!");
+}
+
+export async function assignAnimalsToTraining(
+  animalActivityId: string,
+  animalCodes: string[],
+) {
+  let animalActivity = await getAnimalActivityById(animalActivityId);
+
+  for (let animalCode in animalCodes) {
+    animalActivity.addAnimal(await getAnimalByAnimalCode(animalCode));
+  }
+}
+
+export async function removeAnimalsFromTraining(
+  animalActivityId: string,
+  animalCode: string,
+) {
+  let animalActivity = await getAnimalActivityById(animalActivityId);
+
+  animalActivity.removeAnimal(await getAnimalByAnimalCode(animalCode));
 }

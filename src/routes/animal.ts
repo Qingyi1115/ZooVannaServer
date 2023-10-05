@@ -13,10 +13,16 @@ import {
   updateAnimalLineage,
   deleteAnimalLineage,
   getLineageByAnimalCode,
-  checkIsSafeBreeding,
+  checkInbreeding,
   getAllAnimalWeightsByAnimalCode,
   addAnimalWeight,
   deleteAnimalWeight,
+  getAllAnimalActivities,
+  getAnimalActivityById,
+  createAnimalActivity,
+  updateAnimalActivity,
+  deleteAnimalActivity,
+  getAnimalActivityByAnimalCode,
 } from "../controllers/animalController";
 
 const router = express.Router();
@@ -40,10 +46,7 @@ router.get("/getLineageByAnimalCode/:animalCode", getLineageByAnimalCode);
 router.post("/addAnimalLineage", addAnimalLineage);
 router.put("/updateAnimalLineage", updateAnimalLineage);
 router.put("/deleteAnimalLineage", deleteAnimalLineage);
-router.get(
-  "/checkIsSafeBreeding/:animalCode1/:animalCode2",
-  checkIsSafeBreeding,
-);
+router.get("/checkInbreeding/:animalCode1/:animalCode2", checkInbreeding);
 
 // -- Animal Weight
 router.get(
@@ -52,5 +55,16 @@ router.get(
 );
 router.post("/addAnimalWeight", addAnimalWeight);
 router.delete("/deleteAnimalWeight/:animalWeightId", deleteAnimalWeight);
+
+// -- Animal Activity
+router.get("/getAllAnimalActivities", getAllAnimalActivities);
+router.get("/getAnimalActivityById/:animalActivityId", getAnimalActivityById);
+router.get(
+  "/getAnimalActivityByAnimalCode/:animalCode",
+  getAnimalActivityByAnimalCode,
+);
+router.post("/createAnimalActivity", createAnimalActivity);
+router.put("/updateAnimalActivity", updateAnimalActivity);
+router.delete("/deleteAnimalActivity/:animalActivityId", deleteAnimalActivity);
 
 export default router;

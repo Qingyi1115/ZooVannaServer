@@ -25,6 +25,7 @@ import { uppercaseFirst } from "../helpers/others";
 import { Enclosure } from "./enclosure";
 import { AnimalLog } from "./animalLog";
 import { AnimalWeight } from "./animalWeight";
+import { AnimalActivity } from "./animalActivity";
 
 class Animal extends Model<
   InferAttributes<Animal>,
@@ -49,17 +50,19 @@ class Animal extends Model<
   declare dateOfDeath: Date;
   declare locationOfDeath: string;
   declare causeOfDeath: string;
-  declare growthStage: AnimalGrowthStage;
   declare animalStatus: string;
   declare imageUrl: string;
 
   declare location?: string;
+  declare age?: number | null;
+  declare growthStage: AnimalGrowthStage | null;
 
   //--FK
   declare species?: Species;
   declare parents?: Animal[];
   declare children?: Animal[];
   declare animalWeights?: AnimalWeight[];
+  declare animalActivities?: AnimalActivity[];
 
   //--hvnt do yet
   // declare animalClinic?: AnimalClinic;
@@ -88,8 +91,16 @@ class Animal extends Model<
     number
   >;
 
-  // declare getAnimalClinic: BelongsToGetAssociationMixin<AnimalClinic>;
-  // declare setAnimalClinic: BelongsToSetAssociationMixin<AnimalClinic, number>;
+  declare getAnimalActivities: HasManyGetAssociationsMixin<AnimalActivity>;
+  declare addAnimalActivity: HasManyAddAssociationMixin<AnimalActivity, number>;
+  declare setAnimalActivities: HasManySetAssociationsMixin<
+    AnimalActivity,
+    number
+  >;
+  declare removeAnimalActivity: HasManyRemoveAssociationMixin<
+    AnimalActivity,
+    number
+  >;
 
   declare getEnclosure: BelongsToGetAssociationMixin<Enclosure>;
   declare setEnclosure: BelongsToSetAssociationMixin<Enclosure, number>;
@@ -103,9 +114,6 @@ class Animal extends Model<
   declare addEvent: HasManyAddAssociationMixin<Event, number>;
   declare setEvents: HasManySetAssociationsMixin<Event, number>;
   declare removeEvent: HasManyRemoveAssociationMixin<Event, number>;
-  // declare age?: number;
-
-  declare age?: number | null;
 
   // public getAge(): number {
   //   if (!this.age) {
@@ -161,19 +169,19 @@ class Animal extends Model<
     }
   }
 
-  public async isParentOf(childId: number): Promise<boolean> {
-    let result = await Animal.findByPk(childId, {
-      include: [
-        {
-          model: Animal,
-          as: "parents",
-          where: { animalId: this.animalId },
-        },
-      ],
-    });
-    if (result) return true;
-    return false;
-  }
+  // public async isParentOf(childId: number): Promise<boolean> {
+  //   let result = await Animal.findByPk(childId, {
+  //     include: [
+  //       {
+  //         model: Animal,
+  //         as: "parents",
+  //         where: { animalId: this.animalId },
+  //       },
+  //     ],
+  //   });
+  //   if (result) return true;
+  //   return false;
+  // }
 }
 
 Animal.init(
@@ -259,12 +267,12 @@ Animal.init(
       type: DataTypes.STRING,
       allowNull: true,
     },
-    growthStage: {
-      type: DataTypes.ENUM,
-      values: Object.values(AnimalGrowthStage),
-      allowNull: false,
-      defaultValue: AnimalGrowthStage.UNKNOWN,
-    },
+    // growthStage: {
+    //   type: DataTypes.ENUM,
+    //   values: Object.values(AnimalGrowthStage),
+    //   allowNull: false,
+    //   defaultValue: AnimalGrowthStage.UNKNOWN,
+    // },
     animalStatus: {
       // type: DataTypes.ARRAY(DataTypes.ENUM(...Object.values(AnimalStatus))),
       type: DataTypes.STRING,
@@ -287,6 +295,25 @@ Animal.init(
           );
         }
         return null; // Return null if 'dateOfBirth' is null
+      },
+    },
+    growthStage: {
+      type: DataTypes.VIRTUAL,
+      get() {
+        if (this.age != null && this.species != null) {
+          if (this.age < this.species.ageToJuvenile) {
+            return AnimalGrowthStage.INFANT;
+          } else if (this.age < this.species.ageToAdolescent) {
+            return AnimalGrowthStage.JUVENILE;
+          } else if (this.age < this.species.ageToAdult) {
+            return AnimalGrowthStage.ADOLESCENT;
+          } else if (this.age < this.species.ageToElder) {
+            return AnimalGrowthStage.ADULT;
+          } else {
+            return AnimalGrowthStage.ELDER;
+          }
+        }
+        return AnimalGrowthStage.UNKNOWN; // Return UNKNOWN if 'dateOfBirth' is null
       },
     },
   },

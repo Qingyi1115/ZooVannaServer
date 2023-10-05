@@ -190,6 +190,19 @@ enum IdentifierType {
   BRACELETS_ANKLETS = "Bracelets/Anklets",
 }
 
+enum ActivityType {
+  TRAINING = "TRAINING",
+  ENRICHMENT = "ENRICHMENT",
+}
+
+enum Rating {
+  EXCELLENT = "EXCELLENT",
+  GOOD = "GOOD",
+  FAIR = "FAIR",
+  POOR = "POOR",
+  NOT_RECORDED = "NOT RECORDED",
+}
+
 enum EventType {
   SHOW = "SHOW",
   CUSTOMER_FEEDING = "CUSTOMER_FEEDING",
@@ -204,6 +217,23 @@ enum EventTimingType {
   MORNING = "MORNING",
   AFTERNOON = "AFTERNOON",
   EVENING = "EVENING",
+}
+
+enum DayOfTheWeek {
+  MONDAY = "MONDAY",
+  TUESDAY = "TUESDAY",
+  WEDNESDAY = "WEDNESDAY",
+  THURSDAY = "THURSDAY",
+  FRIDAY = "FRIDAY",
+  SATURDAY = "SATURDAY",
+  SUNDAY = "SUNDAY",
+}
+
+enum FoodUnit {
+  KG = "KG",
+  GRAM = "GRAM",
+  ML = "ML",
+  L = "L",
 }
 
 enum Country {
@@ -528,7 +558,11 @@ export {
   PaymentStatus,
   PaymentType,
   OrderStatus,
+  ActivityType,
   EnclosureStatus,
   HubStatus,
   IdentifierType,
+  Rating,
+  FoodUnit,
+  DayOfTheWeek,
 };
