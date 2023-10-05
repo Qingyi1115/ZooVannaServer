@@ -190,6 +190,19 @@ enum IdentifierType {
   BRACELETS_ANKLETS = "Bracelets/Anklets",
 }
 
+enum ActivityType {
+  TRAINING = "TRAINING",
+  ENRICHMENT = "ENRICHMENT",
+}
+
+enum Rating {
+  EXCELLENT = "EXCELLENT",
+  GOOD = "GOOD",
+  FAIR = "FAIR",
+  POOR = "POOR",
+  NOT_RECORDED = "NOT RECORDED",
+}
+
 enum EventType {
   SHOW = "SHOW",
   CUSTOMER_FEEDING = "CUSTOMER_FEEDING",
@@ -528,7 +541,9 @@ export {
   PaymentStatus,
   PaymentType,
   OrderStatus,
+  ActivityType,
   EnclosureStatus,
   HubStatus,
   IdentifierType,
+  Rating,
 };
