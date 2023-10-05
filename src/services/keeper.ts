@@ -74,7 +74,7 @@ export async function removeEnclosure(
 }
 
 export async function updateKeeperType(
-  employeeId: CreationOptional<number>,
+  employeeId: number,
   roleType: string,
 ) {
   let employee = await Employee.findOne({
