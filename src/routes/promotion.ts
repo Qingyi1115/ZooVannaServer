@@ -7,9 +7,16 @@ import {
   getPromotionByPromotionId,
   updatePromotion,
   deletePromotion,
+  verifyPromotionCode,
+  usePromotionCode,
+  cancelUsePromotionCode,
 } from "../controllers/promotionController";
 
 const router = express.Router();
+
+router.get("/verifyPromotionCode/:promotionCode", verifyPromotionCode);
+router.put("/usePromotionCode/:promotionCode", usePromotionCode);
+router.put("/cancelUsePromotionCode/:promotionCode", cancelUsePromotionCode);
 
 router.use(authMiddleware);
 
