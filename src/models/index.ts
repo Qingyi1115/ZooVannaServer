@@ -120,10 +120,13 @@ export const createDatabase = async (options: any) => {
     addCascadeOptions({ foreignKey: "sensorId" }),
   );
 
-  Sensor.hasMany(SensorReading, addCascadeOptions({ foreignKey: "sensorId", as :"sensorReadings"}));
+  Sensor.hasMany(
+    SensorReading,
+    addCascadeOptions({ foreignKey: "sensorId", as: "sensorReadings" }),
+  );
   SensorReading.belongsTo(
     Sensor,
-    addCascadeOptions({ foreignKey: "sensorId", as :"sensor" }),
+    addCascadeOptions({ foreignKey: "sensorId", as: "sensor" }),
   );
 
   Facility.hasOne(InHouse, addCascadeOptions({ foreignKey: "facilityId" }));
@@ -353,7 +356,10 @@ export const createDatabase = async (options: any) => {
   });
 
   Enclosure.hasMany(ZooEvent, addCascadeOptions({ foreignKey: "enclosureId" }));
-  ZooEvent.belongsTo(Enclosure, addCascadeOptions({ foreignKey: "enclosureId" }));
+  ZooEvent.belongsTo(
+    Enclosure,
+    addCascadeOptions({ foreignKey: "enclosureId" }),
+  );
 
   Animal.hasMany(ZooEvent, addCascadeOptions({ foreignKey: "animalId" }));
   ZooEvent.belongsTo(Animal, addCascadeOptions({ foreignKey: "animalId" }));
@@ -820,11 +826,11 @@ export const speciesSeed = async () => {
     habitatOrExhibit: "Southwest China",
     generalDietPreference: "Folivore",
     imageUrl: "img/species/panda.jpg",
-    lifeExpectancyYears: 65,
+    lifeExpectancyYears: 25,
     ageToJuvenile: 2,
-    ageToAdolescent: 5,
+    ageToAdolescent: 4,
     ageToAdult: 7,
-    ageToElder: 50,
+    ageToElder: 20,
     // foodRemark: "Food remark...",
   } as any;
   let panda = await Species.create(pandaTemplate);
@@ -859,27 +865,78 @@ export const speciesSeed = async () => {
 
   let pandaPhy1 = await SpeciesService.createPhysiologicalReferenceNorms(
     "SPE001",
-    100,
-    100,
-    100,
-    100,
+    15,
+    20,
+    15,
+    20,
+    0.1,
+    0.2,
+    0.1,
+    0.2,
     0,
-    5,
+    1,
     AnimalGrowthStage.INFANT,
   );
-  console.log(pandaPhy1.toJSON());
 
   let pandaPhy2 = await SpeciesService.createPhysiologicalReferenceNorms(
     "SPE001",
-    200,
-    200,
-    200,
-    200,
+    50,
+    75,
+    50,
+    75,
+    20,
+    45,
+    20,
+    45,
     2,
-    5,
+    3,
+    AnimalGrowthStage.JUVENILE,
+  );
+
+  let pandaPhy3 = await SpeciesService.createPhysiologicalReferenceNorms(
+    "SPE001",
+    120,
+    150,
+    110,
+    140,
+    50,
+    90,
+    45,
+    80,
+    4,
+    6,
+    AnimalGrowthStage.ADOLESCENT,
+  );
+
+  let pandaPhy4 = await SpeciesService.createPhysiologicalReferenceNorms(
+    "SPE001",
+    160,
+    190,
+    110,
+    180,
+    85,
+    125,
+    70,
+    100,
+    7,
+    20,
     AnimalGrowthStage.ADULT,
   );
-  console.log(pandaPhy2.toJSON());
+
+  let pandaPhy5 = await SpeciesService.createPhysiologicalReferenceNorms(
+    "SPE001",
+    160,
+    190,
+    110,
+    180,
+    80,
+    115,
+    70,
+    100,
+    21,
+    25,
+    AnimalGrowthStage.ELDER,
+  );
 
   let pandaDietNeed1 = await SpeciesService.createDietNeed(
     "SPE001",
@@ -1407,28 +1464,28 @@ export const facilityAssetsSeed = async () => {
       remarks: "my log haha",
     }),
     await FacilityLog.create({
-      dateTime: new Date(Date.now() - 1000*60*60*24),
+      dateTime: new Date(Date.now() - 1000 * 60 * 60 * 24),
       isMaintenance: false,
       title: "log2",
       details: "Bla Bla...",
       remarks: "my log haha",
     }),
     await FacilityLog.create({
-      dateTime: new Date(Date.now() - 1000*60*60*24*2),
+      dateTime: new Date(Date.now() - 1000 * 60 * 60 * 24 * 2),
       isMaintenance: false,
       title: "log3",
       details: "Bla Bla...",
       remarks: "my log haha",
     }),
     await FacilityLog.create({
-      dateTime: new Date(Date.now() - 1000*60*60*24*3),
+      dateTime: new Date(Date.now() - 1000 * 60 * 60 * 24 * 3),
       isMaintenance: false,
       title: "log4",
       details: "Bla Bla...",
       remarks: "my log haha",
     }),
     await FacilityLog.create({
-      dateTime: new Date(Date.now() - 1000*60*60*24*5),
+      dateTime: new Date(Date.now() - 1000 * 60 * 60 * 24 * 5),
       isMaintenance: false,
       title: "log5",
       details: "Bla Bla...",
@@ -1545,7 +1602,7 @@ export const facilityAssetsSeed = async () => {
   let sensors: Sensor[] = await hub1.getSensors();
 
   let sensor = sensors[0];
-  
+
   _day = new Date(Date.now() - 1000 * 60 * 60 * 24 * 10);
   for (const days of [1, 2, 3, 2, 1, 2, 3, 2, 1, 2, 3, 2, 1, 2]) {
     _day = new Date(_day.getTime() - days * 1000 * 60 * 60 * 24);
@@ -1572,8 +1629,15 @@ export const facilityAssetsSeed = async () => {
 
   sensor = sensors[1];
   _day = new Date(Date.now() - 1000 * 60 * 60 * 24 * 5);
-  for (const days of [0, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15 ,16, 17, 18, 19, 20, 21]) {
-    _day = new Date(_day.getTime() - days * 1000 * 60 * 60 * 24 + Math.random()*1000*60*60*24*2 - 1000*60*60*24);
+  for (const days of [
+    0, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21,
+  ]) {
+    _day = new Date(
+      _day.getTime() -
+        days * 1000 * 60 * 60 * 24 +
+        Math.random() * 1000 * 60 * 60 * 24 * 2 -
+        1000 * 60 * 60 * 24,
+    );
     sensor.addMaintenanceLog(
       await MaintenanceLog.create({
         dateTime: _day,
