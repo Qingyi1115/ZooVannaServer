@@ -326,12 +326,12 @@ export const createDatabase = async (options: any) => {
 
   Keeper.belongsToMany(ZooEvent, {
     foreignKey: "keeperId",
-    through: "responsibleFor",
+    through: "keeper_zooEvent",
     as: "keepers",
   });
   ZooEvent.belongsToMany(Keeper, {
     foreignKey: "zooEventId",
-    through: "responsibleFor",
+    through: "keeper_zooEvent",
     as: "zooEvents",
   });
 

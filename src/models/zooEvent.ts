@@ -24,7 +24,7 @@ class ZooEvent extends Model<
   InferAttributes<ZooEvent>,
   InferCreationAttributes<ZooEvent>
 > {
-  declare eventId: CreationOptional<number>;
+  declare zooEventId: CreationOptional<number>;
   declare eventName: String;
   declare eventNotificationDate: Date;
   declare eventStartDateTime: Date;
@@ -75,7 +75,7 @@ class ZooEvent extends Model<
 
 ZooEvent.init(
   {
-    eventId: {
+    zooEventId: {
       type: DataTypes.BIGINT,
       autoIncrement: true,
       primaryKey: true,

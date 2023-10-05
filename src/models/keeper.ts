@@ -25,23 +25,17 @@ class Keeper extends Model<
   declare isDisabled: boolean; 
 
   declare employee?: Employee;
-  declare publicEvents?: ZooEvent[];
-  declare internalEvents?:ZooEvent[];
+  declare zooEvents?: ZooEvent[];
   declare enclosures?: Enclosure[];
 
 
   declare getEmployee: BelongsToGetAssociationMixin<Employee>;
   declare setEmployee: BelongsToSetAssociationMixin<Employee, number>;
 
-  declare getPublicEvents: BelongsToManyGetAssociationsMixin<ZooEvent>;
-  declare addPublicEvent: BelongsToManyAddAssociationMixin<ZooEvent, number>;
-  declare setPublicEvents: BelongsToManySetAssociationsMixin<ZooEvent, number>;
-  declare removePublicEvent: BelongsToManyRemoveAssociationMixin<ZooEvent, number>;
-
-  declare getInternalEvents: BelongsToManyGetAssociationsMixin<ZooEvent>;
-  declare addInternalEvent: BelongsToManyAddAssociationMixin<ZooEvent, number>;
-  declare setInternalEvents: BelongsToManySetAssociationsMixin<ZooEvent, number>;
-  declare removeInternalEvent: BelongsToManyRemoveAssociationMixin<ZooEvent, number>;
+  declare getZooEvents: BelongsToManyGetAssociationsMixin<ZooEvent>;
+  declare addZooEvent: BelongsToManyAddAssociationMixin<ZooEvent, number>;
+  declare setZooEvents: BelongsToManySetAssociationsMixin<ZooEvent, number>;
+  declare removeZooEvent: BelongsToManyRemoveAssociationMixin<ZooEvent, number>;
 
   declare getEnclosures: BelongsToManyGetAssociationsMixin<Enclosure>;
   declare addEnclosure: BelongsToManyAddAssociationMixin<Enclosure, number>;
