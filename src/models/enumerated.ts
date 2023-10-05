@@ -467,13 +467,12 @@ enum ListingStatus {
 }
 
 enum PaymentStatus {
-  SUCCESSFUL = "SUCCESSFUL",
-  FAILED = "FAILED",
+  COMPLETED = "COMPLETED",
+  PENDING = "PENDING",
 }
 
 enum PaymentType {
-  VISA = "VISA",
-  MASTERCARD = "MASTERCARD",
+  CARD = "CARD",
   PAYNOW = "PAYNOW",
 }
 

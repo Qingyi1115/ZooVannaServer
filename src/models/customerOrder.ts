@@ -17,6 +17,7 @@ import { Promotion } from "./promotion";
 import { Payment } from "./payment";
 import { Customer } from "./customer";
 import { OrderItem } from "./orderItem";
+import { PaymentStatus } from "./enumerated";
 
 class CustomerOrder extends Model<
   InferAttributes<CustomerOrder>,
@@ -31,6 +32,7 @@ class CustomerOrder extends Model<
   declare customerLastName: string;
   declare customerContactNo: string;
   declare customerEmail: string;
+  declare paymentStatus: PaymentStatus;
 
   declare promotion?: Promotion;
   declare customer?: Customer;
@@ -52,12 +54,22 @@ class CustomerOrder extends Model<
   declare addOrderItem: HasManyAddAssociationMixin<OrderItem, number>;
   declare setOrderItemms: HasManySetAssociationsMixin<OrderItem, number>;
   declare removeOrderItem: HasManyRemoveAssociationMixin<OrderItem, number>;
-  
+
   public toJSON() {
     return {
       ...this.get(),
-      entryDate:this.entryDate?.getTime(),
-    }
+      entryDate: this.entryDate?.getTime(),
+    };
+  }
+
+  public setCompleted() {
+    this.paymentStatus = PaymentStatus.COMPLETED;
+    this.save();
+  }
+
+  public setPending() {
+    this.paymentStatus = PaymentStatus.PENDING;
+    this.save();
   }
 }
 
@@ -97,6 +109,11 @@ CustomerOrder.init(
     },
     customerEmail: {
       type: DataTypes.STRING,
+      allowNull: false,
+    },
+    paymentStatus: {
+      type: DataTypes.ENUM,
+      values: Object.values(PaymentStatus),
       allowNull: false,
     },
   },

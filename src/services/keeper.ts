@@ -54,10 +54,7 @@ export async function removeEnclosure(
         }
       }
 
-      if (
-        !isNotFree &&
-        (await employee.getKeeper())?.zooEvents?.length != 0
-      ) {
+      if (!isNotFree && (await employee.getKeeper())?.zooEvents?.length != 0) {
         isNotFree = true;
       }
 
