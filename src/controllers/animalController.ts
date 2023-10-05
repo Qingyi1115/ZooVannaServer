@@ -7,7 +7,7 @@ export async function getAllAnimals(req: Request, res: Response) {
   const {} = req.body;
   try {
     const allAnimals = await AnimalService.getAllAnimals();
-    return res.status(200).json({allAnimals:allAnimals.map(animal=>animal.toJSON())});
+    return res.status(200).json(allAnimals.map((animal) => animal.toJSON()));
   } catch (error: any) {
     res.status(400).json({ error: error.message });
   }
@@ -26,7 +26,7 @@ export async function getAllAnimalsBySpeciesCode(req: Request, res: Response) {
   try {
     const allAnimals =
       await AnimalService.getAllAnimalsBySpeciesCode(speciesCode);
-    return res.status(200).json({allAnimals:allAnimals?.map(animal=>animal.toJSON())});
+    return res.status(200).json(allAnimals?.map((animal) => animal.toJSON()));
   } catch (error: any) {
     res.status(400).json({ error: error.message });
   }
@@ -44,7 +44,7 @@ export async function getAnimalByAnimalCode(req: Request, res: Response) {
 
   try {
     const animalRecord = await AnimalService.getAnimalByAnimalCode(animalCode);
-    return res.status(200).json({animalRecord:animalRecord.toJSON()});
+    return res.status(200).json(animalRecord.toJSON());
   } catch (error: any) {
     res.status(400).json({ error: error.message });
   }
@@ -138,7 +138,7 @@ export async function createAnimal(req: Request, res: Response) {
       imageUrl,
     );
 
-    return res.status(200).json({ animal:animal.toJSON() });
+    return res.status(200).json(animal.toJSON());
   } catch (error: any) {
     res.status(400).json({ error: error.message });
   }
@@ -245,7 +245,7 @@ export async function updateAnimal(req: Request, res: Response) {
       imageUrl,
     );
 
-    return res.status(200).json({ result:"success" });
+    return res.status(200).json({ result: "success" });
   } catch (error: any) {
     res.status(400).json({ error: error.message });
   }
@@ -263,7 +263,7 @@ export async function deleteAnimal(req: Request, res: Response) {
 
   try {
     const animal = await AnimalService.deleteAnimal(animalCode);
-    return res.status(200).json({animal:animal});
+    return res.status(200).json({ animal: animal });
   } catch (error: any) {
     res.status(400).json({ error: error.message });
   }
@@ -287,7 +287,7 @@ export async function updateAnimalStatus(req: Request, res: Response) {
       animalStatus,
     );
 
-    return res.status(200).json({ result:"success" });
+    return res.status(200).json({ result: "success" });
   } catch (error: any) {
     res.status(400).json({ error: error.message });
   }
@@ -331,7 +331,7 @@ export async function addAnimalLineage(req: Request, res: Response) {
       parentAnimalCode,
     );
 
-    return res.status(200).json({ result:"success" });
+    return res.status(200).json({ result: "success" });
   } catch (error: any) {
     res.status(400).json({ error: error.message });
   }
@@ -361,7 +361,7 @@ export async function updateAnimalLineage(req: Request, res: Response) {
       newParentAnimalCode,
     );
 
-    return res.status(200).json({ result:"success" });
+    return res.status(200).json({ result: "success" });
   } catch (error: any) {
     res.status(400).json({ error: error.message });
   }
@@ -385,7 +385,7 @@ export async function deleteAnimalLineage(req: Request, res: Response) {
       parentAnimalCode,
     );
 
-    return res.status(200).json({ result:"success" });
+    return res.status(200).json({ result: "success" });
   } catch (error: any) {
     res.status(400).json({ error: error.message });
   }
