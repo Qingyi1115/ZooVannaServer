@@ -28,10 +28,7 @@ export async function updateDetails(
   throw { message: "Employee does not exist" };
 }
 
-export async function removeEnclosure(
-  employeeId: CreationOptional<number>,
-  enclosureId: CreationOptional<number>,
-) {
+export async function removeEnclosure(employeeId: number, enclosureId: number) {
   let employee = await Employee.findOne({
     where: { employeeId: employeeId },
   });
@@ -43,18 +40,20 @@ export async function removeEnclosure(
 
     if (enclosure) {
       let publicEvents = (await employee.getKeeper())?.zooEvents;
-      let isNotFree = false;
 
       if (publicEvents) {
         for (const publicEvent of publicEvents) {
-          if (await publicEvent.getEnclosure()) {
-            isNotFree = true;
-            break;
+          if ((await publicEvent.getEnclosure()).enclosureId == enclosureId) {
+            throw {
+              message:
+                "This keeper is currently managing an event at the enclosure!",
+            };
           }
         }
       }
 
-      if (!isNotFree && (await employee.getKeeper())?.zooEvents?.length != 0) {
+      {
+        /*if (!isNotFree && (await employee.getKeeper())?.zooEvents?.length != 0) {
         isNotFree = true;
       }
 
@@ -64,16 +63,16 @@ export async function removeEnclosure(
       throw {
         error: "There is currently event connected to this keeper",
       };
+    */
+      }
+      return await (await employee.getKeeper())?.removeEnclosure(enclosure);
     }
     throw { message: "Enclosure does not exist" };
   }
   throw { message: "Employee does not exist" };
 }
 
-export async function updateKeeperType(
-  employeeId: CreationOptional<number>,
-  roleType: string,
-) {
+export async function updateKeeperType(employeeId: number, roleType: string) {
   let employee = await Employee.findOne({
     where: { employeeId: employeeId },
   });

@@ -66,14 +66,28 @@ class Promotion extends Model<
   //     throw error;
   //   }
   // }
-  
+
+  public incrementCurrentRedeemNum() {
+    this.currentRedeemNum = this.currentRedeemNum + 1;
+    this.save();
+    return this;
+  }
+
+  public decrementCurrentRedeemNum() {
+    if (this.currentRedeemNum > 0) {
+      this.currentRedeemNum = this.currentRedeemNum - 1;
+      this.save();
+    }
+    return this;
+  }
+
   public toJSON() {
     return {
       ...this.get(),
-      publishDate:this.publishDate?.getTime(),
-      startDate:this.startDate?.getTime(),
-      endDate:this.endDate?.getTime(),
-    }
+      publishDate: this.publishDate?.getTime(),
+      startDate: this.startDate?.getTime(),
+      endDate: this.endDate?.getTime(),
+    };
   }
 }
 

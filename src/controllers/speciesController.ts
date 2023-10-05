@@ -5,9 +5,13 @@ import { handleFileUpload } from "../helpers/multerProcessFile";
 export async function getAllSpecies(req: Request, res: Response) {
   const { includes = "" } = req.body;
 
-  const _includes : string[] = []
-  for (const role of ["speciesDietNeed", "speciesEnclosureNeed", "physiologicalReferenceNorms"]){
-    if (includes.includes(role)) _includes.push(role)
+  const _includes: string[] = [];
+  for (const role of [
+    "speciesDietNeed",
+    "speciesEnclosureNeed",
+    "physiologicalReferenceNorms",
+  ]) {
+    if (includes.includes(role)) _includes.push(role);
   }
 
   try {
@@ -22,9 +26,13 @@ export async function getSpeciesByCode(req: Request, res: Response) {
   const { speciesCode } = req.params;
   const { includes = "" } = req.body;
 
-  const _includes : string[] = []
-  for (const role of ["speciesDietNeed", "speciesEnclosureNeed", "physiologicalReferenceNorms"]){
-    if (includes.includes(role)) _includes.push(role)
+  const _includes: string[] = [];
+  for (const role of [
+    "speciesDietNeed",
+    "speciesEnclosureNeed",
+    "physiologicalReferenceNorms",
+  ]) {
+    if (includes.includes(role)) _includes.push(role);
   }
 
   if (speciesCode == undefined) {
@@ -76,6 +84,10 @@ export async function createSpecies(req: Request, res: Response) {
       habitatOrExhibit,
       generalDietPreference,
       lifeExpectancyYears,
+      ageToJuvenile,
+      ageToAdolescent,
+      ageToAdult,
+      ageToElder,
     } = req.body;
 
     if (
@@ -97,6 +109,10 @@ export async function createSpecies(req: Request, res: Response) {
         habitatOrExhibit,
         generalDietPreference,
         lifeExpectancyYears,
+        ageToJuvenile,
+        ageToAdolescent,
+        ageToAdult,
+        ageToElder,
       ].includes(undefined)
     ) {
       console.log("Missing field(s): ", {
@@ -117,6 +133,10 @@ export async function createSpecies(req: Request, res: Response) {
         habitatOrExhibit,
         generalDietPreference,
         lifeExpectancyYears,
+        ageToJuvenile,
+        ageToAdolescent,
+        ageToAdult,
+        ageToElder,
       });
       return res.status(400).json({ error: "Missing information!" });
     }
@@ -141,6 +161,10 @@ export async function createSpecies(req: Request, res: Response) {
       generalDietPreference,
       imageUrl,
       lifeExpectancyYears,
+      ageToJuvenile,
+      ageToAdolescent,
+      ageToAdult,
+      ageToElder,
     );
 
     return res.status(200).json({ species });
@@ -182,6 +206,10 @@ export async function updateSpecies(req: Request, res: Response) {
       habitatOrExhibit,
       generalDietPreference,
       lifeExpectancyYears,
+      ageToJuvenile,
+      ageToAdolescent,
+      ageToAdult,
+      ageToElder,
     } = req.body;
 
     if (
@@ -204,6 +232,10 @@ export async function updateSpecies(req: Request, res: Response) {
         habitatOrExhibit,
         generalDietPreference,
         lifeExpectancyYears,
+        ageToJuvenile,
+        ageToAdolescent,
+        ageToAdult,
+        ageToElder,
         imageUrl,
       ].includes(undefined)
     ) {
@@ -226,6 +258,10 @@ export async function updateSpecies(req: Request, res: Response) {
         habitatOrExhibit,
         generalDietPreference,
         lifeExpectancyYears,
+        ageToJuvenile,
+        ageToAdolescent,
+        ageToAdult,
+        ageToElder,
         imageUrl,
       });
       return res.status(400).json({ error: "Missing information!" });
@@ -252,6 +288,10 @@ export async function updateSpecies(req: Request, res: Response) {
       generalDietPreference,
       imageUrl,
       lifeExpectancyYears,
+      ageToJuvenile,
+      ageToAdolescent,
+      ageToAdult,
+      ageToElder,
     );
 
     return res.status(200).json({ species });
@@ -662,7 +702,8 @@ export async function createPhysiologicalReferenceNorms(
       sizeFemaleCm,
       weightMaleKg,
       weightFemaleKg,
-      ageToGrowthAge,
+      minAge,
+      maxAge,
       growthStage,
     } = req.body;
 
@@ -673,7 +714,8 @@ export async function createPhysiologicalReferenceNorms(
         sizeFemaleCm,
         weightMaleKg,
         weightFemaleKg,
-        ageToGrowthAge,
+        minAge,
+        maxAge,
         growthStage,
       ].includes(undefined)
     ) {
@@ -683,7 +725,8 @@ export async function createPhysiologicalReferenceNorms(
         sizeFemaleCm,
         weightMaleKg,
         weightFemaleKg,
-        ageToGrowthAge,
+        minAge,
+        maxAge,
         growthStage,
       });
       return res.status(400).json({ error: "Missing information!" });
@@ -697,7 +740,8 @@ export async function createPhysiologicalReferenceNorms(
         sizeFemaleCm,
         weightMaleKg,
         weightFemaleKg,
-        ageToGrowthAge,
+        minAge,
+        maxAge,
         growthStage,
       );
 
@@ -756,7 +800,8 @@ export async function updatePhysiologicalReferenceNorms(
       sizeFemaleCm,
       weightMaleKg,
       weightFemaleKg,
-      ageToGrowthAge,
+      minAge,
+      maxAge,
       growthStage,
     } = req.body;
 
@@ -767,7 +812,8 @@ export async function updatePhysiologicalReferenceNorms(
         sizeFemaleCm,
         weightMaleKg,
         weightFemaleKg,
-        ageToGrowthAge,
+        minAge,
+        maxAge,
         growthStage,
       ].includes(undefined)
     ) {
@@ -777,7 +823,8 @@ export async function updatePhysiologicalReferenceNorms(
         sizeFemaleCm,
         weightMaleKg,
         weightFemaleKg,
-        ageToGrowthAge,
+        minAge,
+        maxAge,
         growthStage,
       });
       return res.status(400).json({ error: "Missing information!" });
@@ -791,7 +838,8 @@ export async function updatePhysiologicalReferenceNorms(
         sizeFemaleCm,
         weightMaleKg,
         weightFemaleKg,
-        ageToGrowthAge,
+        minAge,
+        maxAge,
         growthStage,
       );
 

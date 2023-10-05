@@ -475,7 +475,7 @@ export async function getFacilityMaintenanceSuggestions(
     logs = logs.filter((log: FacilityLog) => log.isMaintenance);
     let dateLogs = logs.map((log: FacilityLog) => log.dateTime);
     
-    return predictCycleLength(dateLogs, predictionLength);
+    return {...predictCycleLength(dateLogs, predictionLength), name:facility.facilityName};
   } catch (error: any) {
     throw validationErrorHandler(error);
   }
@@ -492,7 +492,7 @@ export async function getSensorMaintenanceSuggestions(
     let logs = (await sensor.getMaintenanceLogs()) || [];
     let dateLogs = logs.map((log: MaintenanceLog) => log.dateTime);
     
-    return predictCycleLength(dateLogs, predictionLength);
+    return {...predictCycleLength(dateLogs, predictionLength), name : sensor.sensorName};
   } catch (error: any) {
     throw validationErrorHandler(error);
   }
@@ -589,7 +589,7 @@ export async function createSensorMaintenanceLog(
   title: string,
   details: string,
   remarks: string
-): Promise<MaintenanceLog> {
+): Promise<Sensor> {
   try {
     const sensor = await Sensor.findOne({
       where: { sensorId: sensorId },
@@ -606,7 +606,7 @@ export async function createSensorMaintenanceLog(
     sensor.dateOfLastMaintained = date;
     await sensor.save();
 
-    return newLog;
+    return sensor;
   } catch (error: any) {
     throw validationErrorHandler(error);
   }

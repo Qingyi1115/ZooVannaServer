@@ -15,8 +15,8 @@ class AnimalWeight extends Model<
   InferCreationAttributes<AnimalWeight>
 > {
   declare animalWeightId: CreationOptional<number>;
-  declare dateOfMeasure: Date;
   declare weightInKg: number;
+  declare dateOfMeasure: Date;
 
   declare animal?: Animal;
 
@@ -38,13 +38,13 @@ AnimalWeight.init(
       autoIncrement: true,
       primaryKey: true,
     },
-    dateOfMeasure: {
-      type: DataTypes.DATE,
-      defaultValue: DataTypes.NOW,
-    },
     weightInKg: {
       type: DataTypes.DOUBLE,
       allowNull: false,
+    },
+    dateOfMeasure: {
+      type: DataTypes.DATE,
+      defaultValue: DataTypes.NOW,
     },
   },
   {

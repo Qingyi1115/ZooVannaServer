@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import * as PromotionService from "../services/promotion";
 import { handleFileUpload } from "../helpers/multerProcessFile";
+import { cpuUsage } from "process";
 
 export async function createPromotion(req: Request, res: Response) {
   try {
@@ -87,6 +88,40 @@ export async function getAllPromotions(req: Request, res: Response) {
   }
 }
 
+export async function getAllPublishedPromotions(req: Request, res: Response) {
+  const { includes = "" } = req.body;
+
+  const _includes: string[] = [];
+  for (const role of ["customerOrder"]) {
+    if (includes.includes(role)) _includes.push(role);
+  }
+
+  try {
+    const publishedPromotions =
+      await PromotionService.getAllPublishedPromotions(_includes);
+    return res.status(200).json(publishedPromotions);
+  } catch (error: any) {
+    res.status(400).json({ error: error.message });
+  }
+}
+
+export async function getAllActivePromotions(req: Request, res: Response) {
+  const { includes = "" } = req.body;
+
+  const _includes: string[] = [];
+  for (const role of ["customerOrder"]) {
+    if (includes.includes(role)) _includes.push(role);
+  }
+
+  try {
+    const activePromotions =
+      await PromotionService.getAllActivePromotions(_includes);
+    return res.status(200).json(activePromotions);
+  } catch (error: any) {
+    res.status(400).json({ error: error.message });
+  }
+}
+
 export async function getPromotionByPromotionId(req: Request, res: Response) {
   const { promotionId } = req.params;
   const { includes = "" } = req.body;
@@ -152,7 +187,7 @@ export async function updatePromotion(req: Request, res: Response) {
     ) {
       imageUrl = await handleFileUpload(
         req,
-        process.env.IMG_URL_ROOT! + "promotion", //"D:/capstoneUploads/species",
+        process.env.IMG_URL_ROOT! + "promotion", //"D:/capstoneUploads/promotion",
       );
     } else {
       imageUrl = req.body.imageUrl;
@@ -228,6 +263,73 @@ export async function updatePromotion(req: Request, res: Response) {
     } else {
       return res.status(400).json({ error: "Invalid promotion ID!" });
     }
+  } catch (error: any) {
+    res.status(400).json({ error: error.message });
+  }
+}
+
+export async function verifyPromotionCode(req: Request, res: Response) {
+  const { promotionCode } = req.params;
+  const { currentSpending } = req.body;
+
+  if (promotionCode == undefined) {
+    console.log("Missing field(s): ", {
+      promotionCode,
+      currentSpending,
+    });
+    return res.status(400).json({ error: "Missing information!" });
+  }
+
+  try {
+    const promotion = await PromotionService.verifyPromotionCode(
+      promotionCode,
+      currentSpending,
+    );
+    return res.status(200).json(promotion);
+  } catch (error: any) {
+    res.status(400).json({ error: error.message });
+  }
+}
+
+export async function usePromotionCode(req: Request, res: Response) {
+  const { promotionCode } = req.params;
+  const { currentSpending } = req.body;
+
+  if (promotionCode == undefined) {
+    console.log("Missing field(s): ", {
+      promotionCode,
+      currentSpending,
+    });
+    return res.status(400).json({ error: "Missing information!" });
+  }
+
+  try {
+    const isSuccessful = await PromotionService.usePromotionCode(
+      promotionCode,
+      currentSpending,
+    );
+    return res.status(200).json(isSuccessful);
+  } catch (error: any) {
+    res.status(400).json({ error: error.message });
+  }
+}
+
+export async function cancelUsePromotionCode(req: Request, res: Response) {
+  const { promotionCode } = req.params;
+  const { currentSpending } = req.body;
+
+  if (promotionCode == undefined) {
+    console.log("Missing field(s): ", {
+      promotionCode,
+      currentSpending,
+    });
+    return res.status(400).json({ error: "Missing information!" });
+  }
+
+  try {
+    const isSuccessful =
+      await PromotionService.cancelUsePromotionCode(promotionCode);
+    return res.status(200).json(isSuccessful);
   } catch (error: any) {
     res.status(400).json({ error: error.message });
   }

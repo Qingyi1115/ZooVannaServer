@@ -46,6 +46,36 @@ export async function getAllPromotions(includes: string[]) {
   }
 }
 
+export async function getAllPublishedPromotions(includes: string[]) {
+  try {
+    const allPromo = await Promotion.findAll({ include: includes });
+    const currentDate = new Date(new Date().toUTCString());
+    const publishedPromotions = allPromo.filter((promotion) => {
+      return (
+        promotion.publishDate <= currentDate && promotion.endDate >= currentDate
+      );
+    });
+    return publishedPromotions;
+  } catch (error: any) {
+    throw validationErrorHandler(error);
+  }
+}
+
+export async function getAllActivePromotions(includes: string[]) {
+  try {
+    const allPromo = await Promotion.findAll({ include: includes });
+    const currentDate = new Date(new Date().toUTCString());
+    const publishedPromotions = allPromo.filter((promotion) => {
+      return (
+        promotion.startDate <= currentDate && promotion.endDate >= currentDate
+      );
+    });
+    return publishedPromotions;
+  } catch (error: any) {
+    throw validationErrorHandler(error);
+  }
+}
+
 export async function getPromotionByPromotionId(
   promotionId: number,
   includes: string[],
@@ -105,5 +135,70 @@ export async function updatePromotion(
     });
   } catch (error: any) {
     throw validationErrorHandler(error);
+  }
+}
+
+export async function verifyPromotionCode(
+  promotionCode: string,
+  currentSpending: number,
+) {
+  try {
+    const promotion = await Promotion.findOne({
+      where: { promotionCode: promotionCode },
+    });
+
+    const currentDate = new Date(new Date().toUTCString());
+
+    if (!promotion) {
+      throw { message: "Invalid promotion code!" };
+    }
+
+    if (promotion.startDate > currentDate || promotion.endDate < currentDate) {
+      throw { message: "Promotion is not applicable for today!" };
+    }
+
+    if (promotion.currentRedeemNum >= promotion.maxRedeemNum) {
+      throw { message: "Promotion is fully redeemed!" };
+    }
+
+    if (currentSpending < promotion.minimumSpending) {
+      throw {
+        message: `This promotion is only applicable for a minimum purchase of $${promotion.minimumSpending}`,
+      };
+    }
+
+    return promotion;
+  } catch (error) {
+    throw error; // Re-throw the error for higher-level handling
+  }
+}
+
+export async function usePromotionCode(
+  promotionCode: string,
+  currentSpending: number,
+) {
+  const promotion = await verifyPromotionCode(promotionCode, currentSpending);
+  if (promotion) {
+    // need to link promotion w customer order in the future if the promotion criteria gets more complex
+    promotion.incrementCurrentRedeemNum();
+  }
+  //success
+  return true;
+}
+
+export async function cancelUsePromotionCode(promotionCode: string) {
+  try {
+    const promotion = await Promotion.findOne({
+      where: { promotionCode: promotionCode },
+    });
+
+    if (!promotion) {
+      throw { message: "Invalid promotion code!" };
+    }
+
+    promotion.decrementCurrentRedeemNum();
+    return true;
+  } catch (error) {
+    throw error;
   }
 }

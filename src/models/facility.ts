@@ -78,7 +78,9 @@ class Facility extends Model<
   }
 
   public toJSON() {
-    return this.get(); 
+    return {
+      ...this.get(),
+    } 
   }
 
   public async toFullJson(){

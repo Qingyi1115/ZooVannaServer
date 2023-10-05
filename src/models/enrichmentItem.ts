@@ -1,11 +1,16 @@
 import {
-    DataTypes,
-    Model,
-    CreationOptional,
-    InferAttributes,
-    InferCreationAttributes,
+  DataTypes,
+  Model,
+  CreationOptional,
+  InferAttributes,
+  InferCreationAttributes,
+  HasManyGetAssociationsMixin,
+  HasManyAddAssociationMixin,
+  HasManySetAssociationsMixin,
+  HasManyRemoveAssociationMixin,
 } from "Sequelize";
 import { conn } from "../db";
+import { AnimalActivity } from "./animalActivity";
 
 class EnrichmentItem extends Model<
   InferAttributes<EnrichmentItem>,
@@ -14,17 +19,31 @@ class EnrichmentItem extends Model<
   declare enrichmentItemId: CreationOptional<number>;
   declare enrichmentItemName: string;
   declare enrichmentItemImageUrl: string;
-  
+
+  //-- FK
+  declare enrichmentItems?: EnrichmentItem[];
+
+  declare getAnimalActivities: HasManyGetAssociationsMixin<AnimalActivity>;
+  declare addAnimalActivity: HasManyAddAssociationMixin<AnimalActivity, number>;
+  declare setAnimalActivities: HasManySetAssociationsMixin<
+    AnimalActivity,
+    number
+  >;
+  declare removeAnimalActivity: HasManyRemoveAssociationMixin<
+    AnimalActivity,
+    number
+  >;
+
   public toJSON() {
     return {
-      ...this.get()
-    }
+      ...this.get(),
+    };
   }
 }
 
 EnrichmentItem.init(
   {
-      enrichmentItemId: {
+    enrichmentItemId: {
       type: DataTypes.BIGINT,
       autoIncrement: true,
       primaryKey: true,
@@ -32,7 +51,7 @@ EnrichmentItem.init(
     enrichmentItemName: {
       type: DataTypes.STRING,
       allowNull: false,
-      unique: false
+      unique: false,
     },
     enrichmentItemImageUrl: {
       type: DataTypes.STRING,
@@ -50,4 +69,3 @@ EnrichmentItem.init(
 );
 
 export { EnrichmentItem };
-

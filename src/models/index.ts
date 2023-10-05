@@ -37,6 +37,8 @@ import {
   ListingStatus,
   Specialization,
   AnimalSex,
+  ActivityType,
+  EventTimingType,
 } from "./enumerated";
 import { ZooEvent } from "./zooEvent";
 import { Facility } from "./facility";
@@ -61,6 +63,7 @@ import { SpeciesDietNeed } from "./speciesDietNeed";
 import { SpeciesEnclosureNeed } from "./speciesEnclosureNeed";
 import { TerrainDistribution } from "./terrainDistribution";
 import { ThirdParty } from "./thirdParty";
+import { AnimalActivity } from "./animalActivity";
 
 function addCascadeOptions(options: object) {
   return { ...options, onDelete: "CASCADE", onUpdate: "CASCADE" };
@@ -88,6 +91,10 @@ export const createDatabase = async (options: any) => {
     Employee,
     addCascadeOptions({ foreignKey: "employeeId" }),
   );
+
+  // added by qy for animal activity 5 Oct
+  Employee.hasMany(AnimalActivity);
+  AnimalActivity.belongsTo(Employee);
 
   Facility.hasMany(
     HubProcessor,
@@ -228,9 +235,6 @@ export const createDatabase = async (options: any) => {
 
   // ------------ Animal Relation --------------
 
-  // Species.hasMany(Animal, addCascadeOptions({ foreignKey: "speciesId" }));
-  // Animal.belongsTo(Species, addCascadeOptions({ foreignKey: "speciesId" }));
-
   Species.hasMany(Animal, { onDelete: "CASCADE" });
   Animal.belongsTo(Species);
 
@@ -251,6 +255,28 @@ export const createDatabase = async (options: any) => {
   Animal.hasMany(AnimalWeight, { onDelete: "CASCADE" });
   AnimalWeight.belongsTo(Animal);
 
+  Animal.belongsToMany(AnimalActivity, {
+    foreignKey: "animalId",
+    through: "animal_animalActivity",
+    as: "animalActivities",
+  });
+  AnimalActivity.belongsToMany(Animal, {
+    foreignKey: "animalActivityId",
+    through: "animal_animalActivity",
+    as: "animals",
+  });
+
+  AnimalActivity.belongsToMany(EnrichmentItem, {
+    foreignKey: "animalActivityId",
+    through: "animalActivity_enrichmentItem",
+    as: "enrichmentItems",
+  });
+  EnrichmentItem.belongsToMany(AnimalActivity, {
+    foreignKey: "enrichmentItemId",
+    through: "animalActivity_enrichmentItem",
+    as: "animalActivities",
+  });
+
   Species.belongsToMany(Customer, {
     foreignKey: "speciesId",
     through: "customerFravouriteSpecies",
@@ -264,15 +290,6 @@ export const createDatabase = async (options: any) => {
 
   Animal.hasMany(AnimalLog, addCascadeOptions({ foreignKey: "animalId" }));
   AnimalLog.belongsTo(Animal, addCascadeOptions({ foreignKey: "animalId" }));
-
-  // AnimalClinic.hasMany(
-  //   Animal,
-  //   addCascadeOptions({ foreignKey: "animalClinicId" }),
-  // );
-  // Animal.belongsTo(
-  //   AnimalClinic,
-  //   addCascadeOptions({ foreignKey: "animalClinicId" }),
-  // );
 
   // ------------ End of Animal Relation --------------
 
@@ -780,7 +797,7 @@ export const employeeSeed = async () => {
 };
 
 export const speciesSeed = async () => {
-  let panda1Template = {
+  let pandaTemplate = {
     speciesCode: await Species.getNextSpeciesCode(),
     commonName: "Giant Panda",
     scientificName: "Ailuropoda Melanoleuca",
@@ -804,12 +821,16 @@ export const speciesSeed = async () => {
     generalDietPreference: "Folivore",
     imageUrl: "img/species/panda.jpg",
     lifeExpectancyYears: 65,
+    ageToJuvenile: 2,
+    ageToAdolescent: 5,
+    ageToAdult: 7,
+    ageToElder: 50,
     // foodRemark: "Food remark...",
   } as any;
-  let panda1 = await Species.create(panda1Template);
-  console.log(panda1.toJSON());
+  let panda = await Species.create(pandaTemplate);
+  console.log(panda.toJSON());
 
-  let panda1enclosure = await SpeciesService.createEnclosureNeeds(
+  let pandaEnclosure = await SpeciesService.createEnclosureNeeds(
     "SPE001",
     10,
     10,
@@ -834,31 +855,33 @@ export const speciesSeed = async () => {
     0,
     0,
   );
-  console.log(panda1enclosure.toJSON());
+  console.log(pandaEnclosure.toJSON());
 
-  let panda1phy1 = await SpeciesService.createPhysiologicalReferenceNorms(
+  let pandaPhy1 = await SpeciesService.createPhysiologicalReferenceNorms(
     "SPE001",
     100,
     100,
     100,
     100,
-    100,
+    0,
+    5,
     AnimalGrowthStage.INFANT,
   );
-  console.log(panda1phy1.toJSON());
+  console.log(pandaPhy1.toJSON());
 
-  let panda1phy2 = await SpeciesService.createPhysiologicalReferenceNorms(
+  let pandaPhy2 = await SpeciesService.createPhysiologicalReferenceNorms(
     "SPE001",
     200,
     200,
     200,
     200,
-    200,
+    2,
+    5,
     AnimalGrowthStage.ADULT,
   );
-  console.log(panda1phy2.toJSON());
+  console.log(pandaPhy2.toJSON());
 
-  let panda1DietNeed1 = await SpeciesService.createDietNeed(
+  let pandaDietNeed1 = await SpeciesService.createDietNeed(
     "SPE001",
     AnimalFeedCategory.FISH,
     100,
@@ -868,9 +891,9 @@ export const speciesSeed = async () => {
     PresentationLocation.IN_CONTAINER,
     AnimalGrowthStage.ADULT,
   );
-  console.log(panda1DietNeed1.toJSON());
+  console.log(pandaDietNeed1.toJSON());
 
-  let panda1DietNeed2 = await SpeciesService.createDietNeed(
+  let pandaDietNeed2 = await SpeciesService.createDietNeed(
     "SPE001",
     AnimalFeedCategory.HAY,
     1000,
@@ -880,7 +903,7 @@ export const speciesSeed = async () => {
     PresentationLocation.IN_CONTAINER,
     AnimalGrowthStage.JUVENILE,
   );
-  console.log(panda1DietNeed2.toJSON());
+  console.log(pandaDietNeed2.toJSON());
   let capybara1Template = {
     speciesCode: await Species.getNextSpeciesCode(),
     commonName: "Capybara",
@@ -905,12 +928,16 @@ export const speciesSeed = async () => {
     generalDietPreference: "Herbivore",
     imageUrl: "img/species/capybara.jpg",
     lifeExpectancyYears: 10,
+    ageToJuvenile: 2,
+    ageToAdolescent: 5,
+    ageToAdult: 7,
+    ageToElder: 50,
     // foodRemark: "Food remark...",
   } as any;
   let capybara1 = await Species.create(capybara1Template);
   console.log(capybara1.toJSON());
 
-  let redPanda1Template = {
+  let redPandaTemplate = {
     speciesCode: await Species.getNextSpeciesCode(),
     commonName: "Red Panda",
     scientificName: "Ailurus fulgens",
@@ -933,12 +960,16 @@ export const speciesSeed = async () => {
     generalDietPreference: "Herbivore",
     imageUrl: "img/species/redPanda.jpg",
     lifeExpectancyYears: 14,
+    ageToJuvenile: 2,
+    ageToAdolescent: 5,
+    ageToAdult: 7,
+    ageToElder: 50,
     // foodRemark: "Food remark...",
   } as any;
-  let redPanda1 = await Species.create(redPanda1Template);
-  console.log(redPanda1.toJSON());
+  let redPanda = await Species.create(redPandaTemplate);
+  console.log(redPanda.toJSON());
 
-  let africanElephant1Template = {
+  let africanElephantTemplate = {
     speciesCode: await Species.getNextSpeciesCode(),
     commonName: "African Elephant",
     scientificName: "Loxodonta africana",
@@ -962,10 +993,14 @@ export const speciesSeed = async () => {
     generalDietPreference: "Herbivore",
     imageUrl: "img/species/elephant.jpg",
     lifeExpectancyYears: 14,
+    ageToJuvenile: 2,
+    ageToAdolescent: 5,
+    ageToAdult: 7,
+    ageToElder: 50,
     // foodRemark: "Food remark...",
   } as any;
-  let elephant1 = await Species.create(africanElephant1Template);
-  console.log(elephant1.toJSON());
+  let elephant = await Species.create(africanElephantTemplate);
+  console.log(elephant.toJSON());
 
   let compatibility1 = await SpeciesService.createCompatibility(
     "SPE001",
@@ -992,11 +1027,11 @@ export const animalSeed = async () => {
     false,
     "Pang Pang",
     AnimalSex.FEMALE,
-    new Date("2021-03-04"),
+    new Date("1990-03-04"),
     "Singapore",
-    IdentifierType.TYPE,
+    IdentifierType.MAGNETIC_TAG,
     "identifierValue 001",
-    AcquisitionMethod.CAPTIVE_BRED,
+    AcquisitionMethod.FROM_THE_WILD,
     new Date("2021-03-04"),
     "N.A.",
     "Big face, black spot at the back",
@@ -1004,45 +1039,20 @@ export const animalSeed = async () => {
     null,
     null,
     null,
-    "UNKNOWN",
     "NORMAL",
     "img/animal/pangPang.jpg",
   );
-  console.log(panda1Template.toJSON());
 
   let panda2Template = await AnimalService.createNewAnimal(
     "SPE001",
-    true,
-    "Panda Group 01",
-    null,
-    null,
-    null,
-    null,
-    null,
-    AcquisitionMethod.WILD_CAPTURED,
-    new Date("2021-03-04"),
-    null,
-    null,
-    null,
-    null,
-    null,
-    null,
-    "UNKNOWN",
-    "NORMAL",
-    "img/animal/pandaGroup01.jpg",
-  );
-  console.log(panda2Template.toJSON());
-
-  let panda3Template = await AnimalService.createNewAnimal(
-    "SPE001",
-    true,
-    "Panda 3",
+    false,
+    "Yuan Yuan",
     AnimalSex.FEMALE,
-    new Date("2021-03-04"),
+    new Date("1997-03-04"),
     "Singapore",
-    IdentifierType.TYPE,
+    IdentifierType.MAGNETIC_TAG,
     "identifierValue 001",
-    AcquisitionMethod.CAPTIVE_BRED,
+    AcquisitionMethod.FROM_THE_WILD,
     new Date("2021-03-04"),
     "N.A.",
     "Big face, black spot at the back",
@@ -1050,11 +1060,206 @@ export const animalSeed = async () => {
     null,
     null,
     null,
-    "UNKNOWN",
     "NORMAL",
-    "img/animal/pangPang.jpg",
+    "img/animal/yuanYuan.jpg",
   );
-  console.log(panda3Template.toJSON());
+
+  let panda3Template = await AnimalService.createNewAnimal(
+    "SPE001",
+    false,
+    "Du Du",
+    AnimalSex.FEMALE,
+    new Date("2021-03-04"),
+    "Singapore",
+    IdentifierType.RFID_TAG,
+    "identifierValue 001",
+    AcquisitionMethod.INHOUSE_CAPTIVE_BRED,
+    new Date("2021-03-04"),
+    "N.A.",
+    "Big face, black spot at the back",
+    "active, friendly",
+    null,
+    null,
+    null,
+    "NORMAL",
+    "img/animal/duDu.jpg",
+  );
+
+  let panda4Template = await AnimalService.createNewAnimal(
+    "SPE001",
+    false,
+    "Fu Fu",
+    AnimalSex.MALE,
+    new Date("2021-03-04"),
+    "Singapore",
+    IdentifierType.RFID_TAG,
+    "identifierValue 001",
+    AcquisitionMethod.INHOUSE_CAPTIVE_BRED,
+    new Date("2021-03-04"),
+    "N.A.",
+    "Big face, black spot at the back",
+    "active, friendly",
+    null,
+    null,
+    null,
+    "NORMAL",
+    "img/animal/fuFu.jpg",
+  );
+
+  let panda5Template = await AnimalService.createNewAnimal(
+    "SPE001",
+    false,
+    "Tuan Tuan",
+    AnimalSex.MALE,
+    new Date("2021-03-04"),
+    "Singapore",
+    IdentifierType.RFID_TAG,
+    "identifierValue 001",
+    AcquisitionMethod.INHOUSE_CAPTIVE_BRED,
+    new Date("2021-03-04"),
+    "N.A.",
+    "Big face, black spot at the back",
+    "active, friendly",
+    null,
+    null,
+    null,
+    "NORMAL",
+    "img/animal/tuanTuan.jpg",
+  );
+
+  let panda6Template = await AnimalService.createNewAnimal(
+    "SPE001",
+    false,
+    "Huan Huan",
+    AnimalSex.MALE,
+    new Date("2021-03-04"),
+    "Singapore",
+    IdentifierType.RFID_TAG,
+    "identifierValue 001",
+    AcquisitionMethod.INHOUSE_CAPTIVE_BRED,
+    new Date("2021-03-04"),
+    "N.A.",
+    "Big face, black spot at the back",
+    "active, friendly",
+    null,
+    null,
+    null,
+    "NORMAL",
+    "img/animal/huanHuan.jpg",
+  );
+
+  let panda7Template = await AnimalService.createNewAnimal(
+    "SPE001",
+    false,
+    "Yin Yin",
+    AnimalSex.FEMALE,
+    new Date("2021-03-04"),
+    "Singapore",
+    IdentifierType.RFID_TAG,
+    "identifierValue 001",
+    AcquisitionMethod.INHOUSE_CAPTIVE_BRED,
+    new Date("2021-03-04"),
+    "N.A.",
+    "Big face, black spot at the back",
+    "active, friendly",
+    null,
+    null,
+    null,
+    "NORMAL",
+    "img/animal/yinYin.jpg",
+  );
+  let panda8Template = await AnimalService.createNewAnimal(
+    "SPE001",
+    false,
+    "Ni Ni",
+    AnimalSex.FEMALE,
+    new Date("2021-03-04"),
+    "Singapore",
+    IdentifierType.RFID_TAG,
+    "identifierValue 001",
+    AcquisitionMethod.INHOUSE_CAPTIVE_BRED,
+    new Date("2021-03-04"),
+    "N.A.",
+    "Big face, black spot at the back",
+    "active, friendly",
+    null,
+    null,
+    null,
+    "NORMAL",
+    "img/animal/niNi.jpg",
+  );
+  let panda9Template = await AnimalService.createNewAnimal(
+    "SPE001",
+    false,
+    "Bei Bei",
+    AnimalSex.MALE,
+    new Date("2021-03-04"),
+    "Singapore",
+    IdentifierType.RFID_TAG,
+    "identifierValue 001",
+    AcquisitionMethod.INHOUSE_CAPTIVE_BRED,
+    new Date("2021-03-04"),
+    "N.A.",
+    "Big face, black spot at the back",
+    "active, friendly",
+    null,
+    null,
+    null,
+    "NORMAL",
+    "img/animal/beiBei.jpg",
+  );
+
+  let panda10Template = await AnimalService.createNewAnimal(
+    "SPE001",
+    false,
+    "La La",
+    AnimalSex.MALE,
+    new Date("2021-03-04"),
+    "Singapore",
+    IdentifierType.RFID_TAG,
+    "identifierValue 001",
+    AcquisitionMethod.INHOUSE_CAPTIVE_BRED,
+    new Date("2021-03-04"),
+    "N.A.",
+    "Big face, black spot at the back",
+    "active, friendly",
+    null,
+    null,
+    null,
+    "NORMAL",
+    "img/animal/laLa.jpg",
+  );
+
+  // -- add lineage
+  await AnimalService.addAnimalLineage("ANM00002", "ANM00001");
+  await AnimalService.addAnimalLineage("ANM00002", "ANM00004");
+  await AnimalService.addAnimalLineage("ANM00010", "ANM00001");
+  await AnimalService.addAnimalLineage("ANM00010", "ANM00004");
+  await AnimalService.addAnimalLineage("ANM00003", "ANM00002");
+  await AnimalService.addAnimalLineage("ANM00003", "ANM00005");
+  await AnimalService.addAnimalLineage("ANM00006", "ANM00003");
+  await AnimalService.addAnimalLineage("ANM00006", "ANM00009");
+  await AnimalService.addAnimalLineage("ANM00008", "ANM00006");
+  await AnimalService.addAnimalLineage("ANM00008", "ANM00007");
+
+  // -- create animal activity
+  let animalActivity1 = await AnimalService.createAnimalActivity(
+    ActivityType.ENRICHMENT,
+    "Bamboo Bonanza",
+    "Treat our pandas to a bamboo feast! We'll scatter bamboo leaves and shoots throughout their habitat to encourage natural foraging behavior.",
+    new Date("2021-03-04"),
+    EventTimingType.AFTERNOON,
+    45,
+  );
+
+  let animalActivity2 = await AnimalService.createAnimalActivity(
+    ActivityType.TRAINING,
+    "Target Training",
+    "Use a target stick to teach pandas to touch a designated spot. This aids in directing their movement and helps with medical check-ups.",
+    new Date("2021-03-04"),
+    EventTimingType.MORNING,
+    60,
+  );
 };
 
 export const animalFeedSeed = async () => {
@@ -1077,7 +1282,7 @@ export const animalFeedSeed = async () => {
   let beefTemplate = {
     animalFeedName: "Beef",
     animalFeedImageUrl: "img/animalFeed/beef.jpg",
-    animalFeedCategory: AnimalFeedCategory.FRUITS,
+    animalFeedCategory: AnimalFeedCategory.RED_MEAT,
   } as any;
   let beef = await AnimalFeed.create(beefTemplate);
   console.log(beef.toJSON());
@@ -1100,7 +1305,7 @@ export const animalFeedSeed = async () => {
 export const enrichmentItemSeed = async () => {
   let scratchingPostTemplate = {
     enrichmentItemName: "Scratching Post",
-    enrichmentItemImageUrl: "img/enrichmentItem/scratchingPost.webp",
+    enrichmentItemImageUrl: "img/enrichmentItem/scratchingPost.jpg",
   } as any;
   let scratchingPost = await EnrichmentItem.create(scratchingPostTemplate);
   console.log(scratchingPost.toJSON());
@@ -1120,7 +1325,7 @@ export const enrichmentItemSeed = async () => {
 
   let Feeder = await EnrichmentItem.create({
     enrichmentItemName: "Feeder",
-    enrichmentItemImageUrl: "img/enrichmentItem/Feeder.jpeg",
+    enrichmentItemImageUrl: "img/enrichmentItem/feeder.jpg",
   });
   console.log(Feeder.toJSON());
 };
@@ -1150,9 +1355,9 @@ export const facilityAssetsSeed = async () => {
       await FacilityLog.create({
         dateTime: _day,
         isMaintenance: true,
-        title: "string",
-        details: "string",
-        remarks: "string",
+        title: "Maintenance of " + _day.toDateString(),
+        details: "Bla Bla Bla...",
+        remarks: "Uncommon but common",
       }),
     );
   }
@@ -1198,15 +1403,36 @@ export const facilityAssetsSeed = async () => {
       dateTime: new Date(),
       isMaintenance: false,
       title: "log1",
-      details: "string",
-      remarks: "string",
+      details: "Bla Bla...",
+      remarks: "my log haha",
     }),
     await FacilityLog.create({
-      dateTime: new Date(),
+      dateTime: new Date(Date.now() - 1000*60*60*24),
       isMaintenance: false,
       title: "log2",
-      details: "string",
-      remarks: "string",
+      details: "Bla Bla...",
+      remarks: "my log haha",
+    }),
+    await FacilityLog.create({
+      dateTime: new Date(Date.now() - 1000*60*60*24*2),
+      isMaintenance: false,
+      title: "log3",
+      details: "Bla Bla...",
+      remarks: "my log haha",
+    }),
+    await FacilityLog.create({
+      dateTime: new Date(Date.now() - 1000*60*60*24*3),
+      isMaintenance: false,
+      title: "log4",
+      details: "Bla Bla...",
+      remarks: "my log haha",
+    }),
+    await FacilityLog.create({
+      dateTime: new Date(Date.now() - 1000*60*60*24*5),
+      isMaintenance: false,
+      title: "log5",
+      details: "Bla Bla...",
+      remarks: "my log haha",
     }),
   ]);
   // facility1.destroy();
@@ -1334,38 +1560,7 @@ export const facilityAssetsSeed = async () => {
   }
   sensor.dateOfLastMaintained = _day;
 
-  sensor.addSensorReading(
-    await SensorReading.create({
-      readingDate: new Date(Date.now() - 1000 * 60 * 60 * 24 * 1),
-      value: 1,
-    }),
-  );
-  sensor.addSensorReading(
-    await SensorReading.create({
-      readingDate: new Date(Date.now() - 1000 * 60 * 60 * 24 * 2),
-      value: 2,
-    }),
-  );
-  sensor.addSensorReading(
-    await SensorReading.create({
-      readingDate: new Date(Date.now() - 1000 * 60 * 60 * 24 * 3),
-      value: 3,
-    }),
-  );
-  sensor.addSensorReading(
-    await SensorReading.create({
-      readingDate: new Date(Date.now() - 1000 * 60 * 60 * 24 * 4),
-      value: 4,
-    }),
-  );
-  sensor.addSensorReading(
-    await SensorReading.create({
-      readingDate: new Date(Date.now() - 1000 * 60 * 60 * 24 * 5),
-      value: 5,
-    }),
-  );
-
-  for (let i = 1; i < 100; i++) {
+  for (let i = 1; i < 1000; i++) {
     sensor.addSensorReading(
       await SensorReading.create({
         readingDate: new Date(Date.now() - 1000 * 60 * 30 * i),
@@ -1377,8 +1572,8 @@ export const facilityAssetsSeed = async () => {
 
   sensor = sensors[1];
   _day = new Date(Date.now() - 1000 * 60 * 60 * 24 * 5);
-  for (const days of [15, 21, 28, 36, 45, 55, 66, 78, 91, 105]) {
-    _day = new Date(_day.getTime() - days * 1000 * 60 * 60 * 24);
+  for (const days of [0, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15 ,16, 17, 18, 19, 20, 21]) {
+    _day = new Date(_day.getTime() - days * 1000 * 60 * 60 * 24 + Math.random()*1000*60*60*24*2 - 1000*60*60*24);
     sensor.addMaintenanceLog(
       await MaintenanceLog.create({
         dateTime: _day,
@@ -1402,7 +1597,7 @@ export const facilityAssetsSeed = async () => {
 
   sensor = sensors[2];
   _day = new Date(Date.now());
-  for (const days of [3, 4, 6, 7, 9, 10, 12, 13, 15, 16]) {
+  for (const days of [3, 1, 2, 3, 4, 5, 6, 7, 8, 9]) {
     _day = new Date(_day.getTime() - days * 1000 * 60 * 60 * 24);
     sensor.addMaintenanceLog(
       await MaintenanceLog.create({
@@ -1415,9 +1610,6 @@ export const facilityAssetsSeed = async () => {
   }
   sensor.dateOfLastMaintained = _day;
 
-  /*for (let i = 1; i < 100; i++){
-    sensor.addSensorReading(await SensorReading.create({readingDate: new Date(Date.now() - 1000 * 60 * i), value: Math.random()*1 + 30 - i/100}));
-  }*/
   for (let i = 1; i < 100; i++) {
     sensor.addSensorReading(
       await SensorReading.create({
@@ -1430,7 +1622,7 @@ export const facilityAssetsSeed = async () => {
 
   sensor = sensors[3];
   _day = new Date(Date.now());
-  for (const days of [0, 1, 2, 5, 7, 8]) {
+  for (const days of [0, 1, 3, 4, 2, 4]) {
     _day = new Date(_day.getTime() - days * 1000 * 60 * 60 * 24);
     sensor.addMaintenanceLog(
       await MaintenanceLog.create({
@@ -1456,7 +1648,7 @@ export const facilityAssetsSeed = async () => {
   sensor = sensors[4];
   _day = new Date(Date.now());
   // [1, 5, 2, 4, 8, 5, 7, 11, 8, 10, 14, 11, 13, 17]
-  for (const days of [0, 17, 30, 41, 55, 65, 73, 84, 91, 96, 104, 108, 110, 115, 116]) {
+  for (const days of [0, 17, 13, 11, 14, 10, 8, 11, 7, 5, 8, 4, 2, 5, 1]) {
     _day = new Date(_day.getTime() - days * 1000 * 60 * 60 * 24);
     sensor.addMaintenanceLog(
       await MaintenanceLog.create({
@@ -1487,14 +1679,14 @@ export const facilityAssetsSeed = async () => {
       sensors: [
         {
           sensorName: "Camera3",
-          dateOfActivation: new Date("01-01-2023"),
-          dateOfLastMaintained: new Date("09-09-2023"),
+          dateOfActivation: new Date(),
+          dateOfLastMaintained: new Date(),
           sensorType: SensorType.CAMERA,
         },
         {
           sensorName: "Camera4",
-          dateOfActivation: new Date("01-01-2023"),
-          dateOfLastMaintained: new Date("09-09-2023"),
+          dateOfActivation: new Date(),
+          dateOfLastMaintained: new Date(),
           sensorType: SensorType.CAMERA,
         },
       ],
@@ -1516,171 +1708,10 @@ export const facilityAssetsSeed = async () => {
         .then((tramstop2) => tramstop.setNextTramStop(tramstop2)),
     );
 
-  sensor = sensors[4];
-  [1, 5, 2, 4, 8, 5, 7, 11, 8, 10, 14, 11, 13, 17];
-  sensor.addMaintenanceLog(
-    await MaintenanceLog.create({
-      dateTime: new Date(Date.now()),
-      title: "string",
-      details: "string",
-      remarks: "string",
-    }),
-  );
-  sensor.addMaintenanceLog(
-    await MaintenanceLog.create({
-      dateTime: new Date(Date.now() - 1000 * 60 * 60 * 24 * 17),
-      title: "string",
-      details: "string",
-      remarks: "string",
-    }),
-  );
-  sensor.addMaintenanceLog(
-    await MaintenanceLog.create({
-      dateTime: new Date(Date.now() - 1000 * 60 * 60 * 24 * 30),
-      title: "string",
-      details: "string",
-      remarks: "string",
-    }),
-  );
-  sensor.addMaintenanceLog(
-    await MaintenanceLog.create({
-      dateTime: new Date(Date.now() - 1000 * 60 * 60 * 24 * 41),
-      title: "string",
-      details: "string",
-      remarks: "string",
-    }),
-  );
-  sensor.addMaintenanceLog(
-    await MaintenanceLog.create({
-      dateTime: new Date(Date.now() - 1000 * 60 * 60 * 24 * 55),
-      title: "string",
-      details: "string",
-      remarks: "string",
-    }),
-  );
-  sensor.addMaintenanceLog(
-    await MaintenanceLog.create({
-      dateTime: new Date(Date.now() - 1000 * 60 * 60 * 24 * 65),
-      title: "string",
-      details: "string",
-      remarks: "string",
-    }),
-  );
-  sensor.addMaintenanceLog(
-    await MaintenanceLog.create({
-      dateTime: new Date(Date.now() - 1000 * 60 * 60 * 24 * 73),
-      title: "string",
-      details: "string",
-      remarks: "string",
-    }),
-  );
-  sensor.addMaintenanceLog(
-    await MaintenanceLog.create({
-      dateTime: new Date(Date.now() - 1000 * 60 * 60 * 24 * 84),
-      title: "string",
-      details: "string",
-      remarks: "string",
-    }),
-  );
-  sensor.addMaintenanceLog(
-    await MaintenanceLog.create({
-      dateTime: new Date(Date.now() - 1000 * 60 * 60 * 24 * 91),
-      title: "string",
-      details: "string",
-      remarks: "string",
-    }),
-  );
-  sensor.addMaintenanceLog(
-    await MaintenanceLog.create({
-      dateTime: new Date(Date.now() - 1000 * 60 * 60 * 24 * 96),
-      title: "string",
-      details: "string",
-      remarks: "string",
-    }),
-  );
-  sensor.addMaintenanceLog(
-    await MaintenanceLog.create({
-      dateTime: new Date(Date.now() - 1000 * 60 * 60 * 24 * 104),
-      title: "string",
-      details: "string",
-      remarks: "string",
-    }),
-  );
-  sensor.addMaintenanceLog(
-    await MaintenanceLog.create({
-      dateTime: new Date(Date.now() - 1000 * 60 * 60 * 24 * 108),
-      title: "string",
-      details: "string",
-      remarks: "string",
-    }),
-  );
-  sensor.addMaintenanceLog(
-    await MaintenanceLog.create({
-      dateTime: new Date(Date.now() - 1000 * 60 * 60 * 24 * 110),
-      title: "string",
-      details: "string",
-      remarks: "string",
-    }),
-  );
-  sensor.addMaintenanceLog(
-    await MaintenanceLog.create({
-      dateTime: new Date(Date.now() - 1000 * 60 * 60 * 24 * 115),
-      title: "string",
-      details: "string",
-      remarks: "string",
-    }),
-  );
-  sensor.addMaintenanceLog(
-    await MaintenanceLog.create({
-      dateTime: new Date(Date.now() - 1000 * 60 * 60 * 24 * 116),
-      title: "string",
-      details: "string",
-      remarks: "string",
-    }),
-  );
-
-  /*let hub2 = await HubProcessor.create(
-    {
-      processorName: "tramCam2",
-      ipAddressName: "172.25.99.173",
-      HubStatus: HubStatus.CONNECTED,
-      sensors: [
-        {
-          sensorName: "Camera3",
-          dateOfActivation: new Date("01-01-2023"),
-          dateOfLastMaintained: new Date("09-09-2023"),
-          sensorType: SensorType.CAMERA,
-        },
-        {
-          sensorName: "Camera4",
-          dateOfActivation: new Date("01-01-2023"),
-          dateOfLastMaintained: new Date("09-09-2023"),
-          sensorType: SensorType.CAMERA,
-        },
-      ],
-    } as any,
-    {
-      include: [
-        {
-          association: "sensors",
-        },
-      ],
-    },
-  );
-
-  tram2
-    .getInHouse()
-    .then((tramstop) =>
-      tram1
-        .getInHouse()
-        .then((tramstop2) => tramstop.setNextTramStop(tramstop2)),
-    );*/
-  //);
-
   let cameraTemplate = {
     sensorName: "Camera5",
-    dateOfActivation: new Date("01-01-2023"),
-    dateOfLastMaintained: new Date("09-09-2023"),
+    dateOfActivation: new Date(),
+    dateOfLastMaintained: new Date(),
     sensorType: SensorType.CAMERA,
   } as any;
   let camera = await Sensor.create(cameraTemplate);
