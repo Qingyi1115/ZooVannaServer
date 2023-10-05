@@ -141,7 +141,7 @@ export async function getAllFacilityController(req: Request, res: Response) {
       for (const facility of await getAllFacility(_includes, includes.includes("facilityDetail"))){
         facilities.push(await facility.toFullJson());
       }
-      return res.status(200).json({ facilities: facilities });
+      return res.status(200).json({ facilities: facilities?.map(facility=>facility.toJSON()) });
     }
 
     let facilities: Facility[] = []
@@ -152,7 +152,7 @@ export async function getAllFacilityController(req: Request, res: Response) {
     const inHouse =  await (await employee.getGeneralStaff()).getOperatedFacility();
     if (inHouse) facilities.push(await (await inHouse.getFacility()).toFullJson());
     
-    return res.status(200).json({facilities:facilities})
+    return res.status(200).json({ facilities: facilities?.map(facility=>facility.toJSON()) })
 
   } catch (error: any) {
     console.log(error)
@@ -172,7 +172,7 @@ export async function getMyOperationFacilityController(req: Request, res: Respon
     };
 
     const facility = await (await (await (await employee.getGeneralStaff())?.getOperatedFacility())?.getFacility())?.toFullJson();
-    return res.status(200).json({ facility: (facility ? facility : {}) });
+    return res.status(200).json({ facility: (facility ? facility.toJSON() : {}) });
   } catch (error: any) {
     console.log(error)
     res.status(400).json({ error: error.message });
@@ -248,7 +248,7 @@ export async function getFacilityMaintenanceSuggestionsController(req: Request, 
     )
       return res.status(403).json({ error: "Access Denied! Operation managers only!" });
     let facilities = await getAllFacilityMaintenanceSuggestions(employee);
-    return res.status(200).json({ facilities: facilities });
+    return res.status(200).json({ facilities: facilities?.map(facility=>facility.toJSON()) });
   } catch (error: any) {
     console.log("error", error);
     res.status(400).json({ error: error.message });
@@ -280,7 +280,7 @@ export async function getFacilityMaintenancePredictionValuesController(req: Requ
         console.log(err)
       }
     }
-    return res.status(200).json(values);
+    return res.status(200).json({values:values});
   } catch (error: any) {
     console.log("error", error);
     res.status(400).json({ error: error.message });
@@ -365,7 +365,7 @@ export async function getAssignedMaintenanceStaffOfFacilityController(req: Reque
       Number(facilityId)
     );
     console.log("staffs", staffs)
-    return res.status(200).json({ maintenanceStaffs: staffs });
+    return res.status(200).json({ maintenanceStaffs: staffs?.map(emp=>emp.toJSON()) });
   } catch (error: any) {
     console.log(error)
     res.status(400).json({ error: error.message });
@@ -396,7 +396,7 @@ export async function getAllMaintenanceStaffController(req: Request, res: Respon
 
     let staffs = await getAllMaintenanceStaff(_includes);
 
-    return res.status(200).json({ maintenanceStaffs: staffs });
+    return res.status(200).json({ maintenanceStaffs: staffs?.map(emp=>emp.toJSON()) });
   } catch (error: any) {
     console.log(error)
     res.status(400).json({ error: error.message });
@@ -555,7 +555,7 @@ export async function getFacilityLogsController(req: Request, res: Response) {
       Number(facilityId)
     );
 
-    return res.status(200).json({ facilityLogs: facilityLogs });
+    return res.status(200).json({ facilityLogs: facilityLogs?.map(log=>log.toJSON()) });
   } catch (error: any) {
     res.status(400).json({ error: error.message });
   }
@@ -581,7 +581,7 @@ export async function createFacilityLogController(req: Request, res: Response) {
       remarks
     );
 
-    return res.status(200).json({ facilityLog: facilityLog });
+    return res.status(200).json({ facilityLog: facilityLog.toJSON() });
   } catch (error: any) {
     res.status(400).json({ error: error.message });
   }
@@ -617,7 +617,7 @@ export async function createFacilityMaintenanceLogController(req: Request, res: 
     }
     generalStaff.save();
 
-    return res.status(200).json({ maintenanceLog: maintenanceLog });
+    return res.status(200).json({ maintenanceLog: maintenanceLog.toJSON() });
   } catch (error: any) {
     res.status(400).json({ error: error.message });
   }
@@ -705,9 +705,7 @@ export async function getAllHubsController(req: Request, res: Response) {
 
     let hubs: HubProcessor[] = await getAllHubs(_includes);
 
-    hubs.forEach(hub => hub.toJSON())
-
-    return res.status(200).json({ hubs: hubs });
+    return res.status(200).json({ hubs: hubs.map(hub => hub.toJSON()) });
   } catch (error: any) {
     res.status(400).json({ error: error.message });
   }
@@ -738,7 +736,7 @@ export async function getHubProcessorController(req: Request, res: Response) {
     }
 
     let hubProcessor: HubProcessor = await getHubProcessorById(Number(hubProcessorId), _includes);
-    return res.status(200).json({ hubProcessor: hubProcessor });
+    return res.status(200).json({ hubProcessor: hubProcessor.toJSON() });
   } catch (error: any) {
     console.log(error)
     res.status(400).json({ error: error.message });
@@ -769,9 +767,7 @@ export async function getAllSensorsController(req: Request, res: Response) {
 
     let sensors: Sensor[] = await getAllSensors(_includes);
 
-    sensors.forEach(sensor => sensor.toJSON())
-
-    return res.status(200).json({ sensors: sensors });
+    return res.status(200).json({ sensors: sensors.map(sensor => sensor.toJSON()) });
   } catch (error: any) {
     res.status(400).json({ error: error.message });
   }
@@ -806,7 +802,7 @@ export async function getSensorController(req: Request, res: Response) {
 
     let sensor: Sensor = await getSensor(Number(sensorId), includes);
 
-    return res.status(200).json({ sensor: sensor });
+    return res.status(200).json({ sensor: sensor.toJSON() });
   } catch (error: any) {
     res.status(400).json({ error: error.message });
   }
@@ -835,7 +831,7 @@ export async function getSensorReadingController(req: Request, res: Response) {
 
     let earliestDate = await getEarliestReadingBySensorId(Number(sensorId));
     
-    return res.status(200).json({ sensorReadings: sensorReadings, sensor: sensor, earlestDate:earliestDate });
+    return res.status(200).json({ sensorReadings: sensorReadings?.map(reading=>reading.toJSON()), sensor: sensor?.toJSON(), earlestDate:earliestDate?.getTime() });
   } catch (error: any) {
     console.log("error", error)
     res.status(400).json({ error: error.message });
@@ -865,7 +861,7 @@ export async function updateHubController(req: Request, res: Response) {
 
     let hubUpdated = await updateHubByHubId(Number(hubProcessorId), { processorName: processorName });
 
-    return res.status(200).json({ hub: hubUpdated });
+    return res.status(200).json({ hub: hubUpdated.toJSON() });
   } catch (error: any) {
     res.status(400).json({ error: error.message });
   }
@@ -902,7 +898,7 @@ export async function updateSensorController(req: Request, res: Response) {
 
     let sensorUpdated = await updateSensorById(Number(sensorId), data);
 
-    return res.status(200).json({ sensor: sensorUpdated });
+    return res.status(200).json({ sensor: sensorUpdated.toJSON() });
   } catch (error: any) {
     res.status(400).json({ error: error.message });
   }
@@ -989,8 +985,9 @@ export async function createSensorMaintenanceLogController(req: Request, res: Re
     }
     generalStaff.save();
 
-    return res.status(200).json({ maintenanceLog: maintenanceLog });
+    return res.status(200).json({ maintenanceLog: maintenanceLog.toJSON() });
   } catch (error: any) {
+    console.log(error);
     res.status(400).json({ error: error.message });
   }
 }
@@ -1020,7 +1017,7 @@ export async function getAllSensorMaintenanceLogsController(req: Request, res: R
 
     let maintenanceLogs = await getAllSensorMaintenanceLogs(Number(sensorId));
 
-    return res.status(200).json({ maintenanceLog: maintenanceLogs });
+    return res.status(200).json({ maintenanceLog: maintenanceLogs.map(log=>log.toJSON()) });
   } catch (error: any) {
     res.status(400).json({ error: error.message });
   }
@@ -1121,7 +1118,7 @@ export async function getSensorMaintenanceSuggestionsController(req: Request, re
         .json({ error: "Access Denied! Operation managers only!" });
 
     let sensors = await getAllSensorMaintenanceSuggestions(employee);
-    return res.status(200).json({ sensors: sensors });
+    return res.status(200).json({ sensors: sensors?.map(sensor=>sensor.toJSON()) });
   } catch (error: any) {
     console.log("error", error);
     res.status(400).json({ error: error.message });
@@ -1155,7 +1152,7 @@ export async function getSensorMaintenancePredictionValuesController(req: Reques
     }
 
 
-    return res.status(200).json(values);
+    return res.status(200).json({values:values});
   } catch (error: any) {
     console.log("error", error);
     res.status(400).json({ error: error.message });
@@ -1347,8 +1344,7 @@ export async function createNewAnimalFeedController(req: Request, res: Response)
 export async function getAllAnimalFeedController(req: Request, res: Response) {
   try {
     let animalFeeds = await AnimalFeedService.getAllAnimalFeed();
-    animalFeeds.forEach(animalFeed => animalFeed.toJSON())
-    return res.status(200).json({ animalFeeds: animalFeeds });
+    return res.status(200).json({ animalFeeds: animalFeeds.map(animalFeed => animalFeed.toJSON()) });
   } catch (error: any) {
     console.log(error);
     res.status(400).json({ error: error.message });
@@ -1367,7 +1363,7 @@ export async function getAnimalFeedByNameController(req: Request, res: Response)
 
   try {
     const animalFeed = await AnimalFeedService.getAnimalFeedByName(animalFeedName);
-    return res.status(200).json(animalFeed);
+    return res.status(200).json({animalFeed:animalFeed.toJSON()});
   } catch (error: any) {
     console.log(error);
     res.status(400).json({ error: error.message });
@@ -1386,7 +1382,7 @@ export async function getAnimalFeedByIdController(req: Request, res: Response) {
 
   try {
     const animalFeed = await AnimalFeedService.getAnimalFeedById(Number(animalFeedId));
-    return res.status(200).json(animalFeed);
+    return res.status(200).json({animalFeed:animalFeed.toJSON()});
   } catch (error: any) {
     res.status(400).json({ error: error.message });
   }
@@ -1448,7 +1444,7 @@ export async function updateAnimalFeedController(req: Request, res: Response) {
       animalFeedImageUrl
     );
 
-    return res.status(200).json({ animalFeed });
+    return res.status(200).json({ result:"success" });
   } catch (error: any) {
     console.log(error)
     res.status(400).json({ error: error.message });
@@ -1498,7 +1494,7 @@ export async function updateAnimalFeedImageController(req: Request, res: Respons
       imageUrl
     );
 
-    return res.status(200).json({ animalFeed });
+    return res.status(200).json({ result:"success" });
   } catch (error: any) {
     console.log(error)
     res.status(400).json({ error: error.message });
@@ -1531,7 +1527,7 @@ export async function deleteAnimalFeedByNameController(req: Request, res: Respon
 
   try {
     const animalFeed = await AnimalFeedService.deleteAnimalFeedByName(animalFeedName);
-    return res.status(200).json(animalFeed);
+    return res.status(200).json({animalFeed:animalFeed});
   } catch (error: any) {
     res.status(400).json({ error: error.message });
   }
@@ -1587,8 +1583,8 @@ export async function createNewEnrichmentItemController(req: Request, res: Respo
 
 export async function getAllEnrichmentItemController(req: Request, res: Response) {
   try {
-    const allEnrichmentItem = await EnrichmentItemService.getAllEnrichmentItem();
-    return res.status(200).json(allEnrichmentItem);
+    const allEnrichmentItems = await EnrichmentItemService.getAllEnrichmentItem();
+    return res.status(200).json({allEnrichmentItem:allEnrichmentItems.map(enrichmentItem=>enrichmentItem.toJSON())});
   } catch (error: any) {
     res.status(400).json({ error: error.message });
   }
@@ -1607,8 +1603,7 @@ export async function getEnrichmentItemByIdController(req: Request, res: Respons
   try {
     const enrichmentItem = await EnrichmentItemService.getEnrichmentItemById(Number(enrichmentItemId));
 
-    console.log("enrichmentItem", enrichmentItem)
-    return res.status(200).json({ enrichmentItem: enrichmentItem });
+    return res.status(200).json({ enrichmentItem: enrichmentItem.toJSON() });
   } catch (error: any) {
     console.log(error)
     res.status(400).json({ error: error.message });
@@ -1652,7 +1647,7 @@ export async function updateEnrichmentItemController(req: Request, res: Response
     // have to pass in req for image uploading
     let enrichmentItem = await EnrichmentItemService.updateEnrichmentItem(enrichmentItemId, enrichmentItemName);
 
-    return res.status(200).json({ enrichmentItem });
+    return res.status(200).json({ result:"success" });
   } catch (error: any) {
     console.log(error)
     res.status(400).json({ error: error.message });
@@ -1704,7 +1699,7 @@ export async function updateEnrichmentItemImageController(req: Request, res: Res
       imageUrl
     );
 
-    return res.status(200).json({ enrichmentItem });
+    return res.status(200).json({ result:"success" });
   } catch (error: any) {
     res.status(400).json({ error: error.message });
   }
@@ -1736,7 +1731,7 @@ export async function deleteEnrichmentItemByNameController(req: Request, res: Re
 
   try {
     const enrichmentItem = await EnrichmentItemService.deleteEnrichmentItemByName(enrichmentItemName);
-    return res.status(200).json(enrichmentItem);
+    return res.status(200).json({result:"success"});
   } catch (error: any) {
     res.status(400).json({ error: error.message });
   }

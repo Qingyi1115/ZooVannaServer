@@ -81,7 +81,7 @@ export async function getAllFacilityMaintenanceSuggestions(employee:Employee) {
       let logs = (await inHouse.getFacilityLogs()) || [];
       logs = logs.map((log: FacilityLog) => log.dateTime);
       (facility as any).dataValues["predictedMaintenanceDate"] = predictNextDate(logs);
-      (facility as any).dataValues["facilityDetailJson"] = inHouse;
+      (facility as any).dataValues["facilityDetailJson"] = inHouse.toJSON();
     }
 
     return facilities;
@@ -414,7 +414,6 @@ export async function getEarliestReadingBySensorId(
         required: true,
       }]
     });
-    console.log("getEarliestReadingBySensorId reading", reading)
 
     return reading?.readingDate;
   } catch (error: any) {
