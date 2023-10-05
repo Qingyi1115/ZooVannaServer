@@ -78,13 +78,16 @@ export const login = async (req: Request, res: Response) => {
 
 export async function getCustomerByEmail(req: Request, res: Response) {
   try {
-    const { email } = (req as any).locals.jwtPayload;
-    const customer = await CustomerService.findCustomerByEmail(email);
-
-    if (!customer)
-      return res.status(400).json({ message: "Customer not found!" });
-
-    return res.status(200).json(customer);
+    const { email } = req.body;
+    console.log("here");
+    if (email) {
+      const customer = await CustomerService.findCustomerByEmail(email);
+      if (!customer)
+        return res.status(400).json({ message: "Customer not found!" });
+      return res.status(200).json(customer);
+    } else {
+      return res.status(400).json({ message: "Email not found" });
+    }
   } catch (error: any) {
     return res.status(400).json({ error: error.message });
   }
