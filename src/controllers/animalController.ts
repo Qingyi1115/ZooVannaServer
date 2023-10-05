@@ -73,7 +73,6 @@ export async function createAnimal(req: Request, res: Response) {
       dateOfDeath,
       locationOfDeath,
       causeOfDeath,
-      growthStage,
       animalStatus,
     } = req.body;
 
@@ -95,7 +94,6 @@ export async function createAnimal(req: Request, res: Response) {
         dateOfDeath,
         locationOfDeath,
         causeOfDeath,
-        growthStage,
         animalStatus,
       ].includes(undefined)
     ) {
@@ -113,7 +111,6 @@ export async function createAnimal(req: Request, res: Response) {
         acquisitionRemarks,
         physicalDefiningCharacteristics,
         behavioralDefiningCharacteristics,
-        growthStage,
         animalStatus,
       });
       return res.status(400).json({ error: "Missing information!" });
@@ -137,7 +134,6 @@ export async function createAnimal(req: Request, res: Response) {
       dateOfDeath,
       locationOfDeath,
       causeOfDeath,
-      growthStage,
       animalStatus,
       imageUrl,
     );
@@ -178,7 +174,6 @@ export async function updateAnimal(req: Request, res: Response) {
       dateOfDeath,
       locationOfDeath,
       causeOfDeath,
-      growthStage,
       animalStatus,
     } = req.body;
 
@@ -199,7 +194,6 @@ export async function updateAnimal(req: Request, res: Response) {
         dateOfDeath,
         locationOfDeath,
         causeOfDeath,
-        growthStage,
         animalStatus,
         imageUrl,
       ].includes(undefined)
@@ -220,7 +214,6 @@ export async function updateAnimal(req: Request, res: Response) {
         dateOfDeath,
         locationOfDeath,
         causeOfDeath,
-        growthStage,
         animalStatus,
         imageUrl,
       });
@@ -244,7 +237,6 @@ export async function updateAnimal(req: Request, res: Response) {
       dateOfDeath,
       locationOfDeath,
       causeOfDeath,
-      growthStage,
       animalStatus,
       imageUrl,
     );
@@ -394,11 +386,11 @@ export async function deleteAnimalLineage(req: Request, res: Response) {
     res.status(400).json({ error: error.message });
   }
 }
-//checkIsSafeBreeding
-export async function checkIsSafeBreeding(req: Request, res: Response) {
+//checkInbreeding
+export async function checkInbreeding(req: Request, res: Response) {
   const { animalCode1, animalCode2 } = req.params;
   try {
-    const isCompatible = await AnimalService.checkIsSafeBreeding(
+    const isCompatible = await AnimalService.checkInbreeding(
       animalCode1,
       animalCode2,
     );

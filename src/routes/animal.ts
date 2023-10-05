@@ -13,7 +13,7 @@ import {
   updateAnimalLineage,
   deleteAnimalLineage,
   getLineageByAnimalCode,
-  checkIsSafeBreeding,
+  checkInbreeding,
   getAllAnimalWeightsByAnimalCode,
   addAnimalWeight,
   deleteAnimalWeight,
@@ -40,10 +40,7 @@ router.get("/getLineageByAnimalCode/:animalCode", getLineageByAnimalCode);
 router.post("/addAnimalLineage", addAnimalLineage);
 router.put("/updateAnimalLineage", updateAnimalLineage);
 router.put("/deleteAnimalLineage", deleteAnimalLineage);
-router.get(
-  "/checkIsSafeBreeding/:animalCode1/:animalCode2",
-  checkIsSafeBreeding,
-);
+router.get("/checkInbreeding/:animalCode1/:animalCode2", checkInbreeding);
 
 // -- Animal Weight
 router.get(
