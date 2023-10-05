@@ -24,7 +24,8 @@ class PhysiologicalReferenceNorms extends Model<
   declare sizeFemaleCm: number;
   declare weightMaleKg: number;
   declare weightFemaleKg: number;
-  declare ageToGrowthAge: number;
+  declare minAge: number;
+  declare maxAge: number;
   declare growthStage: AnimalGrowthStage;
 
   // declare species?: Species[];
@@ -67,7 +68,11 @@ PhysiologicalReferenceNorms.init(
       type: DataTypes.DOUBLE,
       allowNull: false,
     },
-    ageToGrowthAge: {
+    minAge: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+    },
+    maxAge: {
       type: DataTypes.INTEGER,
       allowNull: false,
     },

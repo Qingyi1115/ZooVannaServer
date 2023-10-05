@@ -8,6 +8,10 @@ import { PhysiologicalReferenceNorms } from "../models/physiologicalReferenceNor
 import { AnimalGrowthStage, AnimalStatus } from "../models/enumerated";
 import { AnimalWeight } from "../models/animalWeight";
 import * as SpeciesService from "../services/species";
+import { AnimalActivity } from "../models/animalActivity";
+import { EnrichmentItem } from "../models/enrichmentItem";
+import { Employee } from "../models/employee";
+import * as EnrichmentItemService from "../services/enrichmentItem";
 
 //-- Animal Basic Info
 export async function getAnimalIdByCode(animalCode: string) {
@@ -100,6 +104,8 @@ export async function getAnimalByAnimalCode(animalCode: string) {
   if (animalRecord) {
     return animalRecord;
   }
+  // console.log("animal code: " + animalCode);
+  // console.log("--in here 2 --");
   throw new Error("Invalid Animal Code!");
 }
 
@@ -120,7 +126,6 @@ export async function createNewAnimal(
   dateOfDeath: Date | null,
   locationOfDeath: string | null,
   causeOfDeath: string | null,
-  growthStage: string,
   animalStatus: string,
   imageUrl: string,
 ) {
@@ -141,7 +146,6 @@ export async function createNewAnimal(
     dateOfDeath: dateOfDeath,
     locationOfDeath: locationOfDeath,
     causeOfDeath: causeOfDeath,
-    growthStage: growthStage,
     animalStatus: animalStatus,
     imageUrl: imageUrl,
   } as any;
@@ -152,7 +156,9 @@ export async function createNewAnimal(
     let newAnimalEntry = await Animal.create(newAnimal);
 
     newAnimalEntry.setSpecies(
-      await SpeciesService.getSpeciesByCode(speciesCode, []),
+      await SpeciesService.getSpeciesByCode(speciesCode, [
+        "physiologicalReferenceNorms",
+      ]),
     );
 
     return newAnimalEntry;
@@ -177,7 +183,6 @@ export async function updateAnimal(
   dateOfDeath: Date | null,
   locationOfDeath: string | null,
   causeOfDeath: string | null,
-  growthStage: string,
   animalStatus: string,
   imageUrl: string,
 ) {
@@ -196,7 +201,6 @@ export async function updateAnimal(
     dateOfDeath: dateOfDeath,
     locationOfDeath: locationOfDeath,
     causeOfDeath: causeOfDeath,
-    growthStage: growthStage,
     animalStatus: animalStatus,
     imageUrl: imageUrl,
   } as any;
@@ -285,10 +289,80 @@ export async function addAnimalLineage(
   }
 }
 
-// export async function getLineageByAnimalCode(animalCode: string) {
-//   let animalId = getAnimalIdByCode(animalCode);
-//   throw new Error("Invalid Animal Code!");
-// }
+export async function getLineageByAnimalCode(animalCode: string) {
+  let animalRecord = await Animal.findOne({
+    where: { animalCode: animalCode },
+    include: [
+      {
+        model: Animal, // Self-reference to represent parent-child relationships
+        as: "children",
+        required: false,
+        include: [
+          {
+            model: Animal,
+            as: "children",
+            required: false,
+            include: [
+              {
+                model: Animal,
+                as: "children",
+                required: false,
+              },
+              {
+                model: Animal,
+                as: "parents",
+                required: false,
+              },
+            ],
+          },
+          {
+            model: Animal,
+            as: "parents",
+            required: false,
+          },
+        ],
+      },
+      {
+        model: Animal, // Self-reference to represent parent-child relationships
+        as: "parents",
+        required: false,
+        include: [
+          {
+            model: Animal,
+            as: "parents",
+            required: false,
+            include: [
+              {
+                model: Animal,
+                as: "parents",
+                required: false,
+              },
+              {
+                model: Animal,
+                as: "children",
+                required: false,
+              },
+            ],
+          },
+          {
+            model: Animal,
+            as: "children",
+            required: false,
+          },
+        ],
+      },
+    ],
+    attributes: {
+      // Include the 'age' virtual field
+      include: ["age"],
+    },
+  });
+
+  if (animalRecord) {
+    return animalRecord;
+  }
+  throw new Error("Invalid Animal Code!");
+}
 
 export async function updateAnimalLineage(
   childAnimalCode: string,
@@ -349,4 +423,363 @@ export async function deleteAnimalLineage(
   } else {
     throw new Error("Child animal has no such parent.");
   }
+}
+
+export async function checkInbreeding( // Check if two animals are related through common ancestors within given degrees
+  animalCode1: string,
+  animalCode2: string,
+  // depth: number,
+): Promise<boolean> {
+  // if (depth === 0) {
+  //   return false; // Stop recursion at depth 0
+  // }
+
+  let animal1 = await Animal.findOne({
+    where: { animalCode: animalCode1 },
+    include: {
+      model: Animal, // Self-reference to represent parent-child relationships
+      as: "parents",
+      required: false,
+      include: [
+        {
+          model: Animal,
+          as: "parents",
+          required: false,
+          include: [
+            {
+              model: Animal,
+              as: "parents",
+              required: false,
+            },
+          ],
+        },
+      ],
+    },
+  });
+
+  let animal2 = await Animal.findOne({
+    where: { animalCode: animalCode2 },
+    include: {
+      model: Animal, // Self-reference to represent parent-child relationships
+      as: "parents",
+      required: false,
+      include: [
+        {
+          model: Animal,
+          as: "parents",
+          required: false,
+          include: [
+            {
+              model: Animal,
+              as: "parents",
+              required: false,
+            },
+          ],
+        },
+      ],
+    },
+  });
+
+  if (!animal1 || !animal2) {
+    throw new Error("Invalid Animal Code!");
+  }
+
+  // Check if animal1 is an ancestor of animal2 and vice versa
+  const isAncestorOf1 = isAncestor(animal1, animal2.animalId);
+  const isAncestorOf2 = isAncestor(animal2, animal1.animalId);
+
+  // Check if animal1 and animal2 have the same parents
+  const haveSameParents = haveSameParentsCheck(animal1, animal2);
+  console.log("isAncestorOf1 --> " + isAncestorOf1);
+  console.log("isAncestorOf2 --> " + isAncestorOf2);
+  console.log("haveSameParents --> " + haveSameParents);
+  console.log(
+    "result --> " + (isAncestorOf1 || isAncestorOf2 || haveSameParents),
+  );
+  // Return true if all false
+  return isAncestorOf1 || isAncestorOf2 || haveSameParents;
+}
+
+// Helper function to check if one animal is an ancestor of another
+function isAncestor(animal: any, targetId: number): boolean {
+  if (!animal || !animal.parents || animal.parents.length === 0) {
+    return false;
+  }
+
+  if (animal.parents.some((parent: any) => parent.animalId === targetId)) {
+    return true;
+  }
+
+  return animal.parents.some((parent: any) => isAncestor(parent, targetId));
+}
+
+// Helper function to check if two animals have the same parents
+function haveSameParentsCheck(animal1: any, animal2: any): boolean {
+  if (animal1.parents.length === 0 || animal2.parents.length === 0) {
+    console.log("here--1");
+    return false;
+  }
+
+  console.log("here--2");
+  const parentIds1 = animal1.parents.map((parent: any) => parent.animalId);
+  const parentIds2 = animal2.parents.map((parent: any) => parent.animalId);
+
+  console.log("here--parentIds1: " + parentIds1);
+  console.log("here--parentIds2: " + parentIds2);
+  return parentIds1.every((animalId: any) => parentIds2.includes(animalId));
+}
+
+//-- Animal Weight
+export async function addAnimalWeight(
+  animalCode: string,
+  weightInKg: number,
+  dateOfMeasure: Date,
+) {
+  let newWeight = {
+    animalCode: animalCode,
+    weightInKg: weightInKg,
+    dateOfMeasure: dateOfMeasure,
+  } as any;
+
+  console.log(newWeight);
+
+  try {
+    let newWeightEntry = await AnimalWeight.create(newWeight);
+
+    newWeightEntry.setAnimal(await getAnimalByAnimalCode(animalCode));
+
+    return newWeightEntry;
+  } catch (error: any) {
+    console.log(error);
+    throw validationErrorHandler(error);
+  }
+}
+
+export async function deleteAnimalWeight(animalWeightId: string) {
+  let result = await AnimalWeight.destroy({
+    where: { animalWeightId: animalWeightId },
+  });
+  if (result) {
+    return result;
+  }
+  throw new Error("Invalid Animal Weight Id!");
+}
+
+export async function getAllAnimalWeightsByAnimalCode(animalCode: string) {
+  let result = await Animal.findOne({
+    where: { animalCode: animalCode },
+    include: AnimalWeight, //eager fetch here
+  });
+
+  if (result) {
+    let resultAnimalWeights = await result.animalWeights;
+    return resultAnimalWeights;
+  }
+  throw new Error("Invalid Animal Code!");
+}
+
+export async function getAllAbnormalWeights() {
+  // --> hvnt do, need to discuss with Jason
+  //   let result = await Animal.findOne({
+  //     where: { animalCode: animalCode },
+  //     include: AnimalWeight, //eager fetch here
+  //   });
+  //   if (result) {
+  //     let resultAnimalWeights = await result.animalWeights;
+  //     return resultAnimalWeights;
+  //   }
+  //   throw new Error("Invalid Animal Code!");
+}
+
+//-- Animal Activity
+export async function getAllAnimalActivities() {
+  try {
+    const allAnimalActivities = await AnimalActivity.findAll({
+      include: [
+        {
+          model: Animal,
+          required: false, // Include only if they exist
+          as: "animals",
+        },
+        {
+          model: EnrichmentItem,
+          required: false, // Include only if they exist
+          as: "enrichmentItems",
+        },
+        {
+          model: Employee,
+          required: false, // Include only if they exist
+        },
+      ],
+    });
+
+    return allAnimalActivities;
+  } catch (error: any) {
+    throw validationErrorHandler(error);
+  }
+}
+
+export async function getAnimalActivityById(animalActivityId: string) {
+  let animalActivityRecord = await AnimalActivity.findOne({
+    where: { animalActivityId: animalActivityId },
+    include: [
+      {
+        model: Animal,
+        required: false, // Include only if they exist
+        as: "animals",
+      },
+      {
+        model: EnrichmentItem,
+        required: false, // Include only if they exist
+        as: "enrichmentItems",
+      },
+      {
+        model: Employee,
+        required: false, // Include only if they exist
+      },
+    ],
+  });
+
+  if (animalActivityRecord) {
+    return animalActivityRecord;
+  }
+  throw new Error("Invalid Animal Activity Id!");
+}
+
+export async function getAnimalActivityByAnimalCode(animalCode: string) {
+  let animalActivities = await Animal.findAll({
+    where: { animalCode: animalCode },
+    include: {
+      model: AnimalActivity,
+      required: false, // Include only if they exist
+      as: "animalActivities",
+    },
+  });
+
+  if (animalActivities) {
+    return animalActivities;
+  }
+  throw new Error("Invalid Animal Code!");
+}
+
+export async function createAnimalActivity(
+  activityType: string,
+  title: string,
+  details: string,
+  date: Date,
+  session: string,
+  durationInMinutes: number,
+) {
+  let newActivity = {
+    activityType: activityType,
+    title: title,
+    details: details,
+    date: date,
+    session: session,
+    durationInMinutes: durationInMinutes,
+  } as any;
+
+  console.log(newActivity);
+
+  try {
+    let newActivityEntry = await AnimalActivity.create(newActivity);
+
+    // for (let a in animalCodes) {
+    //   newActivityEntry.addAnimal(await getAnimalByAnimalCode(a));
+    // }
+
+    // for (let a in animalCodes) {
+    //   newActivityEntry.addAnimal(await getAnimalByAnimalCode(a));
+    // }
+
+    return newActivityEntry;
+  } catch (error: any) {
+    console.log(error);
+    throw validationErrorHandler(error);
+  }
+}
+
+export async function updateAnimalActivity(
+  animalActivityId: number,
+  activityType: string,
+  title: string,
+  details: string,
+  date: Date,
+  session: string,
+  durationInMinutes: number,
+) {
+  let updatedAnimalActivity = {
+    activityType: activityType,
+    title: title,
+    details: details,
+    date: date,
+    session: session,
+    durationInMinutes: durationInMinutes,
+  } as any;
+
+  console.log(updatedAnimalActivity);
+
+  try {
+    await AnimalActivity.update(updatedAnimalActivity, {
+      where: { animalActivityId: animalActivityId },
+    });
+  } catch (error: any) {
+    throw validationErrorHandler(error);
+  }
+}
+
+export async function deleteAnimalActivity(animalActivityId: string) {
+  let result = await AnimalActivity.destroy({
+    where: { animalActivityId: animalActivityId },
+  });
+  if (result) {
+    return result;
+  }
+  throw new Error("Invalid Animal Activity Id!");
+}
+
+export async function assignAnimalsToActivity(
+  animalActivityId: string,
+  animalCodes: string[],
+) {
+  let animalActivity = await getAnimalActivityById(animalActivityId);
+
+  for (let animalCode of animalCodes) {
+    animalActivity.addAnimal(await getAnimalByAnimalCode(animalCode));
+  }
+}
+
+export async function removeAnimalFromActivity(
+  animalActivityId: string,
+  animalCode: string,
+) {
+  let animalActivity = await getAnimalActivityById(animalActivityId);
+
+  animalActivity.removeAnimal(await getAnimalByAnimalCode(animalCode));
+}
+
+export async function assignItemToActivity(
+  animalActivityId: string,
+  enrichmentItemIds: string[],
+) {
+  let animalActivity = await getAnimalActivityById(animalActivityId);
+
+  for (let enrichmentItemId of enrichmentItemIds) {
+    animalActivity.addEnrichmentItem(
+      await EnrichmentItemService.getEnrichmentItemById(
+        Number(enrichmentItemId),
+      ),
+    );
+  }
+}
+
+export async function removeItemFromActivity(
+  animalActivityId: string,
+  enrichmentItemId: string,
+) {
+  let animalActivity = await getAnimalActivityById(animalActivityId);
+
+  animalActivity.removeEnrichmentItem(
+    await EnrichmentItemService.getEnrichmentItemById(Number(enrichmentItemId)),
+  );
 }

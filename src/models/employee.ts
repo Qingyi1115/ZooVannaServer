@@ -6,12 +6,17 @@ import {
   InferCreationAttributes,
   HasOneGetAssociationMixin,
   HasOneSetAssociationMixin,
+  HasManyGetAssociationsMixin,
+  HasManyAddAssociationMixin,
+  HasManySetAssociationsMixin,
+  HasManyRemoveAssociationMixin,
 } from "Sequelize";
 import { conn } from "../db";
 import { Keeper } from "./keeper";
 import { PlanningStaff } from "./planningStaff";
 import { GeneralStaff } from "./generalStaff";
 import { hash } from "../helpers/security";
+import { AnimalActivity } from "./animalActivity";
 
 function uppercaseFirst(str: string) {
   return `${str[0].toUpperCase()}${str.substr(1)}`;
@@ -54,6 +59,17 @@ class Employee extends Model<
   declare getGeneralStaff: HasOneGetAssociationMixin<GeneralStaff>;
   declare setGeneralStaff: HasOneSetAssociationMixin<GeneralStaff, number>;
 
+  declare getAnimalActivities: HasManyGetAssociationsMixin<AnimalActivity>;
+  declare addAnimalActivity: HasManyAddAssociationMixin<AnimalActivity, number>;
+  declare setAnimalActivities: HasManySetAssociationsMixin<
+    AnimalActivity,
+    number
+  >;
+  declare removeAnimalActivity: HasManyRemoveAssociationMixin<
+    AnimalActivity,
+    number
+  >;
+
   static getTotalEmployees() {
     // Example for static class functions
     return Employee.count();
@@ -83,8 +99,8 @@ class Employee extends Model<
     return this;
   }
 
-  public disableAccount(dateOfResignation:Date) {
-    this.dateOfResignation = dateOfResignation
+  public disableAccount(dateOfResignation: Date) {
+    this.dateOfResignation = dateOfResignation;
     this.save();
     console.log("Employee account has been disabled");
     return this.dateOfResignation;
@@ -118,12 +134,12 @@ class Employee extends Model<
       generalStaff: this.generalStaff?.toJSON(),
       employeePasswordHash: undefined,
       employeeSalt: undefined,
-      employeeBirthDate:this.employeeBirthDate?.getTime(),
-      dateOfResignation:this.dateOfResignation?.getTime(),
+      employeeBirthDate: this.employeeBirthDate?.getTime(),
+      dateOfResignation: this.dateOfResignation?.getTime(),
     };
   }
 
-  public async toFullJSON(){
+  public async toFullJSON() {
     return {
       ...this.toJSON(),
       keeper: (await this.getKeeper())?.toJSON(),

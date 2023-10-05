@@ -58,6 +58,10 @@ class Species extends Model<
   declare imageUrl: string;
   declare generalDietPreference: string;
   declare lifeExpectancyYears: number;
+  declare ageToJuvenile: number;
+  declare ageToAdolescent: number;
+  declare ageToAdult: number;
+  declare ageToElder: number;
   declare foodRemark: string;
   //--FK
   declare speciesEnclosureNeed?: SpeciesEnclosureNeed;
@@ -257,6 +261,22 @@ Species.init(
       allowNull: false,
     },
     lifeExpectancyYears: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+    },
+    ageToJuvenile: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+    },
+    ageToAdolescent: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+    },
+    ageToAdult: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+    },
+    ageToElder: {
       type: DataTypes.INTEGER,
       allowNull: false,
     },

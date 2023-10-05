@@ -60,6 +60,10 @@ export async function createNewSpecies(
   generalDietPreference: string,
   imageUrl: string,
   lifeExpectancyYears: number,
+  ageToJuvenile: number,
+  ageToAdolescent: number,
+  ageToAdult: number,
+  ageToElder: number,
   // foodRemark: string,
 ) {
   let newSpecies = {
@@ -81,7 +85,11 @@ export async function createNewSpecies(
     habitatOrExhibit: habitatOrExhibit,
     generalDietPreference: generalDietPreference,
     imageUrl: imageUrl,
-    lifeExpectancyYears,
+    lifeExpectancyYears: lifeExpectancyYears,
+    ageToJuvenile: ageToJuvenile,
+    ageToAdolescent: ageToAdolescent,
+    ageToAdult: ageToAdult,
+    ageToElder: ageToElder,
     // foodRemark nullable now
   } as any;
 
@@ -114,6 +122,10 @@ export async function updateSpecies(
   generalDietPreference: string,
   imageUrl: string,
   lifeExpectancyYears: number,
+  ageToJuvenile: number,
+  ageToAdolescent: number,
+  ageToAdult: number,
+  ageToElder: number,
 ) {
   let updatedSpecies = {
     speciesCode: speciesCode,
@@ -135,6 +147,10 @@ export async function updateSpecies(
     generalDietPreference: generalDietPreference,
     imageUrl: imageUrl,
     lifeExpectancyYears: lifeExpectancyYears,
+    ageToJuvenile: ageToJuvenile,
+    ageToAdolescent: ageToAdolescent,
+    ageToAdult: ageToAdult,
+    ageToElder: ageToElder,
   } as any;
 
   console.log(updatedSpecies);
@@ -392,7 +408,8 @@ export async function createPhysiologicalReferenceNorms(
   sizeFemaleCm: number,
   weightMaleKg: number,
   weightFemaleKg: number,
-  ageToGrowthAge: number,
+  minAge: number,
+  maxAge: number,
   growthStage: AnimalGrowthStage,
 ) {
   let newPhysiologicalRefNorm = {
@@ -400,7 +417,8 @@ export async function createPhysiologicalReferenceNorms(
     sizeFemaleCm: sizeFemaleCm,
     weightMaleKg: weightMaleKg,
     weightFemaleKg: weightFemaleKg,
-    ageToGrowthAge: ageToGrowthAge,
+    minAge: minAge,
+    maxAge: maxAge,
     growthStage: growthStage,
     // species:
   } as any;
@@ -463,7 +481,8 @@ export async function updatePhysiologicalReferenceNorms(
   sizeFemaleCm: number,
   weightMaleKg: number,
   weightFemaleKg: number,
-  ageToGrowthAge: number,
+  minAge: number,
+  maxAge: number,
   growthStage: AnimalGrowthStage,
 ) {
   let updatedPhysiologicalRef = {
@@ -471,7 +490,8 @@ export async function updatePhysiologicalReferenceNorms(
     sizeFemaleCm: sizeFemaleCm,
     weightMaleKg: weightMaleKg,
     weightFemaleKg: weightFemaleKg,
-    ageToGrowthAge: ageToGrowthAge,
+    minAge: minAge,
+    maxAge: maxAge,
     growthStage: growthStage,
   } as any;
 
