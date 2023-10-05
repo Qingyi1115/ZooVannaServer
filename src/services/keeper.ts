@@ -5,7 +5,6 @@ import { Employee } from "../models/employee";
 import { Enclosure } from "../models/enclosure";
 import { Token } from "../models/token";
 import { CreationOptional, literal } from "Sequelize";
-import { Event } from "../models/zooEvent";
 
 //might need to change implementation
 export async function updateDetails(
@@ -43,7 +42,7 @@ export async function removeEnclosure(
     });
 
     if (enclosure) {
-      let publicEvents = (await employee.getKeeper())?.publicEvents;
+      let publicEvents = (await employee.getKeeper())?.zooEvents;
       let isNotFree = false;
 
       if (publicEvents) {
@@ -57,7 +56,7 @@ export async function removeEnclosure(
 
       if (
         !isNotFree &&
-        (await employee.getKeeper())?.internalEvents?.length != 0
+        (await employee.getKeeper())?.zooEvents?.length != 0
       ) {
         isNotFree = true;
       }
