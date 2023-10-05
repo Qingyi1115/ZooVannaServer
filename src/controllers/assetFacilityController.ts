@@ -977,15 +977,17 @@ export async function createSensorMaintenanceLogController(req: Request, res: Re
       return res.status(400).json({ error: "Missing information!" });
     }
 
-    let maintenanceLog = await createSensorMaintenanceLog(Number(sensorId), new Date(), title, details, remarks);
+    let sensor = await createSensorMaintenanceLog(Number(sensorId), new Date(), title, details, remarks);
     const generalStaff = (await employee.getGeneralStaff());
-    let sensors = await generalStaff?.getSensors();
-    for (const sensor of sensors){
-      if (sensor.sensorId == Number(sensorId)) generalStaff.removeSensor(sensor);
+    if (generalStaff){
+      let sensors = await generalStaff?.getSensors() || [];
+      for (const sensor of sensors){
+        if (sensor.sensorId == Number(sensorId)) generalStaff.removeSensor(sensor);
+      }
+      generalStaff.save();
     }
-    generalStaff.save();
 
-    return res.status(200).json({ maintenanceLog: maintenanceLog.toJSON() });
+    return res.status(200).json({ sensor: sensor.toFullJSON() });
   } catch (error: any) {
     console.log(error);
     res.status(400).json({ error: error.message });

@@ -1367,8 +1367,8 @@ export const facilityAssetsSeed = async () => {
 
   sensor = sensors[1];
   _day = new Date(Date.now() - 1000 * 60 * 60 * 24 * 5);
-  for (const days of [15, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15 ,16, 17, 18, 19, 20, 21]) {
-    _day = new Date(_day.getTime() - days * 1000 * 60 * 60 * 24 + Math.random()*1000*60*60*24*4 - 1000*60*60*24*2);
+  for (const days of [0, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15 ,16, 17, 18, 19, 20, 21]) {
+    _day = new Date(_day.getTime() - days * 1000 * 60 * 60 * 24 + Math.random()*1000*60*60*24*2 - 1000*60*60*24);
     sensor.addMaintenanceLog(
       await MaintenanceLog.create({
         dateTime: _day,
