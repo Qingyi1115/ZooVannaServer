@@ -162,6 +162,7 @@ export async function updateAnimal(req: Request, res: Response) {
     } else {
       imageUrl = req.body.imageUrl;
     }
+
     const {
       animalCode,
       houseName,
@@ -175,12 +176,15 @@ export async function updateAnimal(req: Request, res: Response) {
       acquisitionRemarks,
       physicalDefiningCharacteristics,
       behavioralDefiningCharacteristics,
-      dateOfDeath,
+      // dateOfDeath,
       locationOfDeath,
       causeOfDeath,
       growthStage,
       animalStatus,
     } = req.body;
+
+
+    const dateOfDeath = req.body.dateOfDeath == "" ? null : req.body.dateOfDeath;
 
     if (
       [
