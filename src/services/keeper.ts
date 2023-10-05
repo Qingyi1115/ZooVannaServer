@@ -29,8 +29,8 @@ export async function updateDetails(
 }
 
 export async function removeEnclosure(
-  employeeId: CreationOptional<number>,
-  enclosureId: CreationOptional<number>,
+  employeeId: number,
+  enclosureId: number,
 ) {
   let employee = await Employee.findOne({
     where: { employeeId: employeeId },
