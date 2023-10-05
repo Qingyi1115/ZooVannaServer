@@ -36,6 +36,12 @@ class SpeciesDietNeed extends Model<
   // declare setSpecies: HasManySetAssociationsMixin<Species, number>;
   declare getSpecies: BelongsToGetAssociationMixin<Species>;
   declare setSpecies: BelongsToSetAssociationMixin<Species, number>;
+  
+  public toJSON() {
+    return {
+      ...this.get(),
+    }
+  }
 }
 
 SpeciesDietNeed.init(

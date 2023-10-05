@@ -32,12 +32,15 @@ import {
   PresentationLocation,
   PresentationMethod,
   SensorType,
+  EventType,
+  ListingType,
+  ListingStatus,
   Specialization,
   AnimalSex,
   ActivityType,
   EventTimingType,
 } from "./enumerated";
-import { Event } from "./event";
+import { ZooEvent } from "./zooEvent";
 import { Facility } from "./facility";
 import { FacilityLog } from "./facilityLog";
 import { GeneralStaff } from "./generalStaff";
@@ -117,10 +120,10 @@ export const createDatabase = async (options: any) => {
     addCascadeOptions({ foreignKey: "sensorId" }),
   );
 
-  Sensor.hasMany(SensorReading, addCascadeOptions({ foreignKey: "sensorId" }));
+  Sensor.hasMany(SensorReading, addCascadeOptions({ foreignKey: "sensorId", as :"sensorReadings"}));
   SensorReading.belongsTo(
     Sensor,
-    addCascadeOptions({ foreignKey: "sensorId" }),
+    addCascadeOptions({ foreignKey: "sensorId", as :"sensor" }),
   );
 
   Facility.hasOne(InHouse, addCascadeOptions({ foreignKey: "facilityId" }));
@@ -330,39 +333,39 @@ export const createDatabase = async (options: any) => {
   );
 
   PlanningStaff.hasMany(
-    Event,
+    ZooEvent,
     addCascadeOptions({ foreignKey: "planningStaffId" }),
   );
-  Event.belongsTo(
+  ZooEvent.belongsTo(
     PlanningStaff,
     addCascadeOptions({ foreignKey: "planningStaffId" }),
   );
 
-  Keeper.belongsToMany(Event, {
+  Keeper.belongsToMany(ZooEvent, {
     foreignKey: "keeperId",
-    through: "responsibleFor",
+    through: "keeper_zooEvent",
     as: "keepers",
   });
-  Event.belongsToMany(Keeper, {
-    foreignKey: "eventId",
-    through: "responsibleFor",
-    as: "events",
+  ZooEvent.belongsToMany(Keeper, {
+    foreignKey: "zooEventId",
+    through: "keeper_zooEvent",
+    as: "zooEvents",
   });
 
-  Enclosure.hasMany(Event, addCascadeOptions({ foreignKey: "enclosureId" }));
-  Event.belongsTo(Enclosure, addCascadeOptions({ foreignKey: "enclosureId" }));
+  Enclosure.hasMany(ZooEvent, addCascadeOptions({ foreignKey: "enclosureId" }));
+  ZooEvent.belongsTo(Enclosure, addCascadeOptions({ foreignKey: "enclosureId" }));
 
-  Animal.hasMany(Event, addCascadeOptions({ foreignKey: "animalId" }));
-  Event.belongsTo(Animal, addCascadeOptions({ foreignKey: "animalId" }));
+  Animal.hasMany(ZooEvent, addCascadeOptions({ foreignKey: "animalId" }));
+  ZooEvent.belongsTo(Animal, addCascadeOptions({ foreignKey: "animalId" }));
 
-  InHouse.hasMany(Event, addCascadeOptions({ foreignKey: "inHouseId" }));
-  Event.belongsTo(InHouse, addCascadeOptions({ foreignKey: "inHouseId" }));
+  InHouse.hasMany(ZooEvent, addCascadeOptions({ foreignKey: "inHouseId" }));
+  ZooEvent.belongsTo(InHouse, addCascadeOptions({ foreignKey: "inHouseId" }));
 
   AnimalClinic.hasMany(
-    Event,
+    ZooEvent,
     addCascadeOptions({ foreignKey: "animalClinicId" }),
   );
-  Event.belongsTo(
+  ZooEvent.belongsTo(
     AnimalClinic,
     addCascadeOptions({ foreignKey: "animalClinicId" }),
   );
@@ -390,11 +393,11 @@ export const createDatabase = async (options: any) => {
 
   CustomerOrder.hasMany(
     OrderItem,
-    addCascadeOptions({ foreignKey: "orderItemId" }),
+    addCascadeOptions({ foreignKey: "customerOrderId" }),
   );
   OrderItem.belongsTo(
     CustomerOrder,
-    addCascadeOptions({ foreignKey: "orderItemId" }),
+    addCascadeOptions({ foreignKey: "customerOrderId" }),
   );
 
   CustomerOrder.hasMany(
@@ -743,6 +746,54 @@ export const employeeSeed = async () => {
       },
     },
   );
+
+  let listing1 = await Listing.create({
+    name: "Adult",
+    description: "Listing for local adult",
+    price: 20,
+    listingType: ListingType.LOCAL_ADULT_ONETIME,
+    listingStatus: ListingStatus.ACTIVE,
+  });
+
+  let listing2 = await Listing.create({
+    name: "Student",
+    description: "Listing for local student (including university student)",
+    price: 15,
+    listingType: ListingType.LOCAL_STUDENT_ONETIME,
+    listingStatus: ListingStatus.ACTIVE,
+  });
+
+  let listing3 = await Listing.create({
+    name: "Child",
+    description: "Listing for local child (aged <= 12 years old)",
+    price: 15,
+    listingType: ListingType.LOCAL_CHILD_ONETIME,
+    listingStatus: ListingStatus.ACTIVE,
+  });
+
+  let listing4 = await Listing.create({
+    name: "Senior",
+    description: "Listing for local senior (aged >= 65 years old)",
+    price: 10,
+    listingType: ListingType.LOCAL_SENIOR_ONETIME,
+    listingStatus: ListingStatus.ACTIVE,
+  });
+
+  let listing5 = await Listing.create({
+    name: "Adult",
+    description: "Listing for foreigner adult",
+    price: 30,
+    listingType: ListingType.FOREIGNER_ADULT_ONETIME,
+    listingStatus: ListingStatus.ACTIVE,
+  });
+
+  let listing6 = await Listing.create({
+    name: "Child",
+    description: "Listing for foreigner child",
+    price: 30,
+    listingType: ListingType.FOREIGNER_CHILD_ONETIME,
+    listingStatus: ListingStatus.ACTIVE,
+  });
 };
 
 export const speciesSeed = async () => {
@@ -1304,9 +1355,9 @@ export const facilityAssetsSeed = async () => {
       await FacilityLog.create({
         dateTime: _day,
         isMaintenance: true,
-        title: "string",
-        details: "string",
-        remarks: "string",
+        title: "Maintenance of " + _day.toDateString(),
+        details: "Bla Bla Bla...",
+        remarks: "Uncommon but common",
       }),
     );
   }
@@ -1352,15 +1403,36 @@ export const facilityAssetsSeed = async () => {
       dateTime: new Date(),
       isMaintenance: false,
       title: "log1",
-      details: "string",
-      remarks: "string",
+      details: "Bla Bla...",
+      remarks: "my log haha",
     }),
     await FacilityLog.create({
-      dateTime: new Date(),
+      dateTime: new Date(Date.now() - 1000*60*60*24),
       isMaintenance: false,
       title: "log2",
-      details: "string",
-      remarks: "string",
+      details: "Bla Bla...",
+      remarks: "my log haha",
+    }),
+    await FacilityLog.create({
+      dateTime: new Date(Date.now() - 1000*60*60*24*2),
+      isMaintenance: false,
+      title: "log3",
+      details: "Bla Bla...",
+      remarks: "my log haha",
+    }),
+    await FacilityLog.create({
+      dateTime: new Date(Date.now() - 1000*60*60*24*3),
+      isMaintenance: false,
+      title: "log4",
+      details: "Bla Bla...",
+      remarks: "my log haha",
+    }),
+    await FacilityLog.create({
+      dateTime: new Date(Date.now() - 1000*60*60*24*5),
+      isMaintenance: false,
+      title: "log5",
+      details: "Bla Bla...",
+      remarks: "my log haha",
     }),
   ]);
   // facility1.destroy();
@@ -1473,125 +1545,45 @@ export const facilityAssetsSeed = async () => {
   let sensors: Sensor[] = await hub1.getSensors();
 
   let sensor = sensors[0];
-  sensor.addMaintenanceLog(
-    await MaintenanceLog.create({
-      dateTime: new Date(Date.now()),
-      title: "string",
-      details: "string",
-      remarks: "string",
-    }),
-  );
-  _day = new Date();
+  
+  _day = new Date(Date.now() - 1000 * 60 * 60 * 24 * 10);
   for (const days of [1, 2, 3, 2, 1, 2, 3, 2, 1, 2, 3, 2, 1, 2]) {
     _day = new Date(_day.getTime() - days * 1000 * 60 * 60 * 24);
     sensor.addMaintenanceLog(
       await MaintenanceLog.create({
         dateTime: _day,
-        title: "string",
-        details: "string",
-        remarks: "string",
+        title: "Maintenance " + _day.toDateString(),
+        details: "Bla bla bla...",
+        remarks: "not uncommon",
       }),
     );
   }
+  sensor.dateOfLastMaintained = _day;
 
-  for (let i = 1; i < 100; i++) {
+  for (let i = 1; i < 1000; i++) {
     sensor.addSensorReading(
       await SensorReading.create({
-        readingDate: new Date(Date.now() - 1000 * 60 * i),
+        readingDate: new Date(Date.now() - 1000 * 60 * 30 * i),
         value: Math.random() * 5 + 30 + i / 20,
       }),
     );
   }
+  sensor.save();
 
   sensor = sensors[1];
-  sensor.addMaintenanceLog(
-    await MaintenanceLog.create({
-      dateTime: new Date(Date.now() - 1000 * 60 * 60 * 24 * 3),
-      title: "string",
-      details: "string",
-      remarks: "string",
-    }),
-  );
-  sensor.addMaintenanceLog(
-    await MaintenanceLog.create({
-      dateTime: new Date(Date.now() - 1000 * 60 * 60 * 24 * 6),
-      title: "string",
-      details: "string",
-      remarks: "string",
-    }),
-  );
-  sensor.addMaintenanceLog(
-    await MaintenanceLog.create({
-      dateTime: new Date(Date.now() - 1000 * 60 * 60 * 24 * 10),
-      title: "string",
-      details: "string",
-      remarks: "string",
-    }),
-  );
-  sensor.addMaintenanceLog(
-    await MaintenanceLog.create({
-      dateTime: new Date(Date.now() - 1000 * 60 * 60 * 24 * 15),
-      title: "string",
-      details: "string",
-      remarks: "string",
-    }),
-  );
-  sensor.addMaintenanceLog(
-    await MaintenanceLog.create({
-      dateTime: new Date(Date.now() - 1000 * 60 * 60 * 24 * 21),
-      title: "string",
-      details: "string",
-      remarks: "string",
-    }),
-  );
-  sensor.addMaintenanceLog(
-    await MaintenanceLog.create({
-      dateTime: new Date(Date.now() - 1000 * 60 * 60 * 24 * 28),
-      title: "string",
-      details: "string",
-      remarks: "string",
-    }),
-  );
-  sensor.addMaintenanceLog(
-    await MaintenanceLog.create({
-      dateTime: new Date(Date.now() - 1000 * 60 * 60 * 24 * 36),
-      title: "string",
-      details: "string",
-      remarks: "string",
-    }),
-  );
-  sensor.addMaintenanceLog(
-    await MaintenanceLog.create({
-      dateTime: new Date(Date.now() - 1000 * 60 * 60 * 24 * 45),
-      title: "string",
-      details: "string",
-      remarks: "string",
-    }),
-  );
-  sensor.addMaintenanceLog(
-    await MaintenanceLog.create({
-      dateTime: new Date(Date.now() - 1000 * 60 * 60 * 24 * 55),
-      title: "string",
-      details: "string",
-      remarks: "string",
-    }),
-  );
-  sensor.addMaintenanceLog(
-    await MaintenanceLog.create({
-      dateTime: new Date(Date.now() - 1000 * 60 * 60 * 24 * 66),
-      title: "string",
-      details: "string",
-      remarks: "string",
-    }),
-  );
-  sensor.addMaintenanceLog(
-    await MaintenanceLog.create({
-      dateTime: new Date(Date.now() - 1000 * 60 * 60 * 24 * 78),
-      title: "string",
-      details: "string",
-      remarks: "string",
-    }),
-  );
+  _day = new Date(Date.now() - 1000 * 60 * 60 * 24 * 5);
+  for (const days of [0, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15 ,16, 17, 18, 19, 20, 21]) {
+    _day = new Date(_day.getTime() - days * 1000 * 60 * 60 * 24 + Math.random()*1000*60*60*24*2 - 1000*60*60*24);
+    sensor.addMaintenanceLog(
+      await MaintenanceLog.create({
+        dateTime: _day,
+        title: "Maintenance " + _day.toDateString(),
+        details: "Bla bla bla...",
+        remarks: "not uncommon",
+      }),
+    );
+  }
+  sensor.dateOfLastMaintained = _day;
 
   for (let i = 1; i < 100; i++) {
     sensor.addSensorReading(
@@ -1601,92 +1593,22 @@ export const facilityAssetsSeed = async () => {
       }),
     );
   }
+  sensor.save();
 
   sensor = sensors[2];
-  sensor.addMaintenanceLog(
-    await MaintenanceLog.create({
-      dateTime: new Date(Date.now() - 1000 * 60 * 60 * 24 * 3),
-      title: "string",
-      details: "string",
-      remarks: "string",
-    }),
-  );
-  sensor.addMaintenanceLog(
-    await MaintenanceLog.create({
-      dateTime: new Date(Date.now() - 1000 * 60 * 60 * 24 * 4),
-      title: "string",
-      details: "string",
-      remarks: "string",
-    }),
-  );
-  sensor.addMaintenanceLog(
-    await MaintenanceLog.create({
-      dateTime: new Date(Date.now() - 1000 * 60 * 60 * 24 * 6),
-      title: "string",
-      details: "string",
-      remarks: "string",
-    }),
-  );
-  sensor.addMaintenanceLog(
-    await MaintenanceLog.create({
-      dateTime: new Date(Date.now() - 1000 * 60 * 60 * 24 * 7),
-      title: "string",
-      details: "string",
-      remarks: "string",
-    }),
-  );
-  sensor.addMaintenanceLog(
-    await MaintenanceLog.create({
-      dateTime: new Date(Date.now() - 1000 * 60 * 60 * 24 * 9),
-      title: "string",
-      details: "string",
-      remarks: "string",
-    }),
-  );
-  sensor.addMaintenanceLog(
-    await MaintenanceLog.create({
-      dateTime: new Date(Date.now() - 1000 * 60 * 60 * 24 * 10),
-      title: "string",
-      details: "string",
-      remarks: "string",
-    }),
-  );
-  sensor.addMaintenanceLog(
-    await MaintenanceLog.create({
-      dateTime: new Date(Date.now() - 1000 * 60 * 60 * 24 * 12),
-      title: "string",
-      details: "string",
-      remarks: "string",
-    }),
-  );
-  sensor.addMaintenanceLog(
-    await MaintenanceLog.create({
-      dateTime: new Date(Date.now() - 1000 * 60 * 60 * 24 * 13),
-      title: "string",
-      details: "string",
-      remarks: "string",
-    }),
-  );
-  sensor.addMaintenanceLog(
-    await MaintenanceLog.create({
-      dateTime: new Date(Date.now() - 1000 * 60 * 60 * 24 * 15),
-      title: "string",
-      details: "string",
-      remarks: "string",
-    }),
-  );
-  sensor.addMaintenanceLog(
-    await MaintenanceLog.create({
-      dateTime: new Date(Date.now() - 1000 * 60 * 60 * 24 * 16),
-      title: "string",
-      details: "string",
-      remarks: "string",
-    }),
-  );
-  // sensor.addMaintenanceLog(await MaintenanceLog.create({ dateTime: new Date(Date.now() - 1000 * 60 * 60 * 24 * 18), title: "string", details: "string", remarks: "string" }))
-  // sensor.addMaintenanceLog(await MaintenanceLog.create({ dateTime: new Date(Date.now() - 1000 * 60 * 60 * 24 * 19), title: "string", details: "string", remarks: "string" }))
-  // sensor.addMaintenanceLog(await MaintenanceLog.create({ dateTime: new Date(Date.now() - 1000 * 60 * 60 * 24 * 21), title: "string", details: "string", remarks: "string" }))
-  // sensor.addMaintenanceLog(await MaintenanceLog.create({ dateTime: new Date(Date.now() - 1000 * 60 * 60 * 24 * 22), title: "string", details: "string", remarks: "string" }))
+  _day = new Date(Date.now());
+  for (const days of [3, 1, 2, 3, 4, 5, 6, 7, 8, 9]) {
+    _day = new Date(_day.getTime() - days * 1000 * 60 * 60 * 24);
+    sensor.addMaintenanceLog(
+      await MaintenanceLog.create({
+        dateTime: _day,
+        title: "Maintenance " + _day.toDateString(),
+        details: "Bla bla bla...",
+        remarks: "not uncommon",
+      }),
+    );
+  }
+  sensor.dateOfLastMaintained = _day;
 
   for (let i = 1; i < 100; i++) {
     sensor.addSensorReading(
@@ -1696,56 +1618,22 @@ export const facilityAssetsSeed = async () => {
       }),
     );
   }
+  sensor.save();
 
   sensor = sensors[3];
-  sensor.addMaintenanceLog(
-    await MaintenanceLog.create({
-      dateTime: new Date(Date.now()),
-      title: "string",
-      details: "string",
-      remarks: "string",
-    }),
-  );
-  sensor.addMaintenanceLog(
-    await MaintenanceLog.create({
-      dateTime: new Date(Date.now() - 1000 * 60 * 60 * 24 * 1),
-      title: "string",
-      details: "string",
-      remarks: "string",
-    }),
-  );
-  sensor.addMaintenanceLog(
-    await MaintenanceLog.create({
-      dateTime: new Date(Date.now() - 1000 * 60 * 60 * 24 * 2),
-      title: "string",
-      details: "string",
-      remarks: "string",
-    }),
-  );
-  sensor.addMaintenanceLog(
-    await MaintenanceLog.create({
-      dateTime: new Date(Date.now() - 1000 * 60 * 60 * 24 * 5),
-      title: "string",
-      details: "string",
-      remarks: "string",
-    }),
-  );
-  sensor.addMaintenanceLog(
-    await MaintenanceLog.create({
-      dateTime: new Date(Date.now() - 1000 * 60 * 60 * 24 * 7),
-      title: "string",
-      details: "string",
-      remarks: "string",
-    }),
-  );
-  sensor.addMaintenanceLog(
-    await MaintenanceLog.create({
-      dateTime: new Date(Date.now() - 1000 * 60 * 60 * 24 * 8),
-      title: "string",
-      details: "string",
-      remarks: "string",
-    }),
-  );
+  _day = new Date(Date.now());
+  for (const days of [0, 1, 3, 4, 2, 4]) {
+    _day = new Date(_day.getTime() - days * 1000 * 60 * 60 * 24);
+    sensor.addMaintenanceLog(
+      await MaintenanceLog.create({
+        dateTime: _day,
+        title: "Maintenance " + _day.toDateString(),
+        details: "Bla bla bla...",
+        remarks: "not uncommon",
+      }),
+    );
+  }
+  sensor.dateOfLastMaintained = _day;
 
   for (let i = 1; i < 100; i++) {
     sensor.addSensorReading(
@@ -1755,129 +1643,23 @@ export const facilityAssetsSeed = async () => {
       }),
     );
   }
+  sensor.save();
 
   sensor = sensors[4];
-  [1, 5, 2, 4, 8, 5, 7, 11, 8, 10, 14, 11, 13, 17];
-  sensor.addMaintenanceLog(
-    await MaintenanceLog.create({
-      dateTime: new Date(Date.now()),
-      title: "string",
-      details: "string",
-      remarks: "string",
-    }),
-  );
-  sensor.addMaintenanceLog(
-    await MaintenanceLog.create({
-      dateTime: new Date(Date.now() - 1000 * 60 * 60 * 24 * 17),
-      title: "string",
-      details: "string",
-      remarks: "string",
-    }),
-  );
-  sensor.addMaintenanceLog(
-    await MaintenanceLog.create({
-      dateTime: new Date(Date.now() - 1000 * 60 * 60 * 24 * 30),
-      title: "string",
-      details: "string",
-      remarks: "string",
-    }),
-  );
-  sensor.addMaintenanceLog(
-    await MaintenanceLog.create({
-      dateTime: new Date(Date.now() - 1000 * 60 * 60 * 24 * 41),
-      title: "string",
-      details: "string",
-      remarks: "string",
-    }),
-  );
-  sensor.addMaintenanceLog(
-    await MaintenanceLog.create({
-      dateTime: new Date(Date.now() - 1000 * 60 * 60 * 24 * 55),
-      title: "string",
-      details: "string",
-      remarks: "string",
-    }),
-  );
-  sensor.addMaintenanceLog(
-    await MaintenanceLog.create({
-      dateTime: new Date(Date.now() - 1000 * 60 * 60 * 24 * 65),
-      title: "string",
-      details: "string",
-      remarks: "string",
-    }),
-  );
-  sensor.addMaintenanceLog(
-    await MaintenanceLog.create({
-      dateTime: new Date(Date.now() - 1000 * 60 * 60 * 24 * 73),
-      title: "string",
-      details: "string",
-      remarks: "string",
-    }),
-  );
-  sensor.addMaintenanceLog(
-    await MaintenanceLog.create({
-      dateTime: new Date(Date.now() - 1000 * 60 * 60 * 24 * 84),
-      title: "string",
-      details: "string",
-      remarks: "string",
-    }),
-  );
-  sensor.addMaintenanceLog(
-    await MaintenanceLog.create({
-      dateTime: new Date(Date.now() - 1000 * 60 * 60 * 24 * 91),
-      title: "string",
-      details: "string",
-      remarks: "string",
-    }),
-  );
-  sensor.addMaintenanceLog(
-    await MaintenanceLog.create({
-      dateTime: new Date(Date.now() - 1000 * 60 * 60 * 24 * 96),
-      title: "string",
-      details: "string",
-      remarks: "string",
-    }),
-  );
-  sensor.addMaintenanceLog(
-    await MaintenanceLog.create({
-      dateTime: new Date(Date.now() - 1000 * 60 * 60 * 24 * 104),
-      title: "string",
-      details: "string",
-      remarks: "string",
-    }),
-  );
-  sensor.addMaintenanceLog(
-    await MaintenanceLog.create({
-      dateTime: new Date(Date.now() - 1000 * 60 * 60 * 24 * 108),
-      title: "string",
-      details: "string",
-      remarks: "string",
-    }),
-  );
-  sensor.addMaintenanceLog(
-    await MaintenanceLog.create({
-      dateTime: new Date(Date.now() - 1000 * 60 * 60 * 24 * 110),
-      title: "string",
-      details: "string",
-      remarks: "string",
-    }),
-  );
-  sensor.addMaintenanceLog(
-    await MaintenanceLog.create({
-      dateTime: new Date(Date.now() - 1000 * 60 * 60 * 24 * 115),
-      title: "string",
-      details: "string",
-      remarks: "string",
-    }),
-  );
-  sensor.addMaintenanceLog(
-    await MaintenanceLog.create({
-      dateTime: new Date(Date.now() - 1000 * 60 * 60 * 24 * 116),
-      title: "string",
-      details: "string",
-      remarks: "string",
-    }),
-  );
+  _day = new Date(Date.now());
+  // [1, 5, 2, 4, 8, 5, 7, 11, 8, 10, 14, 11, 13, 17]
+  for (const days of [0, 17, 13, 11, 14, 10, 8, 11, 7, 5, 8, 4, 2, 5, 1]) {
+    _day = new Date(_day.getTime() - days * 1000 * 60 * 60 * 24);
+    sensor.addMaintenanceLog(
+      await MaintenanceLog.create({
+        dateTime: _day,
+        title: "Maintenance " + _day.toDateString(),
+        details: "Bla bla bla...",
+        remarks: "not uncommon",
+      }),
+    );
+  }
+  sensor.dateOfLastMaintained = _day;
 
   for (let i = 1; i < 100; i++) {
     sensor.addSensorReading(
@@ -1887,6 +1669,7 @@ export const facilityAssetsSeed = async () => {
       }),
     );
   }
+  sensor.save();
 
   let hub2 = await HubProcessor.create(
     {
@@ -1896,14 +1679,14 @@ export const facilityAssetsSeed = async () => {
       sensors: [
         {
           sensorName: "Camera3",
-          dateOfActivation: new Date("01-01-2023"),
-          dateOfLastMaintained: new Date("09-09-2023"),
+          dateOfActivation: new Date(),
+          dateOfLastMaintained: new Date(),
           sensorType: SensorType.CAMERA,
         },
         {
           sensorName: "Camera4",
-          dateOfActivation: new Date("01-01-2023"),
-          dateOfLastMaintained: new Date("09-09-2023"),
+          dateOfActivation: new Date(),
+          dateOfLastMaintained: new Date(),
           sensorType: SensorType.CAMERA,
         },
       ],
@@ -1927,8 +1710,8 @@ export const facilityAssetsSeed = async () => {
 
   let cameraTemplate = {
     sensorName: "Camera5",
-    dateOfActivation: new Date("01-01-2023"),
-    dateOfLastMaintained: new Date("09-09-2023"),
+    dateOfActivation: new Date(),
+    dateOfLastMaintained: new Date(),
     sensorType: SensorType.CAMERA,
   } as any;
   let camera = await Sensor.create(cameraTemplate);

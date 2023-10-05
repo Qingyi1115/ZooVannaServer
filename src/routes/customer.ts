@@ -13,6 +13,7 @@ import {
   sendForgetPasswordLink,
   resetForgottenPasswordController,
   deleteCustomerByEmail,
+  purchaseTicketController,
 } from "../controllers/customerController";
 import { authMiddleware } from "../middlewares/authMiddleware";
 
@@ -25,12 +26,13 @@ router.post("/createCustomer", createCustomer);
 
 // log in
 router.post("/login", login);
+router.post("/createTicket/:customerId", purchaseTicketController);
+router.post("/getCustomer", getCustomerByEmail);
 
 router.use(authMiddleware);
 
 router.delete("/deleteCustomer/:customerId", deleteCustomer);
 // router.get("/getCustomer/:customerId", getCustomerByCustomerId);
-router.get("/getCustomer", getCustomerByEmail);
 router.put("/updateCustomer/:customerId", updateCustomer);
 router.put("/updatePassword/:customerId", updatePassword);
 router.delete("/deleteCustomer", deleteCustomerByEmail);

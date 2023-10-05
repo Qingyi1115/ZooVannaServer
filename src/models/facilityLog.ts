@@ -26,6 +26,13 @@ class FacilityLog extends Model<
 
   declare getInHouse: BelongsToGetAssociationMixin<InHouse>;
   declare setInHouse: BelongsToSetAssociationMixin<InHouse, number>;
+  
+  public toJSON() {
+    return {
+      ...this.get(),
+      dateTime:this.dateTime?.getTime(),
+    }
+  }
 }
 
 FacilityLog.init(

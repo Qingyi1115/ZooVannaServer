@@ -30,7 +30,7 @@ class Sensor extends Model<
   declare sensorType: SensorType;
 
   declare hubProcessor?: HubProcessor;
-  declare sensorReading? :SensorReading[];
+  declare sensorReadings? :SensorReading[];
   declare maintenanceLog? :MaintenanceLog[];
   declare generalStaff?: GeneralStaff;
 
@@ -39,22 +39,30 @@ class Sensor extends Model<
 
   declare getSensorReadings: HasManyGetAssociationsMixin<SensorReading>;
   declare addSensorReading: HasManyAddAssociationMixin<SensorReading, number>;
-  declare setSensorReadings: HasManySetAssociationsMixin<SensorReading[], number>;
+  declare setSensorReadings: HasManySetAssociationsMixin<SensorReading, number>;
   declare removeSensorReading: HasManyRemoveAssociationMixin<SensorReading, number>;
 
   declare getMaintenanceLogs: HasManyGetAssociationsMixin<MaintenanceLog>;
   declare addMaintenanceLog: HasManyAddAssociationMixin<MaintenanceLog, number>;
-  declare setMaintenanceLogs: HasManySetAssociationsMixin<MaintenanceLog[], number>;
+  declare setMaintenanceLogs: HasManySetAssociationsMixin<MaintenanceLog, number>;
   declare removeMaintenanceLog: HasManyRemoveAssociationMixin<MaintenanceLog, number>;
 
   declare getGeneralStaff: BelongsToGetAssociationMixin<GeneralStaff>;
   declare setGeneralStaff: BelongsToSetAssociationMixin<GeneralStaff, number>;
 
-  public async toFullJSON(){
+  public toJSON() {
     return {
       ...this.get(),
-      hubProcessor: (await this.getHubProcessor()),
-      generalStaff: (await this.getGeneralStaff()),
+      dateOfActivation:this.dateOfActivation?.getTime(),
+      dateOfLastMaintained:this.dateOfLastMaintained?.getTime(),
+    }
+  }
+
+  public async toFullJSON(){
+    return {
+      ...this.toJSON(),
+      hubProcessor: (await this.getHubProcessor())?.toJSON(),
+      generalStaff: (await this.getGeneralStaff())?.toJSON(),
     };
   }
 }

@@ -26,6 +26,7 @@ import { Enclosure } from "./enclosure";
 import { AnimalLog } from "./animalLog";
 import { AnimalWeight } from "./animalWeight";
 import { AnimalActivity } from "./animalActivity";
+import { ZooEvent } from "./zooEvent";
 
 class Animal extends Model<
   InferAttributes<Animal>,
@@ -68,7 +69,7 @@ class Animal extends Model<
   // declare animalClinic?: AnimalClinic;
   declare animalLog?: AnimalLog;
   declare enclosure?: Enclosure;
-  declare events?: Event[];
+  declare zooEvents?: ZooEvent[];
 
   declare getSpecies: BelongsToGetAssociationMixin<Species>;
   declare setSpecies: BelongsToSetAssociationMixin<Species, number>;
@@ -110,10 +111,11 @@ class Animal extends Model<
   declare setAnimalLogs: HasManySetAssociationsMixin<AnimalLog, number>;
   declare removeAnimalLog: HasManyRemoveAssociationMixin<AnimalLog, number>;
 
-  declare getEvents: HasManyGetAssociationsMixin<Event>;
-  declare addEvent: HasManyAddAssociationMixin<Event, number>;
-  declare setEvents: HasManySetAssociationsMixin<Event, number>;
-  declare removeEvent: HasManyRemoveAssociationMixin<Event, number>;
+  declare getZooEvents: HasManyGetAssociationsMixin<ZooEvent>;
+  declare addZooEvent: HasManyAddAssociationMixin<ZooEvent, number>;
+  declare setZooEvents: HasManySetAssociationsMixin<ZooEvent, number>;
+  declare removeZooEvent: HasManyRemoveAssociationMixin<ZooEvent, number>;
+  // declare age?: number;
 
   // public getAge(): number {
   //   if (!this.age) {
@@ -140,11 +142,14 @@ class Animal extends Model<
     return (this as any)[mixinMethodName]();
   }
 
-  // public toJSON() {
-  //     // Can control default values returned rather than manually populating json, removing secrets
-  //     // Similar idea albert more useful when compared to java's toString
-  //     return {...this.get(), age: this.getAge()}
-  // }
+  public toJSON() {
+    return {
+      ...this.get(),
+      dateOfBirth: this.dateOfBirth?.getTime(),
+      dateOfAcquisition: this.dateOfAcquisition?.getTime(),
+      dateOfDeath: this.dateOfDeath?.getTime(),
+    };
+  }
 
   static async getNextAnimalCode() {
     try {

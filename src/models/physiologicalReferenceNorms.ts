@@ -38,6 +38,12 @@ class PhysiologicalReferenceNorms extends Model<
 
   declare getSpecies: BelongsToGetAssociationMixin<Species>;
   declare setSpecies: BelongsToSetAssociationMixin<Species, number>;
+  
+  public toJSON() {
+    return {
+      ...this.get(),
+    }
+  }
 }
 PhysiologicalReferenceNorms.init(
   {

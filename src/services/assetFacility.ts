@@ -8,11 +8,11 @@ import { findEmployeeById, getAllEmployees } from "./employee";
 import { GeneralStaff } from "../models/generalStaff";
 import { InHouse } from "../models/inHouse";
 import { FacilityLog } from "../models/facilityLog";
-import { compareDates } from "../helpers/others";
 import { predictCycleLength, predictNextDate } from "../helpers/predictors";
 import { MaintenanceLog } from "../models/maintenanceLog";
 import { Employee } from "../models/employee";
 import { SensorReading } from "../models/sensorReading";
+import { Op } from "Sequelize";
 
 export async function createNewFacility(
   facilityName: string,
@@ -81,7 +81,7 @@ export async function getAllFacilityMaintenanceSuggestions(employee:Employee) {
       let logs = (await inHouse.getFacilityLogs()) || [];
       logs = logs.map((log: FacilityLog) => log.dateTime);
       (facility as any).dataValues["predictedMaintenanceDate"] = predictNextDate(logs);
-      (facility as any).dataValues["facilityDetailJson"] = inHouse;
+      (facility as any).dataValues["facilityDetailJson"] = inHouse.toJSON();
     }
 
     return facilities;
@@ -375,14 +375,47 @@ export async function getAllSensors(includes: string[] = []): Promise<Sensor[]> 
 
 export async function getSensorReadingBySensorId(
   sensorId: number,
+  startDate: Date,
+  endDate: Date
 ) {
   try {
     const sensor = await Sensor.findOne({
       where: { sensorId: sensorId },
+      include: [{
+        association: "sensorReadings",
+        as: "sensorReadings",
+        where: {
+          readingDate: {
+            [Op.lt]: endDate,
+            [Op.gt]: startDate
+          }
+        }
+      }]
     });
     if (!sensor) throw { message: "Unable to find sensorId: " + sensorId };
 
-    return sensor.getSensorReadings();
+    return sensor.sensorReadings;
+  } catch (error: any) {
+    throw validationErrorHandler(error);
+  }
+}
+
+export async function getEarliestReadingBySensorId(
+  sensorId: number
+) {
+  try {
+    const reading = await SensorReading.findOne({
+      order: [ ["readingDate", 'ASC'], ],
+      include: [{
+        association: "sensor",
+        where: {
+          sensorId: sensorId
+        },
+        required: true,
+      }]
+    });
+
+    return reading?.readingDate;
   } catch (error: any) {
     throw validationErrorHandler(error);
   }
@@ -442,7 +475,7 @@ export async function getFacilityMaintenanceSuggestions(
     logs = logs.filter((log: FacilityLog) => log.isMaintenance);
     let dateLogs = logs.map((log: FacilityLog) => log.dateTime);
     
-    return predictCycleLength(dateLogs, predictionLength);
+    return {...predictCycleLength(dateLogs, predictionLength), name:facility.facilityName};
   } catch (error: any) {
     throw validationErrorHandler(error);
   }
@@ -459,7 +492,7 @@ export async function getSensorMaintenanceSuggestions(
     let logs = (await sensor.getMaintenanceLogs()) || [];
     let dateLogs = logs.map((log: MaintenanceLog) => log.dateTime);
     
-    return predictCycleLength(dateLogs, predictionLength);
+    return {...predictCycleLength(dateLogs, predictionLength), name : sensor.sensorName};
   } catch (error: any) {
     throw validationErrorHandler(error);
   }
@@ -556,7 +589,7 @@ export async function createSensorMaintenanceLog(
   title: string,
   details: string,
   remarks: string
-): Promise<MaintenanceLog> {
+): Promise<Sensor> {
   try {
     const sensor = await Sensor.findOne({
       where: { sensorId: sensorId },
@@ -573,7 +606,7 @@ export async function createSensorMaintenanceLog(
     sensor.dateOfLastMaintained = date;
     await sensor.save();
 
-    return newLog;
+    return sensor;
   } catch (error: any) {
     throw validationErrorHandler(error);
   }

@@ -33,6 +33,12 @@ class EnrichmentItem extends Model<
     AnimalActivity,
     number
   >;
+
+  public toJSON() {
+    return {
+      ...this.get(),
+    };
+  }
 }
 
 EnrichmentItem.init(

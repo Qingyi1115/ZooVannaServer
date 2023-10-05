@@ -22,6 +22,13 @@ class AnimalWeight extends Model<
 
   declare getAnimal: BelongsToGetAssociationMixin<Animal>;
   declare setAnimal: BelongsToSetAssociationMixin<Animal, number>;
+  
+  public toJSON() {
+    return {
+      ...this.get(),
+      dateOfMeasure:this.dateOfMeasure?.getTime(),
+    }
+  }
 }
 
 AnimalWeight.init(

@@ -25,6 +25,12 @@ class BarrierType extends Model<
 
   declare getEnclosure: BelongsToGetAssociationMixin<Enclosure>;
   declare setEnclosure: BelongsToSetAssociationMixin<Enclosure, number>;
+  
+  public toJSON() {
+    return {
+      ...this.get()
+    }
+  }
 }
 
 BarrierType.init(

@@ -160,6 +160,12 @@ class Species extends Model<
 
     return !!isCompatible;
   }
+  
+  public toJSON() {
+    return {
+      ...this.get(),
+    }
+  }
 }
 
 Species.init(

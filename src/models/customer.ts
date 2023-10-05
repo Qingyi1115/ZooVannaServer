@@ -84,12 +84,11 @@ class Customer extends Model<
   }
 
   public toJSON() {
-    // Can control default values returned rather than manually populating json, removing secrets
-    // Similar idea albert more useful when compared to java's toString
     return {
       ...this.get(),
       passwordHash: undefined,
       salt: undefined,
+      birthday:this.birthday?.getTime(),
     };
   }
 }

@@ -6,8 +6,10 @@ import {
   CreationOptional,
   HasManyGetAssociationsMixin,
   HasManySetAssociationsMixin,
-  HasManyAddAssociationsMixin,
+  HasManyAddAssociationMixin,
   HasManyRemoveAssociationMixin,
+  BelongsToGetAssociationMixin,
+  BelongsToSetAssociationMixin,
 } from "Sequelize";
 import { conn } from "../db";
 import { ListingStatus, ListingType } from "./enumerated";
@@ -27,7 +29,7 @@ class Listing extends Model<
   declare orderItems?: OrderItem[];
 
   declare getOrderItems: HasManyGetAssociationsMixin<OrderItem>;
-  declare addOrderItem: HasManyAddAssociationsMixin<OrderItem, number>;
+  declare addOrderItem: HasManyAddAssociationMixin<OrderItem, number>;
   declare setOrderItems: HasManySetAssociationsMixin<OrderItem, number>;
   declare removeOrderItem: HasManyRemoveAssociationMixin<OrderItem, number>;
 
@@ -39,6 +41,12 @@ class Listing extends Model<
   public setEnabled() {
     this.listingStatus = ListingStatus.ACTIVE;
     this.save();
+  }
+  
+  public toJSON() {
+    return {
+      ...this.get()
+    }
   }
 }
 

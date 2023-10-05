@@ -16,6 +16,12 @@ class AnimalFeed extends Model<
   declare animalFeedName: string;
   declare animalFeedImageUrl: string;
   declare animalFeedCategory: AnimalFeedCategory;
+  
+  public toJSON() {
+    return {
+      ...this.get()
+    }
+  }
 }
 
 AnimalFeed.init({

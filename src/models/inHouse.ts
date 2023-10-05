@@ -22,6 +22,7 @@ import { FacilityType } from "./enumerated";
 import { GeneralStaff } from "./generalStaff";
 import { FacilityLog } from "./facilityLog";
 import { CustomerReportLog } from "./customerReportLog";
+import { ZooEvent } from "./zooEvent";
 
 class InHouse extends Model<
   InferAttributes<InHouse>,
@@ -39,7 +40,7 @@ class InHouse extends Model<
   declare maintenanceStaffs?: GeneralStaff[];
   declare operationStaffs?: GeneralStaff[];
   declare facilityLogs?: FacilityLog[];
-  declare events?: Event[];
+  declare zooEvents?: ZooEvent[];
   declare customerReportLogs?: CustomerReportLog[];
 
   declare getFacility: BelongsToGetAssociationMixin<Facility>;
@@ -53,12 +54,12 @@ class InHouse extends Model<
 
   declare getMaintenanceStaffs: BelongsToManyGetAssociationsMixin<GeneralStaff>;
   declare addMaintenanceStaff: BelongsToManyAddAssociationMixin<GeneralStaff, number>;
-  declare setMaintenanceStaffs: BelongsToManySetAssociationsMixin<GeneralStaff[], number>;
+  declare setMaintenanceStaffs: BelongsToManySetAssociationsMixin<GeneralStaff, number>;
   declare removeMaintenanceStaff: BelongsToManyRemoveAssociationMixin<GeneralStaff, number>;
 
-  declare getOperationStaffs: HasManyGetAssociationsMixin<GeneralStaff[]>;
+  declare getOperationStaffs: HasManyGetAssociationsMixin<GeneralStaff>;
   declare addOperationStaff: HasManyAddAssociationMixin<GeneralStaff, number>;
-  declare setOperationStaffs: HasManySetAssociationsMixin<GeneralStaff[], number>;
+  declare setOperationStaffs: HasManySetAssociationsMixin<GeneralStaff, number>;
   declare removeOperationStaff: HasManyRemoveAssociationMixin<GeneralStaff, number>;
 
   declare getFacilityLogs: HasManyGetAssociationsMixin<FacilityLog>;
@@ -66,14 +67,14 @@ class InHouse extends Model<
   declare setFacilityLogs: HasManySetAssociationsMixin<FacilityLog, number>;
   declare removeFacilityLog: HasManyRemoveAssociationMixin<FacilityLog, number>;
 
-  declare getEvents: HasManyGetAssociationsMixin<Event[]>;
-  declare addEvent: HasManyAddAssociationMixin<Event, number>;
-  declare setEvents: HasManySetAssociationsMixin<Event[], number>;
-  declare removeEvent: HasManyRemoveAssociationMixin<Event, number>;
+  declare getZooEvents: HasManyGetAssociationsMixin<ZooEvent>;
+  declare addZooEvent: HasManyAddAssociationMixin<ZooEvent, number>;
+  declare setZooEvents: HasManySetAssociationsMixin<ZooEvent, number>;
+  declare removeZooEvent: HasManyRemoveAssociationMixin<ZooEvent, number>;
 
-  declare getCustomerReportLogs: HasManyGetAssociationsMixin<CustomerReportLog[]>;
+  declare getCustomerReportLogs: HasManyGetAssociationsMixin<CustomerReportLog>;
   declare addCustomerReportLog: HasManyAddAssociationMixin<CustomerReportLog, number>;
-  declare setCustomerReportLogs: HasManySetAssociationsMixin<CustomerReportLog[], number>;
+  declare setCustomerReportLogs: HasManySetAssociationsMixin<CustomerReportLog, number>;
   declare removeCustomerReportLog: HasManyRemoveAssociationMixin<CustomerReportLog, number>;
 
   public toJSON() {
@@ -85,14 +86,15 @@ class InHouse extends Model<
   public async toFullJSON() {
     return {
       ...this.get(),
-      facility: (await this.getFacility()),
-      previousTramStop: (await this.getPreviousTramStop()),
-      nextTramStop: (await this.getNextTramStop()),
-      maintenanceStaffs: await (this.getMaintenanceStaffs()),
-      operationStaffs: await (this.getOperationStaffs()),
-      facilityLogs: await (this.getFacilityLogs()),
-      events: await (this.getEvents()),
-      customerReportLogs: await (this.getCustomerReportLogs())
+      facility: (await this.getFacility())?.toJSON(),
+      previousTramStop: (await this.getPreviousTramStop())?.toJSON(),
+      nextTramStop: (await this.getNextTramStop())?.toJSON(),
+      maintenanceStaffs: (await this.getMaintenanceStaffs())?.map(staff=>staff.toJSON()),
+      operationStaffs: (await this.getOperationStaffs())?.map(staff=>staff.toJSON()),
+      facilityLogs: (await this.getFacilityLogs())?.map(log=>log.toJSON()),
+      zooEvent: (await this.getZooEvents())?.map(event=>event.toJSON()),
+      customerReportLogs: (await this.getCustomerReportLogs())?.map(log=>log.toJSON()),
+      lastMaintained:this.lastMaintained?.getTime(),
     };
   }
 }

@@ -5,6 +5,12 @@ import { Customer } from "../models/customer";
 import { Country } from "../models/enumerated";
 import * as nodemailer from "nodemailer";
 import { v4 as uuidv4 } from "uuid";
+import { OrderItem } from "../models/orderItem";
+import { Listing } from "../models/listing";
+import { CustomerOrder } from "../models/customerOrder";
+import { Payment } from "../models/payment";
+const { Sequelize } = require("sequelize");
+import { conn } from "../db";
 
 export async function createNewCustomer(
   customerPassword: string,
@@ -244,4 +250,133 @@ export async function deleteCustomerByEmail(customerEmail: string) {
     return result;
   }
   throw { message: "Invalid Customer Email!" };
+}
+
+export async function purchaseTicket(
+  customerId: number,
+  listings: any,
+  customerOrder: any,
+  payment: any,
+) {
+  try {
+    await conn.transaction(async (t: any) => {
+      let result = await Customer.findOne({
+        where: { customerId: customerId },
+      });
+
+      if (result) {
+        let custOrder = await CustomerOrder.create(customerOrder, {
+          transaction: t,
+        });
+
+        for (const listing of listings) {
+          let queriedListing = await Listing.findOne({
+            where: { listingId: listing.listingId },
+            transaction: t,
+          });
+          console.log("does it go here again?");
+
+          if (queriedListing) {
+            for (const orderItem of listing.orderItems) {
+              console.log("hmmmmmm");
+              console.log(orderItem);
+              console.log(queriedListing);
+              console.log(listing);
+              try {
+                let newOrderItem = await OrderItem.create(orderItem, {
+                  transaction: t,
+                });
+                console.log(newOrderItem.toJSON());
+
+                console.log("is it okay here?");
+                queriedListing.addOrderItem(newOrderItem);
+                console.log("here");
+                newOrderItem.setListing(queriedListing);
+                console.log("yes here");
+                custOrder.addOrderItem(newOrderItem);
+                console.log("hereeeeee");
+                newOrderItem.setCustomerOrder(custOrder);
+                console.log("hmm??");
+              } catch (error: any) {
+                console.log("yes");
+                console.log(error);
+                throw error;
+              }
+            }
+          } else {
+            throw { message: "Invalid listing" };
+          }
+        }
+        result.addCustomerOrder(custOrder);
+        custOrder.setCustomer(result);
+
+        let pay = await Payment.create(payment, { transaction: t });
+        pay.setCustomerOrder(custOrder);
+        custOrder.addPayment(pay);
+        return custOrder;
+      } else {
+        throw { message: "Invalid customer Id" };
+      }
+    });
+  } catch (error) {
+    console.log(error);
+    throw error;
+  }
+}
+
+{
+  /*export async function purchaseTicket(
+  customerId: number,
+  listings: any,
+  customerOrder: any,
+  payment: any,
+) {
+  try {
+    console.log("is it heree?");
+    console.log("hereeee??");
+    let result = await Customer.findOne({
+      where: { customerId: customerId },
+    });
+    console.log("customer " + result);
+
+    if (result) {
+      let custOrder = await CustomerOrder.create(customerOrder);
+
+      console.log("custOrder " + custOrder);
+
+      for (const listing of listings) {
+        let queriedListing = await Listing.findOne({
+          where: { listingId: listing.listingId },
+        });
+
+        console.log("listing " + queriedListing);
+
+        if (queriedListing) {
+          for (const orderItem of listing.orderItems) {
+            let newOrderItem = await OrderItem.create(orderItem);
+            queriedListing.addOrderItem(newOrderItem);
+            newOrderItem.setListing(queriedListing);
+            custOrder.addOrderItem(newOrderItem);
+            newOrderItem.setCustomerOrder(custOrder);
+          }
+        } else {
+          throw { message: "Invalid listing" };
+        }
+      }
+      result.addCustomerOrder(custOrder);
+      console.log("result add");
+      custOrder.setCustomer(result);
+      console.log("result set customer");
+
+      let pay = await Payment.create(payment);
+      pay.setCustomerOrder(custOrder);
+      custOrder.addPayment(pay);
+      return custOrder;
+    } else {
+      throw { message: "Invalid customer Id" };
+    }
+  } catch (error: any) {
+    throw { message: "The transaction failed" };
+  }
+}*/
 }

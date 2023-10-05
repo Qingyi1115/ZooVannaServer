@@ -26,6 +26,12 @@ class Compatibility extends Model<
 
   declare getSpecies2: BelongsToGetAssociationMixin<Species>;
   declare setSpecies2: BelongsToSetAssociationMixin<Species, number>;
+  
+  public toJSON() {
+    return {
+      ...this.get()
+    }
+  }
 }
 
 // interface CompatibilityAttributes {

@@ -23,6 +23,12 @@ class Plantation extends Model<
 
   declare getEnclosure: BelongsToGetAssociationMixin<Enclosure>;
   declare setEnclosure: BelongsToSetAssociationMixin<Enclosure, number>;
+  
+  public toJSON() {
+    return {
+      ...this.get(),
+    }
+  }
 }
 
 Plantation.init(

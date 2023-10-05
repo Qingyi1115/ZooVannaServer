@@ -4,12 +4,9 @@ import { hash } from "../helpers/security";
 import { Employee } from "../models/employee";
 import { Keeper } from "../models/keeper";
 import { Token } from "../models/token";
-import {
-  CreationOptional,
-  literal
-} from "Sequelize";
-import * as nodemailer from 'nodemailer';
-import { v4 as uuidv4 } from 'uuid';
+import { CreationOptional, literal } from "Sequelize";
+import * as nodemailer from "nodemailer";
+import { v4 as uuidv4 } from "uuid";
 import { PlanningStaff } from "../models/planningStaff";
 import { GeneralStaff } from "../models/generalStaff";
 import { Request, Response } from "express";
@@ -66,7 +63,7 @@ export async function createNewEmployee(
       await Token.create(resetTokens);
 
       const transporter = nodemailer.createTransport({
-        service: 'gmail',
+        service: "gmail",
         auth: {
           user: process.env.EMAIL_USERNAME,
           pass: process.env.EMAIL_PASSWORD,
@@ -76,21 +73,19 @@ export async function createNewEmployee(
       const mailOptions = {
         from: process.env.EMAIL_USERNAME,
         to: employeeEmail,
-        subject: 'Set Password',
-        text: 'Click the link below to set your password: ',
+        subject: "Set Password",
+        text: "Click the link below to set your password: ",
         html: `<a href="http://localhost:5173/employeeAccount/setPassword/${token}">Set Password</a>`,
       };
 
       transporter.sendMail(mailOptions, (error, info) => {
         if (error) {
-          console.error('Error sending email:', error);
+          console.error("Error sending email:", error);
         } else {
-          console.log('Email sent:', info.response);
+          console.log("Email sent:", info.response);
         }
       });
-    }
-    
-    catch (error: any) {
+    } catch (error: any) {
       throw validationErrorHandler(error);
     }
     return [randomPassword, newEmployee.toJSON()];
@@ -101,17 +96,17 @@ export async function createNewEmployee(
 
 export async function resetPassword(
   employeeId: CreationOptional<number>,
-  err:Function,
-  success:Function
+  err: Function,
+  success: Function,
 ) {
   let result = await Employee.findOne({
-    where: {employeeId: employeeId},
+    where: { employeeId: employeeId },
   });
-  
+
   console.log("it is here");
   console.log(result);
-  if(result) {
-    if(result.dateOfResignation == null) {
+  if (result) {
+    if (result.dateOfResignation == null) {
       const token = uuidv4();
 
       const resetTokens: any = {
@@ -126,7 +121,7 @@ export async function resetPassword(
         t.save();
 
         const transporter = nodemailer.createTransport({
-          service: 'gmail',
+          service: "gmail",
           auth: {
             user: process.env.EMAIL_USERNAME,
             pass: process.env.EMAIL_PASSWORD,
@@ -136,8 +131,8 @@ export async function resetPassword(
         const mailOptions = {
           from: process.env.EMAIL_USERNAME,
           to: result.employeeEmail,
-          subject: 'Reset Password',
-          text: 'Click the link below to reset your password: ',
+          subject: "Reset Password",
+          text: "Click the link below to reset your password: ",
           html: `<a href="http://localhost:5173/employeeAccount/setPassword/${token}">Reset Password</a>`,
         };
 
@@ -146,21 +141,18 @@ export async function resetPassword(
             console.log({ message: "Failed to send email!\n" + error });
             err(error);
           } else {
-            console.log('Email sent:', info.response);
+            console.log("Email sent:", info.response);
             success();
           }
         });
-      }
-      catch (error: any) {
+      } catch (error: any) {
         throw validationErrorHandler(error);
       }
+    } else {
+      throw { message: "Employee has been disabled" };
     }
-    else {
-      throw {message: "Employee has been disabled"};
-    } 
-  }
-  else {
-    throw { message: "Employee does not exist"};
+  } else {
+    throw { message: "Employee does not exist" };
   }
 }
 
@@ -176,39 +168,39 @@ export async function findEmployeeByEmail(employeeEmail: string) {
 
 export async function findEmployeeById(
   employeeId: CreationOptional<number>,
-  includes: string[] = []
-  ) {
+  includes: string[] = [],
+) {
   let result = await Employee.findOne({
-    where: { employeeId: employeeId},
-    include: includes
+    where: { employeeId: employeeId },
+    include: includes,
   });
 
-  if(result) {
+  if (result) {
     return result;
   }
-  throw {message: "Employee does not exist"};
+  throw { message: "Employee does not exist" };
 }
 
 export async function employeeLogin(
   employeeEmail: string,
   password: string,
 ): Promise<Employee> {
-  let result = await Employee.findOne({ 
-    where: {employeeEmail: employeeEmail},
-    include: ["generalStaff", "keeper", "planningStaff"]
+  let result = await Employee.findOne({
+    where: { employeeEmail: employeeEmail },
+    include: ["generalStaff", "keeper", "planningStaff"],
   });
-  if(result) {
-    if(result.dateOfResignation == null) {
-      if (result.testPassword(password)){
+  if (result) {
+    if (result.dateOfResignation == null) {
+      if (result.testPassword(password)) {
         return result;
       }
       throw {
         message: "Password inccorrect!",
-      }
+      };
     }
     throw {
       message: "Your account has been disabled!",
-    }
+    };
   }
   throw {
     message: "Email does not exist!",
@@ -216,145 +208,146 @@ export async function employeeLogin(
 }
 
 export async function setAsAccountManager(
-  employeeId: CreationOptional<number>
+  employeeId: CreationOptional<number>,
 ) {
   let employee = await Employee.findOne({
-    where: {employeeId: employeeId},
+    where: { employeeId: employeeId },
   });
 
-  if(employee) {
-    if(!employee.isAccountManager) {
-      if(employee.dateOfResignation == null) {
+  if (employee) {
+    if (!employee.isAccountManager) {
+      if (employee.dateOfResignation == null) {
         return employee.setAsAccountManager();
       }
       throw {
-        message: "Employee has been disabled"
+        message: "Employee has been disabled",
       };
     }
     throw {
-      message: "Employee is already Account Manager"
+      message: "Employee is already Account Manager",
     };
   }
   throw {
-    message: "Employee does not exist"
+    message: "Employee does not exist",
   };
 }
 
 export async function unsetAsAccountManager(
-  employeeId: CreationOptional<number>
+  employeeId: CreationOptional<number>,
 ) {
   let employee = await Employee.findOne({
-    where: {employeeId: employeeId},
+    where: { employeeId: employeeId },
   });
 
-  if(employee) {
-    if(employee.isAccountManager) {
-      if(employee.dateOfResignation == null) {
+  if (employee) {
+    if (employee.isAccountManager) {
+      if (employee.dateOfResignation == null) {
         console.log("Employee is now not account manager!");
         return employee.unsetAsAccountManager();
       }
       throw {
-        message: "Employee has been disabled"
+        message: "Employee has been disabled",
       };
     }
     throw {
-      message: "Employee is not Account Manager"
+      message: "Employee is not Account Manager",
     };
   }
   throw {
-    message: "Employee does not exist"
+    message: "Employee does not exist",
   };
 }
 
-export async function getAllEmployees(includes: string[] = []): Promise<Employee[]> {
+export async function getAllEmployees(
+  includes: string[] = [],
+): Promise<Employee[]> {
   return Employee.findAll({
     order: [
-      [literal('dateOfResignation IS NULL'), "DESC"],
+      [literal("dateOfResignation IS NULL"), "DESC"],
       ["dateOfResignation", "DESC"],
     ],
     include: includes,
   });
 }
 
-export async function getAllGeneralStaffs(includes: string[] = []): Promise<GeneralStaff[]> {
-
-   let generalStaffs = await GeneralStaff.findAll({
+export async function getAllGeneralStaffs(
+  includes: string[] = [],
+): Promise<GeneralStaff[]> {
+  let generalStaffs = await GeneralStaff.findAll({
     include: includes,
   });
 
-  const valid_staff = []
-  for (const staff of generalStaffs){
-    if (!staff.employee?.dateOfResignation && !staff.isDisabled) valid_staff.push(staff);
+  const valid_staff = [];
+  for (const staff of generalStaffs) {
+    if (!staff.employee?.dateOfResignation && !staff.isDisabled)
+      valid_staff.push(staff);
   }
 
   return valid_staff;
 }
 
 export async function getEmployee(
-  employeeId: CreationOptional<number>
-): Promise<Employee>
-{
+  employeeId: CreationOptional<number>,
+): Promise<Employee> {
   let employee = await Employee.findOne({
-    where: {employeeId: employeeId},
+    where: { employeeId: employeeId },
     include: ["keeper", "generalStaff", "planningStaff"],
   });
 
-  if(employee) {
+  if (employee) {
     return employee;
   }
   throw {
-    message: "Employee does not exist"
+    message: "Employee does not exist",
   };
 }
 
 export async function disableEmployeeAccount(
-  employeeId: CreationOptional<number>, 
+  employeeId: CreationOptional<number>,
   dateOfResignation: Date,
 ) {
   let employee = await Employee.findOne({
-    where: {employeeId: employeeId},
-  })
+    where: { employeeId: employeeId },
+  });
 
-  if(employee) {
-    if(employee.dateOfResignation == null) {
+  if (employee) {
+    if (employee.dateOfResignation == null) {
       return employee.disableAccount(dateOfResignation);
     }
-    throw{
-      message: "Employee account was disabled before on "+ employee.dateOfResignation,
+    throw {
+      message:
+        "Employee account was disabled before on " + employee.dateOfResignation,
     };
   }
   throw {
-    message: "Employee does not exist"
+    message: "Employee does not exist",
   };
 }
 
-export async function setPassword(
-  token: string,
-  password: string,
-) {
+export async function setPassword(token: string, password: string) {
   let realToken = await Token.findOne({
-    where: {token: token},
+    where: { token: token },
   });
 
-  if(realToken) {
+  if (realToken) {
     let employee = await Employee.findOne({
-      where: {employeeEmail: realToken.email},
+      where: { employeeEmail: realToken.email },
     });
 
-    if(employee) {
-      if(employee.dateOfResignation == null) {
-        if(realToken.expiresAt.getTime() <= Date.now()) {
+    if (employee) {
+      if (employee.dateOfResignation == null) {
+        if (realToken.expiresAt.getTime() <= Date.now()) {
           realToken.destroy();
           return employee.updatePassword(password);
-        } 
+        }
         realToken.destroy();
-        throw {message: "Token has expired"};
+        throw { message: "Token has expired" };
       }
       realToken.destroy();
-      throw {message: "Employee has been disabled"};
+      throw { message: "Employee has been disabled" };
     }
     realToken.destroy();
-    throw{message: "Employee does not exist"};
+    throw { message: "Employee does not exist" };
   }
 }
 
@@ -370,13 +363,13 @@ export async function enableRole(
   roleJson: any,
 ) {
   let employee = await Employee.findOne({
-    where: {employeeId: employeeId},
-    include: ["keeper", "generalStaff", "planningStaff"]
-  })
+    where: { employeeId: employeeId },
+    include: ["keeper", "generalStaff", "planningStaff"],
+  });
 
-  if(employee) {
+  if (employee) {
     if (role === "Keeper") {
-      if(employee.keeper) {
+      if (employee.keeper) {
         employee.keeper.enable();
         employee.keeper.save();
       } else {
@@ -387,43 +380,34 @@ export async function enableRole(
         employee.setKeeper(newKeeper);
         console.log(newKeeper);
       }
-    }
-    else if (role === "Planning Staff") {
-      if(employee.planningStaff) {
+    } else if (role === "Planning Staff") {
+      if (employee.planningStaff) {
         employee.planningStaff.enable();
         employee.planningStaff.save();
         return employee;
-      }
-      else {
+      } else {
         const planning: any = roleJson;
         let newPlanning = await PlanningStaff.create(planning);
         newPlanning.setEmployee(employee);
         employee.setPlanningStaff(newPlanning);
         return employee;
       }
-      
-    }
-
-    else if( role === "General Staff") {
-      if(employee.generalStaff) {
+    } else if (role === "General Staff") {
+      if (employee.generalStaff) {
         employee.generalStaff.enable();
         employee.generalStaff.save();
-      }
-      else {
+      } else {
         const general: any = roleJson;
         let newGeneral = await GeneralStaff.create(general);
         newGeneral.enable();
         newGeneral.setEmployee(employee);
         employee.setGeneralStaff(newGeneral);
       }
+    } else {
+      throw { message: "The role does not exist" };
     }
-
-    else {
-      throw {message: "The role does not exist"};
-    }
-
   } else {
-    throw {message: "Employee does not exist"};
+    throw { message: "Employee does not exist" };
   }
 }
 
@@ -433,49 +417,38 @@ export async function disableRole(
 ) {
   console.log("this " + role);
   let employee = await Employee.findOne({
-    where: {employeeId: employeeId},
+    where: { employeeId: employeeId },
     include: ["keeper", "generalStaff", "planningStaff"],
-  })
+  });
 
-  if(employee) {
+  if (employee) {
     if (role === "Keeper") {
-      if(employee.keeper) {
+      if (employee.keeper) {
         employee.keeper.disable();
         employee.keeper.save();
-        console.log("it was heree"); 
+        console.log("it was heree");
       } else {
-        throw {message: "Keeper role does not exist in this account"};
+        throw { message: "Keeper role does not exist in this account" };
       }
-
-    }
-
-    else if (role === "Planning Staff") {
-      if(employee.planningStaff) {
+    } else if (role === "Planning Staff") {
+      if (employee.planningStaff) {
         employee.planningStaff.disable();
         employee.planningStaff.save();
+      } else {
+        throw { message: "Planning Staff role does not exist in this account" };
       }
-      else { 
-        throw {message: "Planning Staff role does not exist in this account"};
-      }
-      
-    }
-
-    else if( role === "General Staff") {
-      if(employee.generalStaff) {
-        employee.generalStaff.disable(); 
+    } else if (role === "General Staff") {
+      if (employee.generalStaff) {
+        employee.generalStaff.disable();
         employee.generalStaff.save();
+      } else {
+        throw { message: "General Staff role does not exist in this account" };
       }
-      else {
-        throw {message: "General Staff role does not exist in this account"};
-      }
+    } else {
+      throw { message: "The role does not exist" };
     }
-
-    else {
-      throw {message: "The role does not exist"};
-    }
-
   } else {
-    throw {message: "Employee does not exist"};
+    throw { message: "Employee does not exist" };
   }
 }
 
@@ -504,7 +477,7 @@ export async function disableRole(
 //       } else {
 //           throw { message: "There is no general staff role in this account"};
 //       }
-      
+
 //   } else {
 //       throw { message: "Employee does not exist"};
 //   }
@@ -547,7 +520,7 @@ export async function disableRole(
 //       } else {
 //           throw { message: "There is no planning staff role in this account"};
 //       }
-      
+
 //   } else {
 //       throw { message: "Employee does not exist"};
 //   }
@@ -556,85 +529,67 @@ export async function disableRole(
 export async function updateRoleType(
   employeeId: CreationOptional<number>,
   role: string,
-  roleType: string
-){
+  roleType: string,
+) {
   let employee = await Employee.findOne({
-    where: {employeeId: employeeId},
-    include: ["keeper", "generalStaff", "planningStaff"]
-  })
+    where: { employeeId: employeeId },
+    include: ["keeper", "generalStaff", "planningStaff"],
+  });
 
-  if(employee) {
+  if (employee) {
     if (role === "Keeper") {
-      if(employee.keeper) {
-        employee.keeper.updateKeeperType(roleType); 
+      if (employee.keeper) {
+        employee.keeper.updateKeeperType(roleType);
       } else {
-        throw { message: "Keeper role does not exist in this account"};
+        throw { message: "Keeper role does not exist in this account" };
       }
-    }
-    else if (role === "Planning Staff") {
-      if(employee.planningStaff) {
+    } else if (role === "Planning Staff") {
+      if (employee.planningStaff) {
         employee.planningStaff.updatePlanningStaffType(roleType);
+      } else {
+        throw { message: "Planning Staff role does not exist in this account" };
       }
-      else { 
-        throw { message: "Planning Staff role does not exist in this account"};
-      } 
-    }
-    else if (role === "General Staff") {
-      if(employee.generalStaff) {
+    } else if (role === "General Staff") {
+      if (employee.generalStaff) {
         employee.generalStaff.updateGeneralStaffType(roleType);
+      } else {
+        throw { message: "General Staff role does not exist in this account" };
       }
-      else {
-        throw {message: "General Staff role does not exist in this account"};
-      }
+    } else {
+      throw { message: "The role does not exist" };
     }
-    else {
-      throw {message: "The role does not exist"};
-    }
-
   } else {
-    throw {message: "Employee does not exist"};
+    throw { message: "Employee does not exist" };
   }
-
-
 }
 
 export async function updateSpecializationType(
   employeeId: CreationOptional<number>,
   role: string,
-  specialization: string
+  specialization: string,
 ) {
   let employee = await Employee.findOne({
-    where: {employeeId: employeeId},
-    include: ["keeper", "generalStaff", "planningStaff"]
-  })
+    where: { employeeId: employeeId },
+    include: ["keeper", "generalStaff", "planningStaff"],
+  });
 
-  if(employee) {
+  if (employee) {
     if (role === "Keeper") {
-      if(employee.keeper) {
-        employee.keeper.updateSpecialization(specialization); 
+      if (employee.keeper) {
+        employee.keeper.updateSpecialization(specialization);
       } else {
-        throw {message: "Keeper role does not exist in this account"};
+        throw { message: "Keeper role does not exist in this account" };
       }
-    }
-    else if (role === "Planning Staff") {
-      if(employee.planningStaff) {
+    } else if (role === "Planning Staff") {
+      if (employee.planningStaff) {
         employee.planningStaff.updateSpecialization(specialization);
+      } else {
+        throw { message: "Planning Staff role does not exist in this account" };
       }
-      else { 
-        throw {message: "Planning Staff role does not exist in this account"};
-      } 
+    } else {
+      throw { message: "The role does not exist" };
     }
-    else {
-      throw {message: "The role does not exist"};
-    }
-
   } else {
-    throw {message: "Employee does not exist"};
+    throw { message: "Employee does not exist" };
   }
-
-
 }
-
-
-
-

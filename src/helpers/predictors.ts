@@ -3,7 +3,7 @@ import getAugumentedDataset from "./holtwinters";
 
 const MS_TO_DAYS = 1000 * 60 * 60* 24
 
-export function predictNextDate(dates:Date[]):Date|void{
+export function predictNextDate(dates:Date[]):number|void{
     if (dates.length <= 1) return;
     let dateSorted = dates.sort((a,b)=>compareDates(b, a));
     let intervals :number[] = []
@@ -14,13 +14,13 @@ export function predictNextDate(dates:Date[]):Date|void{
     }
     if (dateSorted.length>7){
         const results = (getAugumentedDataset(intervals, 1)as any) ["augumentedDataset"];
-        return new Date(dateSorted[0].getTime() + results[results.length - 1] * MS_TO_DAYS);
+        return dateSorted[0].getTime() + results[results.length - 1] * MS_TO_DAYS;
     }else{
         let average = 0
         for (const i in intervals){
             average = average + (i as any)/intervals.length
         }
-        return new Date(dateSorted[0].getTime() + average * MS_TO_DAYS);
+        return (dateSorted[0].getTime() + average * MS_TO_DAYS);
     }
 }
 
@@ -37,8 +37,10 @@ export function predictCycleLength(dates:Date[], predictionLength:number){
 
     if (dateSorted.length>7){
         console.log("Holt winters used")
-        const results = (getAugumentedDataset(intervals, predictionLength)as any) ["augumentedDataset"];
+        let results : number[] = (getAugumentedDataset(intervals, predictionLength)as any) ["augumentedDataset"];
+        console.log("results",results)
         results.reverse()
+        results = results.map(no => Math.max(no, 0))
         
         const dateResults = dateSorted.slice(0, dateSorted.length-1);
         let newDateResults : Date[] = []
@@ -56,9 +58,9 @@ export function predictCycleLength(dates:Date[], predictionLength:number){
         };
         
         return {
-            dateResults: dateResults, 
+            dateResults: dateResults.map(date=>date.getTime()), 
             cycleLength: results.slice(predictionLength),
-            newDateResults: newDateResults, 
+            newDateResults: newDateResults.map(date=>date.getTime()), 
             newCycleLength: results.slice(0, predictionLength),
         };
     }else{
@@ -78,9 +80,9 @@ export function predictCycleLength(dates:Date[], predictionLength:number){
         };
 
         return {
-            dateResults: dateResults, 
+            dateResults: dateResults.map(date=>date.getTime()), 
             cycleLength: intervals,
-            newDateResults: newDateResults, 
+            newDateResults: newDateResults.map(date=>date.getTime()), 
             newCycleLength: newIntervals,
         };
     }

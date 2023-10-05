@@ -38,9 +38,9 @@ class Facility extends Model<
   declare animalClinic?: AnimalClinic;
   declare enclosure?: Enclosure;
 
-  declare getHubProcessors: HasManyGetAssociationsMixin<HubProcessor[]>;
+  declare getHubProcessors: HasManyGetAssociationsMixin<HubProcessor>;
   declare addHubProcessor: HasManyAddAssociationMixin<HubProcessor, number>;
-  declare setHubProcessors: HasManySetAssociationsMixin<HubProcessor[], number>;
+  declare setHubProcessors: HasManySetAssociationsMixin<HubProcessor, number>;
   declare removeHubProcessor: HasManyRemoveAssociationMixin<HubProcessor, number>;
 
   declare getInHouse: HasOneGetAssociationMixin<InHouse>;
@@ -78,16 +78,16 @@ class Facility extends Model<
   }
 
   public toJSON() {
-    // Can control default values returned rather than manually populating json, removing secrets
-    // Similar idea albert more useful when compared to java's toString
-    return this.get(); //{...this.get(), employeePasswordHash: undefined, employeeSalt: undefined}
+    return {
+      ...this.get(),
+    } 
   }
 
   public async toFullJson(){
     const _json : any = {
       ...this.get(),
-      facilityDetailJson: (await this.getFacilityDetail()),
-      hubProcessors: (await this.getHubProcessors())
+      facilityDetailJson: (await this.getFacilityDetail())?.toJSON(),
+      hubProcessors: (await this.getHubProcessors())?.map(hub => hub.toJSON())
     }
     _json.facilityDetail = this.facilityDetail
     return _json;

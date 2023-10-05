@@ -24,11 +24,11 @@ class MedicalSupply extends Model<
   declare getFacility: BelongsToGetAssociationMixin<Facility>;
   declare setFacility: BelongsToSetAssociationMixin<Facility, number>;
 
-  // public toJSON() {
-  //     // Can control default values returned rather than manually populating json, removing secrets
-  //     // Similar idea albert more useful when compared to java's toString
-  //     return {...this.get(), EmployeeEmployeeId: undefined}
-  // }
+  public toJSON() {
+    return {
+      ...this.get(),
+    }
+  }
 }
 
 MedicalSupply.init(
