@@ -255,23 +255,23 @@ export const createDatabase = async (options: any) => {
   Animal.belongsToMany(AnimalActivity, {
     foreignKey: "animalId",
     through: "animal_animalActivity",
-    as: "animalActivity",
+    as: "animalActivities",
   });
   AnimalActivity.belongsToMany(Animal, {
     foreignKey: "animalActivityId",
     through: "animal_animalActivity",
-    as: "animalActivityAnimal",
+    as: "animals",
   });
 
   AnimalActivity.belongsToMany(EnrichmentItem, {
     foreignKey: "animalActivityId",
     through: "animalActivity_enrichmentItem",
-    as: "animalActivityEnrichmentItem",
+    as: "enrichmentItems",
   });
   EnrichmentItem.belongsToMany(AnimalActivity, {
     foreignKey: "enrichmentItemId",
     through: "animalActivity_enrichmentItem",
-    as: "enrichmentItem",
+    as: "animalActivities",
   });
 
   Species.belongsToMany(Customer, {

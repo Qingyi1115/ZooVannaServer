@@ -45,10 +45,16 @@ class AnimalActivity extends Model<
   declare setAnimals: HasManySetAssociationsMixin<Animal, number>;
   declare removeAnimal: HasManyRemoveAssociationMixin<Animal, number>;
 
-  declare getEnrichmentItems: HasManyGetAssociationsMixin<Animal>;
-  declare addEnrichmentItem: HasManyAddAssociationMixin<Animal, number>;
-  declare setAEnrichmentItems: HasManySetAssociationsMixin<Animal, number>;
-  declare removeEnrichmentItem: HasManyRemoveAssociationMixin<Animal, number>;
+  declare getEnrichmentItems: HasManyGetAssociationsMixin<EnrichmentItem>;
+  declare addEnrichmentItem: HasManyAddAssociationMixin<EnrichmentItem, number>;
+  declare setAEnrichmentItems: HasManySetAssociationsMixin<
+    EnrichmentItem,
+    number
+  >;
+  declare removeEnrichmentItem: HasManyRemoveAssociationMixin<
+    EnrichmentItem,
+    number
+  >;
 
   declare getEmployee: HasOneGetAssociationMixin<Employee>;
   declare setEmployee: HasOneSetAssociationMixin<Employee, number>;

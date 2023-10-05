@@ -4,7 +4,7 @@ import { handleFileUpload } from "../helpers/multerProcessFile";
 
 // -- Animal Basic Info
 export async function getAllAnimals(req: Request, res: Response) {
-  const { } = req.body;
+  const {} = req.body;
   try {
     const allAnimals = await AnimalService.getAllAnimals();
     return res.status(200).json(allAnimals);
@@ -178,8 +178,8 @@ export async function updateAnimal(req: Request, res: Response) {
       animalStatus,
     } = req.body;
 
-
-    const dateOfDeath = req.body.dateOfDeath == "" ? null : req.body.dateOfDeath;
+    const dateOfDeath =
+      req.body.dateOfDeath == "" ? null : req.body.dateOfDeath;
 
     if (
       [
@@ -465,7 +465,7 @@ export async function deleteAnimalWeight(req: Request, res: Response) {
 
 //-- Animal Activity
 export async function getAllAnimalActivities(req: Request, res: Response) {
-  const { } = req.body;
+  const {} = req.body;
   try {
     const allAnimalActivities = await AnimalService.getAllAnimalActivities();
     return res.status(200).json(allAnimalActivities);
@@ -618,6 +618,102 @@ export async function deleteAnimalActivity(req: Request, res: Response) {
     const animalActivity =
       await AnimalService.deleteAnimalActivity(animalActivityId);
     return res.status(200).json(animalActivity);
+  } catch (error: any) {
+    res.status(400).json({ error: error.message });
+  }
+}
+
+export async function assignAnimalsToActivity(req: Request, res: Response) {
+  try {
+    const { animalActivityId, animalCodes } = req.body;
+
+    if ([animalActivityId, animalCodes].includes(undefined)) {
+      console.log("Missing field(s): ", {
+        animalActivityId,
+        animalCodes,
+      });
+      return res.status(400).json({ error: "Missing information!" });
+    }
+
+    // have to pass in req for image uploading
+    let animalsToActivity = await AnimalService.assignAnimalsToActivity(
+      animalActivityId,
+      animalCodes,
+    );
+
+    return res.status(200).json({ animalsToActivity });
+  } catch (error: any) {
+    res.status(400).json({ error: error.message });
+  }
+}
+
+export async function removeAnimalFromActivity(req: Request, res: Response) {
+  try {
+    const { animalActivityId, animalCode } = req.body;
+
+    if ([animalActivityId, animalCode].includes(undefined)) {
+      console.log("Missing field(s): ", {
+        animalActivityId,
+        animalCode,
+      });
+      return res.status(400).json({ error: "Missing information!" });
+    }
+
+    // have to pass in req for image uploading
+    let animalsFromActivity = await AnimalService.removeAnimalFromActivity(
+      animalActivityId,
+      animalCode,
+    );
+
+    return res.status(200).json({ animalsFromActivity });
+  } catch (error: any) {
+    res.status(400).json({ error: error.message });
+  }
+}
+
+export async function assignItemToActivity(req: Request, res: Response) {
+  try {
+    const { animalActivityId, enrichmentItemIds } = req.body;
+
+    if ([animalActivityId, enrichmentItemIds].includes(undefined)) {
+      console.log("Missing field(s): ", {
+        animalActivityId,
+        enrichmentItemIds,
+      });
+      return res.status(400).json({ error: "Missing information!" });
+    }
+
+    // have to pass in req for image uploading
+    let itemsToActivity = await AnimalService.assignItemToActivity(
+      animalActivityId,
+      enrichmentItemIds,
+    );
+
+    return res.status(200).json({ itemsToActivity });
+  } catch (error: any) {
+    res.status(400).json({ error: error.message });
+  }
+}
+
+export async function removeItemFromActivity(req: Request, res: Response) {
+  try {
+    const { animalActivityId, enrichmentItemId } = req.body;
+
+    if ([animalActivityId, enrichmentItemId].includes(undefined)) {
+      console.log("Missing field(s): ", {
+        animalActivityId,
+        enrichmentItemId,
+      });
+      return res.status(400).json({ error: "Missing information!" });
+    }
+
+    // have to pass in req for image uploading
+    let itemsFromActivity = await AnimalService.removeItemFromActivity(
+      animalActivityId,
+      enrichmentItemId,
+    );
+
+    return res.status(200).json({ itemsFromActivity });
   } catch (error: any) {
     res.status(400).json({ error: error.message });
   }

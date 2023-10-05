@@ -11,6 +11,7 @@ import * as SpeciesService from "../services/species";
 import { AnimalActivity } from "../models/animalActivity";
 import { EnrichmentItem } from "../models/enrichmentItem";
 import { Employee } from "../models/employee";
+import * as EnrichmentItemService from "../services/enrichmentItem";
 
 //-- Animal Basic Info
 export async function getAnimalIdByCode(animalCode: string) {
@@ -103,6 +104,8 @@ export async function getAnimalByAnimalCode(animalCode: string) {
   if (animalRecord) {
     return animalRecord;
   }
+  // console.log("animal code: " + animalCode);
+  // console.log("--in here 2 --");
   throw new Error("Invalid Animal Code!");
 }
 
@@ -596,12 +599,12 @@ export async function getAllAnimalActivities() {
         {
           model: Animal,
           required: false, // Include only if they exist
-          as: "animalActivityAnimal",
+          as: "animals",
         },
         {
           model: EnrichmentItem,
           required: false, // Include only if they exist
-          as: "animalActivityEnrichmentItem",
+          as: "enrichmentItems",
         },
         {
           model: Employee,
@@ -623,12 +626,12 @@ export async function getAnimalActivityById(animalActivityId: string) {
       {
         model: Animal,
         required: false, // Include only if they exist
-        as: "animalActivityAnimal",
+        as: "animals",
       },
       {
         model: EnrichmentItem,
         required: false, // Include only if they exist
-        as: "animalActivityEnrichmentItem",
+        as: "enrichmentItems",
       },
       {
         model: Employee,
@@ -649,7 +652,7 @@ export async function getAnimalActivityByAnimalCode(animalCode: string) {
     include: {
       model: AnimalActivity,
       required: false, // Include only if they exist
-      as: "animalActivity",
+      as: "animalActivities",
     },
   });
 
@@ -735,22 +738,48 @@ export async function deleteAnimalActivity(animalActivityId: string) {
   throw new Error("Invalid Animal Activity Id!");
 }
 
-export async function assignAnimalsToTraining(
+export async function assignAnimalsToActivity(
   animalActivityId: string,
   animalCodes: string[],
 ) {
   let animalActivity = await getAnimalActivityById(animalActivityId);
 
-  for (let animalCode in animalCodes) {
+  for (let animalCode of animalCodes) {
     animalActivity.addAnimal(await getAnimalByAnimalCode(animalCode));
   }
 }
 
-export async function removeAnimalsFromTraining(
+export async function removeAnimalFromActivity(
   animalActivityId: string,
   animalCode: string,
 ) {
   let animalActivity = await getAnimalActivityById(animalActivityId);
 
   animalActivity.removeAnimal(await getAnimalByAnimalCode(animalCode));
+}
+
+export async function assignItemToActivity(
+  animalActivityId: string,
+  enrichmentItemIds: string[],
+) {
+  let animalActivity = await getAnimalActivityById(animalActivityId);
+
+  for (let enrichmentItemId of enrichmentItemIds) {
+    animalActivity.addEnrichmentItem(
+      await EnrichmentItemService.getEnrichmentItemById(
+        Number(enrichmentItemId),
+      ),
+    );
+  }
+}
+
+export async function removeItemFromActivity(
+  animalActivityId: string,
+  enrichmentItemId: string,
+) {
+  let animalActivity = await getAnimalActivityById(animalActivityId);
+
+  animalActivity.removeEnrichmentItem(
+    await EnrichmentItemService.getEnrichmentItemById(Number(enrichmentItemId)),
+  );
 }

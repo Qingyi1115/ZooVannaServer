@@ -23,6 +23,10 @@ import {
   updateAnimalActivity,
   deleteAnimalActivity,
   getAnimalActivityByAnimalCode,
+  assignAnimalsToActivity,
+  removeAnimalFromActivity,
+  assignItemToActivity,
+  removeItemFromActivity,
 } from "../controllers/animalController";
 
 const router = express.Router();
@@ -66,5 +70,11 @@ router.get(
 router.post("/createAnimalActivity", createAnimalActivity);
 router.put("/updateAnimalActivity", updateAnimalActivity);
 router.delete("/deleteAnimalActivity/:animalActivityId", deleteAnimalActivity);
+router.put("/updateAnimalActivity", updateAnimalActivity);
+
+router.put("/assignAnimalsToActivity", assignAnimalsToActivity);
+router.put("/removeAnimalFromActivity", removeAnimalFromActivity);
+router.put("/assignItemToActivity", assignItemToActivity);
+router.put("/removeItemFromActivity", removeItemFromActivity);
 
 export default router;
