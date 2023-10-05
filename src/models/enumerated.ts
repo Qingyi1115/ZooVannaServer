@@ -129,9 +129,10 @@ enum AnimalSex {
 }
 
 enum AcquisitionMethod {
-  CAPTIVE_BRED = "CAPTIVE_BRED",
-  WILD_CAPTURED = "WILD_CAPTURED",
-  ADOLESCENT = "TRANSFERRED_IN",
+  INHOUSE_CAPTIVE_BRED = "INHOUSE CAPTIVE BRED",
+  PRIVATELY_BRED = "PRIVATELY BRED",
+  FROM_THE_WILD = "FROM THE WILD",
+  TRANSFERRED_FROM_ANOTHER_ZOO = "TRANSFERRED FROM ANOTHER ZOO",
 }
 
 enum AnimalFeedCategory {
@@ -178,7 +179,28 @@ enum Biome {
 }
 
 enum IdentifierType {
-  TYPE = "TYPE",
+  NONE = "None",
+  RFID_TAG = "RFID Tag",
+  MAGNETIC_TAG = "Magnetic Tag",
+  BARCODE_TAG = "Barcode Tag",
+  EAR_TAG = "Ear Tag",
+  COLLAR = "Collar",
+  TATTOOS = "Tattoos",
+  COLORED_BAND = "Colored Band",
+  BRACELETS_ANKLETS = "Bracelets/Anklets",
+}
+
+enum ActivityType {
+  TRAINING = "TRAINING",
+  ENRICHMENT = "ENRICHMENT",
+}
+
+enum Rating {
+  EXCELLENT = "EXCELLENT",
+  GOOD = "GOOD",
+  FAIR = "FAIR",
+  POOR = "POOR",
+  NOT_RECORDED = "NOT RECORDED",
 }
 
 enum EventType {
@@ -196,6 +218,23 @@ enum EventTimingType {
   MORNING = "MORNING",
   AFTERNOON = "AFTERNOON",
   EVENING = "EVENING",
+}
+
+enum DayOfTheWeek {
+  MONDAY = "MONDAY",
+  TUESDAY = "TUESDAY",
+  WEDNESDAY = "WEDNESDAY",
+  THURSDAY = "THURSDAY",
+  FRIDAY = "FRIDAY",
+  SATURDAY = "SATURDAY",
+  SUNDAY = "SUNDAY",
+}
+
+enum FoodUnit {
+  KG = "KG",
+  GRAM = "GRAM",
+  ML = "ML",
+  L = "L",
 }
 
 enum Country {
@@ -523,7 +562,11 @@ export {
   PaymentStatus,
   PaymentType,
   OrderStatus,
+  ActivityType,
   EnclosureStatus,
   HubStatus,
   IdentifierType,
+  Rating,
+  FoodUnit,
+  DayOfTheWeek,
 };

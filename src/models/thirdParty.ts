@@ -31,15 +31,26 @@ class ThirdParty extends Model<
   declare getFacility: BelongsToGetAssociationMixin<Facility>;
   declare setFacility: BelongsToSetAssociationMixin<Facility, number>;
 
-  declare getCustomerReportLogs: HasManyGetAssociationsMixin<CustomerReportLog[]>;
-  declare addCustomerReportLog: HasManyAddAssociationMixin<CustomerReportLog, number>;
-  declare setCustomerReportLogs: HasManySetAssociationsMixin<CustomerReportLog[], number>;
-  declare removeCustomerReportLog: HasManyRemoveAssociationMixin<CustomerReportLog, number>;
+  declare getCustomerReportLogs: HasManyGetAssociationsMixin<
+    CustomerReportLog[]
+  >;
+  declare addCustomerReportLog: HasManyAddAssociationMixin<
+    CustomerReportLog,
+    number
+  >;
+  declare setCustomerReportLogs: HasManySetAssociationsMixin<
+    CustomerReportLog[],
+    number
+  >;
+  declare removeCustomerReportLog: HasManyRemoveAssociationMixin<
+    CustomerReportLog,
+    number
+  >;
 
   public toJSON() {
     return {
-      ...this.get()
-    }
+      ...this.get(),
+    };
   }
 }
 ThirdParty.init(
