@@ -17,6 +17,12 @@ import {
   getAllAnimalWeightsByAnimalCode,
   addAnimalWeight,
   deleteAnimalWeight,
+  getAllAnimalActivities,
+  getAnimalActivityById,
+  createAnimalActivity,
+  updateAnimalActivity,
+  deleteAnimalActivity,
+  getAnimalActivityByAnimalCode,
 } from "../controllers/animalController";
 
 const router = express.Router();
@@ -49,5 +55,16 @@ router.get(
 );
 router.post("/addAnimalWeight", addAnimalWeight);
 router.delete("/deleteAnimalWeight/:animalWeightId", deleteAnimalWeight);
+
+// -- Animal Activity
+router.get("/getAllAnimalActivities", getAllAnimalActivities);
+router.get("/getAnimalActivityById/:animalActivityId", getAnimalActivityById);
+router.get(
+  "/getAnimalActivityByAnimalCode/:animalCode",
+  getAnimalActivityByAnimalCode,
+);
+router.post("/createAnimalActivity", createAnimalActivity);
+router.put("/updateAnimalActivity", updateAnimalActivity);
+router.delete("/deleteAnimalActivity/:animalActivityId", deleteAnimalActivity);
 
 export default router;

@@ -34,6 +34,8 @@ import {
   SensorType,
   Specialization,
   AnimalSex,
+  ActivityType,
+  EventTimingType,
 } from "./enumerated";
 import { Event } from "./event";
 import { Facility } from "./facility";
@@ -58,6 +60,7 @@ import { SpeciesDietNeed } from "./speciesDietNeed";
 import { SpeciesEnclosureNeed } from "./speciesEnclosureNeed";
 import { TerrainDistribution } from "./terrainDistribution";
 import { ThirdParty } from "./thirdParty";
+import { AnimalActivity } from "./animalActivity";
 
 function addCascadeOptions(options: object) {
   return { ...options, onDelete: "CASCADE", onUpdate: "CASCADE" };
@@ -85,6 +88,10 @@ export const createDatabase = async (options: any) => {
     Employee,
     addCascadeOptions({ foreignKey: "employeeId" }),
   );
+
+  // added by qy for animal activity 5 Oct
+  Employee.hasMany(AnimalActivity);
+  AnimalActivity.belongsTo(Employee);
 
   Facility.hasMany(
     HubProcessor,
@@ -225,9 +232,6 @@ export const createDatabase = async (options: any) => {
 
   // ------------ Animal Relation --------------
 
-  // Species.hasMany(Animal, addCascadeOptions({ foreignKey: "speciesId" }));
-  // Animal.belongsTo(Species, addCascadeOptions({ foreignKey: "speciesId" }));
-
   Species.hasMany(Animal, { onDelete: "CASCADE" });
   Animal.belongsTo(Species);
 
@@ -248,6 +252,28 @@ export const createDatabase = async (options: any) => {
   Animal.hasMany(AnimalWeight, { onDelete: "CASCADE" });
   AnimalWeight.belongsTo(Animal);
 
+  Animal.belongsToMany(AnimalActivity, {
+    foreignKey: "animalId",
+    through: "animal_animalActivity",
+    as: "animalActivity",
+  });
+  AnimalActivity.belongsToMany(Animal, {
+    foreignKey: "animalActivityId",
+    through: "animal_animalActivity",
+    as: "animalActivityAnimal",
+  });
+
+  AnimalActivity.belongsToMany(EnrichmentItem, {
+    foreignKey: "animalActivityId",
+    through: "animalActivity_enrichmentItem",
+    as: "animalActivityEnrichmentItem",
+  });
+  EnrichmentItem.belongsToMany(AnimalActivity, {
+    foreignKey: "enrichmentItemId",
+    through: "animalActivity_enrichmentItem",
+    as: "enrichmentItem",
+  });
+
   Species.belongsToMany(Customer, {
     foreignKey: "speciesId",
     through: "customerFravouriteSpecies",
@@ -261,15 +287,6 @@ export const createDatabase = async (options: any) => {
 
   Animal.hasMany(AnimalLog, addCascadeOptions({ foreignKey: "animalId" }));
   AnimalLog.belongsTo(Animal, addCascadeOptions({ foreignKey: "animalId" }));
-
-  // AnimalClinic.hasMany(
-  //   Animal,
-  //   addCascadeOptions({ foreignKey: "animalClinicId" }),
-  // );
-  // Animal.belongsTo(
-  //   AnimalClinic,
-  //   addCascadeOptions({ foreignKey: "animalClinicId" }),
-  // );
 
   // ------------ End of Animal Relation --------------
 
@@ -1173,6 +1190,25 @@ export const animalSeed = async () => {
   await AnimalService.addAnimalLineage("ANM00006", "ANM00009");
   await AnimalService.addAnimalLineage("ANM00008", "ANM00006");
   await AnimalService.addAnimalLineage("ANM00008", "ANM00007");
+
+  // -- create animal activity
+  let animalActivity1 = await AnimalService.createAnimalActivity(
+    ActivityType.ENRICHMENT,
+    "Bamboo Bonanza",
+    "Treat our pandas to a bamboo feast! We'll scatter bamboo leaves and shoots throughout their habitat to encourage natural foraging behavior.",
+    new Date("2021-03-04"),
+    EventTimingType.AFTERNOON,
+    45,
+  );
+
+  let animalActivity2 = await AnimalService.createAnimalActivity(
+    ActivityType.TRAINING,
+    "Target Training",
+    "Use a target stick to teach pandas to touch a designated spot. This aids in directing their movement and helps with medical check-ups.",
+    new Date("2021-03-04"),
+    EventTimingType.MORNING,
+    60,
+  );
 };
 
 export const animalFeedSeed = async () => {
@@ -1195,7 +1231,7 @@ export const animalFeedSeed = async () => {
   let beefTemplate = {
     animalFeedName: "Beef",
     animalFeedImageUrl: "img/animalFeed/beef.jpg",
-    animalFeedCategory: AnimalFeedCategory.FRUITS,
+    animalFeedCategory: AnimalFeedCategory.RED_MEAT,
   } as any;
   let beef = await AnimalFeed.create(beefTemplate);
   console.log(beef.toJSON());
@@ -1218,7 +1254,7 @@ export const animalFeedSeed = async () => {
 export const enrichmentItemSeed = async () => {
   let scratchingPostTemplate = {
     enrichmentItemName: "Scratching Post",
-    enrichmentItemImageUrl: "img/enrichmentItem/scratchingPost.webp",
+    enrichmentItemImageUrl: "img/enrichmentItem/scratchingPost.jpg",
   } as any;
   let scratchingPost = await EnrichmentItem.create(scratchingPostTemplate);
   console.log(scratchingPost.toJSON());
@@ -1238,7 +1274,7 @@ export const enrichmentItemSeed = async () => {
 
   let Feeder = await EnrichmentItem.create({
     enrichmentItemName: "Feeder",
-    enrichmentItemImageUrl: "img/enrichmentItem/Feeder.jpeg",
+    enrichmentItemImageUrl: "img/enrichmentItem/feeder.jpg",
   });
   console.log(Feeder.toJSON());
 };

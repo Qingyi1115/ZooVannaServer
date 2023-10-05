@@ -8,6 +8,9 @@ import { PhysiologicalReferenceNorms } from "../models/physiologicalReferenceNor
 import { AnimalGrowthStage, AnimalStatus } from "../models/enumerated";
 import { AnimalWeight } from "../models/animalWeight";
 import * as SpeciesService from "../services/species";
+import { AnimalActivity } from "../models/animalActivity";
+import { EnrichmentItem } from "../models/enrichmentItem";
+import { Employee } from "../models/employee";
 
 //-- Animal Basic Info
 export async function getAnimalIdByCode(animalCode: string) {
@@ -552,15 +555,182 @@ export async function getAllAnimalWeightsByAnimalCode(animalCode: string) {
   throw new Error("Invalid Animal Code!");
 }
 
-// export async function getAllAbnormalWeights() {
-//   let result = await Animal.findOne({
-//     where: { animalCode: animalCode },
-//     include: AnimalWeight, //eager fetch here
-//   });
+export async function getAllAbnormalWeights() {
+  // --> hvnt do, need to discuss with Jason
+  //   let result = await Animal.findOne({
+  //     where: { animalCode: animalCode },
+  //     include: AnimalWeight, //eager fetch here
+  //   });
+  //   if (result) {
+  //     let resultAnimalWeights = await result.animalWeights;
+  //     return resultAnimalWeights;
+  //   }
+  //   throw new Error("Invalid Animal Code!");
+}
 
-//   if (result) {
-//     let resultAnimalWeights = await result.animalWeights;
-//     return resultAnimalWeights;
-//   }
-//   throw new Error("Invalid Animal Code!");
-// }
+//-- Animal Activity
+export async function getAllAnimalActivities() {
+  try {
+    const allAnimalActivities = await AnimalActivity.findAll({
+      include: [
+        {
+          model: Animal,
+          required: false, // Include only if they exist
+          as: "animalActivityAnimal",
+        },
+        {
+          model: EnrichmentItem,
+          required: false, // Include only if they exist
+          as: "animalActivityEnrichmentItem",
+        },
+        {
+          model: Employee,
+          required: false, // Include only if they exist
+        },
+      ],
+    });
+
+    return allAnimalActivities;
+  } catch (error: any) {
+    throw validationErrorHandler(error);
+  }
+}
+
+export async function getAnimalActivityById(animalActivityId: string) {
+  let animalActivityRecord = await AnimalActivity.findOne({
+    where: { animalActivityId: animalActivityId },
+    include: [
+      {
+        model: Animal,
+        required: false, // Include only if they exist
+        as: "animalActivityAnimal",
+      },
+      {
+        model: EnrichmentItem,
+        required: false, // Include only if they exist
+        as: "animalActivityEnrichmentItem",
+      },
+      {
+        model: Employee,
+        required: false, // Include only if they exist
+      },
+    ],
+  });
+
+  if (animalActivityRecord) {
+    return animalActivityRecord;
+  }
+  throw new Error("Invalid Animal Activity Id!");
+}
+
+export async function getAnimalActivityByAnimalCode(animalCode: string) {
+  let animalActivities = await Animal.findAll({
+    where: { animalCode: animalCode },
+    include: {
+      model: AnimalActivity,
+      required: false, // Include only if they exist
+      as: "animalActivity",
+    },
+  });
+
+  if (animalActivities) {
+    return animalActivities;
+  }
+  throw new Error("Invalid Animal Code!");
+}
+
+export async function createAnimalActivity(
+  activityType: string,
+  title: string,
+  details: string,
+  date: Date,
+  session: string,
+  durationInMinutes: number,
+) {
+  let newActivity = {
+    activityType: activityType,
+    title: title,
+    details: details,
+    date: date,
+    session: session,
+    durationInMinutes: durationInMinutes,
+  } as any;
+
+  console.log(newActivity);
+
+  try {
+    let newActivityEntry = await AnimalActivity.create(newActivity);
+
+    // for (let a in animalCodes) {
+    //   newActivityEntry.addAnimal(await getAnimalByAnimalCode(a));
+    // }
+
+    // for (let a in animalCodes) {
+    //   newActivityEntry.addAnimal(await getAnimalByAnimalCode(a));
+    // }
+
+    return newActivityEntry;
+  } catch (error: any) {
+    console.log(error);
+    throw validationErrorHandler(error);
+  }
+}
+
+export async function updateAnimalActivity(
+  animalActivityId: number,
+  activityType: string,
+  title: string,
+  details: string,
+  date: Date,
+  session: string,
+  durationInMinutes: number,
+) {
+  let updatedAnimalActivity = {
+    activityType: activityType,
+    title: title,
+    details: details,
+    date: date,
+    session: session,
+    durationInMinutes: durationInMinutes,
+  } as any;
+
+  console.log(updatedAnimalActivity);
+
+  try {
+    await AnimalActivity.update(updatedAnimalActivity, {
+      where: { animalActivityId: animalActivityId },
+    });
+  } catch (error: any) {
+    throw validationErrorHandler(error);
+  }
+}
+
+export async function deleteAnimalActivity(animalActivityId: string) {
+  let result = await AnimalActivity.destroy({
+    where: { animalActivityId: animalActivityId },
+  });
+  if (result) {
+    return result;
+  }
+  throw new Error("Invalid Animal Activity Id!");
+}
+
+export async function assignAnimalsToTraining(
+  animalActivityId: string,
+  animalCodes: string[],
+) {
+  let animalActivity = await getAnimalActivityById(animalActivityId);
+
+  for (let animalCode in animalCodes) {
+    animalActivity.addAnimal(await getAnimalByAnimalCode(animalCode));
+  }
+}
+
+export async function removeAnimalsFromTraining(
+  animalActivityId: string,
+  animalCode: string,
+) {
+  let animalActivity = await getAnimalActivityById(animalActivityId);
+
+  animalActivity.removeAnimal(await getAnimalByAnimalCode(animalCode));
+}

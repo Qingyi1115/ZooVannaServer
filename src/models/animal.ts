@@ -25,6 +25,7 @@ import { uppercaseFirst } from "../helpers/others";
 import { Enclosure } from "./enclosure";
 import { AnimalLog } from "./animalLog";
 import { AnimalWeight } from "./animalWeight";
+import { AnimalActivity } from "./animalActivity";
 
 class Animal extends Model<
   InferAttributes<Animal>,
@@ -61,6 +62,7 @@ class Animal extends Model<
   declare parents?: Animal[];
   declare children?: Animal[];
   declare animalWeights?: AnimalWeight[];
+  declare animalActivities?: AnimalActivity[];
 
   //--hvnt do yet
   // declare animalClinic?: AnimalClinic;
@@ -89,8 +91,16 @@ class Animal extends Model<
     number
   >;
 
-  // declare getAnimalClinic: BelongsToGetAssociationMixin<AnimalClinic>;
-  // declare setAnimalClinic: BelongsToSetAssociationMixin<AnimalClinic, number>;
+  declare getAnimalActivities: HasManyGetAssociationsMixin<AnimalActivity>;
+  declare addAnimalActivity: HasManyAddAssociationMixin<AnimalActivity, number>;
+  declare setAnimalActivities: HasManySetAssociationsMixin<
+    AnimalActivity,
+    number
+  >;
+  declare removeAnimalActivity: HasManyRemoveAssociationMixin<
+    AnimalActivity,
+    number
+  >;
 
   declare getEnclosure: BelongsToGetAssociationMixin<Enclosure>;
   declare setEnclosure: BelongsToSetAssociationMixin<Enclosure, number>;
@@ -104,7 +114,6 @@ class Animal extends Model<
   declare addEvent: HasManyAddAssociationMixin<Event, number>;
   declare setEvents: HasManySetAssociationsMixin<Event, number>;
   declare removeEvent: HasManyRemoveAssociationMixin<Event, number>;
-  // declare age?: number;
 
   // public getAge(): number {
   //   if (!this.age) {
