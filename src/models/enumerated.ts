@@ -219,6 +219,23 @@ enum EventTimingType {
   EVENING = "EVENING",
 }
 
+enum DayOfTheWeek {
+  MONDAY = "MONDAY",
+  TUESDAY = "TUESDAY",
+  WEDNESDAY = "WEDNESDAY",
+  THURSDAY = "THURSDAY",
+  FRIDAY = "FRIDAY",
+  SATURDAY = "SATURDAY",
+  SUNDAY = "SUNDAY",
+}
+
+enum FoodUnit {
+  KG = "KG",
+  GRAM = "GRAM",
+  ML = "ML",
+  L = "L",
+}
+
 enum Country {
   Afghanistan = "AF",
   AlandIslands = "AX",
@@ -546,4 +563,6 @@ export {
   HubStatus,
   IdentifierType,
   Rating,
+  FoodUnit,
+  DayOfTheWeek,
 };

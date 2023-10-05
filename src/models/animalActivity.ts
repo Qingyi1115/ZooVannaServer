@@ -9,14 +9,18 @@
 // } from "Sequelize";
 // import { conn } from "../db";
 // import { Animal } from "./animal";
+// import { ActivityType } from "./enumerated";
 
-// class Training extends Model<
-//   InferAttributes<AnimalWeight>,
-//   InferCreationAttributes<AnimalWeight>
+// class AnimalActivity extends Model<
+//   InferAttributes<AnimalActivity>,
+//   InferCreationAttributes<AnimalActivity>
 // > {
-//   declare animalWeightId: CreationOptional<number>;
-//   declare weightInKg: number;
-//   declare dateOfMeasure: Date;
+//   declare animalActivityId: CreationOptional<number>;
+//   declare activityType: ActivityType;
+//   declare title: string;
+//   declare details: string;
+//   declare date: Date;
+//   declare session: Session;
 
 //   declare animal?: Animal;
 
@@ -24,7 +28,7 @@
 //   declare setAnimal: BelongsToSetAssociationMixin<Animal, number>;
 // }
 
-// AnimalWeight.init(
+// AnimalActivity.init(
 //   {
 //     animalWeightId: {
 //       type: DataTypes.BIGINT,
@@ -50,4 +54,4 @@
 //   },
 // );
 
-// export { AnimalWeight };
+// export { AnimalActivity };
