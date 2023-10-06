@@ -1761,8 +1761,8 @@ export const facilityAssetsSeed = async () => {
     _day = new Date(
       _day.getTime() -
         days * 1000 * 60 * 60 * 24 +
-        Math.random() * 1000 * 60 * 60 * 24 * 2 -
-        1000 * 60 * 60 * 24,
+        Math.random() * 1000 * 60 * 60 * 24 * 4 -
+        1000 * 60 * 60 * 24 * 2,
     );
     sensor.addMaintenanceLog(
       await MaintenanceLog.create({
