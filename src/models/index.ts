@@ -1218,7 +1218,7 @@ export const animalSeed = async () => {
     null,
     null,
     null,
-    "NORMAL",
+    "SICK",
     "img/animal/ANM00002.jpg",
   );
 
@@ -1239,7 +1239,7 @@ export const animalSeed = async () => {
     null,
     null,
     null,
-    "NORMAL",
+    "NORMAL,OFFSITE",
     "img/animal/ANM00003.jpg",
   );
 
@@ -1323,7 +1323,7 @@ export const animalSeed = async () => {
     null,
     null,
     null,
-    "NORMAL",
+    "NORMAL,PREGNANT",
     "img/animal/ANM00007.jpg",
   );
   let panda8Template = await AnimalService.createNewAnimal(
@@ -1384,7 +1384,7 @@ export const animalSeed = async () => {
     null,
     null,
     null,
-    "NORMAL",
+    "SICK,INJURED",
     "img/animal/ANM00010.jpg",
   );
 
@@ -1443,17 +1443,17 @@ export const animalSeed = async () => {
   await AnimalService.addAnimalLineage("ANM00008", "ANM00007");
 
   // -- add weight
-  // underweight
-  await AnimalService.addAnimalWeight("ANM00001", 5, new Date("2001-10-6"));
-  await AnimalService.addAnimalWeight("ANM00001", 10, new Date("2003-10-6"));
-  await AnimalService.addAnimalWeight("ANM00001", 20, new Date("2007-10-6"));
-  await AnimalService.addAnimalWeight("ANM00001", 50, new Date("2010-10-6"));
-  await AnimalService.addAnimalWeight("ANM00001", 55, new Date("2013-6-8"));
-  await AnimalService.addAnimalWeight("ANM00001", 50, new Date("2015-9-2"));
-  await AnimalService.addAnimalWeight("ANM00001", 60, new Date("2019-4-6"));
-  await AnimalService.addAnimalWeight("ANM00001", 80, new Date("2021-2-10"));
+  // overweight
+  await AnimalService.addAnimalWeight("ANM00001", 10, new Date("2001-10-6"));
+  await AnimalService.addAnimalWeight("ANM00001", 42, new Date("2003-10-6"));
+  await AnimalService.addAnimalWeight("ANM00001", 68, new Date("2007-10-6"));
+  await AnimalService.addAnimalWeight("ANM00001", 80, new Date("2010-10-6"));
+  await AnimalService.addAnimalWeight("ANM00001", 85, new Date("2013-6-8"));
+  await AnimalService.addAnimalWeight("ANM00001", 83, new Date("2015-9-2"));
+  await AnimalService.addAnimalWeight("ANM00001", 80, new Date("2019-4-6"));
+  await AnimalService.addAnimalWeight("ANM00001", 90, new Date("2021-2-10"));
   await AnimalService.addAnimalWeight("ANM00001", 100, new Date("2022-2-10"));
-  await AnimalService.addAnimalWeight("ANM00001", 150, new Date("2023-2-10"));
+  await AnimalService.addAnimalWeight("ANM00001", 110, new Date("2023-2-10"));
 
   // underweight
   await AnimalService.addAnimalWeight("ANM00002", 70, new Date("2023-10-6"));
@@ -1482,6 +1482,9 @@ export const animalSeed = async () => {
     EventTimingType.MORNING,
     60,
   );
+
+  await AnimalService.assignAnimalsToActivity("1", ["ANM00001", "ANM00003"]);
+  await AnimalService.assignItemToActivity("1", ["1", "2"]);
 };
 
 export const animalFeedSeed = async () => {
