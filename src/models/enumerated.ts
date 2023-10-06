@@ -183,7 +183,7 @@ enum Biome {
 enum IdentifierType {
   NONE = "None",
   RFID_TAG = "RFID Tag",
-  MAGNETIC_TAG = "Magnetic Tag",
+  MAGNETIC_TAG = "Magnetic_Tag",
   BARCODE_TAG = "Barcode Tag",
   EAR_TAG = "Ear Tag",
   COLLAR = "Collar",
@@ -202,7 +202,7 @@ enum Rating {
   GOOD = "GOOD",
   FAIR = "FAIR",
   POOR = "POOR",
-  NOT_RECORDED = "NOT RECORDED",
+  NOT_RECORDED = "NOT_RECORDED",
 }
 
 enum EventType {

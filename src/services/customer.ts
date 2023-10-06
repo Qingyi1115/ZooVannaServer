@@ -11,6 +11,7 @@ import { CustomerOrder } from "../models/customerOrder";
 import { Payment } from "../models/payment";
 const { Sequelize } = require("sequelize");
 import { conn } from "../db";
+import QRCode from "react-qr-code";
 
 export async function createNewCustomer(
   customerPassword: string,
@@ -405,6 +406,7 @@ export async function completePaymentForGuest(
   try {
     let result = await CustomerOrder.findOne({
       where: { customerOrderId: customerOrderId },
+      include: ["orderItems"],
     });
 
     if (result) {
@@ -421,12 +423,88 @@ export async function completePaymentForGuest(
         },
       });
 
+      const generateHTMLContent = async () => {
+        let html = `
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <title>Zoo Admission Tickets</title>
+                <style>
+                    body {
+                        font-family: Arial, sans-serif;
+                    }
+                    .ticket {
+                        border: 1px solid #000;
+                        padding: 10px;
+                        margin: 10px;
+                        width: 300px;
+                        text-align: center;
+                    }
+                    .ticket h2 {
+                        margin: 0;
+                        font-size: 18px;
+                    }
+                    .ticket p {
+                        margin: 5px 0;
+                    }
+                    .booking-reference {
+                      margin-top: 20px;
+                      font-weight: bold;
+                  }
+                </style>
+            </head>
+            <body>
+        `;
+
+        html += `
+        <div class="booking-reference">
+            <p><strong>Booking Reference:</strong> ${result?.bookingReference}</p>
+            
+        </div>
+        <div>
+          <p><strong>Visitor Name:</strong> ${result?.customerFirstName} ${result?.customerLastName}</p>
+          <p><strong>Date of Visit:</strong> ${result?.entryDate}</p>
+        </div>
+    `;
+
+        let orderItems = result?.orderItems;
+
+        if (orderItems) {
+          // Generate a ticket section for each ticket in the data
+          for (const orderItem of orderItems) {
+            const listing: Listing = await orderItem.getListing();
+            html += `
+                <div class="ticket">
+                    <h2>Ticket</h2>
+                    <p><strong>Ticket Verification Code: </strong>${orderItem.verificationCode}</p>
+                    <p><strong>Ticket Price:</strong> $${listing.price}</p>
+                    <p><strong>Ticket Type: </strong> ${listing.listingType}</p>
+                </div>
+            `;
+          }
+        }
+
+        html += `
+        <div class="total-price">
+            <p><strong>Total Price:</strong> $${result?.totalAmount}</p>
+        </div>
+    `;
+
+        // Close the HTML document
+        html += `
+            </body>
+            </html>
+        `;
+
+        return html;
+      };
+
       const mailOptions = {
         from: process.env.EMAIL_USERNAME,
         to: result.customerEmail,
         subject: "Ticket Purchase Order",
         text: "Here is your customer order",
-        html: `Here is the customer order`,
+        html: await generateHTMLContent(),
       };
 
       transporter.sendMail(mailOptions, (error, info) => {
