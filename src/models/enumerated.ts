@@ -165,6 +165,8 @@ enum AnimalStatus {
   PREGNANT = "PREGNANT",
   SICK = "SICK",
   INJURED = "INJURED",
+  OFFSITE = "OFFSITE",
+  RELEASED = "RELEASED",
   DECEASED = "DECEASED",
 }
 

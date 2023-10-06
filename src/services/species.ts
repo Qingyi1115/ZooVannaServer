@@ -404,19 +404,27 @@ export async function deleteSpeciesEnclosureNeeds(
 
 export async function createPhysiologicalReferenceNorms(
   speciesCode: string,
-  sizeMaleCm: number,
-  sizeFemaleCm: number,
-  weightMaleKg: number,
-  weightFemaleKg: number,
+  minSizeMaleCm: number,
+  maxSizeMaleCm: number,
+  minSizeFemaleCm: number,
+  maxSizeFemaleCm: number,
+  minWeightMaleKg: number,
+  maxWeightMaleKg: number,
+  minWeightFemaleKg: number,
+  maxWeightFemaleKg: number,
   minAge: number,
   maxAge: number,
   growthStage: AnimalGrowthStage,
 ) {
   let newPhysiologicalRefNorm = {
-    sizeMaleCm: sizeMaleCm,
-    sizeFemaleCm: sizeFemaleCm,
-    weightMaleKg: weightMaleKg,
-    weightFemaleKg: weightFemaleKg,
+    minSizeMaleCm: minSizeMaleCm,
+    maxSizeMaleCm: maxSizeMaleCm,
+    minSizeFemaleCm: minSizeFemaleCm,
+    maxSizeFemaleCm: maxSizeFemaleCm,
+    minWeightMaleKg: minWeightMaleKg,
+    maxWeightMaleKg: maxWeightMaleKg,
+    minWeightFemaleKg: minWeightFemaleKg,
+    maxWeightFemaleKg: maxWeightFemaleKg,
     minAge: minAge,
     maxAge: maxAge,
     growthStage: growthStage,
@@ -429,10 +437,6 @@ export async function createPhysiologicalReferenceNorms(
     let newPhysiologicalRefNormEntry = await PhysiologicalReferenceNorms.create(
       newPhysiologicalRefNorm,
     );
-    // let test : PhysiologicalReferenceNorms[] = [newPhysiologicalRefNormEntry]
-    // await (
-    //   await getSpeciesByCode(speciesCode, "")
-    // ).addPhysiologicalRefNorm(newPhysiologicalRefNormEntry);
 
     newPhysiologicalRefNormEntry.setSpecies(
       await getSpeciesByCode(speciesCode, []),
@@ -477,19 +481,27 @@ export async function getPhysiologicalReferenceNormsById(
 
 export async function updatePhysiologicalReferenceNorms(
   physiologicalRefId: number,
-  sizeMaleCm: number,
-  sizeFemaleCm: number,
-  weightMaleKg: number,
-  weightFemaleKg: number,
+  minSizeMaleCm: number,
+  maxSizeMaleCm: number,
+  minSizeFemaleCm: number,
+  maxSizeFemaleCm: number,
+  minWeightMaleKg: number,
+  maxWeightMaleKg: number,
+  minWeightFemaleKg: number,
+  maxWeightFemaleKg: number,
   minAge: number,
   maxAge: number,
   growthStage: AnimalGrowthStage,
 ) {
   let updatedPhysiologicalRef = {
-    sizeMaleCm: sizeMaleCm,
-    sizeFemaleCm: sizeFemaleCm,
-    weightMaleKg: weightMaleKg,
-    weightFemaleKg: weightFemaleKg,
+    minSizeMaleCm: minSizeMaleCm,
+    maxSizeMaleCm: maxSizeMaleCm,
+    minSizeFemaleCm: minSizeFemaleCm,
+    maxSizeFemaleCm: maxSizeFemaleCm,
+    minWeightMaleKg: minWeightMaleKg,
+    maxWeightMaleKg: maxWeightMaleKg,
+    minWeightFemaleKg: minWeightFemaleKg,
+    maxWeightFemaleKg: maxWeightFemaleKg,
     minAge: minAge,
     maxAge: maxAge,
     growthStage: growthStage,
