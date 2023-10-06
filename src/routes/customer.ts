@@ -46,7 +46,7 @@ router.post(
 );
 router.post(
   "/completePaymentForCustomer/:customerOrderId",
-  completePaymentForCustomerController,
+  completePaymentForGuestController,
 );
 
 router.use(authMiddleware);
