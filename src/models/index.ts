@@ -934,7 +934,7 @@ export const speciesSeed = async () => {
     70,
     100,
     21,
-    25,
+    50,
     AnimalGrowthStage.ELDER,
   );
 
@@ -1298,6 +1298,16 @@ export const animalSeed = async () => {
   await AnimalService.addAnimalLineage("ANM00006", "ANM00009");
   await AnimalService.addAnimalLineage("ANM00008", "ANM00006");
   await AnimalService.addAnimalLineage("ANM00008", "ANM00007");
+
+  // -- add weight
+  await AnimalService.addAnimalWeight("ANM00001", 50, new Date("2023-10-6"));
+
+  // overwegiht
+  await AnimalService.addAnimalWeight("ANM00003", 50, new Date("2023-6-6"));
+  //underweight
+  await AnimalService.addAnimalWeight("ANM00003", 10, new Date("2023-8-6"));
+  //normal
+  await AnimalService.addAnimalWeight("ANM00003", 30, new Date("2023-10-6"));
 
   // -- create animal activity
   let animalActivity1 = await AnimalService.createAnimalActivity(

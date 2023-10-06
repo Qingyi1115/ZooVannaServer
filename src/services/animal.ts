@@ -596,8 +596,14 @@ export async function checkIfAbnormalWeight(animalCode: string) {
     where: { animalCode: animalCode },
     include: [
       {
-        model: PhysiologicalReferenceNorms,
+        model: Species,
         required: false, // Include only if they exist
+        include: [
+          {
+            model: PhysiologicalReferenceNorms,
+            required: false, // Include only if they exist
+          },
+        ],
       },
       {
         model: AnimalWeight,
@@ -606,11 +612,50 @@ export async function checkIfAbnormalWeight(animalCode: string) {
     ],
   });
 
-  //   if (result) {
-  //     let resultAnimalWeights = await result.animalWeights;
-  //     return resultAnimalWeights;
-  //   }
-  //   throw new Error("Invalid Animal Code!");
+  if (animal && animal.age && animal.animalWeights) {
+    let weightRecords = animal.animalWeights;
+
+    const latestWeightRecord = weightRecords.reduce(
+      (latest: AnimalWeight | null, record: AnimalWeight) => {
+        if (!latest || record.dateOfMeasure > latest.dateOfMeasure) {
+          return record;
+        }
+        return latest;
+      },
+      null,
+    );
+
+    let physiologicalRef = await PhysiologicalReferenceNorms.findOne({
+      where: {
+        minAge: {
+          [Op.lte]: animal.age, // Assuming you have an age property in AnimalWeight
+        },
+        maxAge: {
+          [Op.gte]: animal.age,
+        },
+        // You may need to adjust the query based on the animal's gender
+        // and other characteristics to get the appropriate reference norms.
+      },
+    });
+
+    if (!physiologicalRef) {
+      throw new Error(
+        "Physiological reference data not available for the given age and gender!",
+      );
+    }
+
+    if (latestWeightRecord!.weightInKg < physiologicalRef.minWeightMaleKg) {
+      return "Underweight";
+    } else if (
+      latestWeightRecord!.weightInKg > physiologicalRef.maxWeightMaleKg
+    ) {
+      return "Overweight";
+    } else {
+      return "Normal";
+    }
+  }
+
+  throw new Error("Animal has no age or weight record!");
 }
 
 //-- Animal Activity

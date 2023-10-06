@@ -394,11 +394,11 @@ export async function deleteAnimalLineage(req: Request, res: Response) {
 export async function checkInbreeding(req: Request, res: Response) {
   const { animalCode1, animalCode2 } = req.params;
   try {
-    const isCompatible = await AnimalService.checkInbreeding(
+    const isInbreed = await AnimalService.checkInbreeding(
       animalCode1,
       animalCode2,
     );
-    return res.status(200).json(isCompatible);
+    return res.status(200).json(isInbreed);
   } catch (error: any) {
     res.status(400).json({ error: error.message });
   }
@@ -458,6 +458,16 @@ export async function deleteAnimalWeight(req: Request, res: Response) {
   try {
     const animalWeight = await AnimalService.deleteAnimalWeight(animalWeightId);
     return res.status(200).json(animalWeight);
+  } catch (error: any) {
+    res.status(400).json({ error: error.message });
+  }
+}
+
+export async function checkIfAbnormalWeight(req: Request, res: Response) {
+  const { animalCode } = req.params;
+  try {
+    const isAbnormal = await AnimalService.checkIfAbnormalWeight(animalCode);
+    return res.status(200).json(isAbnormal);
   } catch (error: any) {
     res.status(400).json({ error: error.message });
   }
