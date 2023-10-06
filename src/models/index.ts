@@ -542,6 +542,7 @@ export const employeeSeed = async () => {
       employeeEducation: "PHD in not eating",
       employeeBirthDate: new Date("1992-03-04"),
       isAccountManager: true,
+      superAdmin: true,
       //@ts-ignore
       planningStaff: {
         plannerType: PlannerType.OPERATIONS_MANAGER,
@@ -1001,7 +1002,7 @@ export const speciesSeed = async () => {
     AnimalGrowthStage.JUVENILE,
   );
   console.log(pandaDietNeed2.toJSON());
-  let capybara1Template = {
+  let capybaraTemplate = {
     speciesCode: await Species.getNextSpeciesCode(),
     commonName: "Capybara",
     scientificName: "Hydrochoerus Hydrochaeris",
@@ -1025,14 +1026,14 @@ export const speciesSeed = async () => {
     generalDietPreference: "Herbivore",
     imageUrl: "img/species/capybara.jpg",
     lifeExpectancyYears: 10,
-    ageToJuvenile: 2,
-    ageToAdolescent: 5,
-    ageToAdult: 7,
-    ageToElder: 50,
+    ageToJuvenile: 0.5,
+    ageToAdolescent: 1,
+    ageToAdult: 2,
+    ageToElder: 5,
     // foodRemark: "Food remark...",
   } as any;
-  let capybara1 = await Species.create(capybara1Template);
-  console.log(capybara1.toJSON());
+  let capybara = await Species.create(capybaraTemplate);
+  console.log(capybara.toJSON());
 
   let redPandaTemplate = {
     speciesCode: await Species.getNextSpeciesCode(),
@@ -1056,11 +1057,11 @@ export const speciesSeed = async () => {
     habitatOrExhibit: "Forested areas",
     generalDietPreference: "Herbivore",
     imageUrl: "img/species/redPanda.jpg",
-    lifeExpectancyYears: 14,
-    ageToJuvenile: 2,
-    ageToAdolescent: 5,
-    ageToAdult: 7,
-    ageToElder: 50,
+    lifeExpectancyYears: 10,
+    ageToJuvenile: 1,
+    ageToAdolescent: 2,
+    ageToAdult: 3,
+    ageToElder: 8,
     // foodRemark: "Food remark...",
   } as any;
   let redPanda = await Species.create(redPandaTemplate);
@@ -1089,15 +1090,48 @@ export const speciesSeed = async () => {
     habitatOrExhibit: "Forested areas",
     generalDietPreference: "Herbivore",
     imageUrl: "img/species/elephant.jpg",
-    lifeExpectancyYears: 14,
+    lifeExpectancyYears: 65,
     ageToJuvenile: 2,
     ageToAdolescent: 5,
-    ageToAdult: 7,
-    ageToElder: 50,
+    ageToAdult: 20,
+    ageToElder: 60,
     // foodRemark: "Food remark...",
   } as any;
   let elephant = await Species.create(africanElephantTemplate);
   console.log(elephant.toJSON());
+
+  let clownFishTemplate = {
+    speciesCode: await Species.getNextSpeciesCode(),
+    commonName: "Clown Fish",
+    scientificName: "Amphiprioninae",
+    aliasName: "Anemonefish",
+    conservationStatus: ConservationStatus.LEAST_CONCERN,
+    domain: "Eukarya",
+    kingdom: "Animalia",
+    phylum: "Chordata",
+    speciesClass: "Actinopterygii",
+    order: "Perciformes",
+    family: "Pomacentridae",
+    genus: "Amphiprion",
+    educationalDescription:
+      "The Clown Fish, also known as Anemonefish, is a type of small fish belonging to the subfamily Amphiprioninae within the family Pomacentridae. They are well-known for their colorful appearance and their symbiotic relationship with sea anemones.",
+    educationalFunFact:
+      "Clown Fish have a mutually beneficial relationship with sea anemones, where they provide protection to the anemone in exchange for shelter and food scraps.",
+    nativeContinent: Continent.ASIA,
+    nativeBiomes: "Coral Reefs, Tropical Seas",
+    groupSexualDynamic: GroupSexualDynamic.MONOGAMOUS,
+    habitatOrExhibit: "Coral reefs, Warm tropical waters",
+    generalDietPreference: "Omnivore",
+    imageUrl: "img/species/clownfish.jpg",
+    lifeExpectancyYears: 6,
+    ageToJuvenile: 1,
+    ageToAdolescent: 3,
+    ageToAdult: 1,
+    ageToElder: 6,
+    // foodRemark: "Food remark...",
+  } as any;
+  let clownFish = await Species.create(clownFishTemplate);
+  console.log(clownFish.toJSON());
 
   let compatibility1 = await SpeciesService.createCompatibility(
     "SPE001",
@@ -1137,7 +1171,7 @@ export const animalSeed = async () => {
     null,
     null,
     "NORMAL",
-    "img/animal/pangPang.jpg",
+    "img/animal/ANM00001.jpg",
   );
 
   let panda2Template = await AnimalService.createNewAnimal(
@@ -1158,7 +1192,7 @@ export const animalSeed = async () => {
     null,
     null,
     "NORMAL",
-    "img/animal/yuanYuan.jpg",
+    "img/animal/ANM00002.jpg",
   );
 
   let panda3Template = await AnimalService.createNewAnimal(
@@ -1179,7 +1213,7 @@ export const animalSeed = async () => {
     null,
     null,
     "NORMAL",
-    "img/animal/duDu.jpg",
+    "img/animal/ANM00003.jpg",
   );
 
   let panda4Template = await AnimalService.createNewAnimal(
@@ -1200,7 +1234,7 @@ export const animalSeed = async () => {
     null,
     null,
     "NORMAL",
-    "img/animal/fuFu.jpg",
+    "img/animal/ANM00004.jpg",
   );
 
   let panda5Template = await AnimalService.createNewAnimal(
@@ -1221,7 +1255,7 @@ export const animalSeed = async () => {
     null,
     null,
     "NORMAL",
-    "img/animal/tuanTuan.jpg",
+    "img/animal/ANM00005.jpg",
   );
 
   let panda6Template = await AnimalService.createNewAnimal(
@@ -1242,7 +1276,7 @@ export const animalSeed = async () => {
     null,
     null,
     "NORMAL",
-    "img/animal/huanHuan.jpg",
+    "img/animal/ANM00006.jpg",
   );
 
   let panda7Template = await AnimalService.createNewAnimal(
@@ -1263,7 +1297,7 @@ export const animalSeed = async () => {
     null,
     null,
     "NORMAL",
-    "img/animal/yinYin.jpg",
+    "img/animal/ANM00007.jpg",
   );
   let panda8Template = await AnimalService.createNewAnimal(
     "SPE001",
@@ -1283,7 +1317,7 @@ export const animalSeed = async () => {
     null,
     null,
     "NORMAL",
-    "img/animal/niNi.jpg",
+    "img/animal/ANM00008.jpg",
   );
   let panda9Template = await AnimalService.createNewAnimal(
     "SPE001",
@@ -1303,7 +1337,7 @@ export const animalSeed = async () => {
     null,
     null,
     "NORMAL",
-    "img/animal/beiBei.jpg",
+    "img/animal/ANM00009.jpg",
   );
 
   let panda10Template = await AnimalService.createNewAnimal(
@@ -1324,7 +1358,49 @@ export const animalSeed = async () => {
     null,
     null,
     "NORMAL",
-    "img/animal/laLa.jpg",
+    "img/animal/ANM00010.jpg",
+  );
+
+  let clownFish1Template = await AnimalService.createNewAnimal(
+    "SPE005",
+    true,
+    "Clown Fish Group 1",
+    null,
+    null,
+    "Singapore",
+    null,
+    null,
+    AcquisitionMethod.INHOUSE_CAPTIVE_BRED,
+    new Date("2021-03-04"),
+    null,
+    "Big group, around 100-150 fish",
+    "Likes to swin swirl",
+    null,
+    null,
+    null,
+    "NORMAL",
+    "img/animal/ANM00011.jpg",
+  );
+
+  let clownFish2Template = await AnimalService.createNewAnimal(
+    "SPE005",
+    true,
+    "Clown Fish Group 2",
+    null,
+    null,
+    "Korea",
+    null,
+    null,
+    AcquisitionMethod.TRANSFERRED_FROM_ANOTHER_ZOO,
+    new Date("2023-03-04"),
+    null,
+    "Medium group, around 50-70 fish",
+    "Likes to swin swirl",
+    null,
+    null,
+    null,
+    "NORMAL",
+    "img/animal/ANM00012.jpg",
   );
 
   // -- add lineage
@@ -1685,8 +1761,8 @@ export const facilityAssetsSeed = async () => {
     _day = new Date(
       _day.getTime() -
         days * 1000 * 60 * 60 * 24 +
-        Math.random() * 1000 * 60 * 60 * 24 * 2 -
-        1000 * 60 * 60 * 24,
+        Math.random() * 1000 * 60 * 60 * 24 * 4 -
+        1000 * 60 * 60 * 24 * 2,
     );
     sensor.addMaintenanceLog(
       await MaintenanceLog.create({

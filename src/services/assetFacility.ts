@@ -828,7 +828,6 @@ export async function getMaintenanceStaffsByFacilityId(
     }
     return emps;
 
-
   } catch (error: any) {
     throw validationErrorHandler(error);
   }

@@ -67,7 +67,7 @@ class Animal extends Model<
   declare children?: Animal[];
   declare animalWeights?: AnimalWeight[];
   declare animalActivities?: AnimalActivity[];
-  declare animalObservationLogs? :AnimalObservationLog[];
+  declare animalObservationLogs?: AnimalObservationLog[];
 
   //--hvnt do yet
   // declare animalClinic?: AnimalClinic;
@@ -108,13 +108,16 @@ class Animal extends Model<
   >;
 
   declare getAnimalObservationLogs: BelongsToManyGetAssociationsMixin<AnimalObservationLog>;
-  declare addAnimalObservationLog: BelongsToManyAddAssociationMixin<AnimalObservationLog, number>;
+  declare addAnimalObservationLog: BelongsToManyAddAssociationMixin<
+    AnimalObservationLog,
+    number
+  >;
   declare setAnimalObservationLogs: BelongsToManySetAssociationsMixin<
-  AnimalObservationLog,
+    AnimalObservationLog,
     number
   >;
   declare removeAnimalObservationLog: BelongsToManyRemoveAssociationMixin<
-  AnimalObservationLog,
+    AnimalObservationLog,
     number
   >;
 
@@ -253,20 +256,16 @@ Animal.init(
     acquisitionMethod: {
       type: DataTypes.ENUM,
       values: Object.values(AcquisitionMethod),
-      allowNull: false,
+      allowNull: true,
     },
     dateOfAcquisition: {
       type: DataTypes.DATE,
-      defaultValue: DataTypes.NOW,
+      allowNull: true,
     },
     acquisitionRemarks: {
       type: DataTypes.STRING,
       allowNull: true,
     },
-    // currentWeight: {
-    //   type: DataTypes.DOUBLE,
-    //   allowNull: true,
-    // },
     physicalDefiningCharacteristics: {
       type: DataTypes.STRING,
       allowNull: true,
