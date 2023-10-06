@@ -29,6 +29,13 @@ import {
   removeItemFromActivity,
   checkIfAbnormalWeight,
   getAllAbnormalWeights,
+  createAnimalObservationLog,
+  getAllAnimalObservationLogs,
+  getAnimalObservationLogById,
+  getAnimalObservationLogsByAnimalCode,
+  getAnimalObservationLogsBySpeciesCode,
+  updateAnimalObservationLog,
+  deleteAnimalObservationLogById,
 } from "../controllers/animalController";
 
 const router = express.Router();
@@ -80,5 +87,14 @@ router.put("/assignAnimalsToActivity", assignAnimalsToActivity);
 router.put("/removeAnimalFromActivity", removeAnimalFromActivity);
 router.put("/assignItemToActivity", assignItemToActivity);
 router.put("/removeItemFromActivity", removeItemFromActivity);
+
+// -- Animal Logs
+router.post("/createAnimalObservationLog", createAnimalObservationLog);
+router.get("/getAllAnimalObservationLogs", getAllAnimalObservationLogs);
+router.get("/getAnimalObservationLogById/:animalObservationLogId", getAnimalObservationLogById);
+router.get("/getAnimalObservationLogsByAnimalCode/:animalCode", getAnimalObservationLogsByAnimalCode);
+router.get("/getAnimalObservationLogsBySpeciesCode/:speciesCode", getAnimalObservationLogsBySpeciesCode);
+router.put("/updateAnimalObservationLog/:animalObservationLogId", updateAnimalObservationLog);
+router.delete("/deleteAnimalObservationLogById/:animalObservationLogsId", deleteAnimalObservationLogById);
 
 export default router;
