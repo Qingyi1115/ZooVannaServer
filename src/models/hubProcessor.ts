@@ -25,6 +25,7 @@ class HubProcessor extends Model<
   declare processorName : string;
   declare ipAddressName: string | null;
   declare lastDataUpdate: Date | null;
+  declare radioGroup: number;
   declare hubSecret: string | null;
   declare hubStatus : HubStatus;
 
@@ -42,6 +43,10 @@ class HubProcessor extends Model<
   public generateHubSecret() {
     this.hubSecret = (Math.random() + 1).toString(36).substring(7) + (Math.random() + 1).toString(36).substring(7);
     return this.hubSecret;
+  }
+
+  public setRandomRadioGroup() {
+    return Math.floor(Math.random() * 254 + 1);
   }
 
   public validatePayload(jsonPayload:string, sha256:string) {
@@ -71,6 +76,13 @@ HubProcessor.init(
     },
     ipAddressName: {
       type: DataTypes.STRING
+    },
+    radioGroup: {
+      type: DataTypes.INTEGER,
+      validate: {
+        min: 2,
+        max: 254
+      }
     },
     lastDataUpdate: {
       type: DataTypes.DATE
