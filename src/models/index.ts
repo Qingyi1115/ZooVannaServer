@@ -872,11 +872,11 @@ export const speciesSeed = async () => {
     habitatOrExhibit: "Southwest China",
     generalDietPreference: "Folivore",
     imageUrl: "img/species/panda.jpg",
-    lifeExpectancyYears: 65,
+    lifeExpectancyYears: 25,
     ageToJuvenile: 2,
-    ageToAdolescent: 5,
+    ageToAdolescent: 4,
     ageToAdult: 7,
-    ageToElder: 50,
+    ageToElder: 20,
     // foodRemark: "Food remark...",
   } as any;
   let panda = await Species.create(pandaTemplate);
@@ -911,27 +911,78 @@ export const speciesSeed = async () => {
 
   let pandaPhy1 = await SpeciesService.createPhysiologicalReferenceNorms(
     "SPE001",
-    100,
-    100,
-    100,
-    100,
+    15,
+    20,
+    15,
+    20,
+    0.1,
+    0.2,
+    0.1,
+    0.2,
     0,
-    5,
+    1,
     AnimalGrowthStage.INFANT,
   );
-  console.log(pandaPhy1.toJSON());
 
   let pandaPhy2 = await SpeciesService.createPhysiologicalReferenceNorms(
     "SPE001",
-    200,
-    200,
-    200,
-    200,
+    50,
+    75,
+    50,
+    75,
+    20,
+    45,
+    20,
+    45,
     2,
-    5,
+    3,
+    AnimalGrowthStage.JUVENILE,
+  );
+
+  let pandaPhy3 = await SpeciesService.createPhysiologicalReferenceNorms(
+    "SPE001",
+    120,
+    150,
+    110,
+    140,
+    50,
+    90,
+    45,
+    80,
+    4,
+    6,
+    AnimalGrowthStage.ADOLESCENT,
+  );
+
+  let pandaPhy4 = await SpeciesService.createPhysiologicalReferenceNorms(
+    "SPE001",
+    160,
+    190,
+    110,
+    180,
+    85,
+    125,
+    70,
+    100,
+    7,
+    20,
     AnimalGrowthStage.ADULT,
   );
-  console.log(pandaPhy2.toJSON());
+
+  let pandaPhy5 = await SpeciesService.createPhysiologicalReferenceNorms(
+    "SPE001",
+    160,
+    190,
+    110,
+    180,
+    80,
+    115,
+    70,
+    100,
+    21,
+    50,
+    AnimalGrowthStage.ELDER,
+  );
 
   let pandaDietNeed1 = await SpeciesService.createDietNeed(
     "SPE001",
@@ -1293,6 +1344,16 @@ export const animalSeed = async () => {
   await AnimalService.addAnimalLineage("ANM00006", "ANM00009");
   await AnimalService.addAnimalLineage("ANM00008", "ANM00006");
   await AnimalService.addAnimalLineage("ANM00008", "ANM00007");
+
+  // -- add weight
+  await AnimalService.addAnimalWeight("ANM00001", 50, new Date("2023-10-6"));
+
+  // overwegiht
+  await AnimalService.addAnimalWeight("ANM00003", 50, new Date("2023-6-6"));
+  //underweight
+  await AnimalService.addAnimalWeight("ANM00003", 10, new Date("2023-8-6"));
+  //normal
+  await AnimalService.addAnimalWeight("ANM00003", 30, new Date("2023-10-6"));
 
   // -- create animal activity
   let animalActivity1 = await AnimalService.createAnimalActivity(
