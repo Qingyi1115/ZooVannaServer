@@ -463,6 +463,14 @@ export async function deleteAnimalWeight(req: Request, res: Response) {
   }
 }
 
+export async function getAllAbnormalWeights(req: Request, res: Response) {
+  try {
+    const allAbnormals = await AnimalService.getAllAbnormalWeights();
+    return res.status(200).json(allAbnormals);
+  } catch (error: any) {
+    res.status(400).json({ error: error.message });
+  }
+}
 export async function checkIfAbnormalWeight(req: Request, res: Response) {
   const { animalCode } = req.params;
   try {
