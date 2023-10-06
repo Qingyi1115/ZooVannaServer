@@ -283,6 +283,17 @@ export async function addAnimalLineage(
     throw new Error("An animal can't have more than 2 parents.");
   }
 
+  let parents = await childAnimal.getParents();
+  if (parents) {
+    for (let parent of parents) {
+      if (parent.animalCode === parentAnimalCode) {
+        throw new Error(
+          parentAnimalCode + "is already a parent of current animal!",
+        );
+      }
+    }
+  }
+
   try {
     childAnimal.addParent(parentAnimal);
     // parentAnimal.addChildren(childAnimal);
@@ -492,12 +503,7 @@ export async function checkInbreeding( // Check if two animals are related throu
 
   // Check if animal1 and animal2 have the same parents
   const haveSameParents = haveSameParentsCheck(animal1, animal2);
-  console.log("isAncestorOf1 --> " + isAncestorOf1);
-  console.log("isAncestorOf2 --> " + isAncestorOf2);
-  console.log("haveSameParents --> " + haveSameParents);
-  console.log(
-    "result --> " + (isAncestorOf1 || isAncestorOf2 || haveSameParents),
-  );
+
   // Return true if all false
   return isAncestorOf1 || isAncestorOf2 || haveSameParents;
 }
@@ -867,37 +873,38 @@ export async function removeItemFromActivity(
 }
 
 export async function createAnimalObservationLog(
-  employeeId:number,
-  animalCodes:string[],
-  dateTime:Date,
-  durationInMinutes:number, 
-  observationQuality:Rating,
-  details:string
+  employeeId: number,
+  animalCodes: string[],
+  dateTime: Date,
+  durationInMinutes: number,
+  observationQuality: Rating,
+  details: string,
 ) {
   const keeper = await (await findEmployeeById(employeeId)).getKeeper();
 
-  if (!keeper) throw {message:"No keeper found with employee ID : "+ employeeId}
-  
-  const animalsPromise:Promise<Animal>[] = [];
-  animalCodes.forEach(code => {
+  if (!keeper)
+    throw { message: "No keeper found with employee ID : " + employeeId };
+
+  const animalsPromise: Promise<Animal>[] = [];
+  animalCodes.forEach((code) => {
     animalsPromise.push(getAnimalByAnimalCode(code));
   });
 
-  const animals:Animal[] = [];
-  for (const prom of animalsPromise){
+  const animals: Animal[] = [];
+  for (const prom of animalsPromise) {
     const animal = await prom;
-    if (animal === undefined) throw {message:"Animal Code not found!"}
+    if (animal === undefined) throw { message: "Animal Code not found!" };
     animals.push(animal);
   }
-  try{
+  try {
     const animalObservationLog = await AnimalObservationLog.create({
-      dateTime:dateTime,
-      durationInMinutes:durationInMinutes,
-      observationQuality:observationQuality,
-      details:details
-    })
+      dateTime: dateTime,
+      durationInMinutes: durationInMinutes,
+      observationQuality: observationQuality,
+      details: details,
+    });
 
-    animals.forEach(animal=>{
+    animals.forEach((animal) => {
       animal.addAnimalObservationLog(animalObservationLog);
     });
 
@@ -915,47 +922,52 @@ export async function getAllAnimalObservationLogs() {
 }
 
 export async function getAnimalObservationLogById(
-  animalObservationLogId:number
+  animalObservationLogId: number,
 ) {
   const animalObservationLog = await AnimalObservationLog.findOne({
-    where:{
-      animalObservationLogId:animalObservationLogId
+    where: {
+      animalObservationLogId: animalObservationLogId,
     },
-    include:["animals", "keeper"]
+    include: ["animals", "keeper"],
   });
-  if (!animalObservationLog) throw {message:"Unable to find AnimalObservationLog with Id " + animalObservationLogId}
+  if (!animalObservationLog)
+    throw {
+      message:
+        "Unable to find AnimalObservationLog with Id " + animalObservationLogId,
+    };
   return animalObservationLog;
 }
 
-export async function getAnimalObservationLogsByAnimalCode(
-  animalCode:string
-) {
+export async function getAnimalObservationLogsByAnimalCode(animalCode: string) {
   return AnimalObservationLog.findAll({
-    include:[
+    include: [
       {
         association: "animals",
         where: {
           animalCode: animalCode,
         },
-        required:true,
+        required: true,
       },
       {
         association: "keeper",
-        required:true,
-      }]
+        required: true,
+      },
+    ],
   });
 }
 
 export async function getAnimalObservationLogsBySpeciesCode(
-  speciesCode:string
+  speciesCode: string,
 ) {
-  const species = await SpeciesService.getSpeciesByCode(speciesCode, ["animals"]);
+  const species = await SpeciesService.getSpeciesByCode(speciesCode, [
+    "animals",
+  ]);
   let animals = species.animals || [];
   const logSet = new Set();
-  const logs:AnimalObservationLog[] = [];
-  for (const animal of animals){
-    for (const log of (await animal.getAnimalObservationLogs())){
-      if (!logSet.has(log.animalObservationLogId)){
+  const logs: AnimalObservationLog[] = [];
+  for (const animal of animals) {
+    for (const log of await animal.getAnimalObservationLogs()) {
+      if (!logSet.has(log.animalObservationLogId)) {
         logSet.add(log.animalObservationLogId);
         logs.push(log);
       }
@@ -966,16 +978,18 @@ export async function getAnimalObservationLogsBySpeciesCode(
 }
 
 export async function updateAnimalObservationLog(
-  animalObservationLogId:number, 
-  animalCodes:string, 
-  dateTime:Date,
-  durationInMinutes:number, 
-  observationQuality:Rating, 
-  details:string
+  animalObservationLogId: number,
+  animalCodes: string,
+  dateTime: Date,
+  durationInMinutes: number,
+  observationQuality: Rating,
+  details: string,
 ) {
-  const animalObservationLog = await getAnimalObservationLogById(animalObservationLogId);
+  const animalObservationLog = await getAnimalObservationLogById(
+    animalObservationLogId,
+  );
   await animalObservationLog.setAnimals([]);
-  for (const code of animalCodes){
+  for (const code of animalCodes) {
     const animal = await getAnimalByAnimalCode(code);
     animalObservationLog.addAnimal(animal);
   }
@@ -983,15 +997,16 @@ export async function updateAnimalObservationLog(
   animalObservationLog.durationInMinutes = durationInMinutes;
   animalObservationLog.observationQuality = observationQuality;
   animalObservationLog.details = details;
-  
+
   await animalObservationLog.save();
   return animalObservationLog;
 }
 
 export async function deleteAnimalObservationLogById(
-  animalObservationLogsId:number
+  animalObservationLogsId: number,
 ) {
-  const animalObservationLog = await getAnimalObservationLogById(animalObservationLogsId);
+  const animalObservationLog = await getAnimalObservationLogById(
+    animalObservationLogsId,
+  );
   return await animalObservationLog.destroy();
 }
-
