@@ -458,6 +458,52 @@ export const seedDatabase = async () => {
   await facilityAssetsSeed();
   await speciesSeed();
   await animalSeed();
+  await promotionSeed();
+};
+
+export const promotionSeed = async () => {
+  let promotion1 = await Promotion.create({
+    title: "Happy Birthday Merlion Zoo",
+    description:
+      "Enjoy 30% off admission tickets and come join us in our 30th birthday celebration! \n\n Terms and conditions: \nValid for minimum purchase of S$100 \n Valid for purchase date from 1 October 2023 to 31 October 2023",
+    publishDate: new Date("2023-09-15"),
+    startDate: new Date("2023-10-01"),
+    endDate: new Date("2023-10-31"),
+    percentage: 30,
+    minimumSpending: 100,
+    promotionCode: "HAPPY30BIRTHDAY",
+    maxRedeemNum: 2000,
+    currentRedeemNum: 0,
+    imageUrl: "img/promotion/giraffe.jpg",
+  });
+  let promotion2 = await Promotion.create({
+    title: "Hipp-Hippo Hurray",
+    description:
+      "Enjoy 10% off admission tickets to commemorate International Hippo Day! \n\n Terms and conditions: \nValid for minimum purchase of S$200 \n Valid for purchase date from 6 October 2023 to 11 October 2023",
+    publishDate: new Date("2023-10-01"),
+    startDate: new Date("2023-10-06"),
+    endDate: new Date("2023-10-11"),
+    percentage: 10,
+    minimumSpending: 200,
+    promotionCode: "HIPPODAY",
+    maxRedeemNum: 100,
+    currentRedeemNum: 0,
+    imageUrl: "img/promotion/hippo_water.jpg",
+  });
+  let promotion3 = await Promotion.create({
+    title: "Bye La La",
+    description:
+      "Seize your final chance to make memories with our beloved La La! Enjoy 20% off admission tickets. \n\n Terms and conditions: \nValid for minimum purchase of S$150 \n Valid for purchase date from 8 October 2023 to 22 October 2023",
+    publishDate: new Date("2023-10-07"),
+    startDate: new Date("2023-10-08"),
+    endDate: new Date("2023-10-22"),
+    percentage: 20,
+    minimumSpending: 150,
+    promotionCode: "BYELALA",
+    maxRedeemNum: 1000,
+    currentRedeemNum: 0,
+    imageUrl: "img/promotion/lala.jpg",
+  });
 };
 
 export const employeeSeed = async () => {
