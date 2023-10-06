@@ -1202,7 +1202,7 @@ export async function pushSensorReadingsController(
     let ipaddress = req.socket.remoteAddress || "127.0.0.1";
     ipaddress = ipaddress == "::1" ? "127.0.0.1" : ipaddress.split(":")[3];
 
-    const processor = await findProcessorByName(processorName);
+    const processor : HubProcessor = await findProcessorByName(processorName);
     if (!processor.validatePayload(jsonPayloadString, sha256)) {
       try {
         return res
@@ -1233,6 +1233,7 @@ export async function pushSensorReadingsController(
         sensors: (await processor.getSensors()).map(
           (sensor) => sensor.sensorName,
         ),
+        radioGroup: processor.radioGroup 
       });
   } catch (error: any) {
     console.log(error);
