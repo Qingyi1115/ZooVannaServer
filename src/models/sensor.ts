@@ -87,6 +87,7 @@ Sensor.init(
     sensorName: {
       type: DataTypes.STRING,
       allowNull: false,
+      unique: true
     },
     dateOfLastMaintained: {
       type: DataTypes.DATE,

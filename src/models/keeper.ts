@@ -15,6 +15,7 @@ import { Employee } from "./employee";
 import { Enclosure } from "./enclosure";
 import { KeeperType, Specialization } from "./enumerated";
 import { ZooEvent } from "./zooEvent";
+import { AnimalObservationLog } from "./animalObservationLog";
 
 class Keeper extends Model<
   InferAttributes<Keeper>,
@@ -27,6 +28,7 @@ class Keeper extends Model<
   declare employee?: Employee;
   declare zooEvents?: ZooEvent[];
   declare enclosures?: Enclosure[];
+  declare animalObservationLogs? :AnimalObservationLog[];
 
 
   declare getEmployee: BelongsToGetAssociationMixin<Employee>;
@@ -47,6 +49,10 @@ class Keeper extends Model<
       ...this.get()
     }
   }
+  declare getAnimalObservationLogs: BelongsToManyGetAssociationsMixin<AnimalObservationLog>;
+  declare addAnimalObservationLog: BelongsToManyAddAssociationMixin<AnimalObservationLog, number>;
+  declare setAnimalObservationLogs: BelongsToManySetAssociationsMixin<AnimalObservationLog, number>;
+  declare removeAnimalObservationLog: BelongsToManyRemoveAssociationMixin<AnimalObservationLog, number>;
 
   public enable() {
     this.isDisabled = false;
