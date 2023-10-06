@@ -579,16 +579,23 @@ export async function getAllAnimalWeightsByAnimalCode(animalCode: string) {
 }
 
 export async function getAllAbnormalWeights() {
-  // --> hvnt do, need to discuss with Jason
-  // let animal = await Animal.findOne({
-  //   where: { animalCode: animalCode },
-  //   include: AnimalWeight, //eager fetch here
-  // });
-  //   if (result) {
-  //     let resultAnimalWeights = await result.animalWeights;
-  //     return resultAnimalWeights;
-  //   }
-  //   throw new Error("Invalid Animal Code!");
+  let animals = await getAllAnimals();
+  let abnormalWeightAnimals: Animal[] = [];
+
+  for (let animal of animals) {
+    let currentAnimalWeightStatus = await checkIfAbnormalWeight(
+      animal.animalCode,
+    );
+
+    if (
+      currentAnimalWeightStatus == "Underweight" ||
+      currentAnimalWeightStatus == "Overweight"
+    ) {
+      abnormalWeightAnimals.push(animal);
+    }
+  }
+
+  return abnormalWeightAnimals;
 }
 
 export async function checkIfAbnormalWeight(animalCode: string) {
@@ -612,7 +619,7 @@ export async function checkIfAbnormalWeight(animalCode: string) {
     ],
   });
 
-  if (animal && animal.age && animal.animalWeights) {
+  if (animal && animal.age && animal.animalWeights != null) {
     let weightRecords = animal.animalWeights;
 
     const latestWeightRecord = weightRecords.reduce(
@@ -625,6 +632,10 @@ export async function checkIfAbnormalWeight(animalCode: string) {
       null,
     );
 
+    if (!latestWeightRecord) {
+      // throw new Error("Animal has no weight record!");
+      return "Data Not Available";
+    }
     let physiologicalRef = await PhysiologicalReferenceNorms.findOne({
       where: {
         minAge: {
@@ -639,9 +650,10 @@ export async function checkIfAbnormalWeight(animalCode: string) {
     });
 
     if (!physiologicalRef) {
-      throw new Error(
-        "Physiological reference data not available for the given age and gender!",
-      );
+      // throw new Error(
+      //   "Physiological reference data not available for the given age and gender!",
+      // );
+      return "Data Not Available";
     }
 
     if (latestWeightRecord!.weightInKg < physiologicalRef.minWeightMaleKg) {
@@ -655,7 +667,8 @@ export async function checkIfAbnormalWeight(animalCode: string) {
     }
   }
 
-  throw new Error("Animal has no age or weight record!");
+  return "Data Not Available";
+  // throw new Error("Animal has no age or weight record!");
 }
 
 //-- Animal Activity

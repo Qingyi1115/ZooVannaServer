@@ -389,7 +389,8 @@ export async function getSensorReadingBySensorId(
             [Op.lt]: endDate,
             [Op.gt]: startDate
           }
-        }
+        },
+        required:false
       }]
     });
     if (!sensor) throw { message: "Unable to find sensorId: " + sensorId };
@@ -733,8 +734,7 @@ export async function createNewSensorReading(
       readingDate:date,
       value:value
     });
-    sensorReading.setSensor(sensor);
-
+    await sensorReading.setSensor(sensor);
     return sensor;
   } catch (error: any) {
     throw validationErrorHandler(error);
