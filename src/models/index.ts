@@ -120,10 +120,13 @@ export const createDatabase = async (options: any) => {
     addCascadeOptions({ foreignKey: "sensorId" }),
   );
 
-  Sensor.hasMany(SensorReading, addCascadeOptions({ foreignKey: "sensorId", as :"sensorReadings"}));
+  Sensor.hasMany(
+    SensorReading,
+    addCascadeOptions({ foreignKey: "sensorId", as: "sensorReadings" }),
+  );
   SensorReading.belongsTo(
     Sensor,
-    addCascadeOptions({ foreignKey: "sensorId", as :"sensor" }),
+    addCascadeOptions({ foreignKey: "sensorId", as: "sensor" }),
   );
 
   Facility.hasOne(InHouse, addCascadeOptions({ foreignKey: "facilityId" }));
@@ -353,7 +356,10 @@ export const createDatabase = async (options: any) => {
   });
 
   Enclosure.hasMany(ZooEvent, addCascadeOptions({ foreignKey: "enclosureId" }));
-  ZooEvent.belongsTo(Enclosure, addCascadeOptions({ foreignKey: "enclosureId" }));
+  ZooEvent.belongsTo(
+    Enclosure,
+    addCascadeOptions({ foreignKey: "enclosureId" }),
+  );
 
   Animal.hasMany(ZooEvent, addCascadeOptions({ foreignKey: "animalId" }));
   ZooEvent.belongsTo(Animal, addCascadeOptions({ foreignKey: "animalId" }));
@@ -452,6 +458,52 @@ export const seedDatabase = async () => {
   await facilityAssetsSeed();
   await speciesSeed();
   await animalSeed();
+  await promotionSeed();
+};
+
+export const promotionSeed = async () => {
+  let promotion1 = await Promotion.create({
+    title: "Happy Birthday Merlion Zoo",
+    description:
+      "Enjoy 30% off admission tickets and come join us in our 30th birthday celebration! \n\n Terms and conditions: \nValid for minimum purchase of S$100 \n Valid for purchase date from 1 October 2023 to 31 October 2023",
+    publishDate: new Date("2023-09-15"),
+    startDate: new Date("2023-10-01"),
+    endDate: new Date("2023-10-31"),
+    percentage: 30,
+    minimumSpending: 100,
+    promotionCode: "HAPPY30BIRTHDAY",
+    maxRedeemNum: 2000,
+    currentRedeemNum: 0,
+    imageUrl: "img/promotion/giraffe.jpg",
+  });
+  let promotion2 = await Promotion.create({
+    title: "Hipp-Hippo Hurray",
+    description:
+      "Enjoy 10% off admission tickets to commemorate International Hippo Day! \n\n Terms and conditions: \nValid for minimum purchase of S$200 \n Valid for purchase date from 6 October 2023 to 11 October 2023",
+    publishDate: new Date("2023-10-01"),
+    startDate: new Date("2023-10-06"),
+    endDate: new Date("2023-10-11"),
+    percentage: 10,
+    minimumSpending: 200,
+    promotionCode: "HIPPODAY",
+    maxRedeemNum: 100,
+    currentRedeemNum: 0,
+    imageUrl: "img/promotion/hippo_water.jpg",
+  });
+  let promotion3 = await Promotion.create({
+    title: "Bye La La",
+    description:
+      "Seize your final chance to make memories with our beloved La La! Enjoy 20% off admission tickets. \n\n Terms and conditions: \nValid for minimum purchase of S$150 \n Valid for purchase date from 8 October 2023 to 22 October 2023",
+    publishDate: new Date("2023-10-07"),
+    startDate: new Date("2023-10-08"),
+    endDate: new Date("2023-10-22"),
+    percentage: 20,
+    minimumSpending: 150,
+    promotionCode: "BYELALA",
+    maxRedeemNum: 1000,
+    currentRedeemNum: 0,
+    imageUrl: "img/promotion/lala.jpg",
+  });
 };
 
 export const employeeSeed = async () => {
@@ -1407,28 +1459,28 @@ export const facilityAssetsSeed = async () => {
       remarks: "my log haha",
     }),
     await FacilityLog.create({
-      dateTime: new Date(Date.now() - 1000*60*60*24),
+      dateTime: new Date(Date.now() - 1000 * 60 * 60 * 24),
       isMaintenance: false,
       title: "log2",
       details: "Bla Bla...",
       remarks: "my log haha",
     }),
     await FacilityLog.create({
-      dateTime: new Date(Date.now() - 1000*60*60*24*2),
+      dateTime: new Date(Date.now() - 1000 * 60 * 60 * 24 * 2),
       isMaintenance: false,
       title: "log3",
       details: "Bla Bla...",
       remarks: "my log haha",
     }),
     await FacilityLog.create({
-      dateTime: new Date(Date.now() - 1000*60*60*24*3),
+      dateTime: new Date(Date.now() - 1000 * 60 * 60 * 24 * 3),
       isMaintenance: false,
       title: "log4",
       details: "Bla Bla...",
       remarks: "my log haha",
     }),
     await FacilityLog.create({
-      dateTime: new Date(Date.now() - 1000*60*60*24*5),
+      dateTime: new Date(Date.now() - 1000 * 60 * 60 * 24 * 5),
       isMaintenance: false,
       title: "log5",
       details: "Bla Bla...",
@@ -1545,7 +1597,7 @@ export const facilityAssetsSeed = async () => {
   let sensors: Sensor[] = await hub1.getSensors();
 
   let sensor = sensors[0];
-  
+
   _day = new Date(Date.now() - 1000 * 60 * 60 * 24 * 10);
   for (const days of [1, 2, 3, 2, 1, 2, 3, 2, 1, 2, 3, 2, 1, 2]) {
     _day = new Date(_day.getTime() - days * 1000 * 60 * 60 * 24);
@@ -1572,8 +1624,15 @@ export const facilityAssetsSeed = async () => {
 
   sensor = sensors[1];
   _day = new Date(Date.now() - 1000 * 60 * 60 * 24 * 5);
-  for (const days of [0, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15 ,16, 17, 18, 19, 20, 21]) {
-    _day = new Date(_day.getTime() - days * 1000 * 60 * 60 * 24 + Math.random()*1000*60*60*24*2 - 1000*60*60*24);
+  for (const days of [
+    0, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21,
+  ]) {
+    _day = new Date(
+      _day.getTime() -
+        days * 1000 * 60 * 60 * 24 +
+        Math.random() * 1000 * 60 * 60 * 24 * 2 -
+        1000 * 60 * 60 * 24,
+    );
     sensor.addMaintenanceLog(
       await MaintenanceLog.create({
         dateTime: _day,
