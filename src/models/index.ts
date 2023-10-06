@@ -64,6 +64,7 @@ import { SpeciesEnclosureNeed } from "./speciesEnclosureNeed";
 import { TerrainDistribution } from "./terrainDistribution";
 import { ThirdParty } from "./thirdParty";
 import { AnimalActivity } from "./animalActivity";
+import { AnimalObservationLog } from "./animalObservationLog";
 
 function addCascadeOptions(options: object) {
   return { ...options, onDelete: "CASCADE", onUpdate: "CASCADE" };
@@ -283,16 +284,27 @@ export const createDatabase = async (options: any) => {
   Species.belongsToMany(Customer, {
     foreignKey: "speciesId",
     through: "customerFravouriteSpecies",
-    as: "species",
+    as: "customers",
   });
   Customer.belongsToMany(Species, {
     foreignKey: "customerId",
     through: "customerFravouriteSpecies",
-    as: "customers",
+    as: "species",
   });
 
   Animal.hasMany(AnimalLog, addCascadeOptions({ foreignKey: "animalId" }));
   AnimalLog.belongsTo(Animal, addCascadeOptions({ foreignKey: "animalId" }));
+
+  Animal.belongsToMany(AnimalObservationLog, {
+    foreignKey: "animalId",
+    through: "animal_observationLog",
+    as: "animalObservationLogs",
+  });
+  AnimalObservationLog.belongsToMany(Animal, {
+    foreignKey: "animalObservationLogId",
+    through: "animal_observationLog",
+    as: "animals",
+  });
 
   // ------------ End of Animal Relation --------------
 
@@ -347,15 +359,26 @@ export const createDatabase = async (options: any) => {
   Keeper.belongsToMany(ZooEvent, {
     foreignKey: "keeperId",
     through: "keeper_zooEvent",
-    as: "keepers",
+    as: "zooEvents",
   });
   ZooEvent.belongsToMany(Keeper, {
     foreignKey: "zooEventId",
     through: "keeper_zooEvent",
-    as: "zooEvents",
+    as: "keepers",
   });
 
-  Enclosure.hasMany(ZooEvent, addCascadeOptions({ foreignKey: "enclosureId" }));
+  Keeper.belongsToMany(AnimalObservationLog, {
+    foreignKey: "keeperId",
+    through: "responsibleFor",
+    as: "animalObservationLogs",
+  });
+  AnimalObservationLog.belongsToMany(Keeper, {
+    foreignKey: "eventId",
+    through: "responsibleFor",
+    as: "keepers",
+  });
+
+Enclosure.hasMany(ZooEvent, addCascadeOptions({ foreignKey: "enclosureId" }));
   ZooEvent.belongsTo(
     Enclosure,
     addCascadeOptions({ foreignKey: "enclosureId" }),
@@ -752,54 +775,6 @@ export const employeeSeed = async () => {
       },
     },
   );
-
-  let listing1 = await Listing.create({
-    name: "Adult",
-    description: "Listing for local adult",
-    price: 20,
-    listingType: ListingType.LOCAL_ADULT_ONETIME,
-    listingStatus: ListingStatus.ACTIVE,
-  });
-
-  let listing2 = await Listing.create({
-    name: "Student",
-    description: "Listing for local student (including university student)",
-    price: 15,
-    listingType: ListingType.LOCAL_STUDENT_ONETIME,
-    listingStatus: ListingStatus.ACTIVE,
-  });
-
-  let listing3 = await Listing.create({
-    name: "Child",
-    description: "Listing for local child (aged <= 12 years old)",
-    price: 15,
-    listingType: ListingType.LOCAL_CHILD_ONETIME,
-    listingStatus: ListingStatus.ACTIVE,
-  });
-
-  let listing4 = await Listing.create({
-    name: "Senior",
-    description: "Listing for local senior (aged >= 65 years old)",
-    price: 10,
-    listingType: ListingType.LOCAL_SENIOR_ONETIME,
-    listingStatus: ListingStatus.ACTIVE,
-  });
-
-  let listing5 = await Listing.create({
-    name: "Adult",
-    description: "Listing for foreigner adult",
-    price: 30,
-    listingType: ListingType.FOREIGNER_ADULT_ONETIME,
-    listingStatus: ListingStatus.ACTIVE,
-  });
-
-  let listing6 = await Listing.create({
-    name: "Child",
-    description: "Listing for foreigner child",
-    price: 30,
-    listingType: ListingType.FOREIGNER_CHILD_ONETIME,
-    listingStatus: ListingStatus.ACTIVE,
-  });
 };
 
 export const speciesSeed = async () => {
@@ -826,11 +801,11 @@ export const speciesSeed = async () => {
     habitatOrExhibit: "Southwest China",
     generalDietPreference: "Folivore",
     imageUrl: "img/species/panda.jpg",
-    lifeExpectancyYears: 25,
+    lifeExpectancyYears: 65,
     ageToJuvenile: 2,
-    ageToAdolescent: 4,
+    ageToAdolescent: 5,
     ageToAdult: 7,
-    ageToElder: 20,
+    ageToElder: 50,
     // foodRemark: "Food remark...",
   } as any;
   let panda = await Species.create(pandaTemplate);
@@ -865,61 +840,32 @@ export const speciesSeed = async () => {
 
   let pandaPhy1 = await SpeciesService.createPhysiologicalReferenceNorms(
     "SPE001",
-    15,
-    20,
-    15,
-    20,
-    0.1,
-    0.2,
-    0.1,
-    0.2,
+    100,
+    100,
+    100,
+    100,
     0,
-    1,
+    5,
+    0,
+    6,
+    0,
+    15,
     AnimalGrowthStage.INFANT,
   );
+  console.log(pandaPhy1.toJSON());
 
   let pandaPhy2 = await SpeciesService.createPhysiologicalReferenceNorms(
     "SPE001",
-    50,
-    75,
-    50,
-    75,
-    20,
-    45,
-    20,
-    45,
+    200,
+    200,
+    200,
+    200,
     2,
-    3,
-    AnimalGrowthStage.JUVENILE,
-  );
-
-  let pandaPhy3 = await SpeciesService.createPhysiologicalReferenceNorms(
-    "SPE001",
-    120,
-    150,
-    110,
-    140,
-    50,
-    90,
-    45,
-    80,
+    5,
+    1,
     4,
-    6,
-    AnimalGrowthStage.ADOLESCENT,
-  );
-
-  let pandaPhy4 = await SpeciesService.createPhysiologicalReferenceNorms(
-    "SPE001",
-    160,
-    190,
-    110,
-    180,
-    85,
-    125,
-    70,
-    100,
-    7,
-    20,
+    0,
+    10,
     AnimalGrowthStage.ADULT,
   );
 
@@ -937,6 +883,7 @@ export const speciesSeed = async () => {
     50,
     AnimalGrowthStage.ELDER,
   );
+  console.log(pandaPhy2.toJSON());
 
   let pandaDietNeed1 = await SpeciesService.createDietNeed(
     "SPE001",
@@ -1582,7 +1529,7 @@ export const facilityAssetsSeed = async () => {
           sensorType: SensorType.HUMIDITY,
         },
         {
-          sensorName: "LIGHT1",
+          sensorName: "DA_SUN",
           sensorType: SensorType.LIGHT,
         },
         {
@@ -1612,7 +1559,7 @@ export const facilityAssetsSeed = async () => {
   let sensors: Sensor[] = await hub1.getSensors();
 
   let sensor = sensors[0];
-
+  
   _day = new Date(Date.now() - 1000 * 60 * 60 * 24 * 10);
   for (const days of [1, 2, 3, 2, 1, 2, 3, 2, 1, 2, 3, 2, 1, 2]) {
     _day = new Date(_day.getTime() - days * 1000 * 60 * 60 * 24);
@@ -1625,7 +1572,7 @@ export const facilityAssetsSeed = async () => {
       }),
     );
   }
-  sensor.dateOfLastMaintained = _day;
+sensor.dateOfLastMaintained = _day;
 
   for (let i = 1; i < 1000; i++) {
     sensor.addSensorReading(
@@ -1635,7 +1582,7 @@ export const facilityAssetsSeed = async () => {
       }),
     );
   }
-  sensor.save();
+sensor.save();
 
   sensor = sensors[1];
   _day = new Date(Date.now() - 1000 * 60 * 60 * 24 * 5);
@@ -1647,15 +1594,15 @@ export const facilityAssetsSeed = async () => {
         days * 1000 * 60 * 60 * 24 +
         Math.random() * 1000 * 60 * 60 * 24 * 2 -
         1000 * 60 * 60 * 24,
-    );
-    sensor.addMaintenanceLog(
-      await MaintenanceLog.create({
-        dateTime: _day,
-        title: "Maintenance " + _day.toDateString(),
-        details: "Bla bla bla...",
-        remarks: "not uncommon",
-      }),
-    );
+  );
+  sensor.addMaintenanceLog(
+    await MaintenanceLog.create({
+      dateTime: _day,
+      title: "Maintenance " + _day.toDateString(),
+      details: "Bla bla bla...",
+      remarks: "not uncommon",
+    }),
+  );
   }
   sensor.dateOfLastMaintained = _day;
 
@@ -1667,20 +1614,20 @@ export const facilityAssetsSeed = async () => {
       }),
     );
   }
-  sensor.save();
+sensor.save();
 
   sensor = sensors[2];
-  _day = new Date(Date.now());
+_day = new Date(Date.now());
   for (const days of [3, 1, 2, 3, 4, 5, 6, 7, 8, 9]) {
     _day = new Date(_day.getTime() - days * 1000 * 60 * 60 * 24);
-    sensor.addMaintenanceLog(
-      await MaintenanceLog.create({
-        dateTime: _day,
-        title: "Maintenance " + _day.toDateString(),
-        details: "Bla bla bla...",
-        remarks: "not uncommon",
-      }),
-    );
+  sensor.addMaintenanceLog(
+    await MaintenanceLog.create({
+      dateTime: _day,
+      title: "Maintenance " + _day.toDateString(),
+      details: "Bla bla bla...",
+      remarks: "not uncommon",
+    }),
+  );
   }
   sensor.dateOfLastMaintained = _day;
 
@@ -1692,20 +1639,20 @@ export const facilityAssetsSeed = async () => {
       }),
     );
   }
-  sensor.save();
+sensor.save();
 
   sensor = sensors[3];
-  _day = new Date(Date.now());
+_day = new Date(Date.now());
   for (const days of [0, 1, 3, 4, 2, 4]) {
     _day = new Date(_day.getTime() - days * 1000 * 60 * 60 * 24);
-    sensor.addMaintenanceLog(
-      await MaintenanceLog.create({
-        dateTime: _day,
-        title: "Maintenance " + _day.toDateString(),
-        details: "Bla bla bla...",
-        remarks: "not uncommon",
-      }),
-    );
+  sensor.addMaintenanceLog(
+    await MaintenanceLog.create({
+      dateTime: _day,
+      title: "Maintenance " + _day.toDateString(),
+      details: "Bla bla bla...",
+      remarks: "not uncommon",
+    }),
+  );
   }
   sensor.dateOfLastMaintained = _day;
 
@@ -1717,21 +1664,21 @@ export const facilityAssetsSeed = async () => {
       }),
     );
   }
-  sensor.save();
+sensor.save();
 
   sensor = sensors[4];
   _day = new Date(Date.now());
   // [1, 5, 2, 4, 8, 5, 7, 11, 8, 10, 14, 11, 13, 17]
   for (const days of [0, 17, 13, 11, 14, 10, 8, 11, 7, 5, 8, 4, 2, 5, 1]) {
     _day = new Date(_day.getTime() - days * 1000 * 60 * 60 * 24);
-    sensor.addMaintenanceLog(
-      await MaintenanceLog.create({
-        dateTime: _day,
-        title: "Maintenance " + _day.toDateString(),
-        details: "Bla bla bla...",
-        remarks: "not uncommon",
-      }),
-    );
+  sensor.addMaintenanceLog(
+    await MaintenanceLog.create({
+      dateTime: _day,
+      title: "Maintenance " + _day.toDateString(),
+      details: "Bla bla bla...",
+      remarks: "not uncommon",
+    }),
+  );
   }
   sensor.dateOfLastMaintained = _day;
 
@@ -1743,7 +1690,7 @@ export const facilityAssetsSeed = async () => {
       }),
     );
   }
-  sensor.save();
+sensor.save();
 
   let hub2 = await HubProcessor.create(
     {
