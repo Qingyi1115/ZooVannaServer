@@ -378,7 +378,7 @@ export const createDatabase = async (options: any) => {
     as: "keepers",
   });
 
-Enclosure.hasMany(ZooEvent, addCascadeOptions({ foreignKey: "enclosureId" }));
+  Enclosure.hasMany(ZooEvent, addCascadeOptions({ foreignKey: "enclosureId" }));
   ZooEvent.belongsTo(
     Enclosure,
     addCascadeOptions({ foreignKey: "enclosureId" }),
@@ -821,6 +821,53 @@ export const employeeSeed = async () => {
       },
     },
   );
+  let listing1 = await Listing.create({
+    name: "Adult",
+    description: "Listing for local adult",
+    price: 20,
+    listingType: ListingType.LOCAL_ADULT_ONETIME,
+    listingStatus: ListingStatus.ACTIVE,
+  });
+
+  let listing2 = await Listing.create({
+    name: "Student",
+    description: "Listing for local student (including university student)",
+    price: 15,
+    listingType: ListingType.LOCAL_STUDENT_ONETIME,
+    listingStatus: ListingStatus.ACTIVE,
+  });
+
+  let listing3 = await Listing.create({
+    name: "Child",
+    description: "Listing for local child (aged <= 12 years old)",
+    price: 15,
+    listingType: ListingType.LOCAL_CHILD_ONETIME,
+    listingStatus: ListingStatus.ACTIVE,
+  });
+
+  let listing4 = await Listing.create({
+    name: "Senior",
+    description: "Listing for local senior (aged >= 65 years old)",
+    price: 10,
+    listingType: ListingType.LOCAL_SENIOR_ONETIME,
+    listingStatus: ListingStatus.ACTIVE,
+  });
+
+  let listing5 = await Listing.create({
+    name: "Adult",
+    description: "Listing for foreigner adult",
+    price: 30,
+    listingType: ListingType.FOREIGNER_ADULT_ONETIME,
+    listingStatus: ListingStatus.ACTIVE,
+  });
+
+  let listing6 = await Listing.create({
+    name: "Child",
+    description: "Listing for foreigner child",
+    price: 30,
+    listingType: ListingType.FOREIGNER_CHILD_ONETIME,
+    listingStatus: ListingStatus.ACTIVE,
+  });
 };
 
 export const speciesSeed = async () => {
@@ -1605,7 +1652,7 @@ export const facilityAssetsSeed = async () => {
   let sensors: Sensor[] = await hub1.getSensors();
 
   let sensor = sensors[0];
-  
+
   _day = new Date(Date.now() - 1000 * 60 * 60 * 24 * 10);
   for (const days of [1, 2, 3, 2, 1, 2, 3, 2, 1, 2, 3, 2, 1, 2]) {
     _day = new Date(_day.getTime() - days * 1000 * 60 * 60 * 24);
@@ -1618,7 +1665,7 @@ export const facilityAssetsSeed = async () => {
       }),
     );
   }
-sensor.dateOfLastMaintained = _day;
+  sensor.dateOfLastMaintained = _day;
 
   for (let i = 1; i < 1000; i++) {
     sensor.addSensorReading(
@@ -1628,7 +1675,7 @@ sensor.dateOfLastMaintained = _day;
       }),
     );
   }
-sensor.save();
+  sensor.save();
 
   sensor = sensors[1];
   _day = new Date(Date.now() - 1000 * 60 * 60 * 24 * 5);
@@ -1640,15 +1687,15 @@ sensor.save();
         days * 1000 * 60 * 60 * 24 +
         Math.random() * 1000 * 60 * 60 * 24 * 2 -
         1000 * 60 * 60 * 24,
-  );
-  sensor.addMaintenanceLog(
-    await MaintenanceLog.create({
-      dateTime: _day,
-      title: "Maintenance " + _day.toDateString(),
-      details: "Bla bla bla...",
-      remarks: "not uncommon",
-    }),
-  );
+    );
+    sensor.addMaintenanceLog(
+      await MaintenanceLog.create({
+        dateTime: _day,
+        title: "Maintenance " + _day.toDateString(),
+        details: "Bla bla bla...",
+        remarks: "not uncommon",
+      }),
+    );
   }
   sensor.dateOfLastMaintained = _day;
 
@@ -1660,20 +1707,20 @@ sensor.save();
       }),
     );
   }
-sensor.save();
+  sensor.save();
 
   sensor = sensors[2];
-_day = new Date(Date.now());
+  _day = new Date(Date.now());
   for (const days of [3, 1, 2, 3, 4, 5, 6, 7, 8, 9]) {
     _day = new Date(_day.getTime() - days * 1000 * 60 * 60 * 24);
-  sensor.addMaintenanceLog(
-    await MaintenanceLog.create({
-      dateTime: _day,
-      title: "Maintenance " + _day.toDateString(),
-      details: "Bla bla bla...",
-      remarks: "not uncommon",
-    }),
-  );
+    sensor.addMaintenanceLog(
+      await MaintenanceLog.create({
+        dateTime: _day,
+        title: "Maintenance " + _day.toDateString(),
+        details: "Bla bla bla...",
+        remarks: "not uncommon",
+      }),
+    );
   }
   sensor.dateOfLastMaintained = _day;
 
@@ -1685,20 +1732,20 @@ _day = new Date(Date.now());
       }),
     );
   }
-sensor.save();
+  sensor.save();
 
   sensor = sensors[3];
-_day = new Date(Date.now());
+  _day = new Date(Date.now());
   for (const days of [0, 1, 3, 4, 2, 4]) {
     _day = new Date(_day.getTime() - days * 1000 * 60 * 60 * 24);
-  sensor.addMaintenanceLog(
-    await MaintenanceLog.create({
-      dateTime: _day,
-      title: "Maintenance " + _day.toDateString(),
-      details: "Bla bla bla...",
-      remarks: "not uncommon",
-    }),
-  );
+    sensor.addMaintenanceLog(
+      await MaintenanceLog.create({
+        dateTime: _day,
+        title: "Maintenance " + _day.toDateString(),
+        details: "Bla bla bla...",
+        remarks: "not uncommon",
+      }),
+    );
   }
   sensor.dateOfLastMaintained = _day;
 
@@ -1710,21 +1757,21 @@ _day = new Date(Date.now());
       }),
     );
   }
-sensor.save();
+  sensor.save();
 
   sensor = sensors[4];
   _day = new Date(Date.now());
   // [1, 5, 2, 4, 8, 5, 7, 11, 8, 10, 14, 11, 13, 17]
   for (const days of [0, 17, 13, 11, 14, 10, 8, 11, 7, 5, 8, 4, 2, 5, 1]) {
     _day = new Date(_day.getTime() - days * 1000 * 60 * 60 * 24);
-  sensor.addMaintenanceLog(
-    await MaintenanceLog.create({
-      dateTime: _day,
-      title: "Maintenance " + _day.toDateString(),
-      details: "Bla bla bla...",
-      remarks: "not uncommon",
-    }),
-  );
+    sensor.addMaintenanceLog(
+      await MaintenanceLog.create({
+        dateTime: _day,
+        title: "Maintenance " + _day.toDateString(),
+        details: "Bla bla bla...",
+        remarks: "not uncommon",
+      }),
+    );
   }
   sensor.dateOfLastMaintained = _day;
 
@@ -1736,7 +1783,7 @@ sensor.save();
       }),
     );
   }
-sensor.save();
+  sensor.save();
 
   let hub2 = await HubProcessor.create(
     {
