@@ -291,28 +291,28 @@ export async function verifyPromotionCode(req: Request, res: Response) {
   }
 }
 
-export async function usePromotionCode(req: Request, res: Response) {
-  const { promotionCode } = req.params;
-  const { currentSpending } = req.body;
+// export async function usePromotionCode(req: Request, res: Response) {
+//   const { promotionCode } = req.params;
+//   const { currentSpending } = req.body;
 
-  if (promotionCode == undefined) {
-    console.log("Missing field(s): ", {
-      promotionCode,
-      currentSpending,
-    });
-    return res.status(400).json({ error: "Missing information!" });
-  }
+//   if (promotionCode == undefined) {
+//     console.log("Missing field(s): ", {
+//       promotionCode,
+//       currentSpending,
+//     });
+//     return res.status(400).json({ error: "Missing information!" });
+//   }
 
-  try {
-    const isSuccessful = await PromotionService.usePromotionCode(
-      promotionCode,
-      currentSpending,
-    );
-    return res.status(200).json(isSuccessful);
-  } catch (error: any) {
-    res.status(400).json({ error: error.message });
-  }
-}
+//   try {
+//     const isSuccessful = await PromotionService.usePromotionCode(
+//       promotionCode,
+//       currentSpending,
+//     );
+//     return res.status(200).json(isSuccessful);
+//   } catch (error: any) {
+//     res.status(400).json({ error: error.message });
+//   }
+// }
 
 export async function cancelUsePromotionCode(req: Request, res: Response) {
   const { promotionCode } = req.params;
