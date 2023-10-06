@@ -30,6 +30,10 @@ app.use(
   }),
 );
 
+const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY, {
+  apiVersion: "2022-08-01",
+});
+
 app.use(compression());
 app.use(cookieParser());
 app.use(bodyParser.json());
@@ -62,6 +66,57 @@ app.use((req, res, next) => {
 
 app.get("/", (req: Request, res: Response) => {
   res.send("HELLO)s");
+});
+
+app.get("/config", (req: Request, res: Response) => {
+  res.send({
+    publishableKey: process.env.STRIPE_PUBLISHABLE_KEY,
+  });
+});
+
+app.post("/create-payment-intent", async (req: Request, res: Response) => {
+  const { total } = req.body;
+  try {
+    // Create a PaymentIntent with the order amount and currency
+    const paymentIntent = await stripe.paymentIntents.create({
+      amount: total,
+      currency: "sgd",
+      // In the latest version of the API, specifying the `automatic_payment_methods` parameter is optional because Stripe enables its functionality by default.
+      automatic_payment_methods: {
+        enabled: true,
+      },
+      description: "transaction",
+    });
+
+    res.send({
+      clientSecret: paymentIntent.client_secret,
+      id: paymentIntent.id,
+    });
+  } catch (error: any) {
+    return res.status(400).json({ error: error.message });
+  }
+});
+
+app.post("/fetchPayment", async (req: Request, res: Response) => {
+  const { id } = req.body;
+  console.log(id);
+
+  const paymentIntent = await stripe.paymentIntents.retrieve(id);
+  console.log(paymentIntent);
+  console.log(paymentIntent.payment_method_types);
+
+  console.log(
+    paymentIntent.payment_method_options.card.length == 0 ? "PAYNOW" : "CARD",
+  );
+
+  res.send({
+    amount: paymentIntent.amount,
+    type:
+      paymentIntent.payment_method_options.card.length === 0
+        ? "PAYNOW"
+        : "CARD",
+    description: paymentIntent.description,
+  });
 });
 
 app.use("/api/employee/", employeeRoutes);

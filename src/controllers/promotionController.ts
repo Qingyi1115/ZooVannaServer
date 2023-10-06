@@ -88,6 +88,40 @@ export async function getAllPromotions(req: Request, res: Response) {
   }
 }
 
+export async function getAllPublishedPromotions(req: Request, res: Response) {
+  const { includes = "" } = req.body;
+
+  const _includes: string[] = [];
+  for (const role of ["customerOrder"]) {
+    if (includes.includes(role)) _includes.push(role);
+  }
+
+  try {
+    const publishedPromotions =
+      await PromotionService.getAllPublishedPromotions(_includes);
+    return res.status(200).json(publishedPromotions);
+  } catch (error: any) {
+    res.status(400).json({ error: error.message });
+  }
+}
+
+export async function getAllActivePromotions(req: Request, res: Response) {
+  const { includes = "" } = req.body;
+
+  const _includes: string[] = [];
+  for (const role of ["customerOrder"]) {
+    if (includes.includes(role)) _includes.push(role);
+  }
+
+  try {
+    const activePromotions =
+      await PromotionService.getAllActivePromotions(_includes);
+    return res.status(200).json(activePromotions);
+  } catch (error: any) {
+    res.status(400).json({ error: error.message });
+  }
+}
+
 export async function getPromotionByPromotionId(req: Request, res: Response) {
   const { promotionId } = req.params;
   const { includes = "" } = req.body;

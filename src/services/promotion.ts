@@ -46,6 +46,36 @@ export async function getAllPromotions(includes: string[]) {
   }
 }
 
+export async function getAllPublishedPromotions(includes: string[]) {
+  try {
+    const allPromo = await Promotion.findAll({ include: includes });
+    const currentDate = new Date(new Date().toUTCString());
+    const publishedPromotions = allPromo.filter((promotion) => {
+      return (
+        promotion.publishDate <= currentDate && promotion.endDate >= currentDate
+      );
+    });
+    return publishedPromotions;
+  } catch (error: any) {
+    throw validationErrorHandler(error);
+  }
+}
+
+export async function getAllActivePromotions(includes: string[]) {
+  try {
+    const allPromo = await Promotion.findAll({ include: includes });
+    const currentDate = new Date(new Date().toUTCString());
+    const publishedPromotions = allPromo.filter((promotion) => {
+      return (
+        promotion.startDate <= currentDate && promotion.endDate >= currentDate
+      );
+    });
+    return publishedPromotions;
+  } catch (error: any) {
+    throw validationErrorHandler(error);
+  }
+}
+
 export async function getPromotionByPromotionId(
   promotionId: number,
   includes: string[],
@@ -121,23 +151,20 @@ export async function verifyPromotionCode(
 
     if (!promotion) {
       throw { message: "Invalid promotion code!" };
-    }
-
-    if (promotion.startDate > currentDate || promotion.endDate < currentDate) {
+    } else if (
+      promotion.startDate > currentDate ||
+      promotion.endDate < currentDate
+    ) {
       throw { message: "Promotion is not applicable for today!" };
-    }
-
-    if (promotion.currentRedeemNum >= promotion.maxRedeemNum) {
+    } else if (promotion.currentRedeemNum >= promotion.maxRedeemNum) {
       throw { message: "Promotion is fully redeemed!" };
-    }
-
-    if (currentSpending < promotion.minimumSpending) {
+    } else if (currentSpending < promotion.minimumSpending) {
       throw {
         message: `This promotion is only applicable for a minimum purchase of $${promotion.minimumSpending}`,
       };
+    } else {
+      return promotion;
     }
-
-    return promotion;
   } catch (error) {
     throw error; // Re-throw the error for higher-level handling
   }
@@ -168,7 +195,6 @@ export async function cancelUsePromotionCode(promotionCode: string) {
 
     promotion.decrementCurrentRedeemNum();
     return true;
-    
   } catch (error) {
     throw error;
   }
