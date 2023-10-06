@@ -37,7 +37,7 @@ class CustomerOrder extends Model<
   declare promotion?: Promotion;
   declare customer?: Customer;
   declare payments?: Payment[];
-  declare orderItem?: OrderItem[];
+  declare orderItems?: OrderItem[];
 
   declare getPromotion: BelongsToGetAssociationMixin<Promotion>;
   declare setPromotion: BelongsToSetAssociationMixin<Promotion, number>;

@@ -163,6 +163,7 @@ export async function verifyPromotionCode(
         message: `This promotion is only applicable for a minimum purchase of $${promotion.minimumSpending}`,
       };
     } else {
+      promotion.incrementCurrentRedeemNum();
       return promotion;
     }
   } catch (error) {
@@ -170,18 +171,18 @@ export async function verifyPromotionCode(
   }
 }
 
-export async function usePromotionCode(
-  promotionCode: string,
-  currentSpending: number,
-) {
-  const promotion = await verifyPromotionCode(promotionCode, currentSpending);
-  if (promotion) {
-    // need to link promotion w customer order in the future if the promotion criteria gets more complex
-    promotion.incrementCurrentRedeemNum();
-  }
-  //success
-  return true;
-}
+// export async function usePromotionCode(
+//   promotionCode: string,
+//   currentSpending: number,
+// ) {
+//   const promotion = await verifyPromotionCode(promotionCode, currentSpending);
+//   if (promotion) {
+//     // need to link promotion w customer order in the future if the promotion criteria gets more complex
+//     promotion.incrementCurrentRedeemNum();
+//   }
+//   //success
+//   return true;
+// }
 
 export async function cancelUsePromotionCode(promotionCode: string) {
   try {

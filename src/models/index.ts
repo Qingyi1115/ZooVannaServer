@@ -821,6 +821,53 @@ export const employeeSeed = async () => {
       },
     },
   );
+  let listing1 = await Listing.create({
+    name: "Adult",
+    description: "Listing for local adult",
+    price: 20,
+    listingType: ListingType.LOCAL_ADULT_ONETIME,
+    listingStatus: ListingStatus.ACTIVE,
+  });
+
+  let listing2 = await Listing.create({
+    name: "Student",
+    description: "Listing for local student (including university student)",
+    price: 15,
+    listingType: ListingType.LOCAL_STUDENT_ONETIME,
+    listingStatus: ListingStatus.ACTIVE,
+  });
+
+  let listing3 = await Listing.create({
+    name: "Child",
+    description: "Listing for local child (aged <= 12 years old)",
+    price: 15,
+    listingType: ListingType.LOCAL_CHILD_ONETIME,
+    listingStatus: ListingStatus.ACTIVE,
+  });
+
+  let listing4 = await Listing.create({
+    name: "Senior",
+    description: "Listing for local senior (aged >= 65 years old)",
+    price: 10,
+    listingType: ListingType.LOCAL_SENIOR_ONETIME,
+    listingStatus: ListingStatus.ACTIVE,
+  });
+
+  let listing5 = await Listing.create({
+    name: "Adult",
+    description: "Listing for foreigner adult",
+    price: 30,
+    listingType: ListingType.FOREIGNER_ADULT_ONETIME,
+    listingStatus: ListingStatus.ACTIVE,
+  });
+
+  let listing6 = await Listing.create({
+    name: "Child",
+    description: "Listing for foreigner child",
+    price: 30,
+    listingType: ListingType.FOREIGNER_CHILD_ONETIME,
+    listingStatus: ListingStatus.ACTIVE,
+  });
 };
 
 export const speciesSeed = async () => {
