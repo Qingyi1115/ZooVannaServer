@@ -38,10 +38,13 @@ class Facility extends Model<
   declare animalClinic?: AnimalClinic;
   declare enclosure?: Enclosure;
 
-  declare getHubProcessors: HasManyGetAssociationsMixin<HubProcessor>;
+  declare getHubProcessors: HasManyGetAssociationsMixin<HubProcessor[]>;
   declare addHubProcessor: HasManyAddAssociationMixin<HubProcessor, number>;
-  declare setHubProcessors: HasManySetAssociationsMixin<HubProcessor, number>;
-  declare removeHubProcessor: HasManyRemoveAssociationMixin<HubProcessor, number>;
+  declare setHubProcessors: HasManySetAssociationsMixin<HubProcessor[], number>;
+  declare removeHubProcessor: HasManyRemoveAssociationMixin<
+    HubProcessor,
+    number
+  >;
 
   declare getInHouse: HasOneGetAssociationMixin<InHouse>;
   declare setInHouse: HasOneSetAssociationMixin<InHouse, number>;
@@ -78,18 +81,18 @@ class Facility extends Model<
   }
 
   public toJSON() {
-    return {
-      ...this.get(),
-    } 
+    // Can control default values returned rather than manually populating json, removing secrets
+    // Similar idea albert more useful when compared to java's toString
+    return this.get(); //{...this.get(), employeePasswordHash: undefined, employeeSalt: undefined}
   }
 
-  public async toFullJson(){
-    const _json : any = {
+  public async toFullJson() {
+    const _json: any = {
       ...this.get(),
-      facilityDetailJson: (await this.getFacilityDetail())?.toJSON(),
-      hubProcessors: (await this.getHubProcessors())?.map(hub => hub.toJSON())
-    }
-    _json.facilityDetail = this.facilityDetail
+      facilityDetailJson: await this.getFacilityDetail(),
+      hubProcessors: await this.getHubProcessors(),
+    };
+    _json.facilityDetail = this.facilityDetail;
     return _json;
   }
 }
@@ -107,10 +110,12 @@ Facility.init(
       unique: true,
     },
     xCoordinate: {
-      type: DataTypes.INTEGER
+      type: DataTypes.INTEGER,
+      allowNull: false,
     },
     yCoordinate: {
-      type: DataTypes.INTEGER
+      type: DataTypes.INTEGER,
+      allowNull: false,
     },
     facilityDetail: {
       type: DataTypes.STRING,

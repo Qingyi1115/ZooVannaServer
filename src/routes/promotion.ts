@@ -8,21 +8,25 @@ import {
   updatePromotion,
   deletePromotion,
   verifyPromotionCode,
-  usePromotionCode,
+  // usePromotionCode,
   cancelUsePromotionCode,
+  getAllActivePromotions,
+  getAllPublishedPromotions,
 } from "../controllers/promotionController";
 
 const router = express.Router();
 
+router.get("/getAllPublishedPromotions", getAllPublishedPromotions);
+router.get("/getAllActivePromotions", getAllActivePromotions);
+router.get("/getPromotion/:promotionId", getPromotionByPromotionId);
 router.get("/verifyPromotionCode/:promotionCode", verifyPromotionCode);
-router.put("/usePromotionCode/:promotionCode", usePromotionCode);
+// router.put("/usePromotionCode/:promotionCode", usePromotionCode);
 router.put("/cancelUsePromotionCode/:promotionCode", cancelUsePromotionCode);
 
 router.use(authMiddleware);
 
 router.post("/createPromotion", createPromotion);
 router.get("/getAllPromotions", getAllPromotions);
-router.get("/getPromotion/:promotionId", getPromotionByPromotionId);
 router.put("/updatePromotion/:promotionId", updatePromotion);
 router.delete("/deletePromotion/:promotionId", deletePromotion);
 

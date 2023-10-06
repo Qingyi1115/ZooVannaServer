@@ -3,10 +3,6 @@ import {
   Model,
   InferAttributes,
   InferCreationAttributes,
-  HasManyGetAssociationsMixin,
-  HasManyAddAssociationMixin,
-  HasManySetAssociationsMixin,
-  HasManyRemoveAssociationMixin,
   BelongsToGetAssociationMixin,
   BelongsToSetAssociationMixin,
   CreationOptional,
@@ -20,29 +16,27 @@ class PhysiologicalReferenceNorms extends Model<
   InferCreationAttributes<PhysiologicalReferenceNorms>
 > {
   declare physiologicalRefId: CreationOptional<number>;
-  declare sizeMaleCm: number;
-  declare sizeFemaleCm: number;
-  declare weightMaleKg: number;
-  declare weightFemaleKg: number;
+  declare minSizeMaleCm: number;
+  declare maxSizeMaleCm: number;
+  declare minSizeFemaleCm: number;
+  declare maxSizeFemaleCm: number;
+  declare minWeightMaleKg: number;
+  declare maxWeightMaleKg: number;
+  declare minWeightFemaleKg: number;
+  declare maxWeightFemaleKg: number;
   declare minAge: number;
   declare maxAge: number;
   declare growthStage: AnimalGrowthStage;
 
-  // declare species?: Species[];
   declare species?: Species;
-
-  // declare getSpecies: HasManyGetAssociationsMixin<Species[]>;
-  // declare addSpecies: HasManyAddAssociationMixin<Species, number>;
-  // declare setSpecies: HasManySetAssociationsMixin<Species[], number>;
-  // declare removeSpecies: HasManyRemoveAssociationMixin<Species, number>;
 
   declare getSpecies: BelongsToGetAssociationMixin<Species>;
   declare setSpecies: BelongsToSetAssociationMixin<Species, number>;
-  
+
   public toJSON() {
     return {
       ...this.get(),
-    }
+    };
   }
 }
 PhysiologicalReferenceNorms.init(
@@ -52,19 +46,35 @@ PhysiologicalReferenceNorms.init(
       autoIncrement: true,
       primaryKey: true,
     },
-    sizeMaleCm: {
+    minSizeMaleCm: {
       type: DataTypes.DOUBLE,
       allowNull: false,
     },
-    sizeFemaleCm: {
+    maxSizeMaleCm: {
       type: DataTypes.DOUBLE,
       allowNull: false,
     },
-    weightMaleKg: {
+    minSizeFemaleCm: {
       type: DataTypes.DOUBLE,
       allowNull: false,
     },
-    weightFemaleKg: {
+    maxSizeFemaleCm: {
+      type: DataTypes.DOUBLE,
+      allowNull: false,
+    },
+    minWeightMaleKg: {
+      type: DataTypes.DOUBLE,
+      allowNull: false,
+    },
+    maxWeightMaleKg: {
+      type: DataTypes.DOUBLE,
+      allowNull: false,
+    },
+    minWeightFemaleKg: {
+      type: DataTypes.DOUBLE,
+      allowNull: false,
+    },
+    maxWeightFemaleKg: {
       type: DataTypes.DOUBLE,
       allowNull: false,
     },

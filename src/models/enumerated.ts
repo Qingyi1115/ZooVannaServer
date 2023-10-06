@@ -165,6 +165,8 @@ enum AnimalStatus {
   PREGNANT = "PREGNANT",
   SICK = "SICK",
   INJURED = "INJURED",
+  OFFSITE = "OFFSITE",
+  RELEASED = "RELEASED",
   DECEASED = "DECEASED",
 }
 
@@ -181,7 +183,7 @@ enum Biome {
 enum IdentifierType {
   NONE = "None",
   RFID_TAG = "RFID Tag",
-  MAGNETIC_TAG = "Magnetic Tag",
+  MAGNETIC_TAG = "Magnetic_Tag",
   BARCODE_TAG = "Barcode Tag",
   EAR_TAG = "Ear Tag",
   COLLAR = "Collar",
@@ -200,7 +202,7 @@ enum Rating {
   GOOD = "GOOD",
   FAIR = "FAIR",
   POOR = "POOR",
-  NOT_RECORDED = "NOT RECORDED",
+  NOT_RECORDED = "NOT_RECORDED",
 }
 
 enum EventType {
@@ -496,8 +498,6 @@ enum ListingType {
   LOCAL_SENIOR_ONETIME = "LOCAL_SENIOR_ONETIME",
   FOREIGNER_ADULT_ONETIME = "FOREIGNER_ADULT_ONETIME",
   FOREIGNER_CHILD_ONETIME = "FOREIGNER_CHILD_ONETIME",
-  LOCAL_ANNUAL_PASS = "LOCAL_ANNUAL_PASS",
-  FOREIGNER_ANNUAL_PASS = "FOREIGNER_ANNUAL_PASS",
 }
 
 enum ListingStatus {
@@ -506,13 +506,12 @@ enum ListingStatus {
 }
 
 enum PaymentStatus {
-  SUCCESSFUL = "SUCCESSFUL",
-  FAILED = "FAILED",
+  COMPLETED = "COMPLETED",
+  PENDING = "PENDING",
 }
 
 enum PaymentType {
-  VISA = "VISA",
-  MASTERCARD = "MASTERCARD",
+  CARD = "CARD",
   PAYNOW = "PAYNOW",
 }
 

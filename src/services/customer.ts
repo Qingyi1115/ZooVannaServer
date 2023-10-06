@@ -2,7 +2,7 @@ import { Token } from "../models/token";
 import { validationErrorHandler } from "../helpers/errorHandler";
 import { hash } from "../helpers/security";
 import { Customer } from "../models/customer";
-import { Country } from "../models/enumerated";
+import { Country, OrderStatus, PaymentStatus } from "../models/enumerated";
 import * as nodemailer from "nodemailer";
 import { v4 as uuidv4 } from "uuid";
 import { OrderItem } from "../models/orderItem";
@@ -11,6 +11,7 @@ import { CustomerOrder } from "../models/customerOrder";
 import { Payment } from "../models/payment";
 const { Sequelize } = require("sequelize");
 import { conn } from "../db";
+import QRCode from "react-qr-code";
 
 export async function createNewCustomer(
   customerPassword: string,
@@ -250,6 +251,275 @@ export async function deleteCustomerByEmail(customerEmail: string) {
     return result;
   }
   throw { message: "Invalid Customer Email!" };
+}
+
+export async function createCustomerOrderForGuest(
+  listings: any,
+  customerOrder: any,
+) {
+  try {
+    return await conn.transaction(async (t: any) => {
+      let custOrder = await CustomerOrder.create(customerOrder, {
+        transaction: t,
+      });
+
+      for (const listing of listings) {
+        let queriedListing = await Listing.findOne({
+          where: { listingId: listing.listingId },
+          transaction: t,
+        });
+        console.log("does it go here again?");
+
+        if (queriedListing) {
+          for (const orderItem of listing.orderItems) {
+            console.log("hmmmmmm");
+            console.log(orderItem);
+            console.log(queriedListing);
+            console.log(listing);
+            try {
+              let newOrderItem = await OrderItem.create(orderItem, {
+                transaction: t,
+              });
+              console.log(newOrderItem.toJSON());
+
+              console.log("is it okay here?");
+              queriedListing.addOrderItem(newOrderItem);
+              console.log("here");
+              newOrderItem.setListing(queriedListing);
+              console.log("yes here");
+              custOrder.addOrderItem(newOrderItem);
+              console.log("hereeeeee");
+              newOrderItem.setCustomerOrder(custOrder);
+              console.log("hmm??");
+            } catch (error: any) {
+              console.log("yes");
+              console.log(error);
+              throw error;
+            }
+          }
+        } else {
+          throw { message: "Invalid listing" };
+        }
+      }
+
+      return custOrder;
+    });
+  } catch (error) {
+    console.log(error);
+    throw error;
+  }
+}
+
+export async function createCustomerOrderForCustomer(
+  customerId: number,
+  listings: any,
+  customerOrder: any,
+) {
+  try {
+    return await conn.transaction(async (t: any) => {
+      let result = await Customer.findOne({
+        where: { customerId: customerId },
+      });
+
+      if (result) {
+        let custOrder = await CustomerOrder.create(customerOrder, {
+          transaction: t,
+        });
+
+        for (const listing of listings) {
+          let queriedListing = await Listing.findOne({
+            where: { listingId: listing.listingId },
+            transaction: t,
+          });
+          console.log("does it go here again?");
+
+          if (queriedListing) {
+            for (const orderItem of listing.orderItems) {
+              console.log("hmmmmmm");
+              console.log(orderItem);
+              console.log(queriedListing);
+              console.log(listing);
+              try {
+                let newOrderItem = await OrderItem.create(orderItem, {
+                  transaction: t,
+                });
+                console.log(newOrderItem.toJSON());
+
+                console.log("is it okay here?");
+                queriedListing.addOrderItem(newOrderItem);
+                console.log("here");
+                newOrderItem.setListing(queriedListing);
+                console.log("yes here");
+                custOrder.addOrderItem(newOrderItem);
+                console.log("hereeeeee");
+                newOrderItem.setCustomerOrder(custOrder);
+                console.log("hmm??");
+              } catch (error: any) {
+                console.log("yes");
+                console.log(error);
+                throw error;
+              }
+            }
+          } else {
+            throw { message: "Invalid listing" };
+          }
+        }
+        result.addCustomerOrder(custOrder);
+        custOrder.setCustomer(result);
+        return custOrder;
+      } else {
+        throw { message: "Invalid customer Id" };
+      }
+    });
+  } catch (error) {
+    console.log(error);
+    throw error;
+  }
+}
+
+export async function completePaymentForCustomer(
+  customerOrderId: number,
+  payment: any,
+) {
+  try {
+    let result = await CustomerOrder.findOne({
+      where: { customerOrderId: customerOrderId },
+    });
+
+    if (result) {
+      let pay = await Payment.create(payment);
+      pay.setCustomerOrder(result);
+      result.addPayment(pay);
+      result.setCompleted();
+    } else {
+      throw { message: "Customer Order Id does not exist" };
+    }
+  } catch (error: any) {
+    throw { message: "Payment Completion Unsuccessful: " + error };
+  }
+}
+
+export async function completePaymentForGuest(
+  customerOrderId: number,
+  payment: any,
+) {
+  try {
+    let result = await CustomerOrder.findOne({
+      where: { customerOrderId: customerOrderId },
+      include: ["orderItems"],
+    });
+
+    if (result) {
+      let pay = await Payment.create(payment);
+      pay.setCustomerOrder(result);
+      result.addPayment(pay);
+      result.setCompleted();
+
+      const transporter = nodemailer.createTransport({
+        service: "gmail",
+        auth: {
+          user: process.env.EMAIL_USERNAME,
+          pass: process.env.EMAIL_PASSWORD,
+        },
+      });
+
+      const generateHTMLContent = async () => {
+        let html = `
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <title>Zoo Admission Tickets</title>
+                <style>
+                    body {
+                        font-family: Arial, sans-serif;
+                    }
+                    .ticket {
+                        border: 1px solid #000;
+                        padding: 10px;
+                        margin: 10px;
+                        width: 300px;
+                        text-align: center;
+                    }
+                    .ticket h2 {
+                        margin: 0;
+                        font-size: 18px;
+                    }
+                    .ticket p {
+                        margin: 5px 0;
+                    }
+                    .booking-reference {
+                      margin-top: 20px;
+                      font-weight: bold;
+                  }
+                </style>
+            </head>
+            <body>
+        `;
+
+        html += `
+        <div class="booking-reference">
+            <p><strong>Booking Reference:</strong> ${result?.bookingReference}</p>
+            
+        </div>
+        <div>
+          <p><strong>Visitor Name:</strong> ${result?.customerFirstName} ${result?.customerLastName}</p>
+          <p><strong>Date of Visit:</strong> ${result?.entryDate}</p>
+        </div>
+    `;
+
+        let orderItems = result?.orderItems;
+
+        if (orderItems) {
+          // Generate a ticket section for each ticket in the data
+          for (const orderItem of orderItems) {
+            const listing: Listing = await orderItem.getListing();
+            html += `
+                <div class="ticket">
+                    <h2>Ticket</h2>
+                    <p><strong>Ticket Verification Code: </strong>${orderItem.verificationCode}</p>
+                    <p><strong>Ticket Price:</strong> $${listing.price}</p>
+                    <p><strong>Ticket Type: </strong> ${listing.listingType}</p>
+                </div>
+            `;
+          }
+        }
+
+        html += `
+        <div class="total-price">
+            <p><strong>Total Price:</strong> $${result?.totalAmount}</p>
+        </div>
+    `;
+
+        // Close the HTML document
+        html += `
+            </body>
+            </html>
+        `;
+
+        return html;
+      };
+
+      const mailOptions = {
+        from: process.env.EMAIL_USERNAME,
+        to: result.customerEmail,
+        subject: "Ticket Purchase Order",
+        text: "Here is your customer order",
+        html: await generateHTMLContent(),
+      };
+
+      transporter.sendMail(mailOptions, (error, info) => {
+        if (error) {
+          console.error("Error sending email:", error);
+        } else {
+          console.log("Email sent:", info.response);
+        }
+      });
+    } else {
+      throw { message: "Customer Order Id does not exist" };
+    }
+  } catch (error: any) {
+    throw { message: "Payment Completion Unsuccessful: " + error };
+  }
 }
 
 export async function purchaseTicket(

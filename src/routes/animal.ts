@@ -27,6 +27,8 @@ import {
   removeAnimalFromActivity,
   assignItemToActivity,
   removeItemFromActivity,
+  checkIfAbnormalWeight,
+  getAllAbnormalWeights,
 } from "../controllers/animalController";
 
 const router = express.Router();
@@ -59,6 +61,8 @@ router.get(
 );
 router.post("/addAnimalWeight", addAnimalWeight);
 router.delete("/deleteAnimalWeight/:animalWeightId", deleteAnimalWeight);
+router.get("/getAllAbnormalWeights/", getAllAbnormalWeights);
+router.get("/checkIfAbnormalWeight/:animalCode", checkIfAbnormalWeight);
 
 // -- Animal Activity
 router.get("/getAllAnimalActivities", getAllAnimalActivities);

@@ -10,23 +10,26 @@ import {
   HasManyAddAssociationMixin,
   HasManyRemoveAssociationMixin,
   CreationOptional,
+  BelongsToManyGetAssociationsMixin,
+  BelongsToManyAddAssociationMixin,
+  BelongsToManySetAssociationsMixin,
+  BelongsToManyRemoveAssociationMixin,
 } from "Sequelize";
 import { conn } from "../db";
 import {
   AnimalSex,
   AcquisitionMethod,
   AnimalGrowthStage,
-  AnimalStatus,
   IdentifierType,
 } from "./enumerated";
 import { Species } from "./species";
-import { AnimalClinic } from "./animalClinics";
 import { uppercaseFirst } from "../helpers/others";
 import { Enclosure } from "./enclosure";
 import { AnimalLog } from "./animalLog";
 import { AnimalWeight } from "./animalWeight";
 import { AnimalActivity } from "./animalActivity";
 import { ZooEvent } from "./zooEvent";
+import { AnimalObservationLog } from "./animalObservationLog";
 
 class Animal extends Model<
   InferAttributes<Animal>,
@@ -64,6 +67,7 @@ class Animal extends Model<
   declare children?: Animal[];
   declare animalWeights?: AnimalWeight[];
   declare animalActivities?: AnimalActivity[];
+  declare animalObservationLogs? :AnimalObservationLog[];
 
   //--hvnt do yet
   // declare animalClinic?: AnimalClinic;
@@ -100,6 +104,17 @@ class Animal extends Model<
   >;
   declare removeAnimalActivity: HasManyRemoveAssociationMixin<
     AnimalActivity,
+    number
+  >;
+
+  declare getAnimalObservationLogs: BelongsToManyGetAssociationsMixin<AnimalObservationLog>;
+  declare addAnimalObservationLog: BelongsToManyAddAssociationMixin<AnimalObservationLog, number>;
+  declare setAnimalObservationLogs: BelongsToManySetAssociationsMixin<
+  AnimalObservationLog,
+    number
+  >;
+  declare removeAnimalObservationLog: BelongsToManyRemoveAssociationMixin<
+  AnimalObservationLog,
     number
   >;
 

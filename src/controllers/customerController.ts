@@ -305,14 +305,95 @@ export async function deleteCustomerByEmail(req: Request, res: Response) {
   }
 }
 
+export async function createCustomerOrderForCustomerController(
+  req: Request,
+  res: Response,
+) {
+  const { email, listings, customerOrder } = req.body;
+
+  const customer = await CustomerService.findCustomerByEmail(email);
+
+  try {
+    const result = await CustomerService.createCustomerOrderForCustomer(
+      customer.customerId,
+      listings,
+      customerOrder,
+    );
+
+    console.log(result);
+    return res.status(200).json({ result: result });
+  } catch (error: any) {
+    return res.status(400).json({ error: error.message });
+  }
+}
+
+export async function createCustomerOrderForGuestController(
+  req: Request,
+  res: Response,
+) {
+  const { listings, customerOrder } = req.body;
+
+  try {
+    const result = await CustomerService.createCustomerOrderForGuest(
+      listings,
+      customerOrder,
+    );
+    console.log(result);
+    return res.status(200).json({ result: result });
+  } catch (error: any) {
+    return res.status(400).json({ error: error.message });
+  }
+}
+
+export async function completePaymentForCustomerController(
+  req: Request,
+  res: Response,
+) {
+  const { customerOrderId } = req.params;
+
+  if (!customerOrderId) {
+    return res.status(400).json({ error: "Missing Customer Order ID!" });
+  }
+
+  const { payment } = req.body;
+  try {
+    const result = await CustomerService.completePaymentForCustomer(
+      Number(customerOrderId),
+      payment,
+    );
+    return res.status(200).json({ result: result });
+  } catch (error: any) {
+    return res.status(400).json({ error: error.message });
+  }
+}
+
+export async function completePaymentForGuestController(
+  req: Request,
+  res: Response,
+) {
+  const { customerOrderId } = req.params;
+
+  if (!customerOrderId) {
+    return res.status(400).json({ error: "Missing Customer Order ID!" });
+  }
+
+  const { payment } = req.body;
+  try {
+    const result = await CustomerService.completePaymentForGuest(
+      Number(customerOrderId),
+      payment,
+    );
+    return res.status(200).json({ result: result });
+  } catch (error: any) {
+    return res.status(400).json({ error: error.message });
+  }
+}
+
 export async function purchaseTicketController(req: Request, res: Response) {
   console.log("here");
   const { customerId } = req.params;
   console.log(customerId);
   if (!customerId) {
-    console.log("Missing field(s): ", {
-      customerId,
-    });
     console.log("missing customer id");
     return res.status(400).json({ error: "Missing customer ID!" });
   }

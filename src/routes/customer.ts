@@ -14,6 +14,10 @@ import {
   resetForgottenPasswordController,
   deleteCustomerByEmail,
   purchaseTicketController,
+  createCustomerOrderForCustomerController,
+  completePaymentForCustomerController,
+  createCustomerOrderForGuestController,
+  completePaymentForGuestController,
 } from "../controllers/customerController";
 import { authMiddleware } from "../middlewares/authMiddleware";
 
@@ -28,6 +32,22 @@ router.post("/createCustomer", createCustomer);
 router.post("/login", login);
 router.post("/createTicket/:customerId", purchaseTicketController);
 router.post("/getCustomer", getCustomerByEmail);
+router.post(
+  "/createCustomerOrderForGuest",
+  createCustomerOrderForGuestController,
+);
+router.post(
+  "/completePaymentForGuest/:customerOrderId",
+  completePaymentForGuestController,
+);
+router.post(
+  "/createCustomerOrderForCustomer",
+  createCustomerOrderForCustomerController,
+);
+router.post(
+  "/completePaymentForCustomer/:customerOrderId",
+  completePaymentForGuestController,
+);
 
 router.use(authMiddleware);
 

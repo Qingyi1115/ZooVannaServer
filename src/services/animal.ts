@@ -579,16 +579,96 @@ export async function getAllAnimalWeightsByAnimalCode(animalCode: string) {
 }
 
 export async function getAllAbnormalWeights() {
-  // --> hvnt do, need to discuss with Jason
-  //   let result = await Animal.findOne({
-  //     where: { animalCode: animalCode },
-  //     include: AnimalWeight, //eager fetch here
-  //   });
-  //   if (result) {
-  //     let resultAnimalWeights = await result.animalWeights;
-  //     return resultAnimalWeights;
-  //   }
-  //   throw new Error("Invalid Animal Code!");
+  let animals = await getAllAnimals();
+  let abnormalWeightAnimals: Animal[] = [];
+
+  for (let animal of animals) {
+    let currentAnimalWeightStatus = await checkIfAbnormalWeight(
+      animal.animalCode,
+    );
+
+    if (
+      currentAnimalWeightStatus == "Underweight" ||
+      currentAnimalWeightStatus == "Overweight"
+    ) {
+      abnormalWeightAnimals.push(animal);
+    }
+  }
+
+  return abnormalWeightAnimals;
+}
+
+export async function checkIfAbnormalWeight(animalCode: string) {
+  let animal = await Animal.findOne({
+    where: { animalCode: animalCode },
+    include: [
+      {
+        model: Species,
+        required: false, // Include only if they exist
+        include: [
+          {
+            model: PhysiologicalReferenceNorms,
+            required: false, // Include only if they exist
+          },
+        ],
+      },
+      {
+        model: AnimalWeight,
+        required: false, // Include only if they exist
+      },
+    ],
+  });
+
+  if (animal && animal.age && animal.animalWeights != null) {
+    let weightRecords = animal.animalWeights;
+
+    const latestWeightRecord = weightRecords.reduce(
+      (latest: AnimalWeight | null, record: AnimalWeight) => {
+        if (!latest || record.dateOfMeasure > latest.dateOfMeasure) {
+          return record;
+        }
+        return latest;
+      },
+      null,
+    );
+
+    if (!latestWeightRecord) {
+      // throw new Error("Animal has no weight record!");
+      return "Data Not Available";
+    }
+    let physiologicalRef = await PhysiologicalReferenceNorms.findOne({
+      where: {
+        minAge: {
+          [Op.lte]: animal.age, // Assuming you have an age property in AnimalWeight
+        },
+        maxAge: {
+          [Op.gte]: animal.age,
+        },
+        // You may need to adjust the query based on the animal's gender
+        // and other characteristics to get the appropriate reference norms.
+      },
+    });
+
+    if (!physiologicalRef) {
+      // throw new Error(
+      //   "Physiological reference data not available for the given age and gender!",
+      // );
+      return "Data Not Available";
+    }
+
+    if (latestWeightRecord!.weightInKg < physiologicalRef.minWeightMaleKg) {
+      return "Underweight";
+    } else if (
+      latestWeightRecord!.weightInKg > physiologicalRef.maxWeightMaleKg
+    ) {
+      return "Overweight";
+    } else {
+      return "Normal";
+    }
+  }
+
+  return "Data Not Available";
+  // throw new Error("Animal has no age or weight record!");
 }
 
 //-- Animal Activity
