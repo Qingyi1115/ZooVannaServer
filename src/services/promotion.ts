@@ -151,23 +151,20 @@ export async function verifyPromotionCode(
 
     if (!promotion) {
       throw { message: "Invalid promotion code!" };
-    }
-
-    if (promotion.startDate > currentDate || promotion.endDate < currentDate) {
+    } else if (
+      promotion.startDate > currentDate ||
+      promotion.endDate < currentDate
+    ) {
       throw { message: "Promotion is not applicable for today!" };
-    }
-
-    if (promotion.currentRedeemNum >= promotion.maxRedeemNum) {
+    } else if (promotion.currentRedeemNum >= promotion.maxRedeemNum) {
       throw { message: "Promotion is fully redeemed!" };
-    }
-
-    if (currentSpending < promotion.minimumSpending) {
+    } else if (currentSpending < promotion.minimumSpending) {
       throw {
         message: `This promotion is only applicable for a minimum purchase of $${promotion.minimumSpending}`,
       };
+    } else {
+      return promotion;
     }
-
-    return promotion;
   } catch (error) {
     throw error; // Re-throw the error for higher-level handling
   }
