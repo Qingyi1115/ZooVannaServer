@@ -8,7 +8,7 @@ import {
   updatePromotion,
   deletePromotion,
   verifyPromotionCode,
-  usePromotionCode,
+  // usePromotionCode,
   cancelUsePromotionCode,
   getAllActivePromotions,
   getAllPublishedPromotions,
@@ -20,7 +20,7 @@ router.get("/getAllPublishedPromotions", getAllPublishedPromotions);
 router.get("/getAllActivePromotions", getAllActivePromotions);
 router.get("/getPromotion/:promotionId", getPromotionByPromotionId);
 router.get("/verifyPromotionCode/:promotionCode", verifyPromotionCode);
-router.put("/usePromotionCode/:promotionCode", usePromotionCode);
+// router.put("/usePromotionCode/:promotionCode", usePromotionCode);
 router.put("/cancelUsePromotionCode/:promotionCode", cancelUsePromotionCode);
 
 router.use(authMiddleware);
