@@ -45,6 +45,7 @@ class Employee extends Model<
   declare isAccountManager: boolean;
   declare dateOfResignation: Date | null;
   declare employeeProfileURL: string | null;
+  declare superAdmin : boolean;
 
   declare keeper?: Keeper | null;
   declare planningStaff?: PlanningStaff | null;
@@ -206,6 +207,10 @@ Employee.init(
     },
     employeeProfileURL: {
       type: DataTypes.STRING,
+    },
+    superAdmin: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: false
     },
   },
   {

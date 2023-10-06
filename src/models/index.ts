@@ -542,6 +542,7 @@ export const employeeSeed = async () => {
       employeeEducation: "PHD in not eating",
       employeeBirthDate: new Date("1992-03-04"),
       isAccountManager: true,
+      superAdmin: true,
       //@ts-ignore
       planningStaff: {
         plannerType: PlannerType.OPERATIONS_MANAGER,
