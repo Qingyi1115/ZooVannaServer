@@ -895,11 +895,11 @@ export const speciesSeed = async () => {
     habitatOrExhibit: "Southwest China",
     generalDietPreference: "Folivore",
     imageUrl: "img/species/panda.jpg",
-    lifeExpectancyYears: 65,
+    lifeExpectancyYears: 30,
     ageToJuvenile: 2,
     ageToAdolescent: 5,
     ageToAdult: 7,
-    ageToElder: 50,
+    ageToElder: 20,
     // foodRemark: "Food remark...",
   } as any;
   let panda = await Species.create(pandaTemplate);
@@ -934,32 +934,60 @@ export const speciesSeed = async () => {
 
   let pandaPhy1 = await SpeciesService.createPhysiologicalReferenceNorms(
     "SPE001",
-    100,
-    100,
-    100,
-    100,
-    0,
-    5,
-    0,
-    6,
-    0,
     15,
+    20,
+    15,
+    20,
+    0.1,
+    0.2,
+    0.1,
+    0.2,
+    0,
+    1,
     AnimalGrowthStage.INFANT,
   );
   console.log(pandaPhy1.toJSON());
 
   let pandaPhy2 = await SpeciesService.createPhysiologicalReferenceNorms(
     "SPE001",
-    200,
-    200,
-    200,
-    200,
+    50,
+    75,
+    50,
+    75,
+    20,
+    45,
+    20,
+    45,
     2,
-    5,
-    1,
+    3,
+    AnimalGrowthStage.JUVENILE,
+  );
+  let pandaPhy3 = await SpeciesService.createPhysiologicalReferenceNorms(
+    "SPE001",
+    120,
+    150,
+    110,
+    140,
+    50,
+    90,
+    45,
+    80,
     4,
-    0,
-    10,
+    6,
+    AnimalGrowthStage.ADOLESCENT,
+  );
+  let pandaPhy4 = await SpeciesService.createPhysiologicalReferenceNorms(
+    "SPE001",
+    160,
+    190,
+    110,
+    180,
+    85,
+    125,
+    70,
+    100,
+    7,
+    20,
     AnimalGrowthStage.ADULT,
   );
 
@@ -977,7 +1005,6 @@ export const speciesSeed = async () => {
     50,
     AnimalGrowthStage.ELDER,
   );
-  console.log(pandaPhy2.toJSON());
 
   let pandaDietNeed1 = await SpeciesService.createDietNeed(
     "SPE001",
@@ -1158,7 +1185,7 @@ export const animalSeed = async () => {
     false,
     "Pang Pang",
     AnimalSex.FEMALE,
-    new Date("1990-03-04"),
+    new Date("2000-03-04"),
     "Singapore",
     IdentifierType.MAGNETIC_TAG,
     "identifierValue 001",
@@ -1179,7 +1206,7 @@ export const animalSeed = async () => {
     false,
     "Yuan Yuan",
     AnimalSex.FEMALE,
-    new Date("1997-03-04"),
+    new Date("2003-03-04"),
     "Singapore",
     IdentifierType.MAGNETIC_TAG,
     "identifierValue 001",
@@ -1200,7 +1227,7 @@ export const animalSeed = async () => {
     false,
     "Du Du",
     AnimalSex.FEMALE,
-    new Date("2021-03-04"),
+    new Date("2010-03-04"),
     "Singapore",
     IdentifierType.RFID_TAG,
     "identifierValue 001",
@@ -1221,12 +1248,12 @@ export const animalSeed = async () => {
     false,
     "Fu Fu",
     AnimalSex.MALE,
-    new Date("2021-03-04"),
+    new Date("2008-03-04"),
     "Singapore",
     IdentifierType.RFID_TAG,
     "identifierValue 001",
     AcquisitionMethod.INHOUSE_CAPTIVE_BRED,
-    new Date("2021-03-04"),
+    new Date("2021-09-04"),
     "N.A.",
     "Big face, black spot at the back",
     "active, friendly",
@@ -1242,7 +1269,7 @@ export const animalSeed = async () => {
     false,
     "Tuan Tuan",
     AnimalSex.MALE,
-    new Date("2021-03-04"),
+    new Date("2007-08-04"),
     "Singapore",
     IdentifierType.RFID_TAG,
     "identifierValue 001",
@@ -1263,7 +1290,7 @@ export const animalSeed = async () => {
     false,
     "Huan Huan",
     AnimalSex.MALE,
-    new Date("2021-03-04"),
+    new Date("2005-03-04"),
     "Singapore",
     IdentifierType.RFID_TAG,
     "identifierValue 001",
@@ -1284,7 +1311,7 @@ export const animalSeed = async () => {
     false,
     "Yin Yin",
     AnimalSex.FEMALE,
-    new Date("2021-03-04"),
+    new Date("2017-03-04"),
     "Singapore",
     IdentifierType.RFID_TAG,
     "identifierValue 001",
@@ -1304,7 +1331,7 @@ export const animalSeed = async () => {
     false,
     "Ni Ni",
     AnimalSex.FEMALE,
-    new Date("2021-03-04"),
+    new Date("2020-03-04"),
     "Singapore",
     IdentifierType.RFID_TAG,
     "identifierValue 001",
@@ -1324,7 +1351,7 @@ export const animalSeed = async () => {
     false,
     "Bei Bei",
     AnimalSex.MALE,
-    new Date("2021-03-04"),
+    new Date("2016-03-04"),
     "Singapore",
     IdentifierType.RFID_TAG,
     "identifierValue 001",
@@ -1345,7 +1372,7 @@ export const animalSeed = async () => {
     false,
     "La La",
     AnimalSex.MALE,
-    new Date("2021-03-04"),
+    new Date("2022-03-04"),
     "Singapore",
     IdentifierType.RFID_TAG,
     "identifierValue 001",
@@ -1416,14 +1443,26 @@ export const animalSeed = async () => {
   await AnimalService.addAnimalLineage("ANM00008", "ANM00007");
 
   // -- add weight
-  await AnimalService.addAnimalWeight("ANM00001", 50, new Date("2023-10-6"));
+  // underweight
+  await AnimalService.addAnimalWeight("ANM00001", 5, new Date("2001-10-6"));
+  await AnimalService.addAnimalWeight("ANM00001", 10, new Date("2003-10-6"));
+  await AnimalService.addAnimalWeight("ANM00001", 20, new Date("2007-10-6"));
+  await AnimalService.addAnimalWeight("ANM00001", 50, new Date("2010-10-6"));
+  await AnimalService.addAnimalWeight("ANM00001", 55, new Date("2013-6-8"));
+  await AnimalService.addAnimalWeight("ANM00001", 50, new Date("2015-9-2"));
+  await AnimalService.addAnimalWeight("ANM00001", 60, new Date("2019-4-6"));
+  await AnimalService.addAnimalWeight("ANM00001", 80, new Date("2021-2-10"));
+  await AnimalService.addAnimalWeight("ANM00001", 100, new Date("2022-2-10"));
+  await AnimalService.addAnimalWeight("ANM00001", 150, new Date("2023-2-10"));
 
-  // overwegiht
-  await AnimalService.addAnimalWeight("ANM00003", 50, new Date("2023-6-6"));
-  //underweight
-  await AnimalService.addAnimalWeight("ANM00003", 10, new Date("2023-8-6"));
+  // underweight
+  await AnimalService.addAnimalWeight("ANM00002", 70, new Date("2023-10-6"));
+
+  // overweight
+  await AnimalService.addAnimalWeight("ANM00003", 150, new Date("2023-10-6"));
+
   //normal
-  await AnimalService.addAnimalWeight("ANM00003", 30, new Date("2023-10-6"));
+  await AnimalService.addAnimalWeight("ANM00004", 90, new Date("2023-10-6"));
 
   // -- create animal activity
   let animalActivity1 = await AnimalService.createAnimalActivity(
