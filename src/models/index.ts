@@ -497,7 +497,7 @@ export const promotionSeed = async () => {
     percentage: 30,
     minimumSpending: 100,
     promotionCode: "HAPPY30BIRTHDAY",
-    maxRedeemNum: 200,
+    maxRedeemNum: 1,
     currentRedeemNum: 0,
     imageUrl: "img/promotion/giraffe.jpg",
   });
@@ -1651,7 +1651,7 @@ export const facilityAssetsSeed = async () => {
           processorName: "A01",
           ipAddressName: "172.1.2.19",
           hubStatus: HubStatus.CONNECTED,
-          radioGroup: 222
+          radioGroup: 222,
         } as any,
       ],
       inHouse: {
@@ -1786,7 +1786,7 @@ export const facilityAssetsSeed = async () => {
       processorName: "tramCam1",
       ipAddressName: "172.25.99.172",
       hubStatus: HubStatus.CONNECTED,
-      lastDataUpdate : new Date(),
+      lastDataUpdate: new Date(),
       radioGroup: 223,
       sensors: [
         {
