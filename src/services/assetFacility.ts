@@ -724,6 +724,21 @@ export async function getAllSensorMaintenanceLogs(
   }
 }
 
+export async function getSensorMaintenanceLogById(
+  sensorMaintenanceLogId: number
+): Promise<MaintenanceLog> {
+  try {
+    const maintenanceLog = await MaintenanceLog.findOne({
+      where: { maintenanceLogId: sensorMaintenanceLogId },
+    });
+    if (!maintenanceLog) throw { message: "Unable to find maintenanceLog with Id: " + sensorMaintenanceLogId };
+
+    return maintenanceLog;
+  } catch (error: any) {
+    throw validationErrorHandler(error);
+  }
+}
+
 export async function updateSensorMaintenanceLog(
   maintenanceLogId: number,
   title:string,

@@ -45,6 +45,7 @@ import {
   deleteFacilityLogById,
   updateSensorMaintenanceLog,
   deleteSensorMaintenanceLogById,
+  getSensorMaintenanceLogById,
 } from "../services/assetFacility";
 import { Facility } from "../models/facility";
 import { Sensor } from "../models/sensor";
@@ -1215,6 +1216,8 @@ export async function updateSensorMaintenanceLogController(req: Request, res: Re
     if (sensorMaintenanceLogId == "" || [title, details, remarks].includes(undefined)) {
       return res.status(400).json({ error: "Missing information!" });
     }
+
+    if ((await getSensorMaintenanceLogById(Number(sensorMaintenanceLogId))).staffName != employee.employeeName) throw {message: "Only creator of the log can edit!"}
 
     let maintenanceLog: MaintenanceLog = await updateSensorMaintenanceLog(
       Number(sensorMaintenanceLogId),
