@@ -16,6 +16,7 @@ import { Facility } from "./facility";
 import { Sensor } from "./sensor";
 import { HubStatus } from "./enumerated";
 import { hash } from "../helpers/security";
+import { compareDates } from "../helpers/others";
 
 class HubProcessor extends Model<
   InferAttributes<HubProcessor>,
@@ -105,5 +106,17 @@ HubProcessor.init(
     modelName: "hubProcessor", // We need to choose the model name
   },
 );
+
+HubProcessor.addHook("afterFind", (findResult:HubProcessor[]) => {
+  if (!Array.isArray(findResult)) findResult = [findResult];
+  for (const instance of findResult) {
+    if (instance.hubStatus == HubStatus.PENDING) continue;
+    if (instance.lastDataUpdate && compareDates(new Date(), instance.lastDataUpdate) < 1000 * 60 * 5 )  {
+      instance.hubStatus = HubStatus.CONNECTED;
+    }else{
+      instance.hubStatus = HubStatus.DISCONNECTED;
+    }
+  }
+});
 
 export { HubProcessor };
