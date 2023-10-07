@@ -409,11 +409,15 @@ export async function completePaymentForGuest(
       include: ["orderItems"],
     });
 
+    console.log(result);
+
     if (result) {
       let pay = await Payment.create(payment);
       pay.setCustomerOrder(result);
       result.addPayment(pay);
       result.setCompleted();
+
+      console.log(pay);
 
       const transporter = nodemailer.createTransport({
         service: "gmail",
@@ -514,6 +518,7 @@ export async function completePaymentForGuest(
           console.log("Email sent:", info.response);
         }
       });
+      return pay;
     } else {
       throw { message: "Customer Order Id does not exist" };
     }
