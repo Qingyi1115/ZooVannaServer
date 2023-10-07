@@ -1792,6 +1792,7 @@ export const facilityAssetsSeed = async () => {
       processorName: "tramCam1",
       ipAddressName: "172.25.99.172",
       hubStatus: HubStatus.CONNECTED,
+      lastDataUpdate : new Date(),
       radioGroup: 223,
       sensors: [
         {

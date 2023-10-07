@@ -111,11 +111,11 @@ Facility.init(
     },
     xCoordinate: {
       type: DataTypes.INTEGER,
-      allowNull: false,
+      // allowNull: false,
     },
     yCoordinate: {
       type: DataTypes.INTEGER,
-      allowNull: false,
+      // allowNull: false,
     },
     facilityDetail: {
       type: DataTypes.STRING,
