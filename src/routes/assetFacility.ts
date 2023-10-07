@@ -53,7 +53,13 @@ import {
   createFacilityMaintenanceLogController,
   pushSensorReadingsController,
   getSensorMaintenancePredictionValuesController,
-  getFacilityMaintenancePredictionValuesController
+  getFacilityMaintenancePredictionValuesController,
+  updateFacilityLogController,
+  deleteFacilityLogController,
+  updateSensorMaintenanceLogController,
+  deleteSensorMaintenanceLogController,
+  getFacilityLogByIdController,
+  getSensorMaintenanceLogController
 } from "../controllers/assetFacilityController";
 
 const router = express.Router();
@@ -80,9 +86,13 @@ router.put("/assignMaintenanceStaffToFacility/:facilityId", assignMaintenanceSta
 router.delete("/removeMaintenanceStaffFromFacility/:facilityId", removeMaintenanceStaffFromFacilityController);
 router.put("/assignOperationStaffToFacility/:facilityId", assignOperationStaffToFacilityController);
 router.delete("/removeOperationStaffFromFacility/:facilityId", removeOperationStaffFromFacilityController);
+
 router.get("/getFacilityLogs/:facilityId", getFacilityLogsController);
+router.get("/getFacilityLog/:facilityLogId", getFacilityLogByIdController);
 router.post("/createFacilityLog/:facilityId", createFacilityLogController);
 router.post("/createFacilityMaintenanceLog/:facilityId", createFacilityMaintenanceLogController);
+router.put("/updateFacilityLog/:facilityLogId", updateFacilityLogController);
+router.delete("/deleteFacilityLog/:facilityLogId", deleteFacilityLogController);
 
 //Animal Feed
 router.post("/createNewAnimalFeed", createNewAnimalFeedController);
@@ -119,8 +129,12 @@ router.put("/assignMaintenanceStaffToSensor/:sensorId", assignMaintenanceStaffTo
 router.put("/removeMaintenanceStaffFromSensor/:sensorId", removeMaintenanceStaffFromSensorController);
 router.put("/updateSensor/:sensorId", updateSensorController);
 router.delete("/deleteSensor/:sensorId", deleteSensorController);
+
 router.post("/createSensorMaintenanceLog/:sensorId", createSensorMaintenanceLogController);
-router.post("/getAllSensorMaintenanceLogsController/:sensorId", getAllSensorMaintenanceLogsController);
+router.get("/getSensorMaintenanceLog/:sensorMaintenanceLogId", getSensorMaintenanceLogController);
+router.post("/getAllSensorMaintenanceLogs/:sensorId", getAllSensorMaintenanceLogsController);
+router.put("/updateSensorMaintenanceLog/:sensorMaintenanceLogId", updateSensorMaintenanceLogController);
+router.delete("/deleteSensorMaintenanceLog/:sensorMaintenanceLogId", deleteSensorMaintenanceLogController);
 
 router.post("/getAuthorizationForCamera", getAuthorizationForCameraController);
 

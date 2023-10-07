@@ -277,6 +277,7 @@ export async function createFacilityLog(
   title: string,
   details: string,
   remarks: string,
+  staffName: string
 ): Promise<FacilityLog> {
   try {
     const facility = await Facility.findOne({
@@ -291,7 +292,8 @@ export async function createFacilityLog(
       isMaintenance: isMaintenance,
       title: title,
       details: details,
-      remarks: remarks
+      remarks: remarks,
+      staffName: staffName
     })
     thirdParty.addFacilityLog(facilityLog);
 
@@ -590,7 +592,8 @@ export async function createSensorMaintenanceLog(
   date: Date,
   title: string,
   details: string,
-  remarks: string
+  remarks: string,
+  staffName: string
 ): Promise<Sensor> {
   try {
     const sensor = await Sensor.findOne({
@@ -602,7 +605,8 @@ export async function createSensorMaintenanceLog(
       dateTime: date,
       title: title,
       details: details,
-      remarks: remarks
+      remarks: remarks,
+      staffName: staffName
     })
     sensor.addMaintenanceLog(newLog);
     sensor.dateOfLastMaintained = date;
@@ -619,7 +623,8 @@ export async function createFacilityMaintenanceLog(
   date: Date,
   title: string,
   details: string,
-  remarks: string
+  remarks: string,
+  staffName:string
 ): Promise<FacilityLog> {
   try {
     const facility = await Facility.findOne({
@@ -634,13 +639,71 @@ export async function createFacilityMaintenanceLog(
       title: title,
       details: details,
       remarks: remarks,
-      isMaintenance: true
+      isMaintenance: true,
+      staffName : staffName
     })
     inHouse.addFacilityLog(newLog);
     inHouse.lastMaintained = date;
     await inHouse.save();
 
     return newLog;
+  } catch (error: any) {
+    throw validationErrorHandler(error);
+  }
+}
+
+export async function getFacilityLogById(
+  facilityLogId: number,
+): Promise<FacilityLog> {
+  try {
+    const facilityLog = await FacilityLog.findOne({
+      where: {
+        facilityLogId:facilityLogId
+      }
+    });
+    if (!facilityLog) throw {message:"Cannot find facility log id : " + facilityLogId}
+    return facilityLog;
+  } catch (error: any) {
+    throw validationErrorHandler(error);
+  }
+}
+
+export async function updateFacilityLog(
+  facilityLogId: number,
+  title: string,
+  details: string,
+  remarks: string
+): Promise<FacilityLog> {
+  try {
+    const facilityLog = await FacilityLog.findOne({
+      where: {
+        facilityLogId:facilityLogId
+      }
+    });
+    if (!facilityLog) throw {message:"Cannot find facility log id : " + facilityLogId}
+    facilityLog.title = title;
+    facilityLog.details = details;
+    facilityLog.remarks = remarks;
+    
+    await facilityLog.save();
+    return facilityLog;
+  } catch (error: any) {
+    throw validationErrorHandler(error);
+  }
+}
+
+export async function deleteFacilityLogById(
+  facilityLogId: number,
+) {
+  try {
+    const facilityLog = await FacilityLog.findOne({
+      where: {
+        facilityLogId:facilityLogId
+      }
+    });
+    if (!facilityLog) throw {message:"Cannot find facility log id : " + facilityLogId}
+    
+    await facilityLog.destroy();
   } catch (error: any) {
     throw validationErrorHandler(error);
   }
@@ -656,6 +719,59 @@ export async function getAllSensorMaintenanceLogs(
     if (!sensor) throw { message: "Unable to find sensorId: " + sensorId };
 
     return sensor.getMaintenanceLogs();
+  } catch (error: any) {
+    throw validationErrorHandler(error);
+  }
+}
+
+export async function getSensorMaintenanceLogById(
+  sensorMaintenanceLogId: number
+): Promise<MaintenanceLog> {
+  try {
+    const maintenanceLog = await MaintenanceLog.findOne({
+      where: { maintenanceLogId: sensorMaintenanceLogId },
+    });
+    if (!maintenanceLog) throw { message: "Unable to find maintenanceLog with Id: " + sensorMaintenanceLogId };
+
+    return maintenanceLog;
+  } catch (error: any) {
+    throw validationErrorHandler(error);
+  }
+}
+
+export async function updateSensorMaintenanceLog(
+  maintenanceLogId: number,
+  title:string,
+  details:string,
+  remarks : string
+): Promise<MaintenanceLog> {
+  try {
+    const maintenanceLog = await MaintenanceLog.findOne({
+      where: { maintenanceLogId: maintenanceLogId },
+    });
+    if (!maintenanceLog) throw { message: "Unable to find maintenanceLogId : " + maintenanceLogId };
+    
+    maintenanceLog.title = title;
+    maintenanceLog.details = details;
+    maintenanceLog.remarks = remarks;
+    await maintenanceLog.save();
+
+    return maintenanceLog;
+  } catch (error: any) {
+    throw validationErrorHandler(error);
+  }
+}
+
+export async function deleteSensorMaintenanceLogById(
+  maintenanceLogId: number
+) {
+  try {
+    const maintenanceLog = await MaintenanceLog.findOne({
+      where: { maintenanceLogId: maintenanceLogId },
+    });
+    if (!maintenanceLog) throw { message: "Unable to find maintenanceLogId : " + maintenanceLogId };
+    
+    await maintenanceLog.destroy();
   } catch (error: any) {
     throw validationErrorHandler(error);
   }

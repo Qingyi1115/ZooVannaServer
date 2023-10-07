@@ -1634,6 +1634,7 @@ export const facilityAssetsSeed = async () => {
         title: "Maintenance of " + _day.toDateString(),
         details: "Bla Bla Bla...",
         remarks: "Uncommon but common",
+        staffName: "maint1"
       }),
     );
   }
@@ -1682,6 +1683,7 @@ export const facilityAssetsSeed = async () => {
       title: "log1",
       details: "Bla Bla...",
       remarks: "my log haha",
+      staffName: "maint1"
     }),
     await FacilityLog.create({
       dateTime: new Date(Date.now() - 1000 * 60 * 60 * 24),
@@ -1689,6 +1691,7 @@ export const facilityAssetsSeed = async () => {
       title: "log2",
       details: "Bla Bla...",
       remarks: "my log haha",
+      staffName: "maint1"
     }),
     await FacilityLog.create({
       dateTime: new Date(Date.now() - 1000 * 60 * 60 * 24 * 2),
@@ -1696,6 +1699,7 @@ export const facilityAssetsSeed = async () => {
       title: "log3",
       details: "Bla Bla...",
       remarks: "my log haha",
+      staffName: "maint1"
     }),
     await FacilityLog.create({
       dateTime: new Date(Date.now() - 1000 * 60 * 60 * 24 * 3),
@@ -1703,6 +1707,7 @@ export const facilityAssetsSeed = async () => {
       title: "log4",
       details: "Bla Bla...",
       remarks: "my log haha",
+      staffName: "maint1"
     }),
     await FacilityLog.create({
       dateTime: new Date(Date.now() - 1000 * 60 * 60 * 24 * 5),
@@ -1710,6 +1715,7 @@ export const facilityAssetsSeed = async () => {
       title: "log5",
       details: "Bla Bla...",
       remarks: "my log haha",
+      staffName: "maint1"
     }),
   ]);
   // facility1.destroy();
@@ -1834,6 +1840,7 @@ export const facilityAssetsSeed = async () => {
         title: "Maintenance " + _day.toDateString(),
         details: "Bla bla bla...",
         remarks: "not uncommon",
+        staffName : "maint1"
       }),
     );
   }
@@ -1866,6 +1873,7 @@ export const facilityAssetsSeed = async () => {
         title: "Maintenance " + _day.toDateString(),
         details: "Bla bla bla...",
         remarks: "not uncommon",
+        staffName : "maint1"
       }),
     );
   }
@@ -1891,6 +1899,7 @@ export const facilityAssetsSeed = async () => {
         title: "Maintenance " + _day.toDateString(),
         details: "Bla bla bla...",
         remarks: "not uncommon",
+        staffName : "maint1"
       }),
     );
   }
@@ -1916,6 +1925,7 @@ export const facilityAssetsSeed = async () => {
         title: "Maintenance " + _day.toDateString(),
         details: "Bla bla bla...",
         remarks: "not uncommon",
+        staffName : "maint1"
       }),
     );
   }
@@ -1942,6 +1952,7 @@ export const facilityAssetsSeed = async () => {
         title: "Maintenance " + _day.toDateString(),
         details: "Bla bla bla...",
         remarks: "not uncommon",
+        staffName : "maint1"
       }),
     );
   }

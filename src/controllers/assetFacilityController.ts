@@ -40,6 +40,12 @@ import {
   getSensorMaintenanceSuggestions,
   getFacilityMaintenanceSuggestions,
   getEarliestReadingBySensorId,
+  updateFacilityLog,
+  getFacilityLogById,
+  deleteFacilityLogById,
+  updateSensorMaintenanceLog,
+  deleteSensorMaintenanceLogById,
+  getSensorMaintenanceLogById,
 } from "../services/assetFacility";
 import { Facility } from "../models/facility";
 import { Sensor } from "../models/sensor";
@@ -50,7 +56,8 @@ import * as EnrichmentItemService from "../services/enrichmentItem";
 import { compareDates } from "../helpers/others";
 import { InHouse } from "../models/inHouse";
 import { FacilityLog } from "../models/facilityLog";
-import { GeneralStaff } from "models/generalStaff";
+import { GeneralStaff } from "../models/generalStaff";
+import { MaintenanceLog } from "../models/maintenanceLog";
 
 export async function createFacilityController(req: Request, res: Response) {
   try {
@@ -624,10 +631,31 @@ export async function getFacilityLogsController(req: Request, res: Response) {
   }
 }
 
-export async function createFacilityLogController(req: Request, res: Response) {
+export async function getFacilityLogByIdController(req: Request, res: Response) {
   try {
     const { email } = (req as any).locals.jwtPayload;
     // const employee = await findEmployeeByEmail(email);
+
+    const { facilityLogId } = req.params;
+
+    if (facilityLogId == "") {
+      return res.status(400).json({ error: "Missing information!" });
+    }
+
+    let facilityLog: FacilityLog = await getFacilityLogById(Number(facilityLogId));
+
+    return res
+      .status(200)
+      .json({ facilityLog: facilityLog.toJSON() });
+  } catch (error: any) {
+    res.status(400).json({ error: error.message });
+  }
+}
+
+export async function createFacilityLogController(req: Request, res: Response) {
+  try {
+    const { email } = (req as any).locals.jwtPayload;
+    const employee = await findEmployeeByEmail(email);
 
     const { facilityId } = req.params;
     const { title, details, remarks } = req.body;
@@ -642,6 +670,7 @@ export async function createFacilityLogController(req: Request, res: Response) {
       title,
       details,
       remarks,
+      employee.employeeName
     );
 
     return res.status(200).json({ facilityLog: facilityLog.toJSON() });
@@ -670,8 +699,8 @@ export async function createFacilityMaintenanceLogController(
         .json({ error: "Access Denied! Operation managers only!" });
 
     const { facilityId } = req.params;
-    const { title, details, remarks } = req.body;
-    if ([facilityId, title, details, remarks].includes(undefined)) {
+    const { title, details, remarks, staffName } = req.body;
+    if ([facilityId, title, details, remarks, staffName].includes(undefined)) {
       return res.status(400).json({ error: "Missing information!" });
     }
 
@@ -681,6 +710,7 @@ export async function createFacilityMaintenanceLogController(
       title,
       details,
       remarks,
+      staffName
     );
     const generalStaff = await employee.getGeneralStaff();
     const facilities = await generalStaff?.getMaintainedFacilities() || [];
@@ -693,6 +723,54 @@ export async function createFacilityMaintenanceLogController(
     return res.status(200).json({ maintenanceLog: maintenanceLog.toJSON() });
   } catch (error: any) {
     console.log("error",error)
+    res.status(400).json({ error: error.message });
+  }
+}
+
+export async function updateFacilityLogController(req: Request, res: Response) {
+  try {
+    const { email } = (req as any).locals.jwtPayload;
+    const employee = await findEmployeeByEmail(email);
+
+    const { facilityLogId } = req.params;
+    const { title, details, remarks } = req.body;
+
+    if (facilityLogId == "" || [title, details, remarks].includes(undefined)) {
+      return res.status(400).json({ error: "Missing information!" });
+    }
+
+    if ((await getFacilityLogById(Number(facilityLogId))).staffName != employee.employeeName) throw {message: "Only creator of the log can edit!"}
+
+    let facilityLog: FacilityLog = await updateFacilityLog(
+      Number(facilityLogId),
+      title,
+      details,
+      remarks,
+    );
+
+    return res.status(200).json({ facilityLog: facilityLog.toJSON() });
+  } catch (error: any) {
+    res.status(400).json({ error: error.message });
+  }
+}
+
+export async function deleteFacilityLogController(req: Request, res: Response) {
+  try {
+    const { email } = (req as any).locals.jwtPayload;
+    // const employee = await findEmployeeByEmail(email);
+
+    const { facilityLogId } = req.params;
+
+    if ([facilityLogId].includes("")) {
+      return res.status(400).json({ error: "Missing information!" });
+    }
+
+    await deleteFacilityLogById(
+      Number(facilityLogId)
+    );
+
+    return res.status(200).json({ result: "success" });
+  } catch (error: any) {
     res.status(400).json({ error: error.message });
   }
 }
@@ -1091,6 +1169,7 @@ export async function createSensorMaintenanceLogController(
       title,
       details,
       remarks,
+      employee.employeeName
     );
     const generalStaff = await employee?.getGeneralStaff();
     if (generalStaff) {
@@ -1105,6 +1184,27 @@ export async function createSensorMaintenanceLogController(
     return res.status(200).json({ sensor: sensor.toFullJSON() });
   } catch (error: any) {
     console.log(error);
+    res.status(400).json({ error: error.message });
+  }
+}
+
+export async function getSensorMaintenanceLogController(req: Request, res: Response) {
+  try {
+    const { email } = (req as any).locals.jwtPayload;
+    // const employee = await findEmployeeByEmail(email);
+
+    const { sensorMaintenanceLogId } = req.params;
+
+    if (sensorMaintenanceLogId == "") {
+      return res.status(400).json({ error: "Missing information!" });
+    }
+
+    let maintenanceLog: MaintenanceLog = await getSensorMaintenanceLogById(Number(sensorMaintenanceLogId));
+
+    return res
+      .status(200)
+      .json({ maintenanceLog: maintenanceLog.toJSON() });
+  } catch (error: any) {
     res.status(400).json({ error: error.message });
   }
 }
@@ -1141,6 +1241,55 @@ export async function getAllSensorMaintenanceLogsController(
     return res
       .status(200)
       .json({ maintenanceLog: maintenanceLogs.map((log) => log.toJSON()) });
+  } catch (error: any) {
+    res.status(400).json({ error: error.message });
+  }
+}
+
+export async function updateSensorMaintenanceLogController(req: Request, res: Response) {
+  try {
+    const { email } = (req as any).locals.jwtPayload;
+    const employee = await findEmployeeByEmail(email);
+
+    const { sensorMaintenanceLogId } = req.params;
+    const { title, details, remarks } = req.body;
+    
+
+    if (sensorMaintenanceLogId == "" || [title, details, remarks].includes(undefined)) {
+      return res.status(400).json({ error: "Missing information!" });
+    }
+
+    if ((await getSensorMaintenanceLogById(Number(sensorMaintenanceLogId))).staffName != employee.employeeName) throw {message: "Only creator of the log can edit!"}
+
+    let maintenanceLog: MaintenanceLog = await updateSensorMaintenanceLog(
+      Number(sensorMaintenanceLogId),
+      title,
+      details,
+      remarks
+    );
+
+    return res.status(200).json({ maintenanceLog: maintenanceLog.toJSON() });
+  } catch (error: any) {
+    res.status(400).json({ error: error.message });
+  }
+}
+
+export async function deleteSensorMaintenanceLogController(req: Request, res: Response) {
+  try {
+    const { email } = (req as any).locals.jwtPayload;
+    // const employee = await findEmployeeByEmail(email);
+
+    const { sensorMaintenanceLogId } = req.params;
+
+    if ([sensorMaintenanceLogId].includes("")) {
+      return res.status(400).json({ error: "Missing information!" });
+    }
+
+    await deleteSensorMaintenanceLogById(
+      Number(sensorMaintenanceLogId)
+    );
+
+    return res.status(200).json({ result: "success" });
   } catch (error: any) {
     res.status(400).json({ error: error.message });
   }
