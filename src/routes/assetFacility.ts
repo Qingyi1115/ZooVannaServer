@@ -55,7 +55,9 @@ import {
   getSensorMaintenancePredictionValuesController,
   getFacilityMaintenancePredictionValuesController,
   updateFacilityLogController,
-  deleteFacilityLogController
+  deleteFacilityLogController,
+  updateSensorMaintenanceLogController,
+  deleteSensorMaintenanceLogController
 } from "../controllers/assetFacilityController";
 
 const router = express.Router();
@@ -87,7 +89,7 @@ router.get("/getFacilityLogs/:facilityId", getFacilityLogsController);
 router.post("/createFacilityLog/:facilityId", createFacilityLogController);
 router.post("/createFacilityMaintenanceLog/:facilityId", createFacilityMaintenanceLogController);
 router.put("/updateFacilityLog/:facilityLogId", updateFacilityLogController);
-router.delete("/deleteFacilityLog/:facilityId", deleteFacilityLogController);
+router.delete("/deleteFacilityLog/:facilityLogId", deleteFacilityLogController);
 
 //Animal Feed
 router.post("/createNewAnimalFeed", createNewAnimalFeedController);
@@ -127,6 +129,8 @@ router.delete("/deleteSensor/:sensorId", deleteSensorController);
 
 router.post("/createSensorMaintenanceLog/:sensorId", createSensorMaintenanceLogController);
 router.post("/getAllSensorMaintenanceLogsController/:sensorId", getAllSensorMaintenanceLogsController);
+router.put("/updateSensorMaintenanceLog/:sensorMaintenanceLogId", updateSensorMaintenanceLogController);
+router.delete("/deleteSensorMaintenanceLog/:sensorMaintenanceLogId", deleteSensorMaintenanceLogController);
 
 router.post("/getAuthorizationForCamera", getAuthorizationForCameraController);
 

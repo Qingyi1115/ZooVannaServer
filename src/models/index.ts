@@ -1840,6 +1840,7 @@ export const facilityAssetsSeed = async () => {
         title: "Maintenance " + _day.toDateString(),
         details: "Bla bla bla...",
         remarks: "not uncommon",
+        staffName : "maint1"
       }),
     );
   }
@@ -1872,6 +1873,7 @@ export const facilityAssetsSeed = async () => {
         title: "Maintenance " + _day.toDateString(),
         details: "Bla bla bla...",
         remarks: "not uncommon",
+        staffName : "maint1"
       }),
     );
   }
@@ -1897,6 +1899,7 @@ export const facilityAssetsSeed = async () => {
         title: "Maintenance " + _day.toDateString(),
         details: "Bla bla bla...",
         remarks: "not uncommon",
+        staffName : "maint1"
       }),
     );
   }
@@ -1922,6 +1925,7 @@ export const facilityAssetsSeed = async () => {
         title: "Maintenance " + _day.toDateString(),
         details: "Bla bla bla...",
         remarks: "not uncommon",
+        staffName : "maint1"
       }),
     );
   }
@@ -1948,6 +1952,7 @@ export const facilityAssetsSeed = async () => {
         title: "Maintenance " + _day.toDateString(),
         details: "Bla bla bla...",
         remarks: "not uncommon",
+        staffName : "maint1"
       }),
     );
   }

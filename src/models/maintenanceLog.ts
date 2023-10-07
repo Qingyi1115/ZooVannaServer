@@ -19,6 +19,7 @@ class MaintenanceLog extends Model<
   declare title : string;
   declare details : string;
   declare remarks: string;
+  declare staffName: string;
   
   declare Sensor? :Sensor;
 
@@ -53,6 +54,10 @@ class MaintenanceLog extends Model<
           allowNull: false
         },
         remarks: {
+          type: DataTypes.STRING,
+          allowNull: false
+        },
+        staffName: {
           type: DataTypes.STRING,
           allowNull: false
         },
