@@ -148,7 +148,7 @@ export async function verifyPromotionCode(
     });
 
     const currentDate = new Date(new Date().toUTCString());
-
+    console.log("Current spending: " + currentSpending);
     if (!promotion) {
       throw { message: "Invalid promotion code!" };
     } else if (
@@ -159,6 +159,7 @@ export async function verifyPromotionCode(
     } else if (promotion.currentRedeemNum >= promotion.maxRedeemNum) {
       throw { message: "Promotion is fully redeemed!" };
     } else if (currentSpending < promotion.minimumSpending) {
+      console.log("Correct error throw");
       throw {
         message: `This promotion is only applicable for a minimum purchase of $${promotion.minimumSpending}`,
       };

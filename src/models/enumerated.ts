@@ -183,7 +183,7 @@ enum Biome {
 enum IdentifierType {
   NONE = "None",
   RFID_TAG = "RFID Tag",
-  MAGNETIC_TAG = "Magnetic_Tag",
+  MAGNETIC_TAG = "Magnetic Tag",
   BARCODE_TAG = "Barcode Tag",
   EAR_TAG = "Ear Tag",
   COLLAR = "Collar",

@@ -160,11 +160,11 @@ class Species extends Model<
 
     return !!isCompatible;
   }
-  
+
   public toJSON() {
     return {
       ...this.get(),
-    }
+    };
   }
 }
 
@@ -261,23 +261,23 @@ Species.init(
       allowNull: false,
     },
     lifeExpectancyYears: {
-      type: DataTypes.INTEGER,
+      type: DataTypes.DOUBLE,
       allowNull: false,
     },
     ageToJuvenile: {
-      type: DataTypes.INTEGER,
+      type: DataTypes.DOUBLE,
       allowNull: false,
     },
     ageToAdolescent: {
-      type: DataTypes.INTEGER,
+      type: DataTypes.DOUBLE,
       allowNull: false,
     },
     ageToAdult: {
-      type: DataTypes.INTEGER,
+      type: DataTypes.DOUBLE,
       allowNull: false,
     },
     ageToElder: {
-      type: DataTypes.INTEGER,
+      type: DataTypes.DOUBLE,
       allowNull: false,
     },
     foodRemark: {

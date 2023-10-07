@@ -19,6 +19,7 @@ import {
   AcquisitionMethod,
   AnimalFeedCategory,
   AnimalGrowthStage,
+  Country,
   ConservationStatus,
   Continent,
   FacilityType,
@@ -482,6 +483,7 @@ export const seedDatabase = async () => {
   await speciesSeed();
   await animalSeed();
   await promotionSeed();
+  await customerSeed();
 };
 
 export const promotionSeed = async () => {
@@ -495,7 +497,7 @@ export const promotionSeed = async () => {
     percentage: 30,
     minimumSpending: 100,
     promotionCode: "HAPPY30BIRTHDAY",
-    maxRedeemNum: 2000,
+    maxRedeemNum: 200,
     currentRedeemNum: 0,
     imageUrl: "img/promotion/giraffe.jpg",
   });
@@ -517,15 +519,64 @@ export const promotionSeed = async () => {
     title: "Bye La La",
     description:
       "Seize your final chance to make memories with our beloved La La! Enjoy 20% off admission tickets. \n\n Terms and conditions: \nValid for minimum purchase of S$150 \n Valid for purchase date from 8 October 2023 to 22 October 2023",
-    publishDate: new Date("2023-10-07"),
-    startDate: new Date("2023-10-08"),
-    endDate: new Date("2023-10-22"),
+    publishDate: new Date("2023-10-01"),
+    startDate: new Date("2023-10-07"),
+    endDate: new Date("2023-10-21"),
     percentage: 20,
-    minimumSpending: 150,
+    minimumSpending: 120,
     promotionCode: "BYELALA",
     maxRedeemNum: 1000,
     currentRedeemNum: 0,
     imageUrl: "img/promotion/lala.jpg",
+  });
+  let promotion4 = await Promotion.create({
+    title: "Welcome back!",
+    description:
+      "Tired of WFH? Enjoy 20% off admission tickets to celebrate the end of circuit breaker. \n\n Terms and conditions: \nValid for minimum purchase of S$100 \n Valid for purchase date from 20 July 2021 to 20 August 2023",
+    publishDate: new Date("2023-07-07"),
+    startDate: new Date("2023-07-20"),
+    endDate: new Date("2023-08-20"),
+    percentage: 20,
+    minimumSpending: 200,
+    promotionCode: "BYECOVID",
+    maxRedeemNum: 1000,
+    currentRedeemNum: 1000,
+    imageUrl: "img/promotion/elephant.jpg",
+  });
+};
+
+export const customerSeed = async () => {
+  let customer1 = await Customer.create({
+    firstName: "Vinessa",
+    lastName: "Christabella",
+    email: "vinessac235@gmail.com",
+    contactNo: "12345568",
+    birthday: new Date("2001-01-01"),
+    nationality: Country.Indonesia,
+    passwordHash: Customer.getHash("Hahaha123.", "hehe"),
+    salt: "hehe",
+  });
+
+  let customer2 = await Customer.create({
+    firstName: "Natasha",
+    lastName: "Rafaela",
+    email: "natasha.rafaela1711sg@gmail.com",
+    contactNo: "12345568",
+    birthday: new Date("2001-01-01"),
+    nationality: Country.Indonesia,
+    passwordHash: Customer.getHash("Hahaha123.", "hehe"),
+    salt: "hehe",
+  });
+
+  let customer3 = await Customer.create({
+    firstName: "Qingyi",
+    lastName: "Xiang",
+    email: "xqy1115@gmail.com",
+    contactNo: "12345568",
+    birthday: new Date("2001-01-01"),
+    nationality: Country.Indonesia,
+    passwordHash: Customer.getHash("Hahaha123.", "hehe"),
+    salt: "hehe",
   });
 };
 
@@ -895,11 +946,11 @@ export const speciesSeed = async () => {
     habitatOrExhibit: "Southwest China",
     generalDietPreference: "Folivore",
     imageUrl: "img/species/panda.jpg",
-    lifeExpectancyYears: 65,
+    lifeExpectancyYears: 30,
     ageToJuvenile: 2,
     ageToAdolescent: 5,
     ageToAdult: 7,
-    ageToElder: 50,
+    ageToElder: 20,
     // foodRemark: "Food remark...",
   } as any;
   let panda = await Species.create(pandaTemplate);
@@ -934,32 +985,60 @@ export const speciesSeed = async () => {
 
   let pandaPhy1 = await SpeciesService.createPhysiologicalReferenceNorms(
     "SPE001",
-    100,
-    100,
-    100,
-    100,
-    0,
-    5,
-    0,
-    6,
-    0,
     15,
+    20,
+    15,
+    20,
+    0.1,
+    0.2,
+    0.1,
+    0.2,
+    0,
+    1,
     AnimalGrowthStage.INFANT,
   );
   console.log(pandaPhy1.toJSON());
 
   let pandaPhy2 = await SpeciesService.createPhysiologicalReferenceNorms(
     "SPE001",
-    200,
-    200,
-    200,
-    200,
+    50,
+    75,
+    50,
+    75,
+    20,
+    45,
+    20,
+    45,
     2,
-    5,
-    1,
+    3,
+    AnimalGrowthStage.JUVENILE,
+  );
+  let pandaPhy3 = await SpeciesService.createPhysiologicalReferenceNorms(
+    "SPE001",
+    120,
+    150,
+    110,
+    140,
+    50,
+    90,
+    45,
+    80,
     4,
-    0,
-    10,
+    6,
+    AnimalGrowthStage.ADOLESCENT,
+  );
+  let pandaPhy4 = await SpeciesService.createPhysiologicalReferenceNorms(
+    "SPE001",
+    160,
+    190,
+    110,
+    180,
+    85,
+    125,
+    70,
+    100,
+    7,
+    20,
     AnimalGrowthStage.ADULT,
   );
 
@@ -977,7 +1056,6 @@ export const speciesSeed = async () => {
     50,
     AnimalGrowthStage.ELDER,
   );
-  console.log(pandaPhy2.toJSON());
 
   let pandaDietNeed1 = await SpeciesService.createDietNeed(
     "SPE001",
@@ -1002,7 +1080,7 @@ export const speciesSeed = async () => {
     AnimalGrowthStage.JUVENILE,
   );
   console.log(pandaDietNeed2.toJSON());
-  let capybara1Template = {
+  let capybaraTemplate = {
     speciesCode: await Species.getNextSpeciesCode(),
     commonName: "Capybara",
     scientificName: "Hydrochoerus Hydrochaeris",
@@ -1026,14 +1104,14 @@ export const speciesSeed = async () => {
     generalDietPreference: "Herbivore",
     imageUrl: "img/species/capybara.jpg",
     lifeExpectancyYears: 10,
-    ageToJuvenile: 2,
-    ageToAdolescent: 5,
-    ageToAdult: 7,
-    ageToElder: 50,
+    ageToJuvenile: 0.5,
+    ageToAdolescent: 1,
+    ageToAdult: 2,
+    ageToElder: 5,
     // foodRemark: "Food remark...",
   } as any;
-  let capybara1 = await Species.create(capybara1Template);
-  console.log(capybara1.toJSON());
+  let capybara = await Species.create(capybaraTemplate);
+  console.log(capybara.toJSON());
 
   let redPandaTemplate = {
     speciesCode: await Species.getNextSpeciesCode(),
@@ -1057,11 +1135,11 @@ export const speciesSeed = async () => {
     habitatOrExhibit: "Forested areas",
     generalDietPreference: "Herbivore",
     imageUrl: "img/species/redPanda.jpg",
-    lifeExpectancyYears: 14,
-    ageToJuvenile: 2,
-    ageToAdolescent: 5,
-    ageToAdult: 7,
-    ageToElder: 50,
+    lifeExpectancyYears: 10,
+    ageToJuvenile: 1,
+    ageToAdolescent: 2,
+    ageToAdult: 3,
+    ageToElder: 8,
     // foodRemark: "Food remark...",
   } as any;
   let redPanda = await Species.create(redPandaTemplate);
@@ -1090,15 +1168,48 @@ export const speciesSeed = async () => {
     habitatOrExhibit: "Forested areas",
     generalDietPreference: "Herbivore",
     imageUrl: "img/species/elephant.jpg",
-    lifeExpectancyYears: 14,
+    lifeExpectancyYears: 65,
     ageToJuvenile: 2,
     ageToAdolescent: 5,
-    ageToAdult: 7,
-    ageToElder: 50,
+    ageToAdult: 20,
+    ageToElder: 60,
     // foodRemark: "Food remark...",
   } as any;
   let elephant = await Species.create(africanElephantTemplate);
   console.log(elephant.toJSON());
+
+  let clownFishTemplate = {
+    speciesCode: await Species.getNextSpeciesCode(),
+    commonName: "Clown Fish",
+    scientificName: "Amphiprioninae",
+    aliasName: "Anemonefish",
+    conservationStatus: ConservationStatus.LEAST_CONCERN,
+    domain: "Eukarya",
+    kingdom: "Animalia",
+    phylum: "Chordata",
+    speciesClass: "Actinopterygii",
+    order: "Perciformes",
+    family: "Pomacentridae",
+    genus: "Amphiprion",
+    educationalDescription:
+      "The Clown Fish, also known as Anemonefish, is a type of small fish belonging to the subfamily Amphiprioninae within the family Pomacentridae. They are well-known for their colorful appearance and their symbiotic relationship with sea anemones.",
+    educationalFunFact:
+      "Clown Fish have a mutually beneficial relationship with sea anemones, where they provide protection to the anemone in exchange for shelter and food scraps.",
+    nativeContinent: Continent.ASIA,
+    nativeBiomes: "Coral Reefs, Tropical Seas",
+    groupSexualDynamic: GroupSexualDynamic.MONOGAMOUS,
+    habitatOrExhibit: "Coral reefs, Warm tropical waters",
+    generalDietPreference: "Omnivore",
+    imageUrl: "img/species/clownfish.jpg",
+    lifeExpectancyYears: 6,
+    ageToJuvenile: 1,
+    ageToAdolescent: 3,
+    ageToAdult: 1,
+    ageToElder: 6,
+    // foodRemark: "Food remark...",
+  } as any;
+  let clownFish = await Species.create(clownFishTemplate);
+  console.log(clownFish.toJSON());
 
   let compatibility1 = await SpeciesService.createCompatibility(
     "SPE001",
@@ -1125,7 +1236,7 @@ export const animalSeed = async () => {
     false,
     "Pang Pang",
     AnimalSex.FEMALE,
-    new Date("1990-03-04"),
+    new Date("2000-03-04"),
     "Singapore",
     IdentifierType.MAGNETIC_TAG,
     "identifierValue 001",
@@ -1138,7 +1249,7 @@ export const animalSeed = async () => {
     null,
     null,
     "NORMAL",
-    "img/animal/pangPang.jpg",
+    "img/animal/ANM00001.jpg",
   );
 
   let panda2Template = await AnimalService.createNewAnimal(
@@ -1146,7 +1257,7 @@ export const animalSeed = async () => {
     false,
     "Yuan Yuan",
     AnimalSex.FEMALE,
-    new Date("1997-03-04"),
+    new Date("2003-03-04"),
     "Singapore",
     IdentifierType.MAGNETIC_TAG,
     "identifierValue 001",
@@ -1158,8 +1269,8 @@ export const animalSeed = async () => {
     null,
     null,
     null,
-    "NORMAL",
-    "img/animal/yuanYuan.jpg",
+    "SICK",
+    "img/animal/ANM00002.jpg",
   );
 
   let panda3Template = await AnimalService.createNewAnimal(
@@ -1167,7 +1278,7 @@ export const animalSeed = async () => {
     false,
     "Du Du",
     AnimalSex.FEMALE,
-    new Date("2021-03-04"),
+    new Date("2010-03-04"),
     "Singapore",
     IdentifierType.RFID_TAG,
     "identifierValue 001",
@@ -1179,8 +1290,8 @@ export const animalSeed = async () => {
     null,
     null,
     null,
-    "NORMAL",
-    "img/animal/duDu.jpg",
+    "NORMAL,OFFSITE",
+    "img/animal/ANM00003.jpg",
   );
 
   let panda4Template = await AnimalService.createNewAnimal(
@@ -1188,12 +1299,12 @@ export const animalSeed = async () => {
     false,
     "Fu Fu",
     AnimalSex.MALE,
-    new Date("2021-03-04"),
+    new Date("2008-03-04"),
     "Singapore",
     IdentifierType.RFID_TAG,
     "identifierValue 001",
     AcquisitionMethod.INHOUSE_CAPTIVE_BRED,
-    new Date("2021-03-04"),
+    new Date("2021-09-04"),
     "N.A.",
     "Big face, black spot at the back",
     "active, friendly",
@@ -1201,7 +1312,7 @@ export const animalSeed = async () => {
     null,
     null,
     "NORMAL",
-    "img/animal/fuFu.jpg",
+    "img/animal/ANM00004.jpg",
   );
 
   let panda5Template = await AnimalService.createNewAnimal(
@@ -1209,7 +1320,7 @@ export const animalSeed = async () => {
     false,
     "Tuan Tuan",
     AnimalSex.MALE,
-    new Date("2021-03-04"),
+    new Date("2007-08-04"),
     "Singapore",
     IdentifierType.RFID_TAG,
     "identifierValue 001",
@@ -1222,7 +1333,7 @@ export const animalSeed = async () => {
     null,
     null,
     "NORMAL",
-    "img/animal/tuanTuan.jpg",
+    "img/animal/ANM00005.jpg",
   );
 
   let panda6Template = await AnimalService.createNewAnimal(
@@ -1230,7 +1341,7 @@ export const animalSeed = async () => {
     false,
     "Huan Huan",
     AnimalSex.MALE,
-    new Date("2021-03-04"),
+    new Date("2005-03-04"),
     "Singapore",
     IdentifierType.RFID_TAG,
     "identifierValue 001",
@@ -1243,7 +1354,7 @@ export const animalSeed = async () => {
     null,
     null,
     "NORMAL",
-    "img/animal/huanHuan.jpg",
+    "img/animal/ANM00006.jpg",
   );
 
   let panda7Template = await AnimalService.createNewAnimal(
@@ -1251,7 +1362,7 @@ export const animalSeed = async () => {
     false,
     "Yin Yin",
     AnimalSex.FEMALE,
-    new Date("2021-03-04"),
+    new Date("2017-03-04"),
     "Singapore",
     IdentifierType.RFID_TAG,
     "identifierValue 001",
@@ -1263,15 +1374,15 @@ export const animalSeed = async () => {
     null,
     null,
     null,
-    "NORMAL",
-    "img/animal/yinYin.jpg",
+    "NORMAL,PREGNANT",
+    "img/animal/ANM00007.jpg",
   );
   let panda8Template = await AnimalService.createNewAnimal(
     "SPE001",
     false,
     "Ni Ni",
     AnimalSex.FEMALE,
-    new Date("2021-03-04"),
+    new Date("2020-03-04"),
     "Singapore",
     IdentifierType.RFID_TAG,
     "identifierValue 001",
@@ -1284,14 +1395,14 @@ export const animalSeed = async () => {
     null,
     null,
     "NORMAL",
-    "img/animal/niNi.jpg",
+    "img/animal/ANM00008.jpg",
   );
   let panda9Template = await AnimalService.createNewAnimal(
     "SPE001",
     false,
     "Bei Bei",
     AnimalSex.MALE,
-    new Date("2021-03-04"),
+    new Date("2016-03-04"),
     "Singapore",
     IdentifierType.RFID_TAG,
     "identifierValue 001",
@@ -1304,7 +1415,7 @@ export const animalSeed = async () => {
     null,
     null,
     "NORMAL",
-    "img/animal/beiBei.jpg",
+    "img/animal/ANM00009.jpg",
   );
 
   let panda10Template = await AnimalService.createNewAnimal(
@@ -1312,7 +1423,7 @@ export const animalSeed = async () => {
     false,
     "La La",
     AnimalSex.MALE,
-    new Date("2021-03-04"),
+    new Date("2022-03-04"),
     "Singapore",
     IdentifierType.RFID_TAG,
     "identifierValue 001",
@@ -1324,8 +1435,50 @@ export const animalSeed = async () => {
     null,
     null,
     null,
+    "SICK,INJURED",
+    "img/animal/ANM00010.jpg",
+  );
+
+  let clownFish1Template = await AnimalService.createNewAnimal(
+    "SPE005",
+    true,
+    "Clown Fish Group 1",
+    null,
+    null,
+    "Singapore",
+    null,
+    null,
+    AcquisitionMethod.INHOUSE_CAPTIVE_BRED,
+    new Date("2021-03-04"),
+    null,
+    "Big group, around 100-150 fish",
+    "Likes to swin swirl",
+    null,
+    null,
+    null,
     "NORMAL",
-    "img/animal/laLa.jpg",
+    "img/animal/ANM00011.jpg",
+  );
+
+  let clownFish2Template = await AnimalService.createNewAnimal(
+    "SPE005",
+    true,
+    "Clown Fish Group 2",
+    null,
+    null,
+    "Korea",
+    null,
+    null,
+    AcquisitionMethod.TRANSFERRED_FROM_ANOTHER_ZOO,
+    new Date("2023-03-04"),
+    null,
+    "Medium group, around 50-70 fish",
+    "Likes to swin swirl",
+    null,
+    null,
+    null,
+    "NORMAL",
+    "img/animal/ANM00012.jpg",
   );
 
   // -- add lineage
@@ -1341,14 +1494,26 @@ export const animalSeed = async () => {
   await AnimalService.addAnimalLineage("ANM00008", "ANM00007");
 
   // -- add weight
-  await AnimalService.addAnimalWeight("ANM00001", 50, new Date("2023-10-6"));
+  // overweight
+  await AnimalService.addAnimalWeight("ANM00001", 10, new Date("2001-10-6"));
+  await AnimalService.addAnimalWeight("ANM00001", 42, new Date("2003-10-6"));
+  await AnimalService.addAnimalWeight("ANM00001", 68, new Date("2007-10-6"));
+  await AnimalService.addAnimalWeight("ANM00001", 80, new Date("2010-10-6"));
+  await AnimalService.addAnimalWeight("ANM00001", 85, new Date("2013-6-8"));
+  await AnimalService.addAnimalWeight("ANM00001", 83, new Date("2015-9-2"));
+  await AnimalService.addAnimalWeight("ANM00001", 80, new Date("2019-4-6"));
+  await AnimalService.addAnimalWeight("ANM00001", 90, new Date("2021-2-10"));
+  await AnimalService.addAnimalWeight("ANM00001", 100, new Date("2022-2-10"));
+  await AnimalService.addAnimalWeight("ANM00001", 110, new Date("2023-2-10"));
 
-  // overwegiht
-  await AnimalService.addAnimalWeight("ANM00003", 50, new Date("2023-6-6"));
-  //underweight
-  await AnimalService.addAnimalWeight("ANM00003", 10, new Date("2023-8-6"));
+  // underweight
+  await AnimalService.addAnimalWeight("ANM00002", 70, new Date("2023-10-6"));
+
+  // overweight
+  await AnimalService.addAnimalWeight("ANM00003", 150, new Date("2023-10-6"));
+
   //normal
-  await AnimalService.addAnimalWeight("ANM00003", 30, new Date("2023-10-6"));
+  await AnimalService.addAnimalWeight("ANM00004", 90, new Date("2023-10-6"));
 
   // -- create animal activity
   let animalActivity1 = await AnimalService.createAnimalActivity(
@@ -1368,6 +1533,9 @@ export const animalSeed = async () => {
     EventTimingType.MORNING,
     60,
   );
+
+  await AnimalService.assignAnimalsToActivity("1", ["ANM00001", "ANM00003"]);
+  await AnimalService.assignItemToActivity("1", ["1", "2"]);
 };
 
 export const animalFeedSeed = async () => {
@@ -1688,8 +1856,8 @@ export const facilityAssetsSeed = async () => {
     _day = new Date(
       _day.getTime() -
         days * 1000 * 60 * 60 * 24 +
-        Math.random() * 1000 * 60 * 60 * 24 * 2 -
-        1000 * 60 * 60 * 24,
+        Math.random() * 1000 * 60 * 60 * 24 * 4 -
+        1000 * 60 * 60 * 24 * 2,
     );
     sensor.addMaintenanceLog(
       await MaintenanceLog.create({

@@ -378,6 +378,7 @@ export async function completePaymentForGuestController(
   }
 
   const { payment } = req.body;
+  console.log(payment);
   try {
     const result = await CustomerService.completePaymentForGuest(
       Number(customerOrderId),

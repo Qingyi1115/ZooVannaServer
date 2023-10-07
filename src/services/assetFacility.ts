@@ -696,6 +696,7 @@ export async function initializeHubProcessor(
     hubProcessor.lastDataUpdate = new Date();
     hubProcessor.hubStatus = HubStatus.CONNECTED;
     hubProcessor.ipAddressName = ipAddress;
+    hubProcessor.radioGroup = HubProcessor.generateRandomRadioGroup();
     await hubProcessor.save();
 
     return newtoken;
@@ -827,7 +828,6 @@ export async function getMaintenanceStaffsByFacilityId(
       emps.push(await staff.getEmployee());
     }
     return emps;
-
 
   } catch (error: any) {
     throw validationErrorHandler(error);
