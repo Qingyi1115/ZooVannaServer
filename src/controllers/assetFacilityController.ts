@@ -950,13 +950,14 @@ export async function updateHubController(req: Request, res: Response) {
         .json({ error: "Access Denied! Operation managers only!" });
 
     const { hubProcessorId } = req.params;
-    const { processorName } = req.body;
-    if ([hubProcessorId, processorName].includes(undefined)) {
+    const { processorName, radioGroup } = req.body;
+    if ([hubProcessorId, processorName, radioGroup].includes(undefined)) {
       return res.status(400).json({ error: "Missing information!" });
     }
 
     let hubUpdated = await updateHubByHubId(Number(hubProcessorId), {
       processorName: processorName,
+      radioGroup: radioGroup
     });
 
     return res.status(200).json({ hub: hubUpdated.toJSON() });
