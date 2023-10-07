@@ -696,6 +696,7 @@ export async function initializeHubProcessor(
     hubProcessor.lastDataUpdate = new Date();
     hubProcessor.hubStatus = HubStatus.CONNECTED;
     hubProcessor.ipAddressName = ipAddress;
+    hubProcessor.radioGroup = HubProcessor.generateRandomRadioGroup();
     hubProcessor.save();
 
     return newtoken;

@@ -45,8 +45,8 @@ class HubProcessor extends Model<
     return this.hubSecret;
   }
 
-  public setRandomRadioGroup() {
-    return Math.floor(Math.random() * 254 + 1);
+  static generateRandomRadioGroup() {
+    return Math.floor(Math.random() * 255);
   }
 
   public validatePayload(jsonPayload:string, sha256:string) {
