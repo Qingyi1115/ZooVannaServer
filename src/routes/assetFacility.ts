@@ -58,7 +58,8 @@ import {
   deleteFacilityLogController,
   updateSensorMaintenanceLogController,
   deleteSensorMaintenanceLogController,
-  getFacilityLogByIdController
+  getFacilityLogByIdController,
+  getSensorMaintenanceLogController
 } from "../controllers/assetFacilityController";
 
 const router = express.Router();
@@ -130,7 +131,8 @@ router.put("/updateSensor/:sensorId", updateSensorController);
 router.delete("/deleteSensor/:sensorId", deleteSensorController);
 
 router.post("/createSensorMaintenanceLog/:sensorId", createSensorMaintenanceLogController);
-router.post("/getAllSensorMaintenanceLogsController/:sensorId", getAllSensorMaintenanceLogsController);
+router.get("/getSensorMaintenanceLog/:sensorMaintenanceLogId", getSensorMaintenanceLogController);
+router.post("/getAllSensorMaintenanceLogs/:sensorId", getAllSensorMaintenanceLogsController);
 router.put("/updateSensorMaintenanceLog/:sensorMaintenanceLogId", updateSensorMaintenanceLogController);
 router.delete("/deleteSensorMaintenanceLog/:sensorMaintenanceLogId", deleteSensorMaintenanceLogController);
 

@@ -642,11 +642,11 @@ export async function getFacilityLogByIdController(req: Request, res: Response) 
       return res.status(400).json({ error: "Missing information!" });
     }
 
-    let facilityLogs: FacilityLog = await getFacilityLogById(Number(facilityLogId));
+    let facilityLog: FacilityLog = await getFacilityLogById(Number(facilityLogId));
 
     return res
       .status(200)
-      .json({ facilityLogs: facilityLogs.toJSON() });
+      .json({ facilityLog: facilityLog.toJSON() });
   } catch (error: any) {
     res.status(400).json({ error: error.message });
   }
@@ -1184,6 +1184,27 @@ export async function createSensorMaintenanceLogController(
     return res.status(200).json({ sensor: sensor.toFullJSON() });
   } catch (error: any) {
     console.log(error);
+    res.status(400).json({ error: error.message });
+  }
+}
+
+export async function getSensorMaintenanceLogController(req: Request, res: Response) {
+  try {
+    const { email } = (req as any).locals.jwtPayload;
+    // const employee = await findEmployeeByEmail(email);
+
+    const { sensorMaintenanceLogId } = req.params;
+
+    if (sensorMaintenanceLogId == "") {
+      return res.status(400).json({ error: "Missing information!" });
+    }
+
+    let maintenanceLog: MaintenanceLog = await getSensorMaintenanceLogById(Number(sensorMaintenanceLogId));
+
+    return res
+      .status(200)
+      .json({ maintenanceLog: maintenanceLog.toJSON() });
+  } catch (error: any) {
     res.status(400).json({ error: error.message });
   }
 }
