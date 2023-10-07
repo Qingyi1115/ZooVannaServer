@@ -1483,6 +1483,7 @@ export const facilityAssetsSeed = async () => {
           processorName: "A01",
           ipAddressName: "172.1.2.19",
           hubStatus: HubStatus.CONNECTED,
+          radioGroup: 222
         } as any,
       ],
       inHouse: {
@@ -1617,6 +1618,7 @@ export const facilityAssetsSeed = async () => {
       processorName: "tramCam1",
       ipAddressName: "172.25.99.172",
       hubStatus: HubStatus.CONNECTED,
+      radioGroup: 223,
       sensors: [
         {
           sensorName: "HUMIDITY1",
@@ -1786,34 +1788,35 @@ export const facilityAssetsSeed = async () => {
   }
   sensor.save();
 
-  let hub2 = await HubProcessor.create(
-    {
-      processorName: "tramCam2",
-      ipAddressName: "172.25.99.173",
-      HubStatus: HubStatus.CONNECTED,
-      sensors: [
-        {
-          sensorName: "Camera3",
-          dateOfActivation: new Date(),
-          dateOfLastMaintained: new Date(),
-          sensorType: SensorType.CAMERA,
-        },
-        {
-          sensorName: "Camera4",
-          dateOfActivation: new Date(),
-          dateOfLastMaintained: new Date(),
-          sensorType: SensorType.CAMERA,
-        },
-      ],
-    } as any,
-    {
-      include: [
-        {
-          association: "sensors",
-        },
-      ],
-    },
-  );
+  // let hub2 = await HubProcessor.create(
+  //   {
+  //     processorName: "tramCam2",
+  //     ipAddressName: "172.25.99.173",
+  //     HubStatus: HubStatus.CONNECTED,
+  //     radioGroup: 221,
+  //     sensors: [
+  //       {
+  //         sensorName: "Camera3",
+  //         dateOfActivation: new Date(),
+  //         dateOfLastMaintained: new Date(),
+  //         sensorType: SensorType.CAMERA,
+  //       },
+  //       {
+  //         sensorName: "Camera4",
+  //         dateOfActivation: new Date(),
+  //         dateOfLastMaintained: new Date(),
+  //         sensorType: SensorType.CAMERA,
+  //       },
+  //     ],
+  //   } as any,
+  //   {
+  //     include: [
+  //       {
+  //         association: "sensors",
+  //       },
+  //     ],
+  //   },
+  // );
 
   tram2
     .getInHouse()
@@ -1823,11 +1826,11 @@ export const facilityAssetsSeed = async () => {
         .then((tramstop2) => tramstop.setNextTramStop(tramstop2)),
     );
 
-  let cameraTemplate = {
-    sensorName: "Camera5",
-    dateOfActivation: new Date(),
-    dateOfLastMaintained: new Date(),
-    sensorType: SensorType.CAMERA,
-  } as any;
-  let camera = await Sensor.create(cameraTemplate);
+  // let cameraTemplate = {
+  //   sensorName: "Camera5",
+  //   dateOfActivation: new Date(),
+  //   dateOfLastMaintained: new Date(),
+  //   sensorType: SensorType.CAMERA,
+  // } as any;
+  // let camera = await Sensor.create(cameraTemplate);
 };

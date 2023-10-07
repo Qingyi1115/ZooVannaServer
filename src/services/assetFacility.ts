@@ -525,7 +525,7 @@ export async function updateHubByHubId(
     for (const [key, value] of Object.entries(data)) {
       hubProcessor[key] = value;
     }
-    hubProcessor.save();
+    await hubProcessor.save();
 
     return hubProcessor;
   } catch (error: any) {
@@ -546,7 +546,7 @@ export async function updateSensorById(
     for (const [key, value] of Object.entries(data)) {
       sensor[key] = value;
     }
-    sensor.save();
+    await sensor.save();
 
     return sensor;
   } catch (error: any) {
@@ -696,7 +696,7 @@ export async function initializeHubProcessor(
     hubProcessor.lastDataUpdate = new Date();
     hubProcessor.hubStatus = HubStatus.CONNECTED;
     hubProcessor.ipAddressName = ipAddress;
-    hubProcessor.save();
+    await hubProcessor.save();
 
     return newtoken;
   } catch (error: any) {
@@ -778,7 +778,7 @@ export async function removeMaintenanceStaffFromSensorById(
     if (!generalStaff) throw { message: "Unable to find generalStaff with employeeId: " + employeeId };
 
     generalStaff.removeSensor(sensor);
-    generalStaff.save();
+    await generalStaff.save();
 
     return generalStaff;
   } catch (error: any) {

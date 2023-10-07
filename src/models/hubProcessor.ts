@@ -80,7 +80,7 @@ HubProcessor.init(
     radioGroup: {
       type: DataTypes.INTEGER,
       validate: {
-        min: 2,
+        min: 0,
         max: 254
       }
     },

@@ -65,7 +65,7 @@ export async function updateEmployeeAccountController(
         (employee as any)[field] = v;
       }
     }
-    employee.save();
+    await employee.save();
 
     let token = undefined;
     if (employeeEmail !== undefined) {

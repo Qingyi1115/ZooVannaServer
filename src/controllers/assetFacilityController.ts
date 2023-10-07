@@ -688,7 +688,7 @@ export async function createFacilityMaintenanceLogController(
       if ((await facility.getFacility()).facilityId == Number(facilityId))
         generalStaff.removeMaintainedFacilities(facility);
     }
-    generalStaff.save();
+    await generalStaff.save();
 
     return res.status(200).json({ maintenanceLog: maintenanceLog.toJSON() });
   } catch (error: any) {
@@ -962,6 +962,7 @@ export async function updateHubController(req: Request, res: Response) {
 
     return res.status(200).json({ hub: hubUpdated.toJSON() });
   } catch (error: any) {
+    console.log(error)
     res.status(400).json({ error: error.message });
   }
 }
@@ -1097,7 +1098,7 @@ export async function createSensorMaintenanceLogController(
         if (sensor.sensorId == Number(sensorId))
           generalStaff.removeSensor(sensor);
       }
-      generalStaff.save();
+      await generalStaff.save();
     }
 
     return res.status(200).json({ sensor: sensor.toFullJSON() });
@@ -1227,7 +1228,7 @@ export async function pushSensorReadingsController(
 
     processor.ipAddressName = ipaddress;
     processor.lastDataUpdate = new Date();
-    processor.save();
+    await processor.save();
     return res
       .status(200)
       .json({

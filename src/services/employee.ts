@@ -48,7 +48,7 @@ export async function createNewEmployee(
       },
     });
 
-    newEmployee.save();
+    await newEmployee.save();
 
     const token = uuidv4();
 
@@ -118,7 +118,7 @@ export async function resetPassword(
 
       try {
         let t = await Token.create(resetTokens);
-        t.save();
+        await t.save();
 
         const transporter = nodemailer.createTransport({
           service: "gmail",
@@ -371,11 +371,11 @@ export async function enableRole(
     if (role === "Keeper") {
       if (employee.keeper) {
         employee.keeper.enable();
-        employee.keeper.save();
+        await employee.keeper.save();
       } else {
         const keeper: any = roleJson;
         let newKeeper = await Keeper.create(keeper);
-        newKeeper.save();
+        await newKeeper.save();
         newKeeper.setEmployee(employee);
         employee.setKeeper(newKeeper);
         console.log(newKeeper);
@@ -383,7 +383,7 @@ export async function enableRole(
     } else if (role === "Planning Staff") {
       if (employee.planningStaff) {
         employee.planningStaff.enable();
-        employee.planningStaff.save();
+        await employee.planningStaff.save();
         return employee;
       } else {
         const planning: any = roleJson;
@@ -395,7 +395,7 @@ export async function enableRole(
     } else if (role === "General Staff") {
       if (employee.generalStaff) {
         employee.generalStaff.enable();
-        employee.generalStaff.save();
+        await employee.generalStaff.save();
       } else {
         const general: any = roleJson;
         let newGeneral = await GeneralStaff.create(general);
@@ -425,7 +425,7 @@ export async function disableRole(
     if (role === "Keeper") {
       if (employee.keeper) {
         employee.keeper.disable();
-        employee.keeper.save();
+        await employee.keeper.save();
         console.log("it was heree");
       } else {
         throw { message: "Keeper role does not exist in this account" };
@@ -433,14 +433,14 @@ export async function disableRole(
     } else if (role === "Planning Staff") {
       if (employee.planningStaff) {
         employee.planningStaff.disable();
-        employee.planningStaff.save();
+        await employee.planningStaff.save();
       } else {
         throw { message: "Planning Staff role does not exist in this account" };
       }
     } else if (role === "General Staff") {
       if (employee.generalStaff) {
         employee.generalStaff.disable();
-        employee.generalStaff.save();
+        await employee.generalStaff.save();
       } else {
         throw { message: "General Staff role does not exist in this account" };
       }
