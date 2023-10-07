@@ -1661,7 +1661,7 @@ export async function deleteAnimalFeedByNameController(
   )
     return res
       .status(403)
-      .json({ error: "Access Denied! Operation managers only!" });
+      .json({ error: "Access Denied! Curators only!" });
 
   const { animalFeedName } = req.params;
 
@@ -1694,7 +1694,7 @@ export async function createNewEnrichmentItemController(
     )
       return res
         .status(403)
-        .json({ error: "Access Denied! Operation managers only!" });
+        .json({ error: "Access Denied! Curators only!" });
 
     const enrichmentItemImageUrl = await handleFileUpload(
       req,
