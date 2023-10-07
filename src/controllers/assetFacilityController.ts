@@ -631,6 +631,27 @@ export async function getFacilityLogsController(req: Request, res: Response) {
   }
 }
 
+export async function getFacilityLogByIdController(req: Request, res: Response) {
+  try {
+    const { email } = (req as any).locals.jwtPayload;
+    // const employee = await findEmployeeByEmail(email);
+
+    const { facilityLogId } = req.params;
+
+    if (facilityLogId == "") {
+      return res.status(400).json({ error: "Missing information!" });
+    }
+
+    let facilityLogs: FacilityLog = await getFacilityLogById(Number(facilityLogId));
+
+    return res
+      .status(200)
+      .json({ facilityLogs: facilityLogs.toJSON() });
+  } catch (error: any) {
+    res.status(400).json({ error: error.message });
+  }
+}
+
 export async function createFacilityLogController(req: Request, res: Response) {
   try {
     const { email } = (req as any).locals.jwtPayload;
