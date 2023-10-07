@@ -40,6 +40,9 @@ import {
   getSensorMaintenanceSuggestions,
   getFacilityMaintenanceSuggestions,
   getEarliestReadingBySensorId,
+  updateFacilityLog,
+  getFacilityLogById,
+  deleteFacilityLogById,
 } from "../services/assetFacility";
 import { Facility } from "../models/facility";
 import { Sensor } from "../models/sensor";
@@ -630,9 +633,9 @@ export async function createFacilityLogController(req: Request, res: Response) {
     // const employee = await findEmployeeByEmail(email);
 
     const { facilityId } = req.params;
-    const { title, details, remarks } = req.body;
+    const { title, details, remarks, staffName } = req.body;
 
-    if ([facilityId, title, details, remarks].includes(undefined)) {
+    if ([facilityId, title, details, remarks, staffName].includes(undefined)) {
       return res.status(400).json({ error: "Missing information!" });
     }
 
@@ -642,6 +645,7 @@ export async function createFacilityLogController(req: Request, res: Response) {
       title,
       details,
       remarks,
+      staffName
     );
 
     return res.status(200).json({ facilityLog: facilityLog.toJSON() });
@@ -670,8 +674,8 @@ export async function createFacilityMaintenanceLogController(
         .json({ error: "Access Denied! Operation managers only!" });
 
     const { facilityId } = req.params;
-    const { title, details, remarks } = req.body;
-    if ([facilityId, title, details, remarks].includes(undefined)) {
+    const { title, details, remarks, staffName } = req.body;
+    if ([facilityId, title, details, remarks, staffName].includes(undefined)) {
       return res.status(400).json({ error: "Missing information!" });
     }
 
@@ -681,6 +685,7 @@ export async function createFacilityMaintenanceLogController(
       title,
       details,
       remarks,
+      staffName
     );
     const generalStaff = await employee.getGeneralStaff();
     const facilities = await generalStaff.getMaintainedFacilities();
@@ -691,6 +696,54 @@ export async function createFacilityMaintenanceLogController(
     await generalStaff.save();
 
     return res.status(200).json({ maintenanceLog: maintenanceLog.toJSON() });
+  } catch (error: any) {
+    res.status(400).json({ error: error.message });
+  }
+}
+
+export async function updateFacilityLogController(req: Request, res: Response) {
+  try {
+    const { email } = (req as any).locals.jwtPayload;
+    const employee = await findEmployeeByEmail(email);
+
+    const { facilityLogId } = req.params;
+    const { title, details, remarks } = req.body;
+
+    if (facilityLogId == "" || [title, details, remarks].includes(undefined)) {
+      return res.status(400).json({ error: "Missing information!" });
+    }
+
+    if ((await getFacilityLogById(Number(facilityLogId))).staffName != employee.employeeName) throw {message: "Only creator of the log can edit!"}
+
+    let facilityLog: FacilityLog = await updateFacilityLog(
+      Number(facilityLogId),
+      title,
+      details,
+      remarks,
+    );
+
+    return res.status(200).json({ facilityLog: facilityLog.toJSON() });
+  } catch (error: any) {
+    res.status(400).json({ error: error.message });
+  }
+}
+
+export async function deleteFacilityLogController(req: Request, res: Response) {
+  try {
+    const { email } = (req as any).locals.jwtPayload;
+    // const employee = await findEmployeeByEmail(email);
+
+    const { facilityLogId } = req.params;
+
+    if ([facilityLogId].includes("")) {
+      return res.status(400).json({ error: "Missing information!" });
+    }
+
+    await deleteFacilityLogById(
+      Number(facilityLogId)
+    );
+
+    return res.status(200).json({ result: "success" });
   } catch (error: any) {
     res.status(400).json({ error: error.message });
   }

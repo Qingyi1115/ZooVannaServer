@@ -14,12 +14,13 @@ class FacilityLog extends Model<
   InferAttributes<FacilityLog>,
   InferCreationAttributes<FacilityLog>
 > {
-  declare logId: CreationOptional<number>;
+  declare facilityLogId: CreationOptional<number>;
   declare dateTime: Date;
   declare isMaintenance: boolean;
   declare title: string;
   // declare type: Type;
   declare details: string;
+  declare staffName: string;
   declare remarks: string;
 
   declare inHouse?: InHouse;
@@ -37,7 +38,7 @@ class FacilityLog extends Model<
 
 FacilityLog.init(
   {
-    logId: {
+    facilityLogId: {
       type: DataTypes.BIGINT,
       autoIncrement: true,
       primaryKey: true,
@@ -56,6 +57,10 @@ FacilityLog.init(
       allowNull: false,
     },
     title: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    staffName: {
       type: DataTypes.STRING,
       allowNull: false,
     },

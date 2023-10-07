@@ -276,6 +276,7 @@ export async function createFacilityLog(
   title: string,
   details: string,
   remarks: string,
+  staffName: string
 ): Promise<FacilityLog> {
   try {
     const facility = await Facility.findOne({
@@ -290,7 +291,8 @@ export async function createFacilityLog(
       isMaintenance: isMaintenance,
       title: title,
       details: details,
-      remarks: remarks
+      remarks: remarks,
+      staffName: staffName
     })
     thirdParty.addFacilityLog(facilityLog);
 
@@ -618,7 +620,8 @@ export async function createFacilityMaintenanceLog(
   date: Date,
   title: string,
   details: string,
-  remarks: string
+  remarks: string,
+  staffName:string
 ): Promise<FacilityLog> {
   try {
     const facility = await Facility.findOne({
@@ -633,13 +636,71 @@ export async function createFacilityMaintenanceLog(
       title: title,
       details: details,
       remarks: remarks,
-      isMaintenance: true
+      isMaintenance: true,
+      staffName : staffName
     })
     inHouse.addFacilityLog(newLog);
     inHouse.lastMaintained = date;
     await inHouse.save();
 
     return newLog;
+  } catch (error: any) {
+    throw validationErrorHandler(error);
+  }
+}
+
+export async function getFacilityLogById(
+  facilityLogId: number,
+): Promise<FacilityLog> {
+  try {
+    const facilityLog = await FacilityLog.findOne({
+      where: {
+        facilityLogId:facilityLogId
+      }
+    });
+    if (!facilityLog) throw {message:"Cannot find facility log id : " + facilityLogId}
+    return facilityLog;
+  } catch (error: any) {
+    throw validationErrorHandler(error);
+  }
+}
+
+export async function updateFacilityLog(
+  facilityLogId: number,
+  title: string,
+  details: string,
+  remarks: string
+): Promise<FacilityLog> {
+  try {
+    const facilityLog = await FacilityLog.findOne({
+      where: {
+        facilityLogId:facilityLogId
+      }
+    });
+    if (!facilityLog) throw {message:"Cannot find facility log id : " + facilityLogId}
+    facilityLog.title = title;
+    facilityLog.details = details;
+    facilityLog.remarks = remarks;
+    
+    await facilityLog.save();
+    return facilityLog;
+  } catch (error: any) {
+    throw validationErrorHandler(error);
+  }
+}
+
+export async function deleteFacilityLogById(
+  facilityLogId: number,
+) {
+  try {
+    const facilityLog = await FacilityLog.findOne({
+      where: {
+        facilityLogId:facilityLogId
+      }
+    });
+    if (!facilityLog) throw {message:"Cannot find facility log id : " + facilityLogId}
+    
+    await facilityLog.destroy();
   } catch (error: any) {
     throw validationErrorHandler(error);
   }

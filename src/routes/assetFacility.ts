@@ -53,7 +53,9 @@ import {
   createFacilityMaintenanceLogController,
   pushSensorReadingsController,
   getSensorMaintenancePredictionValuesController,
-  getFacilityMaintenancePredictionValuesController
+  getFacilityMaintenancePredictionValuesController,
+  updateFacilityLogController,
+  deleteFacilityLogController
 } from "../controllers/assetFacilityController";
 
 const router = express.Router();
@@ -80,9 +82,12 @@ router.put("/assignMaintenanceStaffToFacility/:facilityId", assignMaintenanceSta
 router.delete("/removeMaintenanceStaffFromFacility/:facilityId", removeMaintenanceStaffFromFacilityController);
 router.put("/assignOperationStaffToFacility/:facilityId", assignOperationStaffToFacilityController);
 router.delete("/removeOperationStaffFromFacility/:facilityId", removeOperationStaffFromFacilityController);
+
 router.get("/getFacilityLogs/:facilityId", getFacilityLogsController);
 router.post("/createFacilityLog/:facilityId", createFacilityLogController);
 router.post("/createFacilityMaintenanceLog/:facilityId", createFacilityMaintenanceLogController);
+router.put("/updateFacilityLog/:facilityLogId", updateFacilityLogController);
+router.delete("/deleteFacilityLog/:facilityId", deleteFacilityLogController);
 
 //Animal Feed
 router.post("/createNewAnimalFeed", createNewAnimalFeedController);
@@ -119,6 +124,7 @@ router.put("/assignMaintenanceStaffToSensor/:sensorId", assignMaintenanceStaffTo
 router.put("/removeMaintenanceStaffFromSensor/:sensorId", removeMaintenanceStaffFromSensorController);
 router.put("/updateSensor/:sensorId", updateSensorController);
 router.delete("/deleteSensor/:sensorId", deleteSensorController);
+
 router.post("/createSensorMaintenanceLog/:sensorId", createSensorMaintenanceLogController);
 router.post("/getAllSensorMaintenanceLogsController/:sensorId", getAllSensorMaintenanceLogsController);
 
