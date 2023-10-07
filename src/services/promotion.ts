@@ -148,7 +148,7 @@ export async function verifyPromotionCode(
     });
 
     const currentDate = new Date(new Date().toUTCString());
-    console.log(currentSpending);
+    console.log("Current spending: " + currentSpending);
     if (!promotion) {
       throw { message: "Invalid promotion code!" };
     } else if (
