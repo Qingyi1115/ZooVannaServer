@@ -497,7 +497,7 @@ export const promotionSeed = async () => {
     percentage: 30,
     minimumSpending: 100,
     promotionCode: "HAPPY30BIRTHDAY",
-    maxRedeemNum: 2000,
+    maxRedeemNum: 200,
     currentRedeemNum: 0,
     imageUrl: "img/promotion/giraffe.jpg",
   });
@@ -519,15 +519,29 @@ export const promotionSeed = async () => {
     title: "Bye La La",
     description:
       "Seize your final chance to make memories with our beloved La La! Enjoy 20% off admission tickets. \n\n Terms and conditions: \nValid for minimum purchase of S$150 \n Valid for purchase date from 8 October 2023 to 22 October 2023",
-    publishDate: new Date("2023-10-07"),
-    startDate: new Date("2023-10-08"),
-    endDate: new Date("2023-10-22"),
+    publishDate: new Date("2023-10-01"),
+    startDate: new Date("2023-10-07"),
+    endDate: new Date("2023-10-21"),
     percentage: 20,
-    minimumSpending: 150,
+    minimumSpending: 120,
     promotionCode: "BYELALA",
     maxRedeemNum: 1000,
     currentRedeemNum: 0,
     imageUrl: "img/promotion/lala.jpg",
+  });
+  let promotion4 = await Promotion.create({
+    title: "Welcome back!",
+    description:
+      "Tired of WFH? Enjoy 20% off admission tickets to celebrate the end of circuit breaker. \n\n Terms and conditions: \nValid for minimum purchase of S$100 \n Valid for purchase date from 20 July 2021 to 20 August 2023",
+    publishDate: new Date("2023-07-07"),
+    startDate: new Date("2023-07-20"),
+    endDate: new Date("2023-08-20"),
+    percentage: 20,
+    minimumSpending: 200,
+    promotionCode: "BYECOVID",
+    maxRedeemNum: 1000,
+    currentRedeemNum: 1000,
+    imageUrl: "img/promotion/elephant.jpg",
   });
 };
 
