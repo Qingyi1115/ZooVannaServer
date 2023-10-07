@@ -74,12 +74,23 @@ app.get("/config", (req: Request, res: Response) => {
   });
 });
 
+app.post("/retrieve", async (req: Request, res: Response) => {
+  const { id } = req.body;
+  const paymentIntent = await stripe.paymentIntents.retrieve(id);
+
+  if (paymentIntent) {
+    res.send({ secret: paymentIntent.client_secret });
+  } else {
+    return res.status(400).json({ error: "error" });
+  }
+});
+
 app.post("/create-payment-intent", async (req: Request, res: Response) => {
   const { total } = req.body;
   try {
     // Create a PaymentIntent with the order amount and currency
     const paymentIntent = await stripe.paymentIntents.create({
-      amount: total,
+      amount: total * 100,
       currency: "sgd",
       // In the latest version of the API, specifying the `automatic_payment_methods` parameter is optional because Stripe enables its functionality by default.
       automatic_payment_methods: {
@@ -108,7 +119,6 @@ app.post("/fetchPayment", async (req: Request, res: Response) => {
   console.log(
     paymentIntent.payment_method_options.card.length == 0 ? "PAYNOW" : "CARD",
   );
-
   res.send({
     amount: paymentIntent.amount,
     type:
@@ -116,6 +126,8 @@ app.post("/fetchPayment", async (req: Request, res: Response) => {
         ? "PAYNOW"
         : "CARD",
     description: paymentIntent.description,
+    status: paymentIntent.status,
+    secret: paymentIntent.client_secret,
   });
 });
 
