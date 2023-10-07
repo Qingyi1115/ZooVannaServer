@@ -79,6 +79,7 @@ export async function getAllFacilityMaintenanceSuggestions(employee:Employee) {
     for (const facility of facilities) {
       let inHouse = await (facility as any).getFacilityDetail();
       let logs = (await inHouse.getFacilityLogs()) || [];
+      logs = logs.filter((log: FacilityLog) => log.isMaintenance);
       logs = logs.map((log: FacilityLog) => log.dateTime);
       (facility as any).dataValues["predictedMaintenanceDate"] = predictNextDate(logs);
       (facility as any).dataValues["facilityDetailJson"] = inHouse.toJSON();
