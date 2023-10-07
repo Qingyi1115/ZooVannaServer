@@ -272,7 +272,9 @@ export async function verifyPromotionCode(req: Request, res: Response) {
   const { promotionCode } = req.params;
   const { currentSpending } = req.body;
 
-  if (promotionCode == undefined) {
+  console.log("Controller: " + currentSpending);
+
+  if ([promotionCode, currentSpending].includes(undefined)) {
     console.log("Missing field(s): ", {
       promotionCode,
       currentSpending,

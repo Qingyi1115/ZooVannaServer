@@ -19,6 +19,7 @@ import {
   AcquisitionMethod,
   AnimalFeedCategory,
   AnimalGrowthStage,
+  Country,
   ConservationStatus,
   Continent,
   FacilityType,
@@ -482,6 +483,7 @@ export const seedDatabase = async () => {
   await speciesSeed();
   await animalSeed();
   await promotionSeed();
+  await customerSeed();
 };
 
 export const promotionSeed = async () => {
@@ -526,6 +528,41 @@ export const promotionSeed = async () => {
     maxRedeemNum: 1000,
     currentRedeemNum: 0,
     imageUrl: "img/promotion/lala.jpg",
+  });
+};
+
+export const customerSeed = async () => {
+  let customer1 = await Customer.create({
+    firstName: "Vinessa",
+    lastName: "Christabella",
+    email: "vinessac235@gmail.com",
+    contactNo: "12345568",
+    birthday: new Date("2001-01-01"),
+    nationality: Country.Indonesia,
+    passwordHash: Customer.getHash("Hahaha123.", "hehe"),
+    salt: "hehe",
+  });
+
+  let customer2 = await Customer.create({
+    firstName: "Natasha",
+    lastName: "Rafaela",
+    email: "natasha.rafaela1711sg@gmail.com",
+    contactNo: "12345568",
+    birthday: new Date("2001-01-01"),
+    nationality: Country.Indonesia,
+    passwordHash: Customer.getHash("Hahaha123.", "hehe"),
+    salt: "hehe",
+  });
+
+  let customer3 = await Customer.create({
+    firstName: "Qingyi",
+    lastName: "Xiang",
+    email: "xqy1115@gmail.com",
+    contactNo: "12345568",
+    birthday: new Date("2001-01-01"),
+    nationality: Country.Indonesia,
+    passwordHash: Customer.getHash("Hahaha123.", "hehe"),
+    salt: "hehe",
   });
 };
 

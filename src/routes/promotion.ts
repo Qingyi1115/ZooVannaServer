@@ -19,7 +19,7 @@ const router = express.Router();
 router.get("/getAllPublishedPromotions", getAllPublishedPromotions);
 router.get("/getAllActivePromotions", getAllActivePromotions);
 router.get("/getPromotion/:promotionId", getPromotionByPromotionId);
-router.get("/verifyPromotionCode/:promotionCode", verifyPromotionCode);
+router.put("/verifyPromotionCode/:promotionCode", verifyPromotionCode);
 // router.put("/usePromotionCode/:promotionCode", usePromotionCode);
 router.put("/cancelUsePromotionCode/:promotionCode", cancelUsePromotionCode);
 
