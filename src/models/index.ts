@@ -694,9 +694,9 @@ export const employeeSeed = async () => {
 
   let planner1 = await Employee.create(
     {
-      employeeName: "planner1",
+      employeeName: "planna",
       employeeAddress: "Singapore Kent Ridge LT28",
-      employeeEmail: "planner1@gmail.com",
+      employeeEmail: "planna@gmail.com",
       employeePhoneNumber: "999",
       employeePasswordHash: Employee.getHash("planner1_password", "H2"),
       employeeSalt: "H2",

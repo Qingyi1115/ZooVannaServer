@@ -699,8 +699,8 @@ export async function createFacilityMaintenanceLogController(
         .json({ error: "Access Denied! Operation managers only!" });
 
     const { facilityId } = req.params;
-    const { title, details, remarks, staffName } = req.body;
-    if ([facilityId, title, details, remarks, staffName].includes(undefined)) {
+    const { title, details, remarks } = req.body;
+    if ([facilityId, title, details, remarks].includes(undefined)) {
       return res.status(400).json({ error: "Missing information!" });
     }
 
@@ -710,7 +710,7 @@ export async function createFacilityMaintenanceLogController(
       title,
       details,
       remarks,
-      staffName
+      employee.employeeName
     );
     const generalStaff = await employee.getGeneralStaff();
     const facilities = await generalStaff?.getMaintainedFacilities() || [];
@@ -739,7 +739,9 @@ export async function updateFacilityLogController(req: Request, res: Response) {
       return res.status(400).json({ error: "Missing information!" });
     }
 
-    if ((await getFacilityLogById(Number(facilityLogId))).staffName != employee.employeeName) throw {message: "Only creator of the log can edit!"}
+    if ( ((await employee.getPlanningStaff()).plannerType != PlannerType.OPERATIONS_MANAGER) && 
+    !employee.superAdmin && 
+    (await getFacilityLogById(Number(facilityLogId))).staffName != employee.employeeName) throw {message: "Only creator of the log can edit!"}
 
     let facilityLog: FacilityLog = await updateFacilityLog(
       Number(facilityLogId),
@@ -757,9 +759,13 @@ export async function updateFacilityLogController(req: Request, res: Response) {
 export async function deleteFacilityLogController(req: Request, res: Response) {
   try {
     const { email } = (req as any).locals.jwtPayload;
-    // const employee = await findEmployeeByEmail(email);
+    const employee = await findEmployeeByEmail(email);
 
     const { facilityLogId } = req.params;
+
+    if ( ((await employee.getPlanningStaff()).plannerType != PlannerType.OPERATIONS_MANAGER) && 
+    !employee.superAdmin && 
+    (await getFacilityLogById(Number(facilityLogId))).staffName != employee.employeeName) throw {message: "Only creator of the log can delete!"}
 
     if ([facilityLogId].includes("")) {
       return res.status(400).json({ error: "Missing information!" });
@@ -1259,7 +1265,9 @@ export async function updateSensorMaintenanceLogController(req: Request, res: Re
       return res.status(400).json({ error: "Missing information!" });
     }
 
-    if ((await getSensorMaintenanceLogById(Number(sensorMaintenanceLogId))).staffName != employee.employeeName) throw {message: "Only creator of the log can edit!"}
+    if ( ((await employee.getPlanningStaff()).plannerType != PlannerType.OPERATIONS_MANAGER) && 
+    !employee.superAdmin && 
+    (await getSensorMaintenanceLogById(Number(sensorMaintenanceLogId))).staffName != employee.employeeName) throw {message: "Only creator of the log can edit!"}
 
     let maintenanceLog: MaintenanceLog = await updateSensorMaintenanceLog(
       Number(sensorMaintenanceLogId),
@@ -1277,13 +1285,17 @@ export async function updateSensorMaintenanceLogController(req: Request, res: Re
 export async function deleteSensorMaintenanceLogController(req: Request, res: Response) {
   try {
     const { email } = (req as any).locals.jwtPayload;
-    // const employee = await findEmployeeByEmail(email);
+    const employee = await findEmployeeByEmail(email);
 
     const { sensorMaintenanceLogId } = req.params;
 
     if ([sensorMaintenanceLogId].includes("")) {
       return res.status(400).json({ error: "Missing information!" });
     }
+
+    if ( ((await employee.getPlanningStaff()).plannerType != PlannerType.OPERATIONS_MANAGER) && 
+    !employee.superAdmin && 
+    (await getSensorMaintenanceLogById(Number(sensorMaintenanceLogId))).staffName != employee.employeeName) throw {message: "Only creator of the log can delete!"}
 
     await deleteSensorMaintenanceLogById(
       Number(sensorMaintenanceLogId)
