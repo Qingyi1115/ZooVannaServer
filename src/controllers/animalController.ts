@@ -832,9 +832,9 @@ export async function getAnimalObservationLogsBySpeciesCode(req: Request, res: R
       return res.status(400).json({ error: "Missing information!" });
     }
 
-    let animalObservationLog = await AnimalService.getAnimalObservationLogsBySpeciesCode(speciesCode);
+    let animalObservationLogs = await AnimalService.getAnimalObservationLogsBySpeciesCode(speciesCode);
 
-    return res.status(200).json({ animalObservationLog: animalObservationLog });
+    return res.status(200).json({ animalObservationLogs:animalObservationLogs });
   } catch (error: any) {
     res.status(400).json({ error: error.message });
   }
