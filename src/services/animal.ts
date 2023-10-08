@@ -387,18 +387,21 @@ export async function updateAnimalLineage(
   // } catch (error: any) {
   //   throw new Error(error);
   // }
-  try {
-    await addAnimalLineage(childAnimalCode, newParentAnimalCode);
-  } catch (error) {
-    // Handle the error from addAnimalLineage
-    console.error("Error adding lineage:", error);
-  }
 
   try {
     await deleteAnimalLineage(childAnimalCode, parentAnimalCode);
   } catch (error) {
     // Handle the error from deleteAnimalLineage
-    console.error("Error deleting lineage:", error);
+    throw new Error("Error deleting lineage:" + error);
+    // console.error("Error deleting lineage:", error);
+  }
+
+  try {
+    await addAnimalLineage(childAnimalCode, newParentAnimalCode);
+  } catch (error) {
+    // Handle the error from addAnimalLineage
+    // console.error("Error adding lineage:", error);
+    throw new Error("Error adding lineage:" + error);
   }
 }
 
