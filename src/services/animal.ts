@@ -285,7 +285,7 @@ export async function addAnimalLineage(
     for (let parent of parents) {
       if (parent.animalCode === parentAnimalCode) {
         throw new Error(
-          parentAnimalCode + "is already a parent of current animal!",
+          parentAnimalCode + " is already a parent of current animal!",
         );
       }
     }
