@@ -368,16 +368,8 @@ export const createDatabase = async (options: any) => {
     as: "keepers",
   });
 
-  Keeper.belongsToMany(AnimalObservationLog, {
-    foreignKey: "keeperId",
-    through: "responsibleFor",
-    as: "animalObservationLogs",
-  });
-  AnimalObservationLog.belongsToMany(Keeper, {
-    foreignKey: "eventId",
-    through: "responsibleFor",
-    as: "keepers",
-  });
+  Keeper.hasMany(AnimalObservationLog, {foreignKey: "keeperId"});
+  AnimalObservationLog.belongsTo(Keeper, {foreignKey: "keeperId",});
 
   Enclosure.hasMany(ZooEvent, addCascadeOptions({ foreignKey: "enclosureId" }));
   ZooEvent.belongsTo(

@@ -9,6 +9,10 @@ import {
   BelongsToManyAddAssociationMixin,
   BelongsToManySetAssociationsMixin,
   BelongsToManyRemoveAssociationMixin,
+  HasManyAddAssociationMixin,
+  HasManyGetAssociationsMixin,
+  HasManySetAssociationsMixin,
+  HasManyRemoveAssociationMixin,
 } from "Sequelize";
 import { conn } from "../db";
 import { Employee } from "./employee";
@@ -43,16 +47,17 @@ class Keeper extends Model<
   declare addEnclosure: BelongsToManyAddAssociationMixin<Enclosure, number>;
   declare setEnclosure: BelongsToManySetAssociationsMixin<Enclosure, number>;
   declare removeEnclosure: BelongsToManyRemoveAssociationMixin<Enclosure, number>;
+  
+  declare getAnimalObservationLogs: HasManyGetAssociationsMixin<AnimalObservationLog>;
+  declare addAnimalObservationLog: HasManyAddAssociationMixin<AnimalObservationLog, number>;
+  declare setAnimalObservationLogs: HasManySetAssociationsMixin<AnimalObservationLog, number>;
+  declare removeAnimalObservationLog: HasManyRemoveAssociationMixin<AnimalObservationLog, number>;
 
   public toJSON() {
     return {
       ...this.get()
     }
   }
-  declare getAnimalObservationLogs: BelongsToManyGetAssociationsMixin<AnimalObservationLog>;
-  declare addAnimalObservationLog: BelongsToManyAddAssociationMixin<AnimalObservationLog, number>;
-  declare setAnimalObservationLogs: BelongsToManySetAssociationsMixin<AnimalObservationLog, number>;
-  declare removeAnimalObservationLog: BelongsToManyRemoveAssociationMixin<AnimalObservationLog, number>;
 
   public enable() {
     this.isDisabled = false;
