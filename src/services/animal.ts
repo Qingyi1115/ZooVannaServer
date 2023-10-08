@@ -963,7 +963,18 @@ export async function getAnimalObservationLogById(
     where: {
       animalObservationLogId: animalObservationLogId,
     },
-    include: ["animals", "keeper"],
+    include: [
+    {
+      association: "animals",
+      required:false
+    },{
+      association: "keeper",
+      required:false,
+      include: [{
+        association: "employee",
+        required:false
+      }],
+    }],
   });
   if (!animalObservationLog)
     throw {
@@ -986,6 +997,10 @@ export async function getAnimalObservationLogsByAnimalCode(animalCode: string) {
       {
         association: "keeper",
         required: true,
+        include: [{
+          association: "employee",
+          required:false
+        }],
       },
     ],
   });
