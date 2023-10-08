@@ -392,7 +392,7 @@ export async function updateAnimalLineage(
     await deleteAnimalLineage(childAnimalCode, parentAnimalCode);
   } catch (error) {
     // Handle the error from deleteAnimalLineage
-    throw new Error("Error deleting lineage:" + error);
+    throw new Error("Error deleting lineage: " + error);
     // console.error("Error deleting lineage:", error);
   }
 
@@ -402,7 +402,7 @@ export async function updateAnimalLineage(
     await addAnimalLineage(childAnimalCode, parentAnimalCode);
     // Handle the error from addAnimalLineage
     // console.error("Error adding lineage:", error);
-    throw new Error("Error adding lineage:" + error);
+    throw new Error("Error adding lineage: " + error);
   }
 }
 
