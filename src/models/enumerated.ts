@@ -126,6 +126,7 @@ enum AnimalSex {
   FEMALE = "FEMALE",
   UNKNOWN = "UNKNOWN",
   ASEXUAL = "ASEXUAL",
+  NOT_APPLICABLE = "NOT APPLICABLE"
 }
 
 enum AcquisitionMethod {
