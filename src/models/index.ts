@@ -497,7 +497,7 @@ export const promotionSeed = async () => {
     percentage: 30,
     minimumSpending: 100,
     promotionCode: "HAPPY30BIRTHDAY",
-    maxRedeemNum: 200,
+    maxRedeemNum: 1,
     currentRedeemNum: 0,
     imageUrl: "img/promotion/giraffe.jpg",
   });
