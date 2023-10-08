@@ -399,6 +399,7 @@ export async function updateAnimalLineage(
   try {
     await addAnimalLineage(childAnimalCode, newParentAnimalCode);
   } catch (error) {
+    await addAnimalLineage(childAnimalCode, parentAnimalCode);
     // Handle the error from addAnimalLineage
     // console.error("Error adding lineage:", error);
     throw new Error("Error adding lineage:" + error);
