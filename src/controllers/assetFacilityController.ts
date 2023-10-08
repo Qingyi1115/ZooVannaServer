@@ -1599,9 +1599,9 @@ export async function getAuthorizationForCameraController(
         .status(403)
         .json({ error: "Access Denied! Operation managers only!" });
 
-    const { sensorId } = req.body;
+    const { sensorId } = req.params;
 
-    if (sensorId === undefined) {
+    if (sensorId == "") {
       return res.status(400).json({ error: "Missing information!" });
     }
 
@@ -1609,7 +1609,7 @@ export async function getAuthorizationForCameraController(
       .status(200)
       .json(
         await getAuthorizationForCameraById(
-          sensorId,
+          Number(sensorId),
           String(employee.employeeId),
         ),
       );

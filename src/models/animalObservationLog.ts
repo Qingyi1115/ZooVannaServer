@@ -27,7 +27,7 @@ import { Keeper } from "./keeper";
     declare details : string;
 
     declare animals?: Animal[];
-    declare keeper?: Keeper;
+    declare keepers?: Keeper;
   
     declare getAnimals: BelongsToManyGetAssociationsMixin<Animal>;
     declare addAnimal: BelongsToManyAddAssociationMixin<Animal, number>;

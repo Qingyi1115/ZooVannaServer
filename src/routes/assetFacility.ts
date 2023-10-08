@@ -136,6 +136,6 @@ router.post("/getAllSensorMaintenanceLogs/:sensorId", getAllSensorMaintenanceLog
 router.put("/updateSensorMaintenanceLog/:sensorMaintenanceLogId", updateSensorMaintenanceLogController);
 router.delete("/deleteSensorMaintenanceLog/:sensorMaintenanceLogId", deleteSensorMaintenanceLogController);
 
-router.post("/getAuthorizationForCamera", getAuthorizationForCameraController);
+router.get("/getAuthorizationForCamera/:sensorId", getAuthorizationForCameraController);
 
 export default router;
