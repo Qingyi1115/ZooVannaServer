@@ -6,7 +6,12 @@ import { Animal } from "../models/animal";
 import { Species } from "../models/species";
 import { SpeciesEnclosureNeed } from "../models/speciesEnclosureNeed";
 import { PhysiologicalReferenceNorms } from "../models/physiologicalReferenceNorms";
-import { AnimalGrowthStage, AnimalStatus, Rating } from "../models/enumerated";
+import {
+  AnimalGrowthStage,
+  AnimalSex,
+  AnimalStatus,
+  Rating,
+} from "../models/enumerated";
 import { AnimalWeight } from "../models/animalWeight";
 import * as SpeciesService from "../services/species";
 import { AnimalActivity } from "../models/animalActivity";
@@ -680,14 +685,28 @@ export async function checkIfAbnormalWeight(animalCode: string) {
       return "Data Not Available";
     }
 
-    if (latestWeightRecord!.weightInKg < physiologicalRef.minWeightMaleKg) {
-      return "Underweight";
-    } else if (
-      latestWeightRecord!.weightInKg > physiologicalRef.maxWeightMaleKg
-    ) {
-      return "Overweight";
+    if (animal.sex === AnimalSex.MALE) {
+      if (latestWeightRecord!.weightInKg < physiologicalRef.minWeightMaleKg) {
+        return "Underweight";
+      } else if (
+        latestWeightRecord!.weightInKg > physiologicalRef.maxWeightMaleKg
+      ) {
+        return "Overweight";
+      } else {
+        return "Normal";
+      }
+    } else if (animal.sex === AnimalSex.FEMALE) {
+      if (latestWeightRecord!.weightInKg < physiologicalRef.minWeightFemaleKg) {
+        return "Underweight";
+      } else if (
+        latestWeightRecord!.weightInKg > physiologicalRef.maxWeightFemaleKg
+      ) {
+        return "Overweight";
+      } else {
+        return "Normal";
+      }
     } else {
-      return "Normal";
+      return "Data Not Available";
     }
   }
 

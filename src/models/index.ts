@@ -1042,6 +1042,21 @@ export const speciesSeed = async () => {
     AnimalGrowthStage.ADULT,
   );
 
+  // let pandaPhy5 = await SpeciesService.createPhysiologicalReferenceNorms(
+  //   "SPE001",
+  //   160,
+  //   190,
+  //   110,
+  //   180,
+  //   80,
+  //   115,
+  //   70,
+  //   100,
+  //   21,
+  //   50,
+  //   AnimalGrowthStage.ELDER,
+  // );
+
   let pandaPhy5 = await SpeciesService.createPhysiologicalReferenceNorms(
     "SPE001",
     160,
@@ -1053,7 +1068,22 @@ export const speciesSeed = async () => {
     70,
     100,
     21,
-    50,
+    28,
+    AnimalGrowthStage.ELDER,
+  );
+
+  let pandaPhy6 = await SpeciesService.createPhysiologicalReferenceNorms(
+    "SPE001",
+    165,
+    195,
+    115,
+    185,
+    80,
+    115,
+    75,
+    105,
+    29,
+    35,
     AnimalGrowthStage.ELDER,
   );
 
@@ -1503,11 +1533,11 @@ export const animalSeed = async () => {
   await AnimalService.addAnimalWeight("ANM00001", 83, new Date("2015-9-2"));
   await AnimalService.addAnimalWeight("ANM00001", 80, new Date("2019-4-6"));
   await AnimalService.addAnimalWeight("ANM00001", 90, new Date("2021-2-10"));
-  await AnimalService.addAnimalWeight("ANM00001", 100, new Date("2022-2-10"));
+  await AnimalService.addAnimalWeight("ANM00001", 95, new Date("2022-2-10"));
   await AnimalService.addAnimalWeight("ANM00001", 110, new Date("2023-2-10"));
 
   // underweight
-  await AnimalService.addAnimalWeight("ANM00002", 70, new Date("2023-10-6"));
+  await AnimalService.addAnimalWeight("ANM00002", 60, new Date("2023-10-6"));
 
   // overweight
   await AnimalService.addAnimalWeight("ANM00003", 150, new Date("2023-10-6"));
@@ -1520,7 +1550,7 @@ export const animalSeed = async () => {
     ActivityType.ENRICHMENT,
     "Bamboo Bonanza",
     "Treat our pandas to a bamboo feast! We'll scatter bamboo leaves and shoots throughout their habitat to encourage natural foraging behavior.",
-    new Date("2021-03-04"),
+    new Date("2023-10-13"),
     EventTimingType.AFTERNOON,
     45,
   );
@@ -1529,8 +1559,41 @@ export const animalSeed = async () => {
     ActivityType.TRAINING,
     "Target Training",
     "Use a target stick to teach pandas to touch a designated spot. This aids in directing their movement and helps with medical check-ups.",
-    new Date("2021-03-04"),
+    new Date("2023-10-15"),
     EventTimingType.MORNING,
+    60,
+  );
+
+  let animalActivity3 = await AnimalService.createAnimalActivity(
+    ActivityType.ENRICHMENT,
+    "Enrichment Activity 01",
+    "Text...",
+    new Date("2023-10-16"),
+    EventTimingType.MORNING,
+    60,
+  );
+  let animalActivity4 = await AnimalService.createAnimalActivity(
+    ActivityType.ENRICHMENT,
+    "Enrichment Activity 02",
+    "Text...",
+    new Date("2023-10-16"),
+    EventTimingType.MORNING,
+    60,
+  );
+  let animalActivity5 = await AnimalService.createAnimalActivity(
+    ActivityType.TRAINING,
+    "Training Activity 01",
+    "Text...",
+    new Date("2023-10-18"),
+    EventTimingType.AFTERNOON,
+    60,
+  );
+  let animalActivity6 = await AnimalService.createAnimalActivity(
+    ActivityType.TRAINING,
+    "Training Activity 02",
+    "Text...",
+    new Date("2023-10-18"),
+    EventTimingType.EVENING,
     60,
   );
 
@@ -1634,7 +1697,7 @@ export const facilityAssetsSeed = async () => {
         title: "Maintenance of " + _day.toDateString(),
         details: "Bla Bla Bla...",
         remarks: "Uncommon but common",
-        staffName: "maint1"
+        staffName: "maint1",
       }),
     );
   }
@@ -1652,7 +1715,7 @@ export const facilityAssetsSeed = async () => {
           processorName: "A01",
           ipAddressName: "172.1.2.19",
           hubStatus: HubStatus.CONNECTED,
-          radioGroup: 222
+          radioGroup: 222,
         } as any,
       ],
       inHouse: {
@@ -1683,7 +1746,7 @@ export const facilityAssetsSeed = async () => {
       title: "log1",
       details: "Bla Bla...",
       remarks: "my log haha",
-      staffName: "maint1"
+      staffName: "maint1",
     }),
     await FacilityLog.create({
       dateTime: new Date(Date.now() - 1000 * 60 * 60 * 24),
@@ -1691,7 +1754,7 @@ export const facilityAssetsSeed = async () => {
       title: "log2",
       details: "Bla Bla...",
       remarks: "my log haha",
-      staffName: "maint1"
+      staffName: "maint1",
     }),
     await FacilityLog.create({
       dateTime: new Date(Date.now() - 1000 * 60 * 60 * 24 * 2),
@@ -1699,7 +1762,7 @@ export const facilityAssetsSeed = async () => {
       title: "log3",
       details: "Bla Bla...",
       remarks: "my log haha",
-      staffName: "maint1"
+      staffName: "maint1",
     }),
     await FacilityLog.create({
       dateTime: new Date(Date.now() - 1000 * 60 * 60 * 24 * 3),
@@ -1707,7 +1770,7 @@ export const facilityAssetsSeed = async () => {
       title: "log4",
       details: "Bla Bla...",
       remarks: "my log haha",
-      staffName: "maint1"
+      staffName: "maint1",
     }),
     await FacilityLog.create({
       dateTime: new Date(Date.now() - 1000 * 60 * 60 * 24 * 5),
@@ -1715,7 +1778,7 @@ export const facilityAssetsSeed = async () => {
       title: "log5",
       details: "Bla Bla...",
       remarks: "my log haha",
-      staffName: "maint1"
+      staffName: "maint1",
     }),
   ]);
   // facility1.destroy();
@@ -1792,7 +1855,7 @@ export const facilityAssetsSeed = async () => {
       processorName: "tramCam1",
       ipAddressName: "172.25.99.172",
       hubStatus: HubStatus.CONNECTED,
-      lastDataUpdate : new Date(),
+      lastDataUpdate: new Date(),
       radioGroup: 223,
       sensors: [
         {
@@ -1840,7 +1903,7 @@ export const facilityAssetsSeed = async () => {
         title: "Maintenance " + _day.toDateString(),
         details: "Bla bla bla...",
         remarks: "not uncommon",
-        staffName : "maint1"
+        staffName: "maint1",
       }),
     );
   }
@@ -1873,7 +1936,7 @@ export const facilityAssetsSeed = async () => {
         title: "Maintenance " + _day.toDateString(),
         details: "Bla bla bla...",
         remarks: "not uncommon",
-        staffName : "maint1"
+        staffName: "maint1",
       }),
     );
   }
@@ -1899,7 +1962,7 @@ export const facilityAssetsSeed = async () => {
         title: "Maintenance " + _day.toDateString(),
         details: "Bla bla bla...",
         remarks: "not uncommon",
-        staffName : "maint1"
+        staffName: "maint1",
       }),
     );
   }
@@ -1925,7 +1988,7 @@ export const facilityAssetsSeed = async () => {
         title: "Maintenance " + _day.toDateString(),
         details: "Bla bla bla...",
         remarks: "not uncommon",
-        staffName : "maint1"
+        staffName: "maint1",
       }),
     );
   }
@@ -1952,7 +2015,7 @@ export const facilityAssetsSeed = async () => {
         title: "Maintenance " + _day.toDateString(),
         details: "Bla bla bla...",
         remarks: "not uncommon",
-        staffName : "maint1"
+        staffName: "maint1",
       }),
     );
   }
