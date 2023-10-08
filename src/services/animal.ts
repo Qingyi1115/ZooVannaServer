@@ -1,5 +1,6 @@
 import { Request } from "express";
 import { Op } from "Sequelize";
+import { conn } from "../db";
 import { validationErrorHandler } from "../helpers/errorHandler";
 import { Animal } from "../models/animal";
 import { Species } from "../models/species";
@@ -48,23 +49,19 @@ export async function getAllAnimals() {
 }
 
 export async function getAllAnimalsBySpeciesCode(speciesCode: string) {
-  //   try {
-  //     const allAnimals = await Animal.findAll({ include: [Species] });
-  //     return allAnimals;
-  //   } catch (error: any) {
-  //     throw validationErrorHandler(error);
-  //   }
-
-  let result = await Species.findOne({
-    where: { speciesCode: speciesCode },
-    include: Animal, //eager fetch here!!
-  });
-
-  if (result) {
-    let animalBySpecies = await result.animals;
-    //   await result.getPhysiologicalRefNorm();
-    return animalBySpecies;
+  let result: Animal[] = [];
+  let allAnimals = await getAllAnimals();
+  if (allAnimals) {
+    for (let a of allAnimals) {
+      if (a.species?.speciesCode === speciesCode) {
+        result.push(a);
+      }
+    }
   }
+  if (result) {
+    return result;
+  }
+
   throw new Error("Invalid Species Code!");
 }
 
@@ -382,11 +379,26 @@ export async function updateAnimalLineage(
   parentAnimalCode: string,
   newParentAnimalCode: string,
 ) {
+  // try {
+
+  //   await addAnimalLineage(childAnimalCode, newParentAnimalCode);
+  //   await deleteAnimalLineage(childAnimalCode, parentAnimalCode);
+
+  // } catch (error: any) {
+  //   throw new Error(error);
+  // }
+  try {
+    await addAnimalLineage(childAnimalCode, newParentAnimalCode);
+  } catch (error) {
+    // Handle the error from addAnimalLineage
+    console.error("Error adding lineage:", error);
+  }
+
   try {
     await deleteAnimalLineage(childAnimalCode, parentAnimalCode);
-    await addAnimalLineage(childAnimalCode, newParentAnimalCode);
-  } catch (error: any) {
-    throw new Error(error);
+  } catch (error) {
+    // Handle the error from deleteAnimalLineage
+    console.error("Error deleting lineage:", error);
   }
 }
 
