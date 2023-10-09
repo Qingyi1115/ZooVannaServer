@@ -411,7 +411,7 @@ export async function completePaymentForGuest(
 
     console.log(result);
 
-    if (result) {
+    if (result && (await result.getPayments()).length === 0) {
       let pay = await Payment.create(payment);
       pay.setCustomerOrder(result);
       result.addPayment(pay);

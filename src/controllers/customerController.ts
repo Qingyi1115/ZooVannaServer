@@ -78,7 +78,7 @@ export const login = async (req: Request, res: Response) => {
 
 export async function getCustomerByEmail(req: Request, res: Response) {
   try {
-    const { email } = req.body;
+    const { email } = (req as any).locals.jwtPayload;
     console.log("here");
     if (email) {
       const customer = await CustomerService.findCustomerByEmail(email);
@@ -309,7 +309,8 @@ export async function createCustomerOrderForCustomerController(
   req: Request,
   res: Response,
 ) {
-  const { email, listings, customerOrder } = req.body;
+  const { email } = (req as any).locals.jwtPayload;
+  const { listings, customerOrder } = req.body;
 
   const customer = await CustomerService.findCustomerByEmail(email);
 
