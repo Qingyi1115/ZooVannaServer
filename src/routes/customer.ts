@@ -30,8 +30,8 @@ router.post("/createCustomer", createCustomer);
 
 // log in
 router.post("/login", login);
+
 router.post("/createTicket/:customerId", purchaseTicketController);
-router.post("/getCustomer", getCustomerByEmail);
 router.post(
   "/createCustomerOrderForGuest",
   createCustomerOrderForGuestController,
@@ -39,10 +39,6 @@ router.post(
 router.post(
   "/completePaymentForGuest/:customerOrderId",
   completePaymentForGuestController,
-);
-router.post(
-  "/createCustomerOrderForCustomer",
-  createCustomerOrderForCustomerController,
 );
 router.post(
   "/completePaymentForCustomer/:customerOrderId",
@@ -53,8 +49,14 @@ router.use(authMiddleware);
 
 router.delete("/deleteCustomer/:customerId", deleteCustomer);
 // router.get("/getCustomer/:customerId", getCustomerByCustomerId);
+router.get("/getCustomer", getCustomerByEmail);
 router.put("/updateCustomer/:customerId", updateCustomer);
 router.put("/updatePassword/:customerId", updatePassword);
 router.delete("/deleteCustomer", deleteCustomerByEmail);
+
+router.post(
+  "/createCustomerOrderForCustomer",
+  createCustomerOrderForCustomerController,
+);
 
 export default router;
