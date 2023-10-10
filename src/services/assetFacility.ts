@@ -785,9 +785,11 @@ export async function addSensorByHubProcessorId(
   try {
     const hubProcessor = await HubProcessor.findOne({
       where: { hubProcessorId: hubProcessorId },
+      include:["sensors"]
     });
     if (!hubProcessor) throw { message: "Unable to find hubProcessorId " + hubProcessorId };
     if (hubProcessor.hubStatus != HubStatus.CONNECTED) throw { message: "Hub not connected!" };
+    if ((sensorType == SensorType.CAMERA) && !!(hubProcessor.sensors?.find(sensor => sensor.sensorType == SensorType.CAMERA))) throw { message: "Hub can only support one camera!" };
 
     const newSensor = await Sensor.create({
       sensorName: sensorName,
