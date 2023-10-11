@@ -923,6 +923,7 @@ export async function getAuthorizationForCameraById(
     const currentDT = Date.now().toString();
 
     return {
+      sensorName : sensor.sensorName,
       userId: userId,
       hubId: hub.hubProcessorId.toString(),
       date: currentDT,

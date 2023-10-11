@@ -1845,7 +1845,7 @@ export const facilityAssetsSeed = async () => {
   let hub1 = await HubProcessor.create(
     {
       processorName: "tramCam1",
-      ipAddressName: "172.25.99.172",
+      ipAddressName: "127.0.0.1",
       hubStatus: HubStatus.CONNECTED,
       lastDataUpdate: new Date(),
       radioGroup: 223,
