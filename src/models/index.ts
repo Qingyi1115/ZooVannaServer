@@ -66,6 +66,7 @@ import { TerrainDistribution } from "./terrainDistribution";
 import { ThirdParty } from "./thirdParty";
 import { AnimalActivity } from "./animalActivity";
 import { AnimalObservationLog } from "./animalObservationLog";
+import { Region } from "./region";
 
 function addCascadeOptions(options: object) {
   return { ...options, onDelete: "CASCADE", onUpdate: "CASCADE" };
@@ -105,6 +106,15 @@ export const createDatabase = async (options: any) => {
   HubProcessor.belongsTo(
     Facility,
     addCascadeOptions({ foreignKey: "facilityId" }),
+  );
+
+  Region.hasMany(
+    Facility,
+    addCascadeOptions({ foreignKey: "regionId" }),
+  );
+  Facility.belongsTo(
+    Region,
+    addCascadeOptions({ foreignKey: "regionId" }),
   );
 
   HubProcessor.hasMany(
