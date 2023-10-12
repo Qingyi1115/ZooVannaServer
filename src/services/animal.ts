@@ -20,6 +20,7 @@ import { Employee } from "../models/employee";
 import * as EnrichmentItemService from "../services/enrichmentItem";
 import { findEmployeeById } from "./employee";
 import { AnimalObservationLog } from "../models/animalObservationLog";
+import { AnimalActivitySession } from "../models/animalActivitySession";
 
 //-- Animal Basic Info
 export async function getAnimalIdByCode(animalCode: string) {
@@ -757,7 +758,7 @@ export async function getAnimalActivityById(animalActivityId: string) {
         as: "enrichmentItems",
       },
       {
-        model: Employee,
+        model: AnimalActivitySession,
         required: false, // Include only if they exist
       },
     ],

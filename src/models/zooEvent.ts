@@ -19,6 +19,7 @@ import { Keeper } from "./keeper";
 import { Animal } from "./animal";
 import { InHouse } from "./inHouse";
 import { AnimalClinic } from "./animalClinics";
+import { AnimalActivitySession } from "./animalActivitySession";
 
 class ZooEvent extends Model<
   InferAttributes<ZooEvent>,
@@ -42,6 +43,7 @@ class ZooEvent extends Model<
   declare animal?: Animal;
   declare inHouse?: InHouse;
   declare animalClinic?: AnimalClinic;
+  declare animalActivitySession?: AnimalActivitySession;
 
   declare getPlanningStaff: BelongsToGetAssociationMixin<PlanningStaff>;
   declare setPlanningStaff: BelongsToSetAssociationMixin<PlanningStaff, number>;
@@ -62,6 +64,9 @@ class ZooEvent extends Model<
 
   declare getAnimalClinic: BelongsToGetAssociationMixin<AnimalClinic>;
   declare setAnimalClinic: BelongsToSetAssociationMixin<AnimalClinic, number>;
+  
+  declare getAnimalActivitySession: BelongsToGetAssociationMixin<AnimalActivitySession>;
+  declare setAnimalActivitySession: BelongsToSetAssociationMixin<AnimalActivitySession, number>;
 
   public toJSON() {
       return {

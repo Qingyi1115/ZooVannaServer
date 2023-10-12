@@ -21,7 +21,7 @@ import { conn } from "../db";
 import { Animal } from "./animal";
 import { ActivityType, EventTimingType } from "./enumerated";
 import { EnrichmentItem } from "./enrichmentItem";
-import { Employee } from "./employee";
+import { AnimalActivitySession } from "./animalActivitySession";
 
 class AnimalActivity extends Model<
   InferAttributes<AnimalActivity>,
@@ -38,7 +38,7 @@ class AnimalActivity extends Model<
   // -- FK
   declare animals?: Animal[];
   declare enrichmentItems?: EnrichmentItem[];
-  declare employee?: Employee;
+  declare animalActivitySessions?: AnimalActivitySession[];
 
   declare getAnimals: HasManyGetAssociationsMixin<Animal>;
   declare addAnimal: HasManyAddAssociationMixin<Animal, number>;
@@ -56,8 +56,10 @@ class AnimalActivity extends Model<
     number
   >;
 
-  declare getEmployee: HasOneGetAssociationMixin<Employee>;
-  declare setEmployee: HasOneSetAssociationMixin<Employee, number>;
+  declare getAnimalActivitySessions: HasManyGetAssociationsMixin<AnimalActivitySession>;
+  declare addAnimalActivitySession: HasManyAddAssociationMixin<AnimalActivitySession, number>;
+  declare setAnimalActivitySessions: HasManySetAssociationsMixin<AnimalActivitySession, number>;
+  declare removeAnimalActivitySession: HasManyRemoveAssociationMixin<AnimalActivitySession, number>;
 }
 
 AnimalActivity.init(

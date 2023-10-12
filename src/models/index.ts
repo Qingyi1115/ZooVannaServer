@@ -67,6 +67,7 @@ import { ThirdParty } from "./thirdParty";
 import { AnimalActivity } from "./animalActivity";
 import { AnimalObservationLog } from "./animalObservationLog";
 import { Region } from "./region";
+import { AnimalActivitySession } from "./animalActivitySession";
 
 function addCascadeOptions(options: object) {
   return { ...options, onDelete: "CASCADE", onUpdate: "CASCADE" };
@@ -95,9 +96,21 @@ export const createDatabase = async (options: any) => {
     addCascadeOptions({ foreignKey: "employeeId" }),
   );
 
-  // added by qy for animal activity 5 Oct
-  Employee.hasMany(AnimalActivity);
-  AnimalActivity.belongsTo(Employee);
+  AnimalActivity.hasMany(AnimalActivitySession,
+    addCascadeOptions({ foreignKey: "animalActivityId" }),
+    );
+  AnimalActivitySession.belongsTo(AnimalActivity,
+    addCascadeOptions({ foreignKey: "animalActivityId" }),
+    );
+
+  AnimalActivitySession.hasOne(
+    ZooEvent,
+    addCascadeOptions({ foreignKey: "animalActivitySessionId" }),
+  );
+  ZooEvent.belongsTo(
+    AnimalActivitySession,
+    addCascadeOptions({ foreignKey: "animalActivitySessionId" }),
+  );
 
   Facility.hasMany(
     HubProcessor,
