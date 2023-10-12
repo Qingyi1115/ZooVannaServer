@@ -12,12 +12,12 @@ import {
   import { conn } from "../db";
 import { Facility } from "./facility";
   
-class Region extends Model<
-    InferAttributes<Region>,
-    InferCreationAttributes<Region>
+class Zone extends Model<
+    InferAttributes<Zone>,
+    InferCreationAttributes<Zone>
 > {
-    declare regionId: CreationOptional<number>;
-    declare regionName: string;
+    declare zoneId: CreationOptional<number>;
+    declare zoneName: string;
   
     declare facilities?: Facility[];
   
@@ -34,14 +34,14 @@ class Region extends Model<
     }
   }
   
-Region.init(
+  Zone.init(
     {
-        regionId: {
+        zoneId: {
             type: DataTypes.BIGINT,
             autoIncrement: true,
             primaryKey: true,
         },
-        regionName: {
+        zoneName: {
             type: DataTypes.STRING,
             allowNull: false,
         },
@@ -52,9 +52,9 @@ Region.init(
         createdAt: true,
         updatedAt: "updateTimestamp",
         sequelize: conn, // We need to pass the connection instance
-        modelName: "region", // We need to choose the model name
+        modelName: "zone", // We need to choose the model name
     },
 );
   
-  export { Region };
+  export { Zone };
   

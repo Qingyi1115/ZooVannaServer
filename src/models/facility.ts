@@ -19,7 +19,7 @@ import { AnimalClinic } from "./animalClinics";
 import { uppercaseFirst } from "../helpers/others";
 import { HubProcessor } from "./hubProcessor";
 import { Enclosure } from "./enclosure";
-import { Region } from "./region";
+import { Zone } from "./zone";
 
 class Facility extends Model<
   InferAttributes<Facility>,
@@ -35,7 +35,7 @@ class Facility extends Model<
   declare facilityDetail?: string;
 
   declare hubProcessors?: HubProcessor[];
-  declare region? : Region;
+  declare zone? : Zone;
   declare inHouse?: InHouse;
   declare thirdParty?: ThirdParty;
   declare animalClinic?: AnimalClinic;
@@ -52,8 +52,8 @@ class Facility extends Model<
   declare getInHouse: HasOneGetAssociationMixin<InHouse>;
   declare setInHouse: HasOneSetAssociationMixin<InHouse, number>;
 
-  declare getRegion: HasOneGetAssociationMixin<Region>;
-  declare setRegion: HasOneSetAssociationMixin<Region, number>;
+  declare getZone: HasOneGetAssociationMixin<Zone>;
+  declare setZone: HasOneSetAssociationMixin<Zone, number>;
 
   declare getThirdParty: HasOneGetAssociationMixin<ThirdParty>;
   declare setThirdParty: HasOneSetAssociationMixin<ThirdParty, number>;
@@ -132,7 +132,7 @@ Facility.init(
     },
     showOnMap: {
       type: DataTypes.BOOLEAN,
-      allowNull: false,
+      defaultValue: false,
     },
   },
   {

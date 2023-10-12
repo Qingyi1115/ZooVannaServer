@@ -66,7 +66,7 @@ import { TerrainDistribution } from "./terrainDistribution";
 import { ThirdParty } from "./thirdParty";
 import { AnimalActivity } from "./animalActivity";
 import { AnimalObservationLog } from "./animalObservationLog";
-import { Region } from "./region";
+import { Zone } from "./zone";
 import { AnimalActivitySession } from "./animalActivitySession";
 
 function addCascadeOptions(options: object) {
@@ -121,13 +121,13 @@ export const createDatabase = async (options: any) => {
     addCascadeOptions({ foreignKey: "facilityId" }),
   );
 
-  Region.hasMany(
+  Zone.hasMany(
     Facility,
-    addCascadeOptions({ foreignKey: "regionId" }),
+    addCascadeOptions({ foreignKey: "zoneId" }),
   );
   Facility.belongsTo(
-    Region,
-    addCascadeOptions({ foreignKey: "regionId" }),
+    Zone,
+    addCascadeOptions({ foreignKey: "zoneId" }),
   );
 
   HubProcessor.hasMany(
@@ -1690,6 +1690,7 @@ export const facilityAssetsSeed = async () => {
     xCoordinate: 2,
     yCoordinate: 2,
     isSheltered: true,
+    showOnMap:true,
     inHouse: {
       lastMaintained: new Date(),
       isPaid: false,
@@ -1725,6 +1726,7 @@ export const facilityAssetsSeed = async () => {
       xCoordinate: 123456,
       yCoordinate: 654321,
       isSheltered: true,
+      showOnMap: true,
       hubProcessors: [
         {
           processorName: "A01",
