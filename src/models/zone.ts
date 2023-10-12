@@ -21,11 +21,10 @@ class Zone extends Model<
   
     declare facilities?: Facility[];
   
-    declare getFacilitys: HasManyGetAssociationsMixin<Facility>;
+    declare getFacilities: HasManyGetAssociationsMixin<Facility>;
     declare addFacility: HasManyAddAssociationMixin<Facility, number>;
-    declare setFacilitys: HasManySetAssociationsMixin<Facility, number>;
+    declare setFacilities: HasManySetAssociationsMixin<Facility, number>;
     declare removeFacility: HasManyRemoveAssociationMixin<Facility, number>;
-  
     
     public toJSON() {
       return {
@@ -44,6 +43,7 @@ class Zone extends Model<
         zoneName: {
             type: DataTypes.STRING,
             allowNull: false,
+            unique:true
         },
     },
     {
