@@ -98,10 +98,10 @@ export const createDatabase = async (options: any) => {
 
   AnimalActivity.hasMany(AnimalActivitySession,
     addCascadeOptions({ foreignKey: "animalActivityId" }),
-    );
+  );
   AnimalActivitySession.belongsTo(AnimalActivity,
     addCascadeOptions({ foreignKey: "animalActivityId" }),
-    );
+  );
 
   AnimalActivitySession.hasOne(
     ZooEvent,
@@ -391,8 +391,8 @@ export const createDatabase = async (options: any) => {
     as: "keepers",
   });
 
-  Keeper.hasMany(AnimalObservationLog, {foreignKey: "keeperId"});
-  AnimalObservationLog.belongsTo(Keeper, {foreignKey: "keeperId",});
+  Keeper.hasMany(AnimalObservationLog, { foreignKey: "keeperId" });
+  AnimalObservationLog.belongsTo(Keeper, { foreignKey: "keeperId", });
 
   Enclosure.hasMany(ZooEvent, addCascadeOptions({ foreignKey: "enclosureId" }));
   ZooEvent.belongsTo(
@@ -1690,7 +1690,7 @@ export const facilityAssetsSeed = async () => {
     xCoordinate: 2,
     yCoordinate: 2,
     isSheltered: true,
-    showOnMap:true,
+    showOnMap: true,
     inHouse: {
       lastMaintained: new Date(),
       isPaid: false,
@@ -1723,8 +1723,8 @@ export const facilityAssetsSeed = async () => {
   let facility1 = await Facility.create(
     {
       facilityName: "facility1",
-      xCoordinate: 123456,
-      yCoordinate: 654321,
+      xCoordinate: 123,
+      yCoordinate: 654,
       isSheltered: true,
       showOnMap: true,
       hubProcessors: [
@@ -1943,9 +1943,9 @@ export const facilityAssetsSeed = async () => {
   ]) {
     _day = new Date(
       _day.getTime() -
-        days * 1000 * 60 * 60 * 24 +
-        Math.random() * 1000 * 60 * 60 * 24 * 4 -
-        1000 * 60 * 60 * 24 * 2,
+      days * 1000 * 60 * 60 * 24 +
+      Math.random() * 1000 * 60 * 60 * 24 * 4 -
+      1000 * 60 * 60 * 24 * 2,
     );
     sensor.addMaintenanceLog(
       await MaintenanceLog.create({
