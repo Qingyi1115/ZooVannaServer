@@ -729,11 +729,7 @@ export async function getAllAnimalActivities() {
           model: EnrichmentItem,
           required: false, // Include only if they exist
           as: "enrichmentItems",
-        },
-        {
-          model: Employee,
-          required: false, // Include only if they exist
-        },
+        }
       ],
     });
 

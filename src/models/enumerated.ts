@@ -533,6 +533,23 @@ enum HubStatus {
   CONNECTED = "CONNECTED",
 }
 
+enum DayOfWeek {
+  MONDAY="MONDAY",
+  TUESDAY="TUESDAY",
+  WEDNESDAY="WEDNESDAY",
+  THURSDAY="THURSDAY",
+  FRIDAY="FRIDAY",
+  SATURDAY="SATURDAY",
+  SUNDAY="SUNDAY"
+}
+
+enum RepeatPattern{
+  DAILY="DAILY",
+  WEEKLY="WEEKLY",
+  MONTHLY="MONTHLY",
+  ANUALLY="ANUALLY"
+}
+
 export {
   KeeperType,
   PlannerType,
@@ -569,4 +586,5 @@ export {
   Rating,
   FoodUnit,
   DayOfTheWeek,
+  RepeatPattern
 };

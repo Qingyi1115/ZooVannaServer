@@ -10,7 +10,7 @@ import {
     CreationOptional,
   } from "Sequelize";
   import { conn } from "../db";
-  import { EventTimingType } from "./enumerated";
+  import { DayOfTheWeek, EventTimingType } from "./enumerated";
 import { ZooEvent } from "./zooEvent";
 import { AnimalActivity } from "./animalActivity";
   
@@ -19,11 +19,12 @@ import { AnimalActivity } from "./animalActivity";
     InferCreationAttributes<AnimalActivitySession>
   > {
     declare animalActivitySessionId: CreationOptional<number>;
-    declare date:Date;
+    declare startDate:Date;
+    declare endDate:Date;
+    declare dayOfTheWeek: DayOfTheWeek;
     declare eventTimingType: EventTimingType;
     declare durationInMinutes: number;
 
-  
     // declare declare  FK
     declare zooEvent?: ZooEvent;
     declare animalActivity?: AnimalActivity;
@@ -42,9 +43,17 @@ import { AnimalActivity } from "./animalActivity";
         autoIncrement: true,
         primaryKey: true,
       },
-      date: {
+      startDate: {
         type: DataTypes.DATE,
         defaultValue: DataTypes.NOW,
+      },
+      endDate: {
+        type: DataTypes.DATE,
+        defaultValue: DataTypes.NOW,
+      },
+      dayOfTheWeek: {
+        type: DataTypes.ENUM,
+        values: Object.values(DayOfTheWeek),
         allowNull: false,
       },
       eventTimingType: {

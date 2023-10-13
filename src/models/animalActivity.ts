@@ -3,18 +3,10 @@ import {
   Model,
   InferAttributes,
   InferCreationAttributes,
-  BelongsToSetAssociationMixin,
-  BelongsToGetAssociationMixin,
-  HasOneGetAssociationMixin,
-  HasOneSetAssociationMixin,
   HasManyGetAssociationsMixin,
   HasManyAddAssociationMixin,
   HasManySetAssociationsMixin,
   HasManyRemoveAssociationMixin,
-  BelongsToManyGetAssociationsMixin,
-  BelongsToManyAddAssociationMixin,
-  BelongsToManySetAssociationsMixin,
-  BelongsToManyRemoveAssociationMixin,
   CreationOptional,
 } from "Sequelize";
 import { conn } from "../db";
@@ -31,9 +23,6 @@ class AnimalActivity extends Model<
   declare activityType: ActivityType;
   declare title: string;
   declare details: string;
-  declare date: Date;
-  declare session: EventTimingType;
-  declare durationInMinutes: number;
 
   // -- FK
   declare animals?: Animal[];
@@ -80,20 +69,6 @@ AnimalActivity.init(
     },
     details: {
       type: DataTypes.TEXT,
-      allowNull: false,
-    },
-    date: {
-      type: DataTypes.DATE,
-      defaultValue: DataTypes.NOW,
-      allowNull: false,
-    },
-    session: {
-      type: DataTypes.ENUM,
-      values: Object.values(EventTimingType),
-      allowNull: false,
-    },
-    durationInMinutes: {
-      type: DataTypes.INTEGER,
       allowNull: false,
     },
   },
