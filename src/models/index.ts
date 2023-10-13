@@ -40,6 +40,7 @@ import {
   AnimalSex,
   ActivityType,
   EventTimingType,
+  DayOfTheWeek,
 } from "./enumerated";
 import { ZooEvent } from "./zooEvent";
 import { Facility } from "./facility";
@@ -67,7 +68,6 @@ import { ThirdParty } from "./thirdParty";
 import { AnimalActivity } from "./animalActivity";
 import { AnimalObservationLog } from "./animalObservationLog";
 import { Zone } from "./zone";
-import { AnimalActivitySession } from "./animalActivitySession";
 
 function addCascadeOptions(options: object) {
   return { ...options, onDelete: "CASCADE", onUpdate: "CASCADE" };
@@ -95,21 +95,13 @@ export const createDatabase = async (options: any) => {
     Employee,
     addCascadeOptions({ foreignKey: "employeeId" }),
   );
-
-  AnimalActivity.hasMany(AnimalActivitySession,
-    addCascadeOptions({ foreignKey: "animalActivityId" }),
-  );
-  AnimalActivitySession.belongsTo(AnimalActivity,
-    addCascadeOptions({ foreignKey: "animalActivityId" }),
-  );
-
-  AnimalActivitySession.hasOne(
+  AnimalActivity.hasOne(
     ZooEvent,
-    addCascadeOptions({ foreignKey: "animalActivitySessionId" }),
+    addCascadeOptions({ foreignKey: "animalActivityId" }),
   );
   ZooEvent.belongsTo(
-    AnimalActivitySession,
-    addCascadeOptions({ foreignKey: "animalActivitySessionId" }),
+    AnimalActivity,
+    addCascadeOptions({ foreignKey: "animalActivityId" }),
   );
 
   Facility.hasMany(
@@ -1566,6 +1558,8 @@ export const animalSeed = async () => {
     "Bamboo Bonanza",
     "Treat our pandas to a bamboo feast! We'll scatter bamboo leaves and shoots throughout their habitat to encourage natural foraging behavior.",
     new Date("2023-10-13"),
+    new Date("2023-10-13"),
+    null,
     EventTimingType.AFTERNOON,
     45,
   );
@@ -1575,6 +1569,8 @@ export const animalSeed = async () => {
     "Target Training",
     "Use a target stick to teach pandas to touch a designated spot. This aids in directing their movement and helps with medical check-ups.",
     new Date("2023-10-15"),
+    new Date("2023-10-15"),
+    null,
     EventTimingType.MORNING,
     60,
   );
@@ -1584,6 +1580,8 @@ export const animalSeed = async () => {
     "Enrichment Activity 01",
     "Text...",
     new Date("2023-10-16"),
+    new Date("2023-10-16"),
+    null,
     EventTimingType.MORNING,
     60,
   );
@@ -1592,6 +1590,8 @@ export const animalSeed = async () => {
     "Enrichment Activity 02",
     "Text...",
     new Date("2023-10-16"),
+    new Date("2023-10-16"),
+    null,
     EventTimingType.MORNING,
     60,
   );
@@ -1600,6 +1600,8 @@ export const animalSeed = async () => {
     "Training Activity 01",
     "Text...",
     new Date("2023-10-18"),
+    new Date("2023-10-18"),
+    null,
     EventTimingType.AFTERNOON,
     60,
   );
@@ -1608,6 +1610,8 @@ export const animalSeed = async () => {
     "Training Activity 02",
     "Text...",
     new Date("2023-10-18"),
+    new Date("2023-10-18"),
+    null,
     EventTimingType.EVENING,
     60,
   );

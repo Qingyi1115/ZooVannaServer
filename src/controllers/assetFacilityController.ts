@@ -480,6 +480,7 @@ export async function updateFacilityController(req: Request, res: Response) {
       yCoordinate,
       isSheltered,
       facilityDetailJson,
+      showOnMap
     } = req.body;
 
     if (
@@ -490,6 +491,7 @@ export async function updateFacilityController(req: Request, res: Response) {
         yCoordinate,
         facilityDetailJson,
         isSheltered,
+        showOnMap
       ].every((field) => field === undefined)
     ) {
       return res.status(400).json({ error: "Missing information!" });
@@ -502,6 +504,7 @@ export async function updateFacilityController(req: Request, res: Response) {
       xCoordinate: xCoordinate == null ? xCoordinate : Number(xCoordinate),
       yCoordinate: yCoordinate == null ? yCoordinate : Number(yCoordinate),
       isSheltered: isSheltered,
+      showOnMap: showOnMap
     })) {
       if (v !== undefined) {
         facilityAttribute[field] = v;
