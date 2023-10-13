@@ -3,25 +3,21 @@ import {
   Model,
   InferAttributes,
   InferCreationAttributes,
-  BelongsToSetAssociationMixin,
-  BelongsToGetAssociationMixin,
-  HasOneGetAssociationMixin,
-  HasOneSetAssociationMixin,
   HasManyGetAssociationsMixin,
   HasManyAddAssociationMixin,
   HasManySetAssociationsMixin,
   HasManyRemoveAssociationMixin,
-  BelongsToManyGetAssociationsMixin,
-  BelongsToManyAddAssociationMixin,
-  BelongsToManySetAssociationsMixin,
-  BelongsToManyRemoveAssociationMixin,
   CreationOptional,
+  HasOneGetAssociationMixin,
+  HasOneSetAssociationMixin,
+  BelongsToGetAssociationMixin,
+  BelongsToSetAssociationMixin,
 } from "Sequelize";
 import { conn } from "../db";
 import { Animal } from "./animal";
-import { ActivityType, EventTimingType } from "./enumerated";
+import { ActivityType, DayOfTheWeek, EventTimingType } from "./enumerated";
 import { EnrichmentItem } from "./enrichmentItem";
-import { AnimalActivitySession } from "./animalActivitySession";
+import { ZooEvent } from "./zooEvent";
 
 class AnimalActivity extends Model<
   InferAttributes<AnimalActivity>,
@@ -31,14 +27,16 @@ class AnimalActivity extends Model<
   declare activityType: ActivityType;
   declare title: string;
   declare details: string;
-  declare date: Date;
-  declare session: EventTimingType;
+  declare startDate:Date;
+  declare endDate:Date;
+  declare dayOfTheWeek: DayOfTheWeek | null;
+  declare eventTimingType: EventTimingType;
   declare durationInMinutes: number;
 
-  // -- FK
+  // declare declare  FK
   declare animals?: Animal[];
   declare enrichmentItems?: EnrichmentItem[];
-  declare animalActivitySessions?: AnimalActivitySession[];
+  declare zooEvents?: ZooEvent[];
 
   declare getAnimals: HasManyGetAssociationsMixin<Animal>;
   declare addAnimal: HasManyAddAssociationMixin<Animal, number>;
@@ -56,10 +54,10 @@ class AnimalActivity extends Model<
     number
   >;
 
-  declare getAnimalActivitySessions: HasManyGetAssociationsMixin<AnimalActivitySession>;
-  declare addAnimalActivitySession: HasManyAddAssociationMixin<AnimalActivitySession, number>;
-  declare setAnimalActivitySessions: HasManySetAssociationsMixin<AnimalActivitySession, number>;
-  declare removeAnimalActivitySession: HasManyRemoveAssociationMixin<AnimalActivitySession, number>;
+  declare getZooEvents: HasManyGetAssociationsMixin<ZooEvent>;
+  declare addZooEvent: HasManyAddAssociationMixin<ZooEvent, number>;
+  declare setZooEvents: HasManySetAssociationsMixin<ZooEvent, number>;
+  declare removeZooEvent: HasManyRemoveAssociationMixin<ZooEvent, number>;
 }
 
 AnimalActivity.init(
@@ -82,15 +80,21 @@ AnimalActivity.init(
       type: DataTypes.TEXT,
       allowNull: false,
     },
-    date: {
+    startDate: {
       type: DataTypes.DATE,
-      defaultValue: DataTypes.NOW,
       allowNull: false,
     },
-    session: {
-      type: DataTypes.ENUM,
-      values: Object.values(EventTimingType),
+    endDate: {
+      type: DataTypes.DATE,
       allowNull: false,
+    },
+    dayOfTheWeek: {
+      type: DataTypes.ENUM,
+      values: Object.values(DayOfTheWeek)
+    },
+    eventTimingType: {
+      type: DataTypes.ENUM,
+      values: Object.values(EventTimingType)
     },
     durationInMinutes: {
       type: DataTypes.INTEGER,

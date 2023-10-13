@@ -59,7 +59,12 @@ import {
   updateSensorMaintenanceLogController,
   deleteSensorMaintenanceLogController,
   getFacilityLogByIdController,
-  getSensorMaintenanceLogController
+  getSensorMaintenanceLogController,
+  createNewZoneController,
+  getAllZoneController,
+  getZoneByIdController,
+  updateZoneController,
+  deleteZoneController
 } from "../controllers/assetFacilityController";
 
 const router = express.Router();
@@ -69,6 +74,13 @@ router.put("/initializeHub", initializeHubController);
 router.post("/pushSensorReadings/:processorName", pushSensorReadingsController);
 
 router.use(authMiddleware);
+
+// Zone
+router.post("/createNewZone", createNewZoneController);
+router.get("/getAllZone", getAllZoneController);
+router.get("/getZone/:zoneId", getZoneByIdController);
+router.put("/updateZone/:zoneId", updateZoneController);
+router.delete("/deleteZone/:zoneId", deleteZoneController);
 
 // Facilities
 router.post("/createFacility", createFacilityController);
@@ -110,6 +122,7 @@ router.get("/getEnrichmentItem/:enrichmentItemId", getEnrichmentItemByIdControll
 router.put("/updateEnrichmentItem", updateEnrichmentItemController);
 router.put("/updateEnrichmentItemImage", updateEnrichmentItemImageController);
 router.delete("/deleteEnrichmentItem/:enrichmentItemName", deleteEnrichmentItemByNameController);
+
 
 // Hubs and Sensors
 router.post("/addHub", addHubToFacilityController);

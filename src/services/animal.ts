@@ -4,23 +4,23 @@ import { conn } from "../db";
 import { validationErrorHandler } from "../helpers/errorHandler";
 import { Animal } from "../models/animal";
 import { Species } from "../models/species";
-import { SpeciesEnclosureNeed } from "../models/speciesEnclosureNeed";
 import { PhysiologicalReferenceNorms } from "../models/physiologicalReferenceNorms";
 import {
   AnimalGrowthStage,
   AnimalSex,
   AnimalStatus,
+  DayOfTheWeek,
+  EventTimingType,
   Rating,
 } from "../models/enumerated";
 import { AnimalWeight } from "../models/animalWeight";
 import * as SpeciesService from "../services/species";
-import { AnimalActivity } from "../models/animalActivity";
 import { EnrichmentItem } from "../models/enrichmentItem";
 import { Employee } from "../models/employee";
 import * as EnrichmentItemService from "../services/enrichmentItem";
 import { findEmployeeById } from "./employee";
 import { AnimalObservationLog } from "../models/animalObservationLog";
-import { AnimalActivitySession } from "../models/animalActivitySession";
+import { AnimalActivity } from "../models/animalActivity";
 
 //-- Animal Basic Info
 export async function getAnimalIdByCode(animalCode: string) {
@@ -729,11 +729,7 @@ export async function getAllAnimalActivities() {
           model: EnrichmentItem,
           required: false, // Include only if they exist
           as: "enrichmentItems",
-        },
-        {
-          model: Employee,
-          required: false, // Include only if they exist
-        },
+        }
       ],
     });
 
@@ -756,11 +752,7 @@ export async function getAnimalActivityById(animalActivityId: string) {
         model: EnrichmentItem,
         required: false, // Include only if they exist
         as: "enrichmentItems",
-      },
-      {
-        model: AnimalActivitySession,
-        required: false, // Include only if they exist
-      },
+      }
     ],
   });
 
@@ -790,16 +782,20 @@ export async function createAnimalActivity(
   activityType: string,
   title: string,
   details: string,
-  date: Date,
-  session: string,
+  startDate: Date,
+  endDate: Date,
+  dayOfTheWeek: DayOfTheWeek | null,
+  eventTimingType : EventTimingType,
   durationInMinutes: number,
 ) {
   let newActivity = {
     activityType: activityType,
     title: title,
     details: details,
-    date: date,
-    session: session,
+    startDate: startDate,
+    endDate: endDate,
+    dayOfTheWeek: dayOfTheWeek,
+    eventTimingType : eventTimingType,
     durationInMinutes: durationInMinutes,
   } as any;
 
@@ -828,20 +824,22 @@ export async function updateAnimalActivity(
   activityType: string,
   title: string,
   details: string,
-  date: Date,
-  session: string,
+  startDate:Date,
+  endDate:Date,
+  dayOfTheWeek: DayOfTheWeek | null,
+  eventTimingType: EventTimingType,
   durationInMinutes: number,
 ) {
   let updatedAnimalActivity = {
     activityType: activityType,
     title: title,
     details: details,
-    date: date,
-    session: session,
+    startDate: startDate,
+    endDate: endDate,
+    dayOfTheWeek: dayOfTheWeek,
+    eventTimingType: eventTimingType,
     durationInMinutes: durationInMinutes,
   } as any;
-
-  console.log(updatedAnimalActivity);
 
   try {
     await AnimalActivity.update(updatedAnimalActivity, {
