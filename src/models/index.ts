@@ -1687,8 +1687,6 @@ export const enrichmentItemSeed = async () => {
 export const facilityAssetsSeed = async () => {
   let toiletTemplate = {
     facilityName: "Toilet",
-    xCoordinate: 2,
-    yCoordinate: 2,
     isSheltered: true,
     showOnMap:true,
     inHouse: {
@@ -1723,8 +1721,6 @@ export const facilityAssetsSeed = async () => {
   let facility1 = await Facility.create(
     {
       facilityName: "facility1",
-      xCoordinate: 123456,
-      yCoordinate: 654321,
       isSheltered: true,
       showOnMap: true,
       hubProcessors: [
@@ -1742,7 +1738,7 @@ export const facilityAssetsSeed = async () => {
         hasAirCon: false,
         facilityType: FacilityType.PARKING,
       } as any,
-    },
+    } as any,
     {
       include: [
         {
@@ -1818,8 +1814,6 @@ export const facilityAssetsSeed = async () => {
   let tram1 = await Facility.create(
     {
       facilityName: "tram1",
-      xCoordinate: 123,
-      yCoordinate: 321,
       isSheltered: true,
 
       //@ts-ignore
@@ -1848,8 +1842,6 @@ export const facilityAssetsSeed = async () => {
   let tram2 = await Facility.create(
     {
       facilityName: "tram2",
-      xCoordinate: 123,
-      yCoordinate: 321,
       isSheltered: true,
       //@ts-ignore
       inHouse: {
