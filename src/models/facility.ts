@@ -116,12 +116,10 @@ Facility.init(
       unique: true,
     },
     xCoordinate: {
-      type: DataTypes.INTEGER,
-      // allowNull: false,
+      type: DataTypes.FLOAT(17,14),
     },
     yCoordinate: {
-      type: DataTypes.INTEGER,
-      // allowNull: false,
+      type: DataTypes.FLOAT(17,14),
     },
     facilityDetail: {
       type: DataTypes.STRING,
