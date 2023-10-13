@@ -536,11 +536,11 @@ export async function getAnimalActivityByAnimalCode(
 
 export async function createAnimalActivity(req: Request, res: Response) {
   try {
-    const { activityType, title, details, date, session, durationInMinutes } =
+    const { activityType, title, details, startDate, endDate, dayOfTheWeek, eventTimingType, durationInMinutes } =
       req.body;
 
     if (
-      [activityType, title, details, date, session, durationInMinutes].includes(
+      [activityType, title, details, startDate, endDate, dayOfTheWeek, eventTimingType, durationInMinutes].includes(
         undefined,
       )
     ) {
@@ -548,8 +548,10 @@ export async function createAnimalActivity(req: Request, res: Response) {
         activityType,
         title,
         details,
-        date,
-        session,
+        startDate,
+        endDate,
+        dayOfTheWeek,
+        eventTimingType,
         durationInMinutes,
       });
       return res.status(400).json({ error: "Missing information!" });
@@ -560,8 +562,10 @@ export async function createAnimalActivity(req: Request, res: Response) {
       activityType,
       title,
       details,
-      date,
-      session,
+      startDate,
+      endDate,
+      dayOfTheWeek,
+      eventTimingType,
       durationInMinutes,
     );
 
@@ -578,8 +582,10 @@ export async function updateAnimalActivity(req: Request, res: Response) {
       activityType,
       title,
       details,
-      date,
-      session,
+      startDate,
+      endDate,
+      dayOfTheWeek,
+      eventTimingType,
       durationInMinutes,
     } = req.body;
 
@@ -589,8 +595,10 @@ export async function updateAnimalActivity(req: Request, res: Response) {
         activityType,
         title,
         details,
-        date,
-        session,
+        startDate,
+        endDate,
+        dayOfTheWeek,
+        eventTimingType,
         durationInMinutes,
       ].includes(undefined)
     ) {
@@ -599,8 +607,10 @@ export async function updateAnimalActivity(req: Request, res: Response) {
         activityType,
         title,
         details,
-        date,
-        session,
+        startDate,
+        endDate,
+        dayOfTheWeek,
+        eventTimingType,
         durationInMinutes,
       });
       return res.status(400).json({ error: "Missing information!" });
@@ -612,12 +622,14 @@ export async function updateAnimalActivity(req: Request, res: Response) {
       activityType,
       title,
       details,
-      date,
-      session,
+      startDate,
+      endDate,
+      dayOfTheWeek,
+      eventTimingType,
       durationInMinutes,
     );
 
-    return res.status(200).json({ updatedAnimalActivity });
+    return res.status(200).json({ result:"success" });
   } catch (error: any) {
     res.status(400).json({ error: error.message });
   }
@@ -636,7 +648,7 @@ export async function deleteAnimalActivity(req: Request, res: Response) {
   try {
     const animalActivity =
       await AnimalService.deleteAnimalActivity(animalActivityId);
-    return res.status(200).json(animalActivity);
+    return res.status(200).json({result:"success"});
   } catch (error: any) {
     res.status(400).json({ error: error.message });
   }

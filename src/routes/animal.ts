@@ -81,7 +81,6 @@ router.get(
 router.post("/createAnimalActivity", createAnimalActivity);
 router.put("/updateAnimalActivity", updateAnimalActivity);
 router.delete("/deleteAnimalActivity/:animalActivityId", deleteAnimalActivity);
-router.put("/updateAnimalActivity", updateAnimalActivity);
 
 router.put("/assignAnimalsToActivity", assignAnimalsToActivity);
 router.put("/removeAnimalFromActivity", removeAnimalFromActivity);

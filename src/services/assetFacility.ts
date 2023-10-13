@@ -13,6 +13,71 @@ import { MaintenanceLog } from "../models/maintenanceLog";
 import { Employee } from "../models/employee";
 import { SensorReading } from "../models/sensorReading";
 import { Op } from "Sequelize";
+import { Zone } from "../models/zone";
+
+export async function createNewZone(
+  zoneName: string,
+) {
+
+  try {
+    return Zone.create({
+      zoneName:zoneName
+    });
+  } catch (error: any) {
+    throw validationErrorHandler(error);
+  }
+}
+
+export async function getAllZones() {
+  try {
+    return Zone.findAll();
+  } catch (error: any) {
+    throw validationErrorHandler(error);
+  }
+}
+
+export async function getZoneById(
+  zoneId: number
+) {
+  try {
+    const zone = await Zone.findOne({
+      where:{zoneId : zoneId},
+      include:["facilities"]
+    });
+    if (!zone) throw {message:"Unable to find zone with Id: " + zoneId}
+    return zone;
+  } catch (error: any) {
+    throw validationErrorHandler(error);
+  }
+}
+
+export async function updateZone(
+  zoneId: number,
+  zoneName : string
+) {
+  try {
+    const zone = await Zone.findOne({
+      where:{zoneId : zoneId},
+    });
+    if (!zone) throw {message:"Unable to find zone with Id: " + zoneId}
+    zone.zoneName = zoneName;
+    await zone.save();
+    return zone;
+  } catch (error: any) {
+    throw validationErrorHandler(error);
+  }
+}
+
+export async function deleteZoneById(
+  zoneId: number
+) {
+  try {
+    const zone = await getZoneById(zoneId);
+    return await zone.destroy();
+  } catch (error: any) {
+    throw validationErrorHandler(error);
+  }
+}
 
 export async function createNewFacility(
   facilityName: string,
@@ -785,9 +850,11 @@ export async function addSensorByHubProcessorId(
   try {
     const hubProcessor = await HubProcessor.findOne({
       where: { hubProcessorId: hubProcessorId },
+      include:["sensors"]
     });
     if (!hubProcessor) throw { message: "Unable to find hubProcessorId " + hubProcessorId };
     if (hubProcessor.hubStatus != HubStatus.CONNECTED) throw { message: "Hub not connected!" };
+    if ((sensorType == SensorType.CAMERA) && !!(hubProcessor.sensors?.find(sensor => sensor.sensorType == SensorType.CAMERA))) throw { message: "Hub can only support one camera!" };
 
     const newSensor = await Sensor.create({
       sensorName: sensorName,

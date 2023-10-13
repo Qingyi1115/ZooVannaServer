@@ -46,6 +46,11 @@ import {
   updateSensorMaintenanceLog,
   deleteSensorMaintenanceLogById,
   getSensorMaintenanceLogById,
+  createNewZone,
+  getAllZones,
+  getZoneById,
+  updateZone,
+  deleteZoneById,
 } from "../services/assetFacility";
 import { Facility } from "../models/facility";
 import { Sensor } from "../models/sensor";
@@ -58,6 +63,130 @@ import { InHouse } from "../models/inHouse";
 import { FacilityLog } from "../models/facilityLog";
 import { GeneralStaff } from "../models/generalStaff";
 import { MaintenanceLog } from "../models/maintenanceLog";
+
+
+
+export async function createNewZoneController(
+  req: Request,
+  res: Response,
+) {
+  try {
+    const { email } = (req as any).locals.jwtPayload;
+    const employee = await findEmployeeByEmail(email);
+
+    const { zoneName } = req.body;
+
+    if ([zoneName].includes(undefined)) {
+      console.log("Missing field(s): ", {
+        zoneName,
+      });
+      return res.status(400).json({ error: "Missing information!" });
+    }
+
+    let zone = await createNewZone(
+      zoneName,
+    );
+
+    return res.status(200).json({ zone: zone.toJSON() });
+  } catch (error: any) {
+    res.status(400).json({ error: error.message });
+  }
+}
+
+export async function getAllZoneController(
+  req: Request,
+  res: Response,
+) {
+  try {
+    const allZones =
+      await getAllZones();
+    return res
+      .status(200)
+      .json({zones : allZones.map((zone) => zone.toJSON())}
+      );
+  } catch (error: any) {
+    res.status(400).json({ error: error.message });
+  }
+}
+
+export async function getZoneByIdController(
+  req: Request,
+  res: Response,
+) {
+  const { zoneId } = req.params;
+  if (zoneId == "") {
+    console.log("Missing field(s): ", {
+      zoneId: zoneId,
+    });
+    return res.status(400).json({ error: "Missing information!" });
+  }
+
+  try {
+    const zone = await getZoneById(
+      Number(zoneId),
+    );
+
+    return res.status(200).json({ zone: zone.toJSON() });
+  } catch (error: any) {
+    console.log(error);
+    res.status(400).json({ error: error.message });
+  }
+}
+
+export async function updateZoneController(
+  req: Request,
+  res: Response,
+) {
+  const { zoneId } = req.params;
+  const { zoneName } = req.body;
+
+  if ([zoneName, zoneId].includes(undefined)) {
+    console.log("Missing field(s): ", {
+      zoneName,
+      zoneId
+    });
+    return res.status(400).json({ error: "Missing information!" });
+  }
+
+  try {
+    const zone = await updateZone(
+      Number(zoneId),
+      zoneName
+    );
+
+    return res.status(200).json({ zone: zone.toJSON() });
+  } catch (error: any) {
+    console.log(error);
+    res.status(400).json({ error: error.message });
+  }
+}
+
+export async function deleteZoneController(
+  req: Request,
+  res: Response,
+) {
+  const { email } = (req as any).locals.jwtPayload;
+  const employee = await findEmployeeByEmail(email);
+
+  const { zoneId } = req.params;
+
+  if (zoneId == undefined) {
+    console.log("Missing field(s): ", {
+      zoneId,
+    });
+    return res.status(400).json({ error: "Missing information!" });
+  }
+
+  try {
+    
+    await deleteZoneById(
+      Number(zoneId),
+    );
+    return res.status(200).json({ result: "success" });
+  } catch (error: any) {
+    res.status(400).json({ error: error.message });
+  }
+}
 
 export async function createFacilityController(req: Request, res: Response) {
   try {
@@ -351,6 +480,7 @@ export async function updateFacilityController(req: Request, res: Response) {
       yCoordinate,
       isSheltered,
       facilityDetailJson,
+      showOnMap
     } = req.body;
 
     if (
@@ -361,6 +491,7 @@ export async function updateFacilityController(req: Request, res: Response) {
         yCoordinate,
         facilityDetailJson,
         isSheltered,
+        showOnMap
       ].every((field) => field === undefined)
     ) {
       return res.status(400).json({ error: "Missing information!" });
@@ -370,9 +501,10 @@ export async function updateFacilityController(req: Request, res: Response) {
 
     for (const [field, v] of Object.entries({
       facilityName: facilityName,
-      xCoordinate: Number(xCoordinate),
-      yCoordinate: Number(yCoordinate),
+      xCoordinate: xCoordinate == null ? xCoordinate : Number(xCoordinate),
+      yCoordinate: yCoordinate == null ? yCoordinate : Number(yCoordinate),
       isSheltered: isSheltered,
+      showOnMap: showOnMap
     })) {
       if (v !== undefined) {
         facilityAttribute[field] = v;
