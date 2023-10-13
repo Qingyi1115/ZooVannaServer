@@ -499,8 +499,8 @@ export async function updateFacilityController(req: Request, res: Response) {
 
     for (const [field, v] of Object.entries({
       facilityName: facilityName,
-      xCoordinate: Number(xCoordinate),
-      yCoordinate: Number(yCoordinate),
+      xCoordinate: xCoordinate == null ? xCoordinate : Number(xCoordinate),
+      yCoordinate: yCoordinate == null ? yCoordinate : Number(yCoordinate),
       isSheltered: isSheltered,
     })) {
       if (v !== undefined) {
