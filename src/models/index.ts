@@ -1616,8 +1616,8 @@ export const animalSeed = async () => {
     60,
   );
 
-  await AnimalService.assignAnimalsToActivity("1", ["ANM00001", "ANM00003"]);
-  await AnimalService.assignItemToActivity("1", ["1", "2"]);
+  await AnimalService.assignAnimalsToActivity(1, ["ANM00001", "ANM00003"]);
+  await AnimalService.assignItemToActivity(1, [1, 2]);
 };
 
 export const animalFeedSeed = async () => {

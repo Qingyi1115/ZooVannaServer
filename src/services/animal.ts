@@ -739,7 +739,7 @@ export async function getAllAnimalActivities() {
   }
 }
 
-export async function getAnimalActivityById(animalActivityId: string) {
+export async function getAnimalActivityById(animalActivityId: number) {
   let animalActivityRecord = await AnimalActivity.findOne({
     where: { animalActivityId: animalActivityId },
     include: [
@@ -861,7 +861,7 @@ export async function deleteAnimalActivity(animalActivityId: string) {
 }
 
 export async function assignAnimalsToActivity(
-  animalActivityId: string,
+  animalActivityId: number,
   animalCodes: string[],
 ) {
   let animalActivity = await getAnimalActivityById(animalActivityId);
@@ -872,7 +872,7 @@ export async function assignAnimalsToActivity(
 }
 
 export async function removeAnimalFromActivity(
-  animalActivityId: string,
+  animalActivityId: number,
   animalCode: string,
 ) {
   let animalActivity = await getAnimalActivityById(animalActivityId);
@@ -881,8 +881,8 @@ export async function removeAnimalFromActivity(
 }
 
 export async function assignItemToActivity(
-  animalActivityId: string,
-  enrichmentItemIds: string[],
+  animalActivityId: number,
+  enrichmentItemIds: number[],
 ) {
   let animalActivity = await getAnimalActivityById(animalActivityId);
 
@@ -896,8 +896,8 @@ export async function assignItemToActivity(
 }
 
 export async function removeItemFromActivity(
-  animalActivityId: string,
-  enrichmentItemId: string,
+  animalActivityId: number,
+  enrichmentItemId: number,
 ) {
   let animalActivity = await getAnimalActivityById(animalActivityId);
 

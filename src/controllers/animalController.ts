@@ -505,7 +505,7 @@ export async function getAnimalActivityById(req: Request, res: Response) {
 
   try {
     const animalActivityRecord =
-      await AnimalService.getAnimalActivityById(animalActivityId);
+      await AnimalService.getAnimalActivityById(Number(animalActivityId));
     return res.status(200).json(animalActivityRecord);
   } catch (error: any) {
     res.status(400).json({ error: error.message });
