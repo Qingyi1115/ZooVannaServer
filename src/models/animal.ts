@@ -30,6 +30,7 @@ import { AnimalWeight } from "./animalWeight";
 import { AnimalActivity } from "./animalActivity";
 import { ZooEvent } from "./zooEvent";
 import { AnimalObservationLog } from "./animalObservationLog";
+import { AnimalActivityLog } from "./animalActivityLog";
 
 class Animal extends Model<
   InferAttributes<Animal>,
@@ -68,6 +69,7 @@ class Animal extends Model<
   declare animalWeights?: AnimalWeight[];
   declare animalActivities?: AnimalActivity[];
   declare animalObservationLogs?: AnimalObservationLog[];
+  declare animalActivityLogs?: AnimalActivityLog[];
 
   //--hvnt do yet
   // declare animalClinic?: AnimalClinic;
@@ -118,6 +120,20 @@ class Animal extends Model<
   >;
   declare removeAnimalObservationLog: BelongsToManyRemoveAssociationMixin<
     AnimalObservationLog,
+    number
+  >;
+
+  declare getAnimalActivityLogs: BelongsToManyGetAssociationsMixin<AnimalActivityLog>;
+  declare addAnimalActivityLog: BelongsToManyAddAssociationMixin<
+  AnimalActivityLog,
+    number
+  >;
+  declare setAnimalActivityLogs: BelongsToManySetAssociationsMixin<
+  AnimalActivityLog,
+    number
+  >;
+  declare removeAnimalActivityLog: BelongsToManyRemoveAssociationMixin<
+  AnimalActivityLog,
     number
   >;
 

@@ -36,6 +36,11 @@ import {
   getAnimalObservationLogsBySpeciesCode,
   updateAnimalObservationLog,
   deleteAnimalObservationLogById,
+  createAnimalActivityLog,
+  getAnimalActivityLogsBySpeciesCode,
+  getAnimalActivityLogById,
+  deleteAnimalActivityLogById,
+  updateAnimalActivityLog,
 } from "../controllers/animalController";
 
 const router = express.Router();
@@ -96,4 +101,12 @@ router.get("/getAnimalObservationLogsBySpeciesCode/:speciesCode", getAnimalObser
 router.put("/updateAnimalObservationLog/:animalObservationLogId", updateAnimalObservationLog);
 router.delete("/deleteAnimalObservationLogById/:animalObservationLogsId", deleteAnimalObservationLogById);
 
+// -- Animal Activity Logs
+router.post("/createAnimalActivityLog", createAnimalActivityLog);
+router.get("/getAnimalActivityLogById/:animalActivityLogId", getAnimalActivityLogById);
+router.get("/getAnimalActivityLogsBySpeciesCode/:speciesCode", getAnimalActivityLogsBySpeciesCode);
+router.put("/updateAnimalActivityLog/:animalActivityLogId", updateAnimalActivityLog);
+router.delete("/deleteAnimalActivityLogById/:animalActivityLogId", deleteAnimalActivityLogById);
+
+updateAnimalObservationLog
 export default router;

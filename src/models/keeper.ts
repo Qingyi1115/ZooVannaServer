@@ -20,6 +20,7 @@ import { Enclosure } from "./enclosure";
 import { KeeperType, Specialization } from "./enumerated";
 import { ZooEvent } from "./zooEvent";
 import { AnimalObservationLog } from "./animalObservationLog";
+import { AnimalActivityLog } from "./animalActivityLog";
 
 class Keeper extends Model<
   InferAttributes<Keeper>,
@@ -33,6 +34,7 @@ class Keeper extends Model<
   declare zooEvents?: ZooEvent[];
   declare enclosures?: Enclosure[];
   declare animalObservationLogs? :AnimalObservationLog[];
+  declare animalActivityLogs?: AnimalActivityLog[];
 
 
   declare getEmployee: BelongsToGetAssociationMixin<Employee>;
@@ -52,6 +54,11 @@ class Keeper extends Model<
   declare addAnimalObservationLog: HasManyAddAssociationMixin<AnimalObservationLog, number>;
   declare setAnimalObservationLogs: HasManySetAssociationsMixin<AnimalObservationLog, number>;
   declare removeAnimalObservationLog: HasManyRemoveAssociationMixin<AnimalObservationLog, number>;
+  
+  declare getAnimalActivityLogs: HasManyGetAssociationsMixin<AnimalActivityLog>;
+  declare addAnimalActivityLog: HasManyAddAssociationMixin<AnimalActivityLog, number>;
+  declare setAnimalActivityLogs: HasManySetAssociationsMixin<AnimalActivityLog, number>;
+  declare removeAnimalActivityLog: HasManyRemoveAssociationMixin<AnimalActivityLog, number>;
 
   public toJSON() {
     return {
