@@ -536,11 +536,17 @@ export async function getAnimalActivityByAnimalCode(
 
 export async function createAnimalActivity(req: Request, res: Response) {
   try {
-    const { activityType, title, details, startDate, endDate, dayOfTheWeek, eventTimingType, durationInMinutes } =
+    const { activityType, title, details, startDate, endDate, dayOfTheWeek, eventTimingType, durationInMinutes, 
+      // enrichmentItemIds, 
+      // animalCodes
+     } =
       req.body;
 
     if (
-      [activityType, title, details, startDate, endDate, dayOfTheWeek, eventTimingType, durationInMinutes].includes(
+      [activityType, title, details, startDate, endDate, eventTimingType, durationInMinutes, 
+        // enrichmentItemIds, 
+        // animalCodes
+      ].includes(
         undefined,
       )
     ) {
@@ -550,9 +556,10 @@ export async function createAnimalActivity(req: Request, res: Response) {
         details,
         startDate,
         endDate,
-        dayOfTheWeek,
         eventTimingType,
         durationInMinutes,
+        // enrichmentItemIds,
+        // animalCodes,
       });
       return res.status(400).json({ error: "Missing information!" });
     }
@@ -562,11 +569,13 @@ export async function createAnimalActivity(req: Request, res: Response) {
       activityType,
       title,
       details,
-      startDate,
-      endDate,
+      new Date(startDate),
+      new Date(endDate),
       dayOfTheWeek,
       eventTimingType,
-      durationInMinutes,
+      Number(durationInMinutes),
+      // enrichmentItemIds.map((enrichmentItemId:string)=>Number(enrichmentItemId)),
+      // animalCodes,
     );
 
     return res.status(200).json({ animalActivity });

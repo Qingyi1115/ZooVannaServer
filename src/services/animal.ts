@@ -21,6 +21,8 @@ import * as EnrichmentItemService from "../services/enrichmentItem";
 import { findEmployeeById } from "./employee";
 import { AnimalObservationLog } from "../models/animalObservationLog";
 import { AnimalActivity } from "../models/animalActivity";
+import * as ZooEventService from "./zooEvent";
+import { MINUTES_IN_MILLISECONDS } from "helpers/staticValues";
 
 //-- Animal Basic Info
 export async function getAnimalIdByCode(animalCode: string) {
@@ -787,6 +789,8 @@ export async function createAnimalActivity(
   dayOfTheWeek: DayOfTheWeek | null,
   eventTimingType : EventTimingType,
   durationInMinutes: number,
+  // enrichmentItemIds:number[],
+  // animalCodes:string[],
 ) {
   let newActivity = {
     activityType: activityType,
@@ -799,17 +803,29 @@ export async function createAnimalActivity(
     durationInMinutes: durationInMinutes,
   } as any;
 
-  console.log(newActivity);
-
   try {
     let newActivityEntry = await AnimalActivity.create(newActivity);
 
-    // for (let a in animalCodes) {
-    //   newActivityEntry.addAnimal(await getAnimalByAnimalCode(a));
+    if (!dayOfTheWeek){
+      ZooEventService.createAnimalActivityZooEvent(
+        newActivityEntry.animalActivityId,
+        startDate,
+        new Date(startDate.getTime() + durationInMinutes * MINUTES_IN_MILLISECONDS)
+      )
+    }
+
+    // const iKeepMyPromises = []
+
+    // for (let enrichmentItemId of enrichmentItemIds) {
+    //   iKeepMyPromises.push(EnrichmentItemService.getEnrichmentItemById(enrichmentItemId).then(async enrichmentItem =>await enrichmentItem.addAnimalActivity(newActivityEntry)));
+    // }
+    // for (let animalCode of animalCodes) {
+    //   iKeepMyPromises.push(getAnimalByAnimalCode(animalCode).then(async animal =>await animal.addAnimalActivity(newActivityEntry)));
     // }
 
-    // for (let a in animalCodes) {
-    //   newActivityEntry.addAnimal(await getAnimalByAnimalCode(a));
+    // // see?
+    // for (const myPromise of iKeepMyPromises){
+    //   await myPromise;
     // }
 
     return newActivityEntry;
