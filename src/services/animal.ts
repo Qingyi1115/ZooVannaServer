@@ -809,7 +809,6 @@ export async function createAnimalActivity(
     eventTimingType : eventTimingType,
     durationInMinutes: durationInMinutes,
   } as any;
-
   try {
     let newActivityEntry = await AnimalActivity.create(newActivity);
 
@@ -873,7 +872,7 @@ export async function createAnimalActivity(
               eventTimingType,
               details
           ));
-          startDate = new Date(startDate.setMonth(startDate.getMonth()+1));
+          startDate = new Date(Date.UTC(startDate.getFullYear(), startDate.getMonth() + 1, dayOfMonth));
         }
       }
       for (const p of iKeepMyPromises){
@@ -1010,7 +1009,7 @@ export async function updateAnimalActivity(
                   eventTimingType,
                   details
               ));
-              startDate = new Date(startDate.setMonth(startDate.getMonth()+1));
+              startDate = new Date(Date.UTC(startDate.getFullYear(), startDate.getMonth() + 1, dayOfMonth));
             }
           }
           for (const p of iKeepMyPromises){
@@ -1055,7 +1054,7 @@ export async function updateAnimalActivity(
           } else {
             
             if (!dayOfMonth) throw {message: "Day Of Month missing!"}
-            earliestDate = new Date(earliestDate.setMonth(earliestDate.getMonth()-1));
+            earliestDate = new Date(Date.UTC(earliestDate.getFullYear(), earliestDate.getMonth() - 1, dayOfMonth));
             while (compareDates(startDate, earliestDate) >= 0){
               iKeepMyPromises.push(
                 ZooEventService.createAnimalActivityZooEvent(
@@ -1065,7 +1064,7 @@ export async function updateAnimalActivity(
                   eventTimingType,
                   details
               ));
-              earliestDate = new Date(earliestDate.setMonth(earliestDate.getMonth()-1));
+              earliestDate = new Date(Date.UTC(earliestDate.getFullYear(), earliestDate.getMonth() - 1, dayOfMonth));
             }
 
           }
@@ -1097,7 +1096,7 @@ export async function updateAnimalActivity(
           } else {
 
             if (!dayOfMonth) throw {message: "Day Of Month missing!"}
-            latestDate = new Date(latestDate.setMonth(latestDate.getMonth()-1));
+            latestDate = new Date(Date.UTC(latestDate.getFullYear(), latestDate.getMonth() - 1, dayOfMonth));
             while (compareDates(endDate, latestDate) >= 0){
               iKeepMyPromises.push(
                 ZooEventService.createAnimalActivityZooEvent(
@@ -1107,7 +1106,7 @@ export async function updateAnimalActivity(
                   eventTimingType,
                   details
               ));
-              latestDate = new Date(latestDate.setMonth(latestDate.getMonth()-1));
+              latestDate = new Date(Date.UTC(latestDate.getFullYear(), latestDate.getMonth() - 1, dayOfMonth));
             }
 
           }

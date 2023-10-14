@@ -1,3 +1,5 @@
+import { DAY_IN_MILLISECONDS } from "./staticValues";
+
 export function uppercaseFirst(str: string) {
   return `${str[0].toUpperCase()}${str.substr(1)}`;
 }
@@ -9,14 +11,16 @@ export function compareDates(d1:Date, d2:Date):number {
 };
 
 export function getNextDayOfWeek(date:Date, dayOfWeek:number) {
-  let day = date.getDay();
-  return new Date(date.getDate() + (dayOfWeek + 7 - date.getDay()) % 7);
+  return new Date(date.getTime() + DAY_IN_MILLISECONDS * (dayOfWeek + 7 - date.getDay()) % 7);
 };
 
 export function getNextDayOfMonth(date:Date, dayOfMonth:number) {
-  let lastDay = new Date(date.getFullYear(), date.getMonth() + 1, 0);
+  let lastDay = new Date(Date.UTC(date.getFullYear(), date.getMonth() + 1, 0));
   if (lastDay.getDate() <= dayOfMonth){
     return lastDay;
   }
-  return new Date(date.getFullYear(), date.getMonth(), dayOfMonth);
+  if (date.getDate() <= dayOfMonth){
+    return new Date(Date.UTC(date.getFullYear(), date.getMonth(), dayOfMonth));
+  }
+  return new Date(Date.UTC(date.getFullYear(), date.getMonth() + 1, dayOfMonth));
 };
