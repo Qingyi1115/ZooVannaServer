@@ -7,25 +7,19 @@ import { ANIMAL_ACTIVITY_NOTIFICATION_HOURS, HOUR_IN_MILLISECONDS } from "../hel
 export async function createAnimalActivityZooEvent(
   animalActivityId: number,
   eventStartDateTime: Date,
-  eventEndDateTime: Date | null,
   eventDurationHrs: number,
-  isFlexible: boolean,
   eventTiming: EventTimingType | null,
-  eventDescription: string,
-  eventIsPublic: boolean,
+  eventDescription: string
 ) {
   const animalActivity = await AnimalService.getAnimalActivityById(animalActivityId);
   try {
     const newZooEvent = await ZooEvent.create({
       eventName: animalActivity.title,
       eventStartDateTime: eventStartDateTime,
-      eventEndDateTime: eventEndDateTime,
       eventDurationHrs: eventDurationHrs,
-      isFlexible: isFlexible,
       eventTiming: eventTiming,
       eventDescription: eventDescription,
-      eventIsPublic: eventIsPublic,
-      eventType : EventType.ENRICHMENT,
+      eventIsPublic: false,
       eventNotificationDate : new Date(eventStartDateTime.getTime() - HOUR_IN_MILLISECONDS * ANIMAL_ACTIVITY_NOTIFICATION_HOURS),
     });
     

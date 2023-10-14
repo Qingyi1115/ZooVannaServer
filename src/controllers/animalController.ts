@@ -536,14 +536,14 @@ export async function getAnimalActivityByAnimalCode(
 
 export async function createAnimalActivity(req: Request, res: Response) {
   try {
-    const { activityType, title, details, startDate, endDate, dayOfTheWeek, eventTimingType, durationInMinutes, 
+    let { activityType, title, details, startDate, endDate, recurringPattern, dayOfWeek, dayOfMonth, eventTimingType, durationInMinutes, 
       // enrichmentItemIds, 
       // animalCodes
      } =
       req.body;
 
     if (
-      [activityType, title, details, startDate, endDate, eventTimingType, durationInMinutes, 
+      [activityType, title, details, startDate, recurringPattern, eventTimingType, durationInMinutes, 
         // enrichmentItemIds, 
         // animalCodes
       ].includes(
@@ -555,13 +555,17 @@ export async function createAnimalActivity(req: Request, res: Response) {
         title,
         details,
         startDate,
-        endDate,
+        recurringPattern,
         eventTimingType,
         durationInMinutes,
         // enrichmentItemIds,
         // animalCodes,
       });
       return res.status(400).json({ error: "Missing information!" });
+    }
+
+    if (endDate === undefined){
+      endDate = startDate
     }
 
     // have to pass in req for image uploading
@@ -571,7 +575,9 @@ export async function createAnimalActivity(req: Request, res: Response) {
       details,
       new Date(startDate),
       new Date(endDate),
-      dayOfTheWeek,
+      recurringPattern,
+      dayOfWeek,
+      dayOfMonth,
       eventTimingType,
       Number(durationInMinutes),
       // enrichmentItemIds.map((enrichmentItemId:string)=>Number(enrichmentItemId)),
@@ -593,7 +599,9 @@ export async function updateAnimalActivity(req: Request, res: Response) {
       details,
       startDate,
       endDate,
-      dayOfTheWeek,
+      recurringPattern, 
+      dayOfWeek,
+      dayOfMonth,
       eventTimingType,
       durationInMinutes,
     } = req.body;
@@ -606,7 +614,7 @@ export async function updateAnimalActivity(req: Request, res: Response) {
         details,
         startDate,
         endDate,
-        dayOfTheWeek,
+        recurringPattern,
         eventTimingType,
         durationInMinutes,
       ].includes(undefined)
@@ -618,7 +626,7 @@ export async function updateAnimalActivity(req: Request, res: Response) {
         details,
         startDate,
         endDate,
-        dayOfTheWeek,
+        recurringPattern,
         eventTimingType,
         durationInMinutes,
       });
@@ -627,15 +635,17 @@ export async function updateAnimalActivity(req: Request, res: Response) {
 
     // have to pass in req for image uploading
     let updatedAnimalActivity = await AnimalService.updateAnimalActivity(
-      animalActivityId,
+      Number(animalActivityId),
       activityType,
       title,
       details,
-      startDate,
-      endDate,
-      dayOfTheWeek,
+      new Date(startDate),
+      new Date(endDate),
+      recurringPattern, 
+      dayOfWeek,
+      dayOfMonth == null ? null : Number(dayOfMonth),  
       eventTimingType,
-      durationInMinutes,
+      Number(durationInMinutes),
     );
 
     return res.status(200).json({ result:"success" });

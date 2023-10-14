@@ -7,3 +7,16 @@ export function compareDates(d1:Date, d2:Date):number {
   let date2 = d2.getTime();
   return date1-date2;
 };
+
+export function getNextDayOfWeek(date:Date, dayOfWeek:number) {
+  let day = date.getDay();
+  return new Date(date.getDate() + (dayOfWeek + 7 - date.getDay()) % 7);
+};
+
+export function getNextDayOfMonth(date:Date, dayOfMonth:number) {
+  let lastDay = new Date(date.getFullYear(), date.getMonth() + 1, 0);
+  if (lastDay.getDate() <= dayOfMonth){
+    return lastDay;
+  }
+  return new Date(date.getFullYear(), date.getMonth(), dayOfMonth);
+};
