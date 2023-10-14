@@ -35,7 +35,7 @@ const router = express.Router();
 
 // log in
 router.post("/login", login);
-router.put("resetForgottenPassword/:token", resetForgottenPasswordController); //Reset from the employee side using email
+router.put("/resetForgottenPassword/:token", resetForgottenPasswordController); //Reset from the employee side using email
 
 router.use(authMiddleware);
 
@@ -50,7 +50,7 @@ router.put("/unsetAccountManager/:employeeId", unsetAccountManagerController);
 
 router.post("/getAllEmployees", getAllEmployeesController);
 router.post("/getAllGeneralStaffs", getAllGeneralStaffsController);
-router.put("/resetPassword/:employeeId", resetPasswordController ); //reset password by account manager (sent to employee's email)
+router.put("/resetPassword/:employeeId", resetPasswordController); //reset password by account manager (sent to employee's email)
 router.put("/disableEmployee/:employeeId", disableEmployeeAccountController);
 
 //Enable and disable role (can be Keeper, General Staff or Planning Staff)
@@ -58,13 +58,21 @@ router.put("/getEmployee/:employeeId/enableRole", enableRoleController);
 router.put("/getEmployee/:employeeId/disableRole", disableRoleController);
 
 router.put("/getEmployee/:employeeId/updateRoleType", updateRoleTypeController);
-router.put("/getEmployee/:employeeId/updateSpecializationType", updateSpecializationTypeController);
-
+router.put(
+  "/getEmployee/:employeeId/updateSpecializationType",
+  updateSpecializationTypeController,
+);
 
 //Update Employee Role Details
 //Update Keeper Role --> Assign more enclosures or delete the enclosures --> for future use if needed
-router.put("getEmployee/:employeeId/addEnclosure/:enclosureId", addEnclosureToKeeperController);
-router.put("getEmployee/:employeeId/removeEnclosure/:enclosureId", removeEnclosureFromKeeperController);
+router.put(
+  "getEmployee/:employeeId/addEnclosure/:enclosureId",
+  addEnclosureToKeeperController,
+);
+router.put(
+  "getEmployee/:employeeId/removeEnclosure/:enclosureId",
+  removeEnclosureFromKeeperController,
+);
 
 // router.put("getEmployee/:employeeId/updateKeeperType", updateKeeperTypeController);
 // router.put("getEmployee/:employeeId/updateGeneralStaffType", updateGeneralStaffTypeController);
