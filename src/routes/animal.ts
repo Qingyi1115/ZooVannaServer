@@ -108,5 +108,12 @@ router.get("/getAnimalActivityLogsBySpeciesCode/:speciesCode", getAnimalActivity
 router.put("/updateAnimalActivityLog/:animalActivityLogId", updateAnimalActivityLog);
 router.delete("/deleteAnimalActivityLogById/:animalActivityLogId", deleteAnimalActivityLogById);
 
+// -- Animal Feeding Logs
+// router.post("/createAnimalFeedingLog", createAnimalFeedingLog);
+// router.get("/getAnimalFeedingLogById/:animalFeedingLogId", getAnimalFeedingLogById);
+// router.get("/getAnimalFeedingLogsBySpeciesCode/:speciesCode", getAnimalFeedingLogsBySpeciesCode);
+// router.put("/updateAnimalFeedingLog/:animalFeedingLogId", updateAnimalFeedingLog);
+// router.delete("/deleteAnimalFeedingLogById/:animalFeedingLogId", deleteAnimalFeedingLogById);
+
 updateAnimalObservationLog
 export default router;
