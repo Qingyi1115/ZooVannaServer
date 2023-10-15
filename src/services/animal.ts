@@ -24,6 +24,7 @@ import { findEmployeeById } from "./employee";
 import { AnimalObservationLog } from "../models/animalObservationLog";
 import { AnimalActivity } from "../models/animalActivity";
 import { AnimalActivityLog } from "../models/animalActivityLog";
+import { AnimalFeedingLog } from "../models/animalFeedingLog";
 
 //-- Animal Basic Info
 export async function getAnimalIdByCode(animalCode: string) {
@@ -1011,10 +1012,8 @@ export async function getAnimalObservationLogsByAnimalCode(animalCode: string) {
 export async function getAnimalObservationLogsBySpeciesCode(
   speciesCode: string,
 ) {
-  const species = await SpeciesService.getSpeciesByCode(speciesCode, [
-    "animals",
-  ]);
-  let animals = species.animals || [];
+  const species = await SpeciesService.getSpeciesByCode(speciesCode, []);
+  let animals = await species.getAnimals();
   const logSet = new Set();
   const logs: AnimalObservationLog[] = [];
   for (const animal of animals) {
@@ -1144,35 +1143,33 @@ export async function getAnimalActivityLogById(
   return animalActivityLog;
 }
 
-// export async function getAnimalObservationLogsByAnimalCode(animalCode: string) {
-//   return AnimalObservationLog.findAll({
-//     include: [
-//       {
-//         association: "animals",
-//         where: {
-//           animalCode: animalCode,
-//         },
-//         required: true,
-//       },
-//       {
-//         association: "keeper",
-//         required: true,
-//         include: [{
-//           association: "employee",
-//           required:false
-//         }],
-//       },
-//     ],
-//   });
-// }
+export async function getAnimalActivityLogsByAnimalCode(animalCode: string) {
+  return AnimalActivityLog.findAll({
+    include: [
+      {
+        association: "animals",
+        where: {
+          animalCode: animalCode,
+        },
+        required: true,
+      },
+      {
+        association: "keeper",
+        required: true,
+        include: [{
+          association: "employee",
+          required:false
+        }],
+      },
+    ],
+  });
+}
 
 export async function getAnimalActivityLogsBySpeciesCode(
   speciesCode: string,
 ) {
-  const species = await SpeciesService.getSpeciesByCode(speciesCode, [
-    "animals",
-  ]);
-  let animals = species.animals || [];
+  const species = await SpeciesService.getSpeciesByCode(speciesCode, []);
+  let animals = await species.getAnimals();
   const logSet = new Set();
   const logs: AnimalActivityLog[] = [];
   for (const animal of animals) {
@@ -1209,7 +1206,6 @@ export async function updateAnimalActivityLog(
   animalActivityLog.dateTime = dateTime;
   animalActivityLog.durationInMinutes = durationInMinutes;
   animalActivityLog.sessionRating = sessionRating;
-  animalActivityLog.sessionRating = sessionRating;
   animalActivityLog.animalReaction = animalReaction;
   animalActivityLog.details = details;
 
@@ -1224,5 +1220,153 @@ export async function deleteAnimalActivityLogById(
     animalActivityLogId,
   );
   return await animalActivityLog.destroy();
+}
+
+export async function createAnimalFeedingLog(
+  employeeId: number,
+  dateTime: Date,
+  durationInMinutes: number,
+  details: string,
+  animalCodes: string[],
+) {
+  const keeper = await (await findEmployeeById(employeeId)).getKeeper();
+
+  if (!keeper)
+    throw { message: "No keeper found with employee ID : " + employeeId };
+
+  const animalsPromise: Promise<Animal>[] = [];
+  animalCodes.forEach((code) => {
+    animalsPromise.push(getAnimalByAnimalCode(code));
+  });
+
+  const animals: Animal[] = [];
+  for (const prom of animalsPromise) {
+    const animal = await prom;
+    if (animal === undefined) throw { message: "Animal Code not found!" };
+    animals.push(animal);
+  }
+  try {
+    const newAnimalFeedingLog = await AnimalFeedingLog.create({
+      dateTime: dateTime,
+      durationInMinutes: durationInMinutes,
+      details: details,
+    });
+
+    animals.forEach((animal) => {
+      animal.addAnimalFeedingLog(newAnimalFeedingLog);
+    });
+
+    await keeper.addAnimalFeedingLog(newAnimalFeedingLog);
+
+    return newAnimalFeedingLog;
+  } catch (error: any) {
+    console.log(error);
+    throw validationErrorHandler(error);
+  }
+}
+
+// export async function getAllAnimalObservationLogs() {
+//   return AnimalObservationLog.findAll();
+// }
+
+export async function getAnimalFeedingLogById(
+  animalFeedingLogId: number,
+) {
+  const animalFeedingLog = await AnimalFeedingLog.findOne({
+    where: {
+      animalFeedingLogId: animalFeedingLogId,
+    },
+    include: [
+    {
+      association: "animals",
+      required:false
+    },{
+      association: "keeper",
+      required:false,
+      include: [{
+        association: "employee",
+        required:false
+      }],
+    }],
+  });
+  if (!animalFeedingLog)
+    throw {
+      message:
+        "Unable to find animalFeedingLog with Id " + animalFeedingLog,
+    };
+  return animalFeedingLog;
+}
+
+export async function getAnimalFeedingLogsByAnimalCode(animalCode: string) {
+  return AnimalFeedingLog.findAll({
+    include: [
+      {
+        association: "animals",
+        where: {
+          animalCode: animalCode,
+        },
+        required: true,
+      },
+      {
+        association: "keeper",
+        required: true,
+        include: [{
+          association: "employee",
+          required:false
+        }],
+      },
+    ],
+  });
+}
+
+export async function getAnimalFeedingLogsBySpeciesCode(
+  speciesCode: string,
+) {
+  const species = await SpeciesService.getSpeciesByCode(speciesCode, []);
+  let animals = await species.getAnimals();
+  const logSet = new Set();
+  const logs: AnimalFeedingLog[] = [];
+  for (const animal of animals) {
+    for (const log of await animal.getAnimalFeedingLogs()) {
+      if (!logSet.has(log.animalFeedingLogId)) {
+        logSet.add(log.animalFeedingLogId);
+        logs.push(log);
+      }
+    }
+  }
+
+  return logs;
+}
+
+export async function updateAnimalFeedingLog(
+  animalFeedingLogId: number,
+  dateTime: Date,
+  durationInMinutes: number,
+  details: string,
+  animalCodes: string[],
+) {
+  const animalFeedingLog = await getAnimalFeedingLogById(
+    animalFeedingLogId,
+  );
+  await animalFeedingLog.setAnimals([]);
+  for (const code of animalCodes) {
+    const animal = await getAnimalByAnimalCode(code);
+    animalFeedingLog.addAnimal(animal);
+  }
+  animalFeedingLog.dateTime = dateTime;
+  animalFeedingLog.durationInMinutes = durationInMinutes;
+  animalFeedingLog.details = details;
+
+  await animalFeedingLog.save();
+  return animalFeedingLog;
+}
+
+export async function deleteAnimalFeedingLogById(
+  animalFeedingLogId: number,
+) {
+  const animalFeedingLog = await getAnimalFeedingLogById(
+    animalFeedingLogId,
+  );
+  return animalFeedingLog.destroy();
 }
 

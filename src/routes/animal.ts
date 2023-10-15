@@ -41,6 +41,13 @@ import {
   getAnimalActivityLogById,
   deleteAnimalActivityLogById,
   updateAnimalActivityLog,
+  createAnimalFeedingLog,
+  getAnimalFeedingLogById,
+  getAnimalFeedingLogsByAnimalCode,
+  getAnimalFeedingLogsBySpeciesCode,
+  updateAnimalFeedingLog,
+  deleteAnimalFeedingLogById,
+  getAnimalActivityLogsByAnimalCode,
 } from "../controllers/animalController";
 
 const router = express.Router();
@@ -104,16 +111,18 @@ router.delete("/deleteAnimalObservationLogById/:animalObservationLogsId", delete
 // -- Animal Activity Logs
 router.post("/createAnimalActivityLog", createAnimalActivityLog);
 router.get("/getAnimalActivityLogById/:animalActivityLogId", getAnimalActivityLogById);
+router.get("/getAnimalActivityLogsByAnimalCode/:animalCode", getAnimalActivityLogsByAnimalCode);
 router.get("/getAnimalActivityLogsBySpeciesCode/:speciesCode", getAnimalActivityLogsBySpeciesCode);
 router.put("/updateAnimalActivityLog/:animalActivityLogId", updateAnimalActivityLog);
 router.delete("/deleteAnimalActivityLogById/:animalActivityLogId", deleteAnimalActivityLogById);
 
 // -- Animal Feeding Logs
-// router.post("/createAnimalFeedingLog", createAnimalFeedingLog);
-// router.get("/getAnimalFeedingLogById/:animalFeedingLogId", getAnimalFeedingLogById);
-// router.get("/getAnimalFeedingLogsBySpeciesCode/:speciesCode", getAnimalFeedingLogsBySpeciesCode);
-// router.put("/updateAnimalFeedingLog/:animalFeedingLogId", updateAnimalFeedingLog);
-// router.delete("/deleteAnimalFeedingLogById/:animalFeedingLogId", deleteAnimalFeedingLogById);
+router.post("/createAnimalFeedingLog", createAnimalFeedingLog);
+router.get("/getAnimalFeedingLogById/:animalFeedingLogId", getAnimalFeedingLogById);
+router.get("/getAnimalFeedingLogsByAnimalCode/:animalCode", getAnimalFeedingLogsByAnimalCode);
+router.get("/getAnimalFeedingLogsBySpeciesCode/:speciesCode", getAnimalFeedingLogsBySpeciesCode);
+router.put("/updateAnimalFeedingLog/:animalFeedingLogId", updateAnimalFeedingLog);
+router.delete("/deleteAnimalFeedingLogById/:animalFeedingLogId", deleteAnimalFeedingLogById);
 
 updateAnimalObservationLog
 export default router;
