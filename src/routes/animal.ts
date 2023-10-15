@@ -36,6 +36,18 @@ import {
   getAnimalObservationLogsBySpeciesCode,
   updateAnimalObservationLog,
   deleteAnimalObservationLogById,
+  createAnimalActivityLog,
+  getAnimalActivityLogsBySpeciesCode,
+  getAnimalActivityLogById,
+  deleteAnimalActivityLogById,
+  updateAnimalActivityLog,
+  createAnimalFeedingLog,
+  getAnimalFeedingLogById,
+  getAnimalFeedingLogsByAnimalCode,
+  getAnimalFeedingLogsBySpeciesCode,
+  updateAnimalFeedingLog,
+  deleteAnimalFeedingLogById,
+  getAnimalActivityLogsByAnimalCode,
 } from "../controllers/animalController";
 
 const router = express.Router();
@@ -96,4 +108,21 @@ router.get("/getAnimalObservationLogsBySpeciesCode/:speciesCode", getAnimalObser
 router.put("/updateAnimalObservationLog/:animalObservationLogId", updateAnimalObservationLog);
 router.delete("/deleteAnimalObservationLogById/:animalObservationLogsId", deleteAnimalObservationLogById);
 
+// -- Animal Activity Logs
+router.post("/createAnimalActivityLog", createAnimalActivityLog);
+router.get("/getAnimalActivityLogById/:animalActivityLogId", getAnimalActivityLogById);
+router.get("/getAnimalActivityLogsByAnimalCode/:animalCode", getAnimalActivityLogsByAnimalCode);
+router.get("/getAnimalActivityLogsBySpeciesCode/:speciesCode", getAnimalActivityLogsBySpeciesCode);
+router.put("/updateAnimalActivityLog/:animalActivityLogId", updateAnimalActivityLog);
+router.delete("/deleteAnimalActivityLogById/:animalActivityLogId", deleteAnimalActivityLogById);
+
+// -- Animal Feeding Logs
+router.post("/createAnimalFeedingLog", createAnimalFeedingLog);
+router.get("/getAnimalFeedingLogById/:animalFeedingLogId", getAnimalFeedingLogById);
+router.get("/getAnimalFeedingLogsByAnimalCode/:animalCode", getAnimalFeedingLogsByAnimalCode);
+router.get("/getAnimalFeedingLogsBySpeciesCode/:speciesCode", getAnimalFeedingLogsBySpeciesCode);
+router.put("/updateAnimalFeedingLog/:animalFeedingLogId", updateAnimalFeedingLog);
+router.delete("/deleteAnimalFeedingLogById/:animalFeedingLogId", deleteAnimalFeedingLogById);
+
+updateAnimalObservationLog
 export default router;

@@ -5,7 +5,6 @@ import * as AnimalService from "../services/animal";
 import { Animal } from "./animal";
 import { AnimalClinic } from "./animalClinics";
 import { AnimalFeed } from "./animalFeed";
-import { AnimalLog } from "./animalLog";
 import { AnimalWeight } from "./animalWeight";
 import { BarrierType } from "./barrierType";
 import { Compatibility } from "./compatibility";
@@ -69,6 +68,8 @@ import { ThirdParty } from "./thirdParty";
 import { AnimalActivity } from "./animalActivity";
 import { AnimalObservationLog } from "./animalObservationLog";
 import { Zone } from "./zone";
+import { AnimalActivityLog } from "./animalActivityLog";
+import { AnimalFeedingLog } from "./animalFeedingLog";
 
 function addCascadeOptions(options: object) {
   return { ...options, onDelete: "CASCADE", onUpdate: "CASCADE" };
@@ -310,9 +311,6 @@ export const createDatabase = async (options: any) => {
     as: "species",
   });
 
-  Animal.hasMany(AnimalLog, addCascadeOptions({ foreignKey: "animalId" }));
-  AnimalLog.belongsTo(Animal, addCascadeOptions({ foreignKey: "animalId" }));
-
   Animal.belongsToMany(AnimalObservationLog, {
     foreignKey: "animalId",
     through: "animal_observationLog",
@@ -324,6 +322,29 @@ export const createDatabase = async (options: any) => {
     as: "animals",
   });
 
+  Animal.belongsToMany(AnimalActivityLog, {
+    foreignKey: "animalId",
+    through: "animal_activityLog",
+    as: "animalActivityLogs",
+  });
+  AnimalActivityLog.belongsToMany(Animal, {
+    foreignKey: "animalActivityLogId",
+    through: "animal_activityLog",
+    as: "animals",
+  });
+
+  Animal.belongsToMany(AnimalFeedingLog, {
+    foreignKey: "animalId",
+    through: "animal_feedingLog",
+    as: "animalFeedingLogs",
+  });
+  AnimalFeedingLog.belongsToMany(Animal, {
+    foreignKey: "animalFeedingLogId",
+    through: "animal_feedingLog",
+    as: "animals",
+  });
+
+  
   // ------------ End of Animal Relation --------------
 
   TerrainDistribution.hasMany(
@@ -387,6 +408,12 @@ export const createDatabase = async (options: any) => {
 
   Keeper.hasMany(AnimalObservationLog, { foreignKey: "keeperId" });
   AnimalObservationLog.belongsTo(Keeper, { foreignKey: "keeperId", });
+
+  Keeper.hasMany(AnimalActivityLog, { foreignKey: "keeperId" });
+  AnimalActivityLog.belongsTo(Keeper, { foreignKey: "keeperId", });
+
+  Keeper.hasMany(AnimalFeedingLog, { foreignKey: "keeperId" });
+  AnimalFeedingLog.belongsTo(Keeper, { foreignKey: "keeperId", });
 
   Enclosure.hasMany(ZooEvent, addCascadeOptions({ foreignKey: "enclosureId" }));
   ZooEvent.belongsTo(
