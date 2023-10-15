@@ -45,7 +45,7 @@ class Employee extends Model<
   declare isAccountManager: boolean;
   declare dateOfResignation: Date | null;
   declare employeeProfileURL: string | null;
-  declare superAdmin : boolean;
+  declare superAdmin: boolean;
 
   declare keeper?: Keeper | null;
   declare planningStaff?: PlanningStaff | null;
@@ -96,6 +96,8 @@ class Employee extends Model<
 
   public updatePassword(password: string) {
     this.employeePasswordHash = hash(password + this.employeeSalt);
+    console.log(password);
+    console.log(this.employeeEmail);
     this.save();
     return this;
   }
@@ -210,7 +212,7 @@ Employee.init(
     },
     superAdmin: {
       type: DataTypes.BOOLEAN,
-      defaultValue: false
+      defaultValue: false,
     },
   },
   {

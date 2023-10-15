@@ -384,6 +384,7 @@ export async function resetForgottenPasswordController(
 ) {
   try {
     const { token, password } = req.body;
+    console.log("here");
 
     if ([token, password].includes(undefined)) {
       console.log("Missing field(s): ", {
@@ -393,8 +394,10 @@ export async function resetForgottenPasswordController(
       return res.status(400).json({ error: "Missing information!" });
     }
 
+    console.log("is here");
+
     let result = await setPassword(token, password);
-    return res.status(200).json({ employee: result });
+    return res.status(200).json({ result: result });
   } catch (error: any) {
     return res.status(400).json({ error: error.message });
   }
