@@ -25,7 +25,7 @@ import { AnimalObservationLog } from "../models/animalObservationLog";
 import { AnimalActivity } from "../models/animalActivity";
 import { AnimalActivityLog } from "../models/animalActivityLog";
 import { AnimalFeedingLog } from "../models/animalFeedingLog";
-import { FeedingPlan } from "models/feedingPlan";
+import { FeedingPlan } from "../models/feedingPlan";
 import { getSpeciesByCode } from "controllers/speciesController";
 
 //-- Animal Basic Info

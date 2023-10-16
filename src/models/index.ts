@@ -360,7 +360,7 @@ export const createDatabase = async (options: any) => {
   Animal.belongsToMany(FeedingPlan, {
     foreignKey: "animalId",
     through: "animal_feedingPlan",
-    as: "animalFeedingLogs",
+    as: "animalFeedingPlans",
   });
   FeedingPlan.belongsToMany(Animal, {
     foreignKey: "feedingPlanId",
