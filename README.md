@@ -131,3 +131,13 @@ Note: many to many relationships has not been implemented as of now. A new table
             }
 
 Thank you for reading this tutorial that teaches you how bad sequelize is. Please use a java framework like springboot that supports better ORM like hibernate in the future. Thanks! - Sincerely your tech lead.
+
+
+## Backend API testing
+
+1. Add .env file with the following settings
+
+SERVER_URL = http://localhost
+SERVER_PORT = 3000
+
+2. Run python zooVannaServer_API_test.py
