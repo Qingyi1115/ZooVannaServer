@@ -25,11 +25,12 @@ import {
 import { Species } from "./species";
 import { uppercaseFirst } from "../helpers/others";
 import { Enclosure } from "./enclosure";
-import { AnimalLog } from "./animalLog";
 import { AnimalWeight } from "./animalWeight";
 import { AnimalActivity } from "./animalActivity";
 import { ZooEvent } from "./zooEvent";
 import { AnimalObservationLog } from "./animalObservationLog";
+import { AnimalActivityLog } from "./animalActivityLog";
+import { AnimalFeedingLog } from "./animalFeedingLog";
 
 class Animal extends Model<
   InferAttributes<Animal>,
@@ -68,10 +69,11 @@ class Animal extends Model<
   declare animalWeights?: AnimalWeight[];
   declare animalActivities?: AnimalActivity[];
   declare animalObservationLogs?: AnimalObservationLog[];
+  declare animalActivityLogs?: AnimalActivityLog[];
+  declare animalFeedingLog?: AnimalFeedingLog[];
 
   //--hvnt do yet
   // declare animalClinic?: AnimalClinic;
-  declare animalLog?: AnimalLog;
   declare enclosure?: Enclosure;
   declare zooEvents?: ZooEvent[];
 
@@ -121,13 +123,36 @@ class Animal extends Model<
     number
   >;
 
+  declare getAnimalActivityLogs: BelongsToManyGetAssociationsMixin<AnimalActivityLog>;
+  declare addAnimalActivityLog: BelongsToManyAddAssociationMixin<
+  AnimalActivityLog,
+    number
+  >;
+  declare setAnimalActivityLogs: BelongsToManySetAssociationsMixin<
+  AnimalActivityLog,
+    number
+  >;
+  declare removeAnimalActivityLog: BelongsToManyRemoveAssociationMixin<
+  AnimalActivityLog,
+    number
+  >;
+
+  declare getAnimalFeedingLogs: BelongsToManyGetAssociationsMixin<AnimalFeedingLog>;
+  declare addAnimalFeedingLog: BelongsToManyAddAssociationMixin<
+  AnimalFeedingLog,
+    number
+  >;
+  declare setAnimalFeedingLogs: BelongsToManySetAssociationsMixin<
+  AnimalFeedingLog,
+    number
+  >;
+  declare removeAnimalFeedingLog: BelongsToManyRemoveAssociationMixin<
+  AnimalFeedingLog,
+    number
+  >;
+
   declare getEnclosure: BelongsToGetAssociationMixin<Enclosure>;
   declare setEnclosure: BelongsToSetAssociationMixin<Enclosure, number>;
-
-  declare getAnimalLogs: HasManyGetAssociationsMixin<AnimalLog>;
-  declare addAnimalLog: HasManyAddAssociationMixin<AnimalLog, number>;
-  declare setAnimalLogs: HasManySetAssociationsMixin<AnimalLog, number>;
-  declare removeAnimalLog: HasManyRemoveAssociationMixin<AnimalLog, number>;
 
   declare getZooEvents: HasManyGetAssociationsMixin<ZooEvent>;
   declare addZooEvent: HasManyAddAssociationMixin<ZooEvent, number>;

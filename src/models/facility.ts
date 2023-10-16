@@ -19,6 +19,7 @@ import { AnimalClinic } from "./animalClinics";
 import { uppercaseFirst } from "../helpers/others";
 import { HubProcessor } from "./hubProcessor";
 import { Enclosure } from "./enclosure";
+import { Zone } from "./zone";
 
 class Facility extends Model<
   InferAttributes<Facility>,
@@ -29,10 +30,12 @@ class Facility extends Model<
   declare xCoordinate: number;
   declare yCoordinate: number;
   declare isSheltered: boolean;
+  declare showOnMap: boolean;
 
   declare facilityDetail?: string;
 
   declare hubProcessors?: HubProcessor[];
+  declare zone? : Zone;
   declare inHouse?: InHouse;
   declare thirdParty?: ThirdParty;
   declare animalClinic?: AnimalClinic;
@@ -48,6 +51,9 @@ class Facility extends Model<
 
   declare getInHouse: HasOneGetAssociationMixin<InHouse>;
   declare setInHouse: HasOneSetAssociationMixin<InHouse, number>;
+
+  declare getZone: HasOneGetAssociationMixin<Zone>;
+  declare setZone: HasOneSetAssociationMixin<Zone, number>;
 
   declare getThirdParty: HasOneGetAssociationMixin<ThirdParty>;
   declare setThirdParty: HasOneSetAssociationMixin<ThirdParty, number>;
@@ -110,12 +116,10 @@ Facility.init(
       unique: true,
     },
     xCoordinate: {
-      type: DataTypes.INTEGER,
-      // allowNull: false,
+      type: DataTypes.FLOAT(17,14),
     },
     yCoordinate: {
-      type: DataTypes.INTEGER,
-      // allowNull: false,
+      type: DataTypes.FLOAT(17,14),
     },
     facilityDetail: {
       type: DataTypes.STRING,
@@ -123,6 +127,10 @@ Facility.init(
     isSheltered: {
       type: DataTypes.BOOLEAN,
       allowNull: false,
+    },
+    showOnMap: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: false,
     },
   },
   {

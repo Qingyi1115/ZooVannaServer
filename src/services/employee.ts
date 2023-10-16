@@ -336,7 +336,7 @@ export async function setPassword(token: string, password: string) {
 
     if (employee) {
       if (employee.dateOfResignation == null) {
-        if (realToken.expiresAt.getTime() <= Date.now()) {
+        if (realToken.expiresAt.getTime() > Date.now()) {
           realToken.destroy();
           return employee.updatePassword(password);
         }

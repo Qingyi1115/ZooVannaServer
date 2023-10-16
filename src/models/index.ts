@@ -5,7 +5,6 @@ import * as AnimalService from "../services/animal";
 import { Animal } from "./animal";
 import { AnimalClinic } from "./animalClinics";
 import { AnimalFeed } from "./animalFeed";
-import { AnimalLog } from "./animalLog";
 import { AnimalWeight } from "./animalWeight";
 import { BarrierType } from "./barrierType";
 import { Compatibility } from "./compatibility";
@@ -40,6 +39,7 @@ import {
   AnimalSex,
   ActivityType,
   EventTimingType,
+  DayOfTheWeek,
 } from "./enumerated";
 import { ZooEvent } from "./zooEvent";
 import { Facility } from "./facility";
@@ -66,6 +66,9 @@ import { TerrainDistribution } from "./terrainDistribution";
 import { ThirdParty } from "./thirdParty";
 import { AnimalActivity } from "./animalActivity";
 import { AnimalObservationLog } from "./animalObservationLog";
+import { Zone } from "./zone";
+import { AnimalActivityLog } from "./animalActivityLog";
+import { AnimalFeedingLog } from "./animalFeedingLog";
 
 function addCascadeOptions(options: object) {
   return { ...options, onDelete: "CASCADE", onUpdate: "CASCADE" };
@@ -93,10 +96,14 @@ export const createDatabase = async (options: any) => {
     Employee,
     addCascadeOptions({ foreignKey: "employeeId" }),
   );
-
-  // added by qy for animal activity 5 Oct
-  Employee.hasMany(AnimalActivity);
-  AnimalActivity.belongsTo(Employee);
+  AnimalActivity.hasOne(
+    ZooEvent,
+    addCascadeOptions({ foreignKey: "animalActivityId" }),
+  );
+  ZooEvent.belongsTo(
+    AnimalActivity,
+    addCascadeOptions({ foreignKey: "animalActivityId" }),
+  );
 
   Facility.hasMany(
     HubProcessor,
@@ -105,6 +112,15 @@ export const createDatabase = async (options: any) => {
   HubProcessor.belongsTo(
     Facility,
     addCascadeOptions({ foreignKey: "facilityId" }),
+  );
+
+  Zone.hasMany(
+    Facility,
+    addCascadeOptions({ foreignKey: "zoneId" }),
+  );
+  Facility.belongsTo(
+    Zone,
+    addCascadeOptions({ foreignKey: "zoneId" }),
   );
 
   HubProcessor.hasMany(
@@ -293,9 +309,6 @@ export const createDatabase = async (options: any) => {
     as: "species",
   });
 
-  Animal.hasMany(AnimalLog, addCascadeOptions({ foreignKey: "animalId" }));
-  AnimalLog.belongsTo(Animal, addCascadeOptions({ foreignKey: "animalId" }));
-
   Animal.belongsToMany(AnimalObservationLog, {
     foreignKey: "animalId",
     through: "animal_observationLog",
@@ -307,6 +320,29 @@ export const createDatabase = async (options: any) => {
     as: "animals",
   });
 
+  Animal.belongsToMany(AnimalActivityLog, {
+    foreignKey: "animalId",
+    through: "animal_activityLog",
+    as: "animalActivityLogs",
+  });
+  AnimalActivityLog.belongsToMany(Animal, {
+    foreignKey: "animalActivityLogId",
+    through: "animal_activityLog",
+    as: "animals",
+  });
+
+  Animal.belongsToMany(AnimalFeedingLog, {
+    foreignKey: "animalId",
+    through: "animal_feedingLog",
+    as: "animalFeedingLogs",
+  });
+  AnimalFeedingLog.belongsToMany(Animal, {
+    foreignKey: "animalFeedingLogId",
+    through: "animal_feedingLog",
+    as: "animals",
+  });
+
+  
   // ------------ End of Animal Relation --------------
 
   TerrainDistribution.hasMany(
@@ -368,8 +404,14 @@ export const createDatabase = async (options: any) => {
     as: "keepers",
   });
 
-  Keeper.hasMany(AnimalObservationLog, {foreignKey: "keeperId"});
-  AnimalObservationLog.belongsTo(Keeper, {foreignKey: "keeperId",});
+  Keeper.hasMany(AnimalObservationLog, { foreignKey: "keeperId" });
+  AnimalObservationLog.belongsTo(Keeper, { foreignKey: "keeperId", });
+
+  Keeper.hasMany(AnimalActivityLog, { foreignKey: "keeperId" });
+  AnimalActivityLog.belongsTo(Keeper, { foreignKey: "keeperId", });
+
+  Keeper.hasMany(AnimalFeedingLog, { foreignKey: "keeperId" });
+  AnimalFeedingLog.belongsTo(Keeper, { foreignKey: "keeperId", });
 
   Enclosure.hasMany(ZooEvent, addCascadeOptions({ foreignKey: "enclosureId" }));
   ZooEvent.belongsTo(
@@ -1543,6 +1585,8 @@ export const animalSeed = async () => {
     "Bamboo Bonanza",
     "Treat our pandas to a bamboo feast! We'll scatter bamboo leaves and shoots throughout their habitat to encourage natural foraging behavior.",
     new Date("2023-10-13"),
+    new Date("2023-10-13"),
+    null,
     EventTimingType.AFTERNOON,
     45,
   );
@@ -1552,6 +1596,8 @@ export const animalSeed = async () => {
     "Target Training",
     "Use a target stick to teach pandas to touch a designated spot. This aids in directing their movement and helps with medical check-ups.",
     new Date("2023-10-15"),
+    new Date("2023-10-15"),
+    null,
     EventTimingType.MORNING,
     60,
   );
@@ -1561,6 +1607,8 @@ export const animalSeed = async () => {
     "Enrichment Activity 01",
     "Text...",
     new Date("2023-10-16"),
+    new Date("2023-10-16"),
+    null,
     EventTimingType.MORNING,
     60,
   );
@@ -1569,6 +1617,8 @@ export const animalSeed = async () => {
     "Enrichment Activity 02",
     "Text...",
     new Date("2023-10-16"),
+    new Date("2023-10-16"),
+    null,
     EventTimingType.MORNING,
     60,
   );
@@ -1577,6 +1627,8 @@ export const animalSeed = async () => {
     "Training Activity 01",
     "Text...",
     new Date("2023-10-18"),
+    new Date("2023-10-18"),
+    null,
     EventTimingType.AFTERNOON,
     60,
   );
@@ -1585,6 +1637,8 @@ export const animalSeed = async () => {
     "Training Activity 02",
     "Text...",
     new Date("2023-10-18"),
+    new Date("2023-10-18"),
+    null,
     EventTimingType.EVENING,
     60,
   );
@@ -1664,9 +1718,8 @@ export const enrichmentItemSeed = async () => {
 export const facilityAssetsSeed = async () => {
   let toiletTemplate = {
     facilityName: "Toilet",
-    xCoordinate: 2,
-    yCoordinate: 2,
     isSheltered: true,
+    showOnMap: true,
     inHouse: {
       lastMaintained: new Date(),
       isPaid: false,
@@ -1699,9 +1752,10 @@ export const facilityAssetsSeed = async () => {
   let facility1 = await Facility.create(
     {
       facilityName: "facility1",
-      xCoordinate: 123456,
-      yCoordinate: 654321,
+      xCoordinate: 123,
+      yCoordinate: 654,
       isSheltered: true,
+      showOnMap: true,
       hubProcessors: [
         {
           processorName: "A01",
@@ -1717,7 +1771,7 @@ export const facilityAssetsSeed = async () => {
         hasAirCon: false,
         facilityType: FacilityType.PARKING,
       } as any,
-    },
+    } as any,
     {
       include: [
         {
@@ -1793,8 +1847,6 @@ export const facilityAssetsSeed = async () => {
   let tram1 = await Facility.create(
     {
       facilityName: "tram1",
-      xCoordinate: 123,
-      yCoordinate: 321,
       isSheltered: true,
 
       //@ts-ignore
@@ -1823,8 +1875,6 @@ export const facilityAssetsSeed = async () => {
   let tram2 = await Facility.create(
     {
       facilityName: "tram2",
-      xCoordinate: 123,
-      yCoordinate: 321,
       isSheltered: true,
       //@ts-ignore
       inHouse: {
@@ -1918,9 +1968,9 @@ export const facilityAssetsSeed = async () => {
   ]) {
     _day = new Date(
       _day.getTime() -
-        days * 1000 * 60 * 60 * 24 +
-        Math.random() * 1000 * 60 * 60 * 24 * 4 -
-        1000 * 60 * 60 * 24 * 2,
+      days * 1000 * 60 * 60 * 24 +
+      Math.random() * 1000 * 60 * 60 * 24 * 4 -
+      1000 * 60 * 60 * 24 * 2,
     );
     sensor.addMaintenanceLog(
       await MaintenanceLog.create({
