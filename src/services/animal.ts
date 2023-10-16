@@ -29,7 +29,7 @@ import { DAY_IN_MILLISECONDS } from "../helpers/staticValues";
 import { compareDates, getNextDayOfMonth, getNextDayOfWeek } from "../helpers/others";
 import { AnimalActivityLog } from "../models/animalActivityLog";
 import { AnimalFeedingLog } from "../models/animalFeedingLog";
-import { ZooEvent } from "models/zooEvent";
+import { ZooEvent } from "../models/zooEvent";
 
 //-- Animal Basic Info
 export async function getAnimalIdByCode(animalCode: string) {
