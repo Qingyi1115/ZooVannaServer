@@ -355,6 +355,19 @@ export const createDatabase = async (options: any) => {
   Animal.hasMany(FeedingItem, { onDelete: "CASCADE" });
   FeedingItem.belongsTo(Animal);
 
+  // Animal.hasMany(FeedingPlan, { onDelete: "CASCADE" });
+  // FeedingPlan.belongsTo(Animal);
+  Animal.belongsToMany(FeedingPlan, {
+    foreignKey: "animalId",
+    through: "animal_feedingPlan",
+    as: "animalFeedingLogs",
+  });
+  FeedingPlan.belongsToMany(Animal, {
+    foreignKey: "feedingPlanId",
+    through: "animal_feedingPlan",
+    as: "animals",
+  });
+
   // ------------ End of Animal Relation --------------
 
   TerrainDistribution.hasMany(

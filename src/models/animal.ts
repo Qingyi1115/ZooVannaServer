@@ -31,6 +31,8 @@ import { ZooEvent } from "./zooEvent";
 import { AnimalObservationLog } from "./animalObservationLog";
 import { AnimalActivityLog } from "./animalActivityLog";
 import { AnimalFeedingLog } from "./animalFeedingLog";
+import { FeedingPlan } from "./feedingPlan";
+import { FeedingItem } from "./feedingItem";
 
 class Animal extends Model<
   InferAttributes<Animal>,
@@ -71,6 +73,8 @@ class Animal extends Model<
   declare animalObservationLogs?: AnimalObservationLog[];
   declare animalActivityLogs?: AnimalActivityLog[];
   declare animalFeedingLog?: AnimalFeedingLog[];
+  declare feedingPlans?: FeedingPlan[];
+  declare feedingItems?: FeedingItem[];
 
   //--hvnt do yet
   // declare animalClinic?: AnimalClinic;
@@ -125,29 +129,29 @@ class Animal extends Model<
 
   declare getAnimalActivityLogs: BelongsToManyGetAssociationsMixin<AnimalActivityLog>;
   declare addAnimalActivityLog: BelongsToManyAddAssociationMixin<
-  AnimalActivityLog,
+    AnimalActivityLog,
     number
   >;
   declare setAnimalActivityLogs: BelongsToManySetAssociationsMixin<
-  AnimalActivityLog,
+    AnimalActivityLog,
     number
   >;
   declare removeAnimalActivityLog: BelongsToManyRemoveAssociationMixin<
-  AnimalActivityLog,
+    AnimalActivityLog,
     number
   >;
 
   declare getAnimalFeedingLogs: BelongsToManyGetAssociationsMixin<AnimalFeedingLog>;
   declare addAnimalFeedingLog: BelongsToManyAddAssociationMixin<
-  AnimalFeedingLog,
+    AnimalFeedingLog,
     number
   >;
   declare setAnimalFeedingLogs: BelongsToManySetAssociationsMixin<
-  AnimalFeedingLog,
+    AnimalFeedingLog,
     number
   >;
   declare removeAnimalFeedingLog: BelongsToManyRemoveAssociationMixin<
-  AnimalFeedingLog,
+    AnimalFeedingLog,
     number
   >;
 
@@ -158,6 +162,16 @@ class Animal extends Model<
   declare addZooEvent: HasManyAddAssociationMixin<ZooEvent, number>;
   declare setZooEvents: HasManySetAssociationsMixin<ZooEvent, number>;
   declare removeZooEvent: HasManyRemoveAssociationMixin<ZooEvent, number>;
+
+  declare getFeedingPlans: HasManyGetAssociationsMixin<FeedingPlan>;
+  declare addFeedingPlan: HasManyAddAssociationMixin<FeedingPlan, number>;
+  declare setFeedingPlans: HasManySetAssociationsMixin<FeedingPlan, number>;
+  declare removeFeedingPlan: HasManyRemoveAssociationMixin<FeedingPlan, number>;
+
+  declare getFeedingItems: HasManyGetAssociationsMixin<FeedingItem>;
+  declare addFeedingItem: HasManyAddAssociationMixin<FeedingItem, number>;
+  declare setFeedingItems: HasManySetAssociationsMixin<FeedingItem, number>;
+  declare removeFeedingItem: HasManyRemoveAssociationMixin<FeedingItem, number>;
   // declare age?: number;
 
   // public getAge(): number {
