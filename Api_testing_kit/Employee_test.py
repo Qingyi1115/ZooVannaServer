@@ -23,7 +23,11 @@ def test_login_should_succeed(mock_data, useAPI: UseAPI):
     mock_data["token"] = response_json["token"]
     print("Testing login should succeed passed!\n")
 
-LOGIN_API_TESTS = [(test_login_should_fail, junior_keeper), (test_login_should_succeed, marry_account), (test_login_should_succeed, junior_keeper), ]
+LOGIN_API_TESTS = [
+    (test_login_should_fail, junior_keeper), 
+    (test_login_should_succeed, marry_account), 
+    (test_login_should_succeed, junior_keeper), 
+]
 
 @login_as_junior_keeper
 def create_user_should_fail(useAPI: UseAPI):
@@ -41,4 +45,6 @@ def create_user_should_fail(useAPI: UseAPI):
 #     STORE["new_emp_id"] = response_json["created"]["employeeId"]
 #     print("Create user should success passed!\n")
 
-USERS_API_TESTS = [(create_user_should_fail,),]
+USERS_API_TESTS = [
+    (create_user_should_fail, ),
+]
