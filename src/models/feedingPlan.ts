@@ -20,6 +20,7 @@ import { Species } from "./species";
 import { ZooEvent } from "./zooEvent";
 import { AnimalFeedingLog } from "./animalFeedingLog";
 import { FeedingPlanSessionDetail } from "./feedingPlanSessionDetail";
+import { Animal } from "./animal";
 
 class FeedingPlan extends Model<
   InferAttributes<FeedingPlan>,
@@ -32,12 +33,18 @@ class FeedingPlan extends Model<
 
   //--FK
   declare species?: Species;
+  declare animals?: Animal[];
   declare feedingPlanSessionDetails?: FeedingPlanSessionDetail[];
   declare animalFeedingLog?: AnimalFeedingLog[];
   //   declare zooEvents?: ZooEvent[];
 
   declare getSpecies: BelongsToGetAssociationMixin<Species>;
   declare setSpecies: BelongsToSetAssociationMixin<Species, number>;
+
+  declare getAnimals: HasManyGetAssociationsMixin<Animal>;
+  declare addAnimal: HasManyAddAssociationMixin<Animal, number>;
+  declare setAnimals: HasManySetAssociationsMixin<Animal, number>;
+  declare removeAnimal: HasManyRemoveAssociationMixin<Animal, number>;
 
   declare getFeedingPlanSessionDetails: HasManyGetAssociationsMixin<FeedingPlanSessionDetail>;
   declare addFeedingPlanSessionDetail: HasManyAddAssociationMixin<
