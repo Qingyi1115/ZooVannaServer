@@ -10,31 +10,9 @@ import {
   HasManyAddAssociationMixin,
   HasManyRemoveAssociationMixin,
   CreationOptional,
-  BelongsToManyGetAssociationsMixin,
-  BelongsToManyAddAssociationMixin,
-  BelongsToManySetAssociationsMixin,
-  BelongsToManyRemoveAssociationMixin,
 } from "Sequelize";
 import { conn } from "../db";
-import {
-  AnimalSex,
-  AcquisitionMethod,
-  AnimalGrowthStage,
-  IdentifierType,
-  EventTimingType,
-  DayOfTheWeek,
-  AnimalFeedCategory,
-  FoodUnit,
-} from "./enumerated";
-import { Species } from "./species";
-import { uppercaseFirst } from "../helpers/others";
-import { Enclosure } from "./enclosure";
-import { AnimalWeight } from "./animalWeight";
-import { AnimalActivity } from "./animalActivity";
-import { ZooEvent } from "./zooEvent";
-import { AnimalObservationLog } from "./animalObservationLog";
-import { AnimalActivityLog } from "./animalActivityLog";
-import { AnimalFeedingLog } from "./animalFeedingLog";
+import { AnimalFeedCategory, FoodUnit } from "./enumerated";
 import { FeedingPlan } from "./feedingPlan";
 import { Animal } from "./animal";
 
