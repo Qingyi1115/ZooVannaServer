@@ -18,13 +18,6 @@ def getAnimalActivityById(mockData, useAPI: UseAPI):
     response_json = res.json()
     assert "animalActivity" in response_json, "No animalActivity! " + ("" if "error" not in response_json else response_json["error"])
     assert(response_json["animalActivity"]["details"] == mockData["details"])
-
-@login_as_marry
-def getAnimalActivityById(mockData, useAPI: UseAPI):
-    res = useAPI.get("/api/animal/getAnimalActivityById/{}".format(mockData["animalActivityId"]))
-    response_json = res.json()
-    assert "animalActivity" in response_json, "No animalActivity! " + ("" if "error" not in response_json else response_json["error"])
-    assert(response_json["animalActivity"]["details"] == mockData["details"])
     assert len(response_json["animalActivity"]["zooEvents"]) in [4,5], "Zoo events incorrectly created " + str(len(response_json["animalActivity"]["zooEvents"])) + " found!"
 
 @login_as_marry
