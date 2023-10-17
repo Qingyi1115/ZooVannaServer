@@ -99,7 +99,7 @@ router.put("/removeAnimalFromActivity", removeAnimalFromActivity);
 router.put("/assignItemToActivity", assignItemToActivity);
 router.put("/removeItemFromActivity", removeItemFromActivity);
 
-// -- Animal Logs
+// -- Animal Observation Logs
 router.post("/createAnimalObservationLog", createAnimalObservationLog);
 router.get("/getAllAnimalObservationLogs", getAllAnimalObservationLogs);
 router.get("/getAnimalObservationLogById/:animalObservationLogId", getAnimalObservationLogById);
