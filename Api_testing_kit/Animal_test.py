@@ -1,5 +1,6 @@
-from Json import newAnimalActivityLogDetails
+from Json import newAnimalActivityLogDetails, newAnimalActivityDetails
 from Annotations import UseAPI, getApi, login_as_marry, login_as_junior_keeper
+from time import time
 
 # Animal Activity API
 @login_as_marry
@@ -24,18 +25,43 @@ def getAnimalActivityById(mockData, useAPI: UseAPI):
     response_json = res.json()
     assert "animalActivity" in response_json, "No animalActivity! " + ("" if "error" not in response_json else response_json["error"])
     assert(response_json["animalActivity"]["details"] == mockData["details"])
+    assert len(response_json["animalActivity"]["zooEvents"]) in [4,5], "Zoo events incorrectly created " + str(len(response_json["animalActivity"]["zooEvents"])) + " found!"
 
 @login_as_marry
 def updateAnimalActivity(mockData, useAPI: UseAPI):
+    mockData["details"] = "New activity details!"
+    mockData["endDate"] = time() * 1000 + 1000 * 60 * 60 * 24 * 60
     res = useAPI.put("/api/animal/updateAnimalActivity", json=mockData)
     response_json = res.json()
     assert "updatedAnimalActivity" in response_json, "No updatedAnimalActivity! " + ("" if "error" not in response_json else response_json["error"])
     assert(response_json["updatedAnimalActivity"]["details"] == mockData["details"])
+    assert len(response_json["updatedAnimalActivity"]["zooEvents"]) in [8,9], "Zoo events incorrectly created " + str(len(response_json["updatedAnimalActivity"]["zooEvents"])) + " found!"
+    
+    mockData["startDate"] = time() * 1000 - 1000 * 60 * 60 * 24 * 30
+    mockData["endDate"] = time() * 1000 + 1000 * 60 * 60 * 24 * 30
+    res = useAPI.put("/api/animal/updateAnimalActivity", json=mockData)
+    response_json = res.json()
+    assert "updatedAnimalActivity" in response_json, "No updatedAnimalActivity! " + ("" if "error" not in response_json else response_json["error"])
+    assert(response_json["updatedAnimalActivity"]["details"] == mockData["details"])
+    assert len(response_json["updatedAnimalActivity"]["zooEvents"]) in [4,5], "Zoo events incorrectly created " + str(len(response_json["updatedAnimalActivity"]["zooEvents"])) + " found!"
+    
+@login_as_marry
+def deleteAnimalActivity(mockData, useAPI: UseAPI):
+    res = useAPI.delete("/api/animal/deleteAnimalActivity/{}".format(mockData["animalActivityId"]),
+                     mockData)
+    response_json = res.json()
+    assert "result" in response_json, "No success message!"
+    assert(response_json["result"] == "success")
+
+    res = useAPI.get("/api/animal/getAnimalActivityById/{}".format(mockData["animalActivityId"]))
+    response_json = res.json()
+    assert("error" in response_json)
 
 ANIMAL_ACTIVITY_API_TESTS = [
-    (createAnimalActivity, newAnimalActivityLogDetails), 
-    (getAnimalActivityById, newAnimalActivityLogDetails),
-    (updateAnimalActivity, newAnimalActivityLogDetails),
+    (createAnimalActivity, newAnimalActivityDetails), 
+    (getAnimalActivityById, newAnimalActivityDetails),
+    (updateAnimalActivity, newAnimalActivityDetails),
+    (deleteAnimalActivity, newAnimalActivityDetails)
 ]
 
 # Animal Activity Log API 

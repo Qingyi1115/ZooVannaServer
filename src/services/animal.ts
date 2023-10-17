@@ -957,9 +957,10 @@ export async function updateAnimalActivity(
       }
     }
 
-    if (animalActivity.dayOfWeek != dayOfWeek 
+    if (zooEvents.length == 0 || animalActivity.dayOfWeek != dayOfWeek 
       || animalActivity.dayOfMonth != dayOfMonth
       || animalActivity.recurringPattern != recurringPattern){
+        console.log("regenerate all events")
         // Regenerate ALL events
         for (const ze of zooEvents){
           await ze.destroy();
@@ -1033,17 +1034,20 @@ export async function updateAnimalActivity(
     }else if (recurringPattern != RecurringPattern.NON_RECURRING 
       && (animalActivity.startDate != startDate
           || animalActivity.endDate != endDate)){
+        console.log("Remove out of date events")
         // If shortened duration in start or end dates
         if (compareDates(startDate, animalActivity.startDate) > 0
         || compareDates(endDate, animalActivity.endDate) < 0 ){
           for (const ze of zooEvents){
-            if (compareDates(startDate, ze.eventStartDateTime) > 0
-            || compareDates(endDate, ze.eventStartDateTime) < 0 )
+            if ((compareDates(startDate, ze.eventStartDateTime) > 0
+            || compareDates(endDate, ze.eventStartDateTime) < 0 ) 
+            && compareDates(new Date(), ze.eventStartDateTime) < 0)
             await ze.destroy();
           }
         }
 
         if (compareDates(startDate, animalActivity.startDate) < 0){
+          console.log("Adding earlier events")
           const iKeepMyPromises = [];
           let earliestDate = zooEvents.reduce((a, b)=>compareDates(a.eventStartDateTime, b.eventStartDateTime) > 0 ? b : a).eventStartDateTime;
           
@@ -1054,7 +1058,8 @@ export async function updateAnimalActivity(
               case RecurringPattern.WEEKLY: interval = DAY_IN_MILLISECONDS * 7; break;
             }
             earliestDate = new Date(earliestDate.getTime() - interval);
-            while (compareDates(startDate, earliestDate) >= 0){
+            while (compareDates(startDate, earliestDate) < 0){
+              if (compareDates(earliestDate, new Date()) < 0) break;
               iKeepMyPromises.push(
                 ZooEventService.createAnimalActivityZooEvent(
                   animalActivity.animalActivityId,
@@ -1086,6 +1091,7 @@ export async function updateAnimalActivity(
         }
 
         if (compareDates(endDate, animalActivity.endDate) > 0){
+          console.log("Adding later events")
           const iKeepMyPromises = [];
           let latestDate = zooEvents.reduce((a, b)=>compareDates(a.eventStartDateTime, b.eventStartDateTime) > 0 ? a : b).eventStartDateTime;
           
@@ -1105,7 +1111,7 @@ export async function updateAnimalActivity(
                   eventTimingType,
                   details
               ));
-              latestDate = new Date(latestDate.getTime() - interval);
+              latestDate = new Date(latestDate.getTime() + interval);
             }
           } else {
 

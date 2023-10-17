@@ -60,6 +60,21 @@ class AnimalActivity extends Model<
   declare addZooEvent: HasManyAddAssociationMixin<ZooEvent, number>;
   declare setZooEvents: HasManySetAssociationsMixin<ZooEvent, number>;
   declare removeZooEvent: HasManyRemoveAssociationMixin<ZooEvent, number>;
+  
+  public toJSON() {
+    return {
+      ...this.get()
+    }
+  }
+
+  public async toFullJSON() {
+    return {
+      ...this.toJSON(),
+      animals: (await this.getAnimals())?.map(obj=> obj.toJSON()),
+      enrichmentItems: (await this.getEnrichmentItems())?.map(obj=> obj.toJSON()),
+      zooEvents: (await this.getZooEvents())?.map(obj=> obj.toJSON()),
+    };
+  }
 }
 
 AnimalActivity.init(

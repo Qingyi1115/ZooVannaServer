@@ -11,7 +11,7 @@ export function compareDates(d1:Date, d2:Date):number {
 };
 
 export function getNextDayOfWeek(date:Date, dayOfWeek:number) {
-  return new Date(date.getTime() + DAY_IN_MILLISECONDS * (dayOfWeek + 7 - date.getDay()) % 7);
+  return new Date(date.getTime() + DAY_IN_MILLISECONDS * ((dayOfWeek + 7 - date.getDay()) % 7));
 };
 
 export function getNextDayOfMonth(date:Date, dayOfMonth:number) {

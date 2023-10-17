@@ -584,7 +584,7 @@ export async function createAnimalActivity(req: Request, res: Response) {
       // animalCodes,
     );
 
-    return res.status(200).json({ animalActivity });
+    return res.status(200).json({ animalActivity:animalActivity.toJSON() });
   } catch (error: any) {
     res.status(400).json({ error: error.message });
   }
@@ -648,8 +648,9 @@ export async function updateAnimalActivity(req: Request, res: Response) {
       Number(durationInMinutes),
     );
 
-    return res.status(200).json({ updatedAnimalActivity:updatedAnimalActivity.toJSON() });
+    return res.status(200).json({ updatedAnimalActivity:await updatedAnimalActivity.toFullJSON() });
   } catch (error: any) {
+    console.log("error", error)
     res.status(400).json({ error: error.message });
   }
 }
