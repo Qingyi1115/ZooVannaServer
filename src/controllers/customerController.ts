@@ -2,9 +2,42 @@ import { Request, Response } from "express";
 import { createToken } from "../helpers/security";
 import * as CustomerService from "../services/customer";
 
+
+//verify customer email
+
+// export const verifyEmail = async (
+//   req: Request,
+//   res: Response,
+// ) => {
+//   try {
+//     const { token, password } = req.body;
+
+//     let result = await CustomerService.resetPassword(token, password);
+//     return res.status(200).json({ customer: result });
+//   } catch (error: any) {
+//     return res.status(400).json({ error: error.message });
+//   }
+// };
+
+export const sendEmailVerification = async (req: Request, res: Response) => {
+  try {
+    const { email } = req.params;
+      await CustomerService.sendEmailVerification(email);
+      console.log("success");
+      return res
+        .status(200)
+        .json({ message: "Email for verification has been sent successfully" });
+    } catch (error: any) {
+    console.log(error);
+    return res.status(400).json({ error: error.message });
+  }
+};
+
 //customer sign up
 export const createCustomer = async (req: Request, res: Response) => {
   try {
+    const { token } = req.params;
+
     const {
       customerPassword,
       firstName,
@@ -15,6 +48,7 @@ export const createCustomer = async (req: Request, res: Response) => {
       address,
       nationality,
     } = req.body;
+
     if (
       [
         customerPassword,
@@ -25,6 +59,7 @@ export const createCustomer = async (req: Request, res: Response) => {
         birthday,
         address,
         nationality,
+        token,
       ].includes(undefined)
     ) {
       console.log("Missing field(s): ", {
@@ -36,6 +71,7 @@ export const createCustomer = async (req: Request, res: Response) => {
         birthday,
         address,
         nationality,
+        token,
       });
       return res.status(400).json({ error: "Missing information!" });
     }
@@ -44,11 +80,11 @@ export const createCustomer = async (req: Request, res: Response) => {
       customerPassword,
       firstName,
       lastName,
-      email,
       contactNo,
       birthday,
       address,
       nationality,
+      token,
     );
 
     return res.status(200).json({ created: newCustomer });
