@@ -70,6 +70,9 @@ import { AnimalObservationLog } from "./animalObservationLog";
 import { Zone } from "./zone";
 import { AnimalActivityLog } from "./animalActivityLog";
 import { AnimalFeedingLog } from "./animalFeedingLog";
+import { FeedingPlan } from "./feedingPlan";
+import { FeedingPlanSessionDetail } from "./feedingPlanSessionDetail";
+import { FeedingItem } from "./feedingItem";
 
 function addCascadeOptions(options: object) {
   return { ...options, onDelete: "CASCADE", onUpdate: "CASCADE" };
@@ -116,14 +119,8 @@ export const createDatabase = async (options: any) => {
     addCascadeOptions({ foreignKey: "facilityId" }),
   );
 
-  Zone.hasMany(
-    Facility,
-    addCascadeOptions({ foreignKey: "zoneId" }),
-  );
-  Facility.belongsTo(
-    Zone,
-    addCascadeOptions({ foreignKey: "zoneId" }),
-  );
+  Zone.hasMany(Facility, addCascadeOptions({ foreignKey: "zoneId" }));
+  Facility.belongsTo(Zone, addCascadeOptions({ foreignKey: "zoneId" }));
 
   HubProcessor.hasMany(
     Sensor,
@@ -344,7 +341,35 @@ export const createDatabase = async (options: any) => {
     as: "animals",
   });
 
-  
+  // feeding plan
+  Species.hasMany(FeedingPlan, { onDelete: "CASCADE" });
+  FeedingPlan.belongsTo(Species);
+
+  FeedingPlan.hasMany(AnimalFeedingLog, { onDelete: "CASCADE" });
+  AnimalFeedingLog.belongsTo(FeedingPlan);
+
+  FeedingPlan.hasMany(FeedingPlanSessionDetail, { onDelete: "CASCADE" });
+  FeedingPlanSessionDetail.belongsTo(FeedingPlan);
+
+  FeedingPlanSessionDetail.hasMany(FeedingItem, { onDelete: "CASCADE" });
+  FeedingItem.belongsTo(FeedingPlanSessionDetail);
+
+  Animal.hasMany(FeedingItem, { onDelete: "CASCADE" });
+  FeedingItem.belongsTo(Animal);
+
+  // Animal.hasMany(FeedingPlan, { onDelete: "CASCADE" });
+  // FeedingPlan.belongsTo(Animal);
+  Animal.belongsToMany(FeedingPlan, {
+    foreignKey: "animalId",
+    through: "animal_feedingPlan",
+    as: "animalFeedingPlans",
+  });
+  FeedingPlan.belongsToMany(Animal, {
+    foreignKey: "feedingPlanId",
+    through: "animal_feedingPlan",
+    as: "animals",
+  });
+
   // ------------ End of Animal Relation --------------
 
   TerrainDistribution.hasMany(
@@ -407,13 +432,13 @@ export const createDatabase = async (options: any) => {
   });
 
   Keeper.hasMany(AnimalObservationLog, { foreignKey: "keeperId" });
-  AnimalObservationLog.belongsTo(Keeper, { foreignKey: "keeperId", });
+  AnimalObservationLog.belongsTo(Keeper, { foreignKey: "keeperId" });
 
   Keeper.hasMany(AnimalActivityLog, { foreignKey: "keeperId" });
-  AnimalActivityLog.belongsTo(Keeper, { foreignKey: "keeperId", });
+  AnimalActivityLog.belongsTo(Keeper, { foreignKey: "keeperId" });
 
   Keeper.hasMany(AnimalFeedingLog, { foreignKey: "keeperId" });
-  AnimalFeedingLog.belongsTo(Keeper, { foreignKey: "keeperId", });
+  AnimalFeedingLog.belongsTo(Keeper, { foreignKey: "keeperId" });
 
   Enclosure.hasMany(ZooEvent, addCascadeOptions({ foreignKey: "enclosureId" }));
   ZooEvent.belongsTo(
@@ -1909,7 +1934,7 @@ export const facilityAssetsSeed = async () => {
   let hub1 = await HubProcessor.create(
     {
       processorName: "tramCam1",
-      ipAddressName: "172.25.99.172",
+      ipAddressName: "127.0.0.1",
       hubStatus: HubStatus.CONNECTED,
       lastDataUpdate: new Date(),
       radioGroup: 223,
@@ -1982,9 +2007,9 @@ export const facilityAssetsSeed = async () => {
   ]) {
     _day = new Date(
       _day.getTime() -
-      days * 1000 * 60 * 60 * 24 +
-      Math.random() * 1000 * 60 * 60 * 24 * 4 -
-      1000 * 60 * 60 * 24 * 2,
+        days * 1000 * 60 * 60 * 24 +
+        Math.random() * 1000 * 60 * 60 * 24 * 4 -
+        1000 * 60 * 60 * 24 * 2,
     );
     sensor.addMaintenanceLog(
       await MaintenanceLog.create({

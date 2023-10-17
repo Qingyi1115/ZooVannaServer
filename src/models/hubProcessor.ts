@@ -108,6 +108,7 @@ HubProcessor.init(
 );
 
 HubProcessor.addHook("afterFind", (findResult:HubProcessor[]) => {
+  if (!findResult) return;
   if (!Array.isArray(findResult)) findResult = [findResult];
   for (const instance of findResult) {
     if (instance.hubStatus == HubStatus.PENDING) continue;

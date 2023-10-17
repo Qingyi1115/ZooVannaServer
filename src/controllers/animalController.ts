@@ -1169,7 +1169,7 @@ export async function updateAnimalActivityLog(req: Request, res: Response) {
       return res.status(400).json({ error: "Missing information!" });
     }
     
-    let animalObservationLog = await AnimalService.updateAnimalActivityLog(
+    let animalActivityLog = await AnimalService.updateAnimalActivityLog(
       Number(animalActivityLogId),
       activityType,
       new Date(dateTime),
@@ -1180,7 +1180,7 @@ export async function updateAnimalActivityLog(req: Request, res: Response) {
       animalCodes,
       );
 
-    return res.status(200).json({ animalObservationLog: animalObservationLog.toJSON() });
+    return res.status(200).json({ animalActivityLog: animalActivityLog.toJSON() });
   } catch (error: any) {
     res.status(400).json({ error: error.message });
   }
