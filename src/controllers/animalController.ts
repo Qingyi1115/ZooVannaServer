@@ -504,9 +504,9 @@ export async function getAnimalActivityById(req: Request, res: Response) {
   }
 
   try {
-    const animalActivityRecord =
+    const animalActivity =
       await AnimalService.getAnimalActivityById(Number(animalActivityId));
-    return res.status(200).json(animalActivityRecord);
+    return res.status(200).json({animalActivity:animalActivity.toJSON()});
   } catch (error: any) {
     res.status(400).json({ error: error.message });
   }
@@ -648,7 +648,7 @@ export async function updateAnimalActivity(req: Request, res: Response) {
       Number(durationInMinutes),
     );
 
-    return res.status(200).json({ result:"success" });
+    return res.status(200).json({ updatedAnimalActivity:updatedAnimalActivity.toJSON() });
   } catch (error: any) {
     res.status(400).json({ error: error.message });
   }
@@ -1075,7 +1075,7 @@ export async function createAnimalActivityLog(req: Request, res: Response) {
     }
 
     // have to pass in req for image uploading
-    let animalObservationLog = await AnimalService.createAnimalActivityLog(
+    let animalActivityLog = await AnimalService.createAnimalActivityLog(
       employee.employeeId,
       activityType,
       new Date(dateTime),
@@ -1086,7 +1086,7 @@ export async function createAnimalActivityLog(req: Request, res: Response) {
       animalCodes
     );
 
-    return res.status(200).json({ animalObservationLog: animalObservationLog });
+    return res.status(200).json({ animalActivityLog: animalActivityLog.toJSON() });
   } catch (error: any) {
     res.status(400).json({ error: error.message });
   }
