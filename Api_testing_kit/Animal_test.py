@@ -70,5 +70,3 @@ ANIMAL_ACTIVITY_LOG_API_TESTS = [
     (updateAnimalActivityLog, newAnimalActivityLogDetails),
     (deleteAnimalActivityLogById, newAnimalActivityLogDetails)
 ]
-
-

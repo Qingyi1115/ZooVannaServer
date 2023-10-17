@@ -19,7 +19,6 @@ import {
 import { AnimalWeight } from "../models/animalWeight";
 import * as SpeciesService from "../services/species";
 import { EnrichmentItem } from "../models/enrichmentItem";
-import { Employee } from "../models/employee";
 import * as EnrichmentItemService from "../services/enrichmentItem";
 import { findEmployeeById } from "./employee";
 import { AnimalObservationLog } from "../models/animalObservationLog";
@@ -30,6 +29,7 @@ import { compareDates, getNextDayOfMonth, getNextDayOfWeek } from "../helpers/ot
 import { AnimalActivityLog } from "../models/animalActivityLog";
 import { AnimalFeedingLog } from "../models/animalFeedingLog";
 import { FeedingPlan } from "../models/feedingPlan";
+import { ZooEvent } from "../models/zooEvent";
 
 //-- Animal Basic Info
 export async function getAnimalIdByCode(animalCode: string) {
@@ -738,6 +738,11 @@ export async function getAllAnimalActivities() {
           model: EnrichmentItem,
           required: false, // Include only if they exist
           as: "enrichmentItems",
+        },
+        {
+          model : ZooEvent,
+          required:false,
+          as :"zooEvents"
         }
       ],
     });
@@ -761,6 +766,11 @@ export async function getAnimalActivityById(animalActivityId: number) {
         model: EnrichmentItem,
         required: false, // Include only if they exist
         as: "enrichmentItems",
+      },
+      {
+        model : ZooEvent,
+        required:false,
+        as :"zooEvents"
       }
     ],
   });
