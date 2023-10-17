@@ -1,6 +1,8 @@
 
 import hashlib, time
 
+DAY_IN_MILLISECONDS = 1000 * 60 * 60 * 24
+
 marry_account = {
     "employeeName":"marry", 
     "employeeAddress":"Singapore Kent Ridge LT19",
@@ -42,3 +44,13 @@ new_user_dat = {
         "generalStaffType":"OPERATE"
     }
   }
+
+newAnimalActivityLogDetails = {
+        "activityType": "ENRICHMENT",
+        "dateTime": time.time() - DAY_IN_MILLISECONDS * 2,
+        "durationInMinutes": 60,
+        "sessionRating": "EXCELLENT",
+        "animalReaction": "PLAYFUL",
+        "details": "Blah ... my testing value",
+        "animalCodes" : ["ANM00001", "ANM00002"]
+}

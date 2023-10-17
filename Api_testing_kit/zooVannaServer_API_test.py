@@ -5,6 +5,7 @@ BASE_URL = SERVER_URL + ":" + SERVER_PORT
 STORE = dict()
 
 from Employee_test import LOGIN_API_TESTS, USERS_API_TESTS
+from Animal_test import ANIMAL_ACTIVITY_LOG_API_TESTS
 
 def do_tests(test_list):
     for tests in test_list:
@@ -13,7 +14,7 @@ def do_tests(test_list):
             tests[0](*tests[1:])
         except Exception as e:
             print("Exception while calling ", tests[0].__name__) 
-            print("Exception: ", e, "\n")
+            print("Details: ", e, "\n")
             import traceback
             traceback.print_exc()
 
@@ -26,6 +27,13 @@ def test_api():
     print("-----------User APIs initiating-----------\n")
     do_tests(USERS_API_TESTS)
     print("User APIs test finish")
+
+    
+    print("-----------User APIs initiating-----------\n")
+    do_tests(ANIMAL_ACTIVITY_LOG_API_TESTS)
+    print("User APIs test finish")
+
+    
 
 if __name__ == "__main__":
     test_api()

@@ -1,0 +1,39 @@
+from Annotations import UseAPI
+from Json import newAnimalActivityLogDetails
+from Annotations import getApi, login_as_marry, login_as_junior_keeper
+
+@login_as_marry
+def createAnimalActivityLog(mockData, useAPI: UseAPI):
+    res = useAPI.post("/api/animal/createAnimalActivityLog", 
+                      json=mockData)
+    response_json = res.json()
+    assert("animalObservationLog" in response_json)
+    assert(response_json["animalObservationLog"]["details"] == mockData["details"])
+    mockData["animalActivityLogId"] = response_json["animalObservationLog"]["animalActivityLogId"]
+    print("Testing createAnimalActivityLog success!\n")
+
+@login_as_marry
+def getAnimalActivityLogById(mockData, useAPI: UseAPI):
+    res = useAPI.get("/api/animal/getAnimalActivityLogById/{}".format(mockData["animalActivityLogId"]))
+    response_json = res.json()
+    assert("animalActivityLog" in response_json)
+    assert(response_json["animalActivityLog"]["details"] == mockData["details"])
+    print("Testing get getAnimalActivityLogById success!\n")
+
+@login_as_marry
+def getAnimalActivityLogsByAnimalCode(animalCode, mockData, useAPI: UseAPI):
+    res = useAPI.get("/api/animal/getAnimalActivityLogsByAnimalCode/{}".format(animalCode))
+    response_json = res.json()
+    assert("animalActivityLogs" in response_json)
+    assert(
+        1 == len(list(filter(lambda log: log["animalActivityLogId"] == mockData["animalActivityLogId"], 
+                        response_json["animalActivityLogs"])))
+           )
+    print("Testing create new getAnimalActivityLogsByAnimalCode success!\n")
+
+
+ANIMAL_ACTIVITY_LOG_API_TESTS = [
+    (createAnimalActivityLog, newAnimalActivityLogDetails), 
+    (getAnimalActivityLogById, newAnimalActivityLogDetails), 
+    (getAnimalActivityLogsByAnimalCode, "ANM00001", newAnimalActivityLogDetails), 
+]

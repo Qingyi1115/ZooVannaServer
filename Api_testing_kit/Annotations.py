@@ -9,29 +9,33 @@ SERVER_PORT = env["SERVER_PORT"]
 BASE_URL = SERVER_URL + ":" + SERVER_PORT
 
 class UseAPI:
-    def __init__(self, BASE_URL, HEADER):
+    def __init__(self, BASE_URL, header):
         self.BASE_URL = BASE_URL
-        self.HEADER = HEADER
+        self.header = header
     
-    def get(self, api, json):
+    def get(self, api, json=None):
         return requests.get(
             url=BASE_URL + api, 
-            json=json)
+            json=json,
+            headers=self.header)
     
-    def put(self, api, json):
+    def put(self, api, json=None):
         return requests.put(
             url=BASE_URL + api, 
-            json=json)
+            json=json,
+            headers=self.header)
     
-    def post(self, api, json):
+    def post(self, api, json=None):
         return requests.post(
             url=BASE_URL + api, 
-            json=json)
+            json=json,
+            headers=self.header)
     
-    def delete(self, api, json):
+    def delete(self, api, json=None):
         return requests.delete(
             url=BASE_URL + api, 
-            json=json)
+            json=json,
+            headers=self.header)
 
 def getApi(func):
     return lambda*args, **kwargs : func(*args, **kwargs, useAPI = UseAPI(BASE_URL, None))
@@ -43,7 +47,6 @@ def login_as_marry(func):
                             json={"email":marry_account["employeeEmail"], 
                                   "password":marry_account["password"]})
         api = UseAPI(BASE_URL, {'Authorization': "Bearer " + res.json()["token"]})
-        print("api", api)
         return (func(*args, **kwargs, 
                      useAPI = api))
     return wrapped_call_back
