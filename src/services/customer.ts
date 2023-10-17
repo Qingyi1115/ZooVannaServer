@@ -14,43 +14,51 @@ import { conn } from "../db";
 import QRCode from "react-qr-code";
 
 export async function sendEmailVerification(email: string) {
-  const token = uuidv4();
+  let customer = await Customer.findOne({
+    where: { email: email },
+  });
 
-  const verificationTokens: any = {
-    token: token,
-    email: email,
-    createdAt: Date.now(),
-    expiresAt: Date.now() + 3600000, //expires in 1 hour
-  };
+  if (!customer) {
+    const token = uuidv4();
 
-  try {
-    await Token.create(verificationTokens);
-
-    const transporter = nodemailer.createTransport({
-      service: "gmail",
-      auth: {
-        user: process.env.EMAIL_USERNAME,
-        pass: process.env.EMAIL_PASSWORD,
-      },
-    });
-
-    const mailOptions = {
-      from: process.env.EMAIL_USERNAME,
-      to: email,
-      subject: "ZooVanna Email Verification",
-      text: "Click the link below to verify your email: ",
-      html: `<a href="http://localhost:5174/signup/${token}">Verify Email</a>`,
+    const verificationTokens: any = {
+      token: token,
+      email: email,
+      createdAt: Date.now(),
+      expiresAt: Date.now() + 3600000, //expires in 1 hour
     };
 
-    transporter.sendMail(mailOptions, (error, info) => {
-      if (error) {
-        console.error("Error sending email:", error);
-      } else {
-        console.log("Email sent:", info.response);
-      }
-    });
-  } catch (error: any) {
-    throw validationErrorHandler(error);
+    try {
+      await Token.create(verificationTokens);
+
+      const transporter = nodemailer.createTransport({
+        service: "gmail",
+        auth: {
+          user: process.env.EMAIL_USERNAME,
+          pass: process.env.EMAIL_PASSWORD,
+        },
+      });
+
+      const mailOptions = {
+        from: process.env.EMAIL_USERNAME,
+        to: email,
+        subject: "ZooVanna Email Verification",
+        text: "Click the link below to verify your email: ",
+        html: `<a href="http://localhost:5174/signup/${token}">Verify Email</a>`,
+      };
+
+      transporter.sendMail(mailOptions, (error, info) => {
+        if (error) {
+          console.error("Error sending email:", error);
+        } else {
+          console.log("Email sent:", info.response);
+        }
+      });
+    } catch (error: any) {
+      throw validationErrorHandler(error);
+    }
+  } else {
+    throw { message: "Email is already registered. Please log in instead." };
   }
 }
 
@@ -280,7 +288,7 @@ export async function sendResetPasswordLink(customerId: number) {
         to: result.email,
         subject: "Reset Password",
         text: "Click the link below to reset your password: ",
-        html: `<a href="http://localhost:5174/resetPasswordNew/${token}">Reset Password</a>`,
+        html: `<a href="http://${process.env.LOCALHOST_ADDRESS}:5174/resetPasswordNew/${token}">Reset Password</a>`,
       };
 
       transporter.sendMail(mailOptions, (error, info) => {
