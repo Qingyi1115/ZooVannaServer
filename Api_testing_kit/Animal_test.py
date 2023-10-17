@@ -18,7 +18,7 @@ def getAnimalActivityLogById(mockData, useAPI: UseAPI):
     response_json = res.json()
     assert("animalActivityLog" in response_json)
     assert(response_json["animalActivityLog"]["details"] == mockData["details"])
-    print("Testing get getAnimalActivityLogById success!\n")
+    print("Testing getAnimalActivityLogById success!\n")
 
 @login_as_marry
 def getAnimalActivityLogsByAnimalCode(animalCode, mockData, useAPI: UseAPI):
@@ -29,11 +29,35 @@ def getAnimalActivityLogsByAnimalCode(animalCode, mockData, useAPI: UseAPI):
         1 == len(list(filter(lambda log: log["animalActivityLogId"] == mockData["animalActivityLogId"], 
                         response_json["animalActivityLogs"])))
            )
-    print("Testing create new getAnimalActivityLogsByAnimalCode success!\n")
+    print("Testing getAnimalActivityLogsByAnimalCode success!\n")
 
+@login_as_marry
+def updateAnimalActivityLog(mockData, useAPI: UseAPI):
+    mockData["details"] = "I HAVE UPDATED MY DETAILS!"
+    res = useAPI.put("/api/animal/updateAnimalActivityLog/{}".format(mockData["animalActivityLogId"]),
+                     mockData)
+    response_json = res.json()
+    assert("animalActivityLog" in response_json)
+    assert(response_json["animalActivityLog"]["details"] == mockData["details"])
+    print("Testing updateAnimalActivityLog success!\n")
+
+@login_as_marry
+def deleteAnimalActivityLogById(mockData, useAPI: UseAPI):
+    res = useAPI.delete("/api/animal/deleteAnimalActivityLogById/{}".format(mockData["animalActivityLogId"]),
+                     mockData)
+    response_json = res.json()
+    assert("result" in response_json)
+    assert(response_json["result"] == "success")
+
+    res = useAPI.get("/api/animal/getAnimalActivityLogById/{}".format(mockData["animalActivityLogId"]))
+    response_json = res.json()
+    assert("error" in response_json)
+    print("Testing deleteAnimalActivityLogById success!\n")
 
 ANIMAL_ACTIVITY_LOG_API_TESTS = [
     (createAnimalActivityLog, newAnimalActivityLogDetails), 
     (getAnimalActivityLogById, newAnimalActivityLogDetails), 
     (getAnimalActivityLogsByAnimalCode, "ANM00001", newAnimalActivityLogDetails), 
+    (updateAnimalActivityLog, newAnimalActivityLogDetails),
+    (deleteAnimalActivityLogById, newAnimalActivityLogDetails)
 ]
