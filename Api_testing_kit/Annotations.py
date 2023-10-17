@@ -38,26 +38,29 @@ class UseAPI:
             headers=self.header)
 
 def getApi(func):
-    return lambda*args, **kwargs : func(*args, **kwargs, useAPI = UseAPI(BASE_URL, None))
+    @wraps(func)
+    def wrapped_func(*args, **kwargs): 
+        return func(*args, **kwargs, useAPI = UseAPI(BASE_URL, None))
+    return wrapped_func
 
 def login_as_marry(func):
     @wraps(func)
-    def wrapped_call_back(*args, **kwargs):
+    def wrapped_func(*args, **kwargs):
         res = requests.post(url=BASE_URL + "/api/employee/login", 
                             json={"email":marry_account["employeeEmail"], 
                                   "password":marry_account["password"]})
         api = UseAPI(BASE_URL, {'Authorization': "Bearer " + res.json()["token"]})
         return (func(*args, **kwargs, 
                      useAPI = api))
-    return wrapped_call_back
+    return wrapped_func
 
 def login_as_junior_keeper(func):
     @wraps(func)
-    def wrapped_call_back(*args, **kwargs):
+    def wrapped_func(*args, **kwargs):
         res = requests.post(url=BASE_URL + "/api/employee/login", 
                             json={"email":junior_keeper["employeeEmail"], 
                                   "password":junior_keeper["password"]})
         return (func(*args, **kwargs, 
                      useAPI = UseAPI(BASE_URL, {'Authorization': "Bearer " + res.json()["token"]})))
-    return wrapped_call_back
+    return wrapped_func
 

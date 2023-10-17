@@ -10,7 +10,6 @@ def test_login_should_fail(mock_data, useAPI: UseAPI):
     response_json = res.json()
     assert("error" in response_json)
     assert(response_json["error"] == "Password inccorrect!")
-    print("Testing login should succeed passed!\n")
 
 @getApi
 def test_login_should_succeed(mock_data, useAPI: UseAPI):
@@ -21,7 +20,6 @@ def test_login_should_succeed(mock_data, useAPI: UseAPI):
     assert(response_json["employeeData"]["employeeEmail"] == mock_data["employeeEmail"])
     assert("token" in response_json)
     mock_data["token"] = response_json["token"]
-    print("Testing login should succeed passed!\n")
 
 LOGIN_API_TESTS = [
     (test_login_should_fail, junior_keeper), 
@@ -35,7 +33,6 @@ def create_user_should_fail(useAPI: UseAPI):
                       json=new_user_dat)
     response_json = res.json()
     assert("error" in response_json or "errors" in response_json)
-    print("Create User Shoud fail passed!\n")
 
 # @login_as_marry
 # def create_user_should_succeed(header):

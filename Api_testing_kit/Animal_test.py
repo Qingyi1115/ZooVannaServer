@@ -10,7 +10,6 @@ def createAnimalActivityLog(mockData, useAPI: UseAPI):
     assert("animalObservationLog" in response_json)
     assert(response_json["animalObservationLog"]["details"] == mockData["details"])
     mockData["animalActivityLogId"] = response_json["animalObservationLog"]["animalActivityLogId"]
-    print("Testing createAnimalActivityLog success!\n")
 
 @login_as_marry
 def getAnimalActivityLogById(mockData, useAPI: UseAPI):
@@ -18,7 +17,6 @@ def getAnimalActivityLogById(mockData, useAPI: UseAPI):
     response_json = res.json()
     assert("animalActivityLog" in response_json)
     assert(response_json["animalActivityLog"]["details"] == mockData["details"])
-    print("Testing getAnimalActivityLogById success!\n")
 
 @login_as_marry
 def getAnimalActivityLogsByAnimalCode(animalCode, mockData, useAPI: UseAPI):
@@ -29,7 +27,6 @@ def getAnimalActivityLogsByAnimalCode(animalCode, mockData, useAPI: UseAPI):
         1 == len(list(filter(lambda log: log["animalActivityLogId"] == mockData["animalActivityLogId"], 
                         response_json["animalActivityLogs"])))
            )
-    print("Testing getAnimalActivityLogsByAnimalCode success!\n")
 
 @login_as_marry
 def updateAnimalActivityLog(mockData, useAPI: UseAPI):
@@ -39,7 +36,6 @@ def updateAnimalActivityLog(mockData, useAPI: UseAPI):
     response_json = res.json()
     assert("animalActivityLog" in response_json)
     assert(response_json["animalActivityLog"]["details"] == mockData["details"])
-    print("Testing updateAnimalActivityLog success!\n")
 
 @login_as_marry
 def deleteAnimalActivityLogById(mockData, useAPI: UseAPI):
@@ -52,7 +48,6 @@ def deleteAnimalActivityLogById(mockData, useAPI: UseAPI):
     res = useAPI.get("/api/animal/getAnimalActivityLogById/{}".format(mockData["animalActivityLogId"]))
     response_json = res.json()
     assert("error" in response_json)
-    print("Testing deleteAnimalActivityLogById success!\n")
 
 ANIMAL_ACTIVITY_LOG_API_TESTS = [
     (createAnimalActivityLog, newAnimalActivityLogDetails), 

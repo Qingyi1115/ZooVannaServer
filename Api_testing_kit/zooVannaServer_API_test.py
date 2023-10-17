@@ -12,6 +12,7 @@ def do_tests(test_list):
         try:
             print("Testing ", tests[0].__name__)
             tests[0](*tests[1:])
+            print("Testing ", tests[0].__name__, " success!\n")
         except Exception as e:
             print("Exception while calling ", tests[0].__name__) 
             print("Details: ", e, "\n")
@@ -19,19 +20,19 @@ def do_tests(test_list):
             traceback.print_exc()
 
 def test_api():
-    print("-----------Login APIs initiating-----------\n")
+    print("-----------LOGIN_API_TESTS initiating-----------")
     do_tests(LOGIN_API_TESTS)
-    print("Login APIs test finish")
+    print("-----------Group test finish!-------------------\n")
 
     
-    print("-----------User APIs initiating-----------\n")
+    print("-----------USERS_API_TESTS initiating-----------")
     do_tests(USERS_API_TESTS)
-    print("User APIs test finish")
+    print("-----------Group test finish!-------------------\n")
 
     
-    print("-----------User APIs initiating-----------\n")
+    print("-----------ANIMAL_ACTIVITY_LOG_API_TESTS initiating-----------")
     do_tests(ANIMAL_ACTIVITY_LOG_API_TESTS)
-    print("User APIs test finish")
+    print("-----------Group test finish!---------------------\n")
 
     
 
