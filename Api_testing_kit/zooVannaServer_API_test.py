@@ -16,8 +16,8 @@ def do_tests(test_list):
         except Exception as e:
             print("Exception while calling ", tests[0].__name__) 
             print("Details: ", e, "\n")
-            # import traceback
-            # traceback.print_exc()
+            import traceback
+            traceback.print_exc()
 
 def test_api():
     print("-----------LOGIN_API_TESTS initiating-----------")

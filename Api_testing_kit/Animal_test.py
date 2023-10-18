@@ -38,6 +38,17 @@ def updateAnimalActivity(mockData, useAPI: UseAPI):
     assert(response_json["updatedAnimalActivity"]["details"] == mockData["details"])
     assert len(response_json["updatedAnimalActivity"]["zooEvents"]) in [4,5], "Zoo events incorrectly created " + str(len(response_json["updatedAnimalActivity"]["zooEvents"])) + " found!"
     
+    mockData["recurringPattern"] = "NON_RECURRING"
+    mockData["startDate"] = round(time()  +  60 * 60 * 24 * 10) * 1000
+    mockData["endDate"] = mockData["startDate"]
+    res = useAPI.put("/api/animal/updateAnimalActivity", json=mockData)
+    response_json = res.json()
+    assert "updatedAnimalActivity" in response_json, "No updatedAnimalActivity! " + ("" if "error" not in response_json else response_json["error"])
+    assert(response_json["updatedAnimalActivity"]["recurringPattern"] == mockData["recurringPattern"])
+    assert(response_json["updatedAnimalActivity"]["endDate"] == mockData["endDate"])
+    assert(response_json["updatedAnimalActivity"]["startDate"] == mockData["startDate"])
+    assert len(response_json["updatedAnimalActivity"]["zooEvents"]) == 1, "Zoo events incorrectly created " + str(len(response_json["updatedAnimalActivity"]["zooEvents"])) + " found!"
+    
 @login_as_marry
 def deleteAnimalActivity(mockData, useAPI: UseAPI):
     res = useAPI.delete("/api/animal/deleteAnimalActivity/{}".format(mockData["animalActivityId"]),

@@ -63,7 +63,10 @@ class AnimalActivity extends Model<
   
   public toJSON() {
     return {
-      ...this.get()
+      ...this.get(),
+      startDate : this.startDate?.getTime(),
+      endDate : this.endDate?.getTime(),
+
     }
   }
 

@@ -960,6 +960,9 @@ export async function updateAnimalActivity(
     if (zooEvents.length == 0 || animalActivity.dayOfWeek != dayOfWeek 
       || animalActivity.dayOfMonth != dayOfMonth
       || animalActivity.recurringPattern != recurringPattern){
+        animalActivity.startDate = startDate;
+        animalActivity.endDate = endDate;
+        animalActivity.recurringPattern = recurringPattern;
         console.log("regenerate all events")
         // Regenerate ALL events
         for (const ze of zooEvents){
@@ -1133,6 +1136,7 @@ export async function updateAnimalActivity(
           for (const p of iKeepMyPromises) await p; 
         }
 
+        animalActivity.recurringPattern = recurringPattern;
         animalActivity.startDate = startDate;
         animalActivity.endDate = endDate;
       }
