@@ -963,6 +963,9 @@ export async function updateAnimalActivity(
         animalActivity.startDate = startDate;
         animalActivity.endDate = endDate;
         animalActivity.recurringPattern = recurringPattern;
+        animalActivity.dayOfMonth = dayOfMonth;
+        animalActivity.dayOfWeek = dayOfWeek;
+
         console.log("regenerate all events")
         // Regenerate ALL events
         for (const ze of zooEvents){
