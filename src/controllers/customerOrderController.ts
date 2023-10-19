@@ -40,12 +40,17 @@ export async function getCustomerOrderByCustomerOrderId(
   }
 
   try {
-    const customerOrder =
-      await CustomerOrderService.getCustomerOrderByBookingReference(
-        customerOrderId,
-        _includes,
-      );
-    return res.status(200).json(customerOrder);
+    const customerOrderIdInt = parseInt(customerOrderId);
+    if (!isNaN(customerOrderIdInt)) {
+      const customerOrder =
+        await CustomerOrderService.getCustomerOrderByCustomerOrderId(
+          customerOrderIdInt,
+          _includes,
+        );
+      return res.status(200).json(customerOrder);
+    } else {
+      return res.status(400).json({ error: "Invalid customer order ID!" });
+    }
   } catch (error: any) {
     res.status(400).json({ error: error.message });
   }
