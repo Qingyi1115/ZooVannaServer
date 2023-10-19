@@ -8,9 +8,13 @@ from Employee_test import LOGIN_API_TESTS, USERS_API_TESTS
 from Animal_test import ANIMAL_ACTIVITY_LOG_API_TESTS, ANIMAL_ACTIVITY_API_TESTS
 from functools import reduce
 
+total_cases = 0
+total_passes = 0
+all_fails = []
+
 def do_tests(test_list):
-    cases = 0
-    passes = 0
+    global total_cases, total_passes, all_fails
+    cases = passes = 0
     fail_cases = []
     for tests in test_list:
         cases += 1
@@ -22,48 +26,37 @@ def do_tests(test_list):
             print("Exception while calling ", tests[0].__name__) 
             fail_cases.append(tests[0].__name__)
             print("Details: ", e, "\n")
-            import traceback
-            traceback.print_exc()
+            # import traceback
+            # traceback.print_exc()
     print("Group test cases pass : ", passes,"/", cases, ", successes rate ", round(passes/cases * 100, 2), "%")
-    return cases, passes, fail_cases
 
-def test_api():
-    total_cases = 0
-    total_passes = 0
-    all_fails = []
-    print("-----------LOGIN_API_TESTS initiating-----------")
-    cases, passes, fail_cases = do_tests(LOGIN_API_TESTS)
     total_cases += cases
     total_passes += passes
     all_fails.extend(fail_cases)
+    # return cases, passes, fail_cases
+
+def test_api():
+    print("-----------LOGIN_API_TESTS initiating-----------")
+    do_tests(LOGIN_API_TESTS)
     print("-----------Group test finish!-------------------\n")
 
     
     print("-----------USERS_API_TESTS initiating-----------")
-    cases, passes, fail_cases = do_tests(USERS_API_TESTS)
-    total_cases += cases
-    total_passes += passes
-    all_fails.extend(fail_cases)
+    do_tests(USERS_API_TESTS)
     print("-----------Group test finish!-------------------\n")
 
     
     print("-----------ANIMAL_ACTIVITY_LOG_API_TESTS initiating-----------")
-    cases, passes, fail_cases = do_tests(ANIMAL_ACTIVITY_LOG_API_TESTS)
-    total_cases += cases
-    total_passes += passes
-    all_fails.extend(fail_cases)
+    do_tests(ANIMAL_ACTIVITY_LOG_API_TESTS)
     print("-----------Group test finish!---------------------\n")
 
     
     print("-----------ANIMAL_ACTIVITY_API_TESTS initiating-----------")
-    cases, passes, fail_cases = do_tests(ANIMAL_ACTIVITY_API_TESTS)
-    total_cases += cases
-    total_passes += passes
-    all_fails.extend(fail_cases)
+    do_tests(ANIMAL_ACTIVITY_API_TESTS)
     print("-----------Group test finish!---------------------\n")
 
 
-    print("Total test cases pass : ", total_cases,"/", total_passes, ", successes rate ", round(total_cases/total_passes * 100, 2), "%\n")
+    print("All test cases finished!\nTotal test cases pass : ", total_passes,"/", total_cases, ", successes rate ", round(total_passes/total_cases * 100, 2), "%\n")
     if len(all_fails):
         print("Failed test cases: ", ", ".join(all_fails))
 
