@@ -44,7 +44,7 @@ export async function sendEmailVerification(email: string) {
         to: email,
         subject: "ZooVanna Email Verification",
         text: "Click the link below to verify your email: ",
-        html: `<a href="http://localhost:5174/signup/${token}">Verify Email</a>`,
+        html: `<a href="http://${process.env.LOCALHOST_ADDRESS}:5174/signup/${token}">Verify Email</a>`,
       };
 
       transporter.sendMail(mailOptions, (error, info) => {
