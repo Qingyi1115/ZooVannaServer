@@ -51,7 +51,6 @@ def updateAnimalActivity(mockData, useAPI: UseAPI):
     mockData["endDate"] = time() * 1000 + 1000 * 60 * 60 * 24 * 60
     res = useAPI.put("/api/animal/updateAnimalActivity", json=mockData)
     response_json = res.json()
-    print("c",debug_map(response_json["updatedAnimalActivity"]["zooEvents"]))
     assert "updatedAnimalActivity" in response_json, "No updatedAnimalActivity! " + ("" if "error" not in response_json else response_json["error"])
     assert(response_json["updatedAnimalActivity"]["details"] == mockData["details"])
     assert len(response_json["updatedAnimalActivity"]["zooEvents"]) in [4,5], "Zoo events incorrectly created " + str(len(response_json["updatedAnimalActivity"]["zooEvents"])) + " found!"
