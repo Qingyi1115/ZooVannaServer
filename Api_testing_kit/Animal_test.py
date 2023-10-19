@@ -1,6 +1,15 @@
+from functools import reduce
 from Json import newAnimalActivityLogDetails, newAnimalActivityDetails
 from Annotations import UseAPI, getApi, login_as_marry, login_as_junior_keeper
 from time import time
+
+from datetime import datetime
+def debug_map(arr):
+    return list(
+        sorted(
+            map(lambda a: datetime.fromtimestamp(a["eventStartDateTime"]/1000), arr),
+            key = lambda a: a
+        ))
 
 # Animal Activity API
 @login_as_marry
@@ -27,7 +36,7 @@ def updateAnimalActivity(mockData, useAPI: UseAPI):
     res = useAPI.put("/api/animal/updateAnimalActivity", json=mockData)
     response_json = res.json()
     assert "updatedAnimalActivity" in response_json, "No updatedAnimalActivity! " + ("" if "error" not in response_json else response_json["error"])
-    assert(response_json["updatedAnimalActivity"]["details"] == mockData["details"])
+    assert response_json["updatedAnimalActivity"]["details"] == mockData["details"], "Details do not match!"
     assert len(response_json["updatedAnimalActivity"]["zooEvents"]) in [8,9], "Zoo events incorrectly created " + str(len(response_json["updatedAnimalActivity"]["zooEvents"])) + " found!"
     
     mockData["startDate"] = time() * 1000 - 1000 * 60 * 60 * 24 * 30
@@ -37,7 +46,16 @@ def updateAnimalActivity(mockData, useAPI: UseAPI):
     assert "updatedAnimalActivity" in response_json, "No updatedAnimalActivity! " + ("" if "error" not in response_json else response_json["error"])
     assert(response_json["updatedAnimalActivity"]["details"] == mockData["details"])
     assert len(response_json["updatedAnimalActivity"]["zooEvents"]) in [4,5], "Zoo events incorrectly created " + str(len(response_json["updatedAnimalActivity"]["zooEvents"])) + " found!"
-    
+
+    mockData["startDate"] = time() * 1000 + 1000 * 60 * 60 * 24 * 30
+    mockData["endDate"] = time() * 1000 + 1000 * 60 * 60 * 24 * 60
+    res = useAPI.put("/api/animal/updateAnimalActivity", json=mockData)
+    response_json = res.json()
+    print("c",debug_map(response_json["updatedAnimalActivity"]["zooEvents"]))
+    assert "updatedAnimalActivity" in response_json, "No updatedAnimalActivity! " + ("" if "error" not in response_json else response_json["error"])
+    assert(response_json["updatedAnimalActivity"]["details"] == mockData["details"])
+    assert len(response_json["updatedAnimalActivity"]["zooEvents"]) in [4,5], "Zoo events incorrectly created " + str(len(response_json["updatedAnimalActivity"]["zooEvents"])) + " found!"
+
     mockData["recurringPattern"] = "NON_RECURRING"
     mockData["startDate"] = round(time()  +  60 * 60 * 24 * 10) * 1000
     mockData["endDate"] = mockData["startDate"]

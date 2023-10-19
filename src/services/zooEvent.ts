@@ -1,9 +1,9 @@
-import { EventTimingType, RecurringPattern } from "../models/enumerated";
+import { DayOfWeek, EventTimingType, RecurringPattern } from "../models/enumerated";
 import { validationErrorHandler } from "../helpers/errorHandler";
 import * as AnimalService from "./animal";
 import { ZooEvent } from "../models/zooEvent";
 import { ADVANCE_DAYS_FOR_ZOO_EVENT_GENERATION, ANIMAL_ACTIVITY_NOTIFICATION_HOURS, DAY_IN_MILLISECONDS, HOUR_IN_MILLISECONDS } from "../helpers/staticValues";
-import { compareDates } from "../helpers/others";
+import { compareDates, getNextDayOfMonth, getNextDayOfWeek } from "../helpers/others";
 
 function loopCallbackDateIntervals(
   callback: Function,
@@ -29,17 +29,27 @@ export async function generateMonthlyZooEventForAnimalActivity(animalActivityId:
   const animalActivity = await AnimalService.getAnimalActivityById(animalActivityId);
   const zooEvents = await animalActivity.getZooEvents();
 
-  let earliestDate = compareDates(new Date(), animalActivity.startDate) > 0 ? new Date() : animalActivity.startDate;
-  earliestDate = new Date(Date.UTC(earliestDate.getFullYear(), earliestDate.getMonth(), earliestDate.getDate()));
+  let startDate = compareDates(new Date(), animalActivity.startDate) > 0 ? new Date() : animalActivity.startDate;
+  startDate = new Date(Date.UTC(startDate.getFullYear(), startDate.getMonth(), startDate.getDate()));
   if (zooEvents.length> 0){
-    earliestDate = zooEvents.reduce((a, b)=>compareDates(a.eventStartDateTime, b.eventStartDateTime) > 0 ? b : a).eventStartDateTime;
+    const latestEventDate = zooEvents.reduce((a, b)=>compareDates(a.eventStartDateTime, b.eventStartDateTime) > 0 ? a : b).eventStartDateTime;
+    startDate = compareDates(latestEventDate, startDate) > 0 ? latestEventDate : startDate;
+    let lastday = new Date(Date.UTC(startDate.getFullYear(), startDate.getMonth() + 1, 0)).getDate();
+    
+    startDate = animalActivity.recurringPattern == RecurringPattern.DAILY?
+    new Date(startDate.getTime() + DAY_IN_MILLISECONDS) 
+    : animalActivity.recurringPattern == RecurringPattern.WEEKLY?
+    new Date(startDate.getTime() + DAY_IN_MILLISECONDS * 7)
+    : animalActivity.recurringPattern == RecurringPattern.MONTHLY?
+    new Date(Date.UTC(startDate.getFullYear(), startDate.getMonth() + 1, Math.min(lastday, animalActivity.dayOfMonth || 1)))
+    : startDate;
   }
 
   if (compareDates(new Date(), animalActivity.endDate) > 0) return animalActivity;
-  let latestDate = compareDates(new Date(Date.now() + DAY_IN_MILLISECONDS * ADVANCE_DAYS_FOR_ZOO_EVENT_GENERATION) , animalActivity.endDate) < 0 
+  let lastDate = compareDates(new Date(Date.now() + DAY_IN_MILLISECONDS * ADVANCE_DAYS_FOR_ZOO_EVENT_GENERATION) , animalActivity.endDate) < 0 
   ? new Date(Date.now() + DAY_IN_MILLISECONDS * ADVANCE_DAYS_FOR_ZOO_EVENT_GENERATION) 
   : animalActivity.endDate ;
-  latestDate =new Date(Date.UTC(latestDate.getFullYear(), latestDate.getMonth(), latestDate.getDate()));
+  lastDate =new Date(Date.UTC(lastDate.getFullYear(), lastDate.getMonth(), lastDate.getDate()));
 
   let interval = 0;
   switch(animalActivity.recurringPattern){
@@ -69,12 +79,21 @@ export async function generateMonthlyZooEventForAnimalActivity(animalActivityId:
             animalActivity.details
         );
       }, 
-      earliestDate,
-      latestDate,
+      getNextDayOfMonth(startDate, animalActivity.dayOfMonth),
+      lastDate,
       animalActivity.dayOfMonth,
       true
     );
   } else {
+    let dayOfWeekNumber = 0;
+    switch(animalActivity.dayOfWeek){
+      case DayOfWeek.MONDAY: dayOfWeekNumber = 1; break;
+      case DayOfWeek.TUESDAY: dayOfWeekNumber = 2; break;
+      case DayOfWeek.WEDNESDAY: dayOfWeekNumber = 3; break;
+      case DayOfWeek.THURSDAY: dayOfWeekNumber = 4; break;
+      case DayOfWeek.FRIDAY: dayOfWeekNumber = 5; break;
+      case DayOfWeek.SATURDAY: dayOfWeekNumber = 6; break;
+    }
     iKeepMyPromises = loopCallbackDateIntervals(
       (date: Date)=>{
           return createAnimalActivityZooEvent(
@@ -85,8 +104,8 @@ export async function generateMonthlyZooEventForAnimalActivity(animalActivityId:
             animalActivity.details
         );
       }, 
-      earliestDate,
-      latestDate,
+      getNextDayOfWeek(startDate, dayOfWeekNumber),
+      lastDate,
       interval,
       false
     );
