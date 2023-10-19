@@ -39,30 +39,23 @@ def test_api():
     print("-----------LOGIN_API_TESTS initiating-----------")
     do_tests(LOGIN_API_TESTS)
     print("-----------Group test finish!-------------------\n")
-
     
     print("-----------USERS_API_TESTS initiating-----------")
     do_tests(USERS_API_TESTS)
     print("-----------Group test finish!-------------------\n")
 
-    
     print("-----------ANIMAL_ACTIVITY_LOG_API_TESTS initiating-----------")
     do_tests(ANIMAL_ACTIVITY_LOG_API_TESTS)
     print("-----------Group test finish!---------------------\n")
-
     
     print("-----------ANIMAL_ACTIVITY_API_TESTS initiating-----------")
     do_tests(ANIMAL_ACTIVITY_API_TESTS)
     print("-----------Group test finish!---------------------\n")
 
-
     print("All test cases finished!\nTotal test cases pass : ", total_passes,"/", total_cases, ", successes rate ", round(total_passes/total_cases * 100, 2), "%\n")
     if len(all_fails):
         print("Failed test cases: ", ", ".join(all_fails))
 
-    
-
-    
 
 if __name__ == "__main__":
     test_api()
