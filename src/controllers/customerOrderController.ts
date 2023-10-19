@@ -7,7 +7,7 @@ export async function getAllCustomerOrders(req: Request, res: Response) {
   const { includes = "" } = req.body;
 
   const _includes: string[] = [];
-  for (const role of ["customerOrder"]) {
+  for (const role of ["customer", "payment", "orderItems", "promotion"]) {
     if (includes.includes(role)) _includes.push(role);
   }
 
@@ -28,7 +28,7 @@ export async function getCustomerOrderByCustomerOrderId(
   const { includes = "" } = req.body;
 
   const _includes: string[] = [];
-  for (const role of ["customer", "payment", "orderItem", "promotion"]) {
+  for (const role of ["customer", "payment", "orderItems", "promotion"]) {
     if (includes.includes(role)) _includes.push(role);
   }
 
@@ -64,7 +64,7 @@ export async function getCustomerOrderByBookingReference(
   const { includes = "" } = req.body;
 
   const _includes: string[] = [];
-  for (const role of ["customer", "payment", "orderItem", "promotion"]) {
+  for (const role of ["customer", "payment", "orderItems", "promotion"]) {
     if (includes.includes(role)) _includes.push(role);
   }
 
