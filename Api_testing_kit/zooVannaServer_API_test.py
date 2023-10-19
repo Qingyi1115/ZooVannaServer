@@ -15,9 +15,8 @@ def do_tests(test_list):
     for tests in test_list:
         cases += 1
         try:
-            print("Testing ", tests[0].__name__)
             tests[0](*tests[1:])
-            print("Testing ", tests[0].__name__, " success!\n")
+            print("Testing ", tests[0].__name__, " success!")
             passes += 1
         except Exception as e:
             print("Exception while calling ", tests[0].__name__) 
@@ -25,7 +24,7 @@ def do_tests(test_list):
             print("Details: ", e, "\n")
             import traceback
             traceback.print_exc()
-    print("Group test cases pass : ", passes,"/", cases, ", successes rate ", round(passes/cases * 100, 2), "%\n")
+    print("Group test cases pass : ", passes,"/", cases, ", successes rate ", round(passes/cases * 100, 2), "%")
     return cases, passes, fail_cases
 
 def test_api():
