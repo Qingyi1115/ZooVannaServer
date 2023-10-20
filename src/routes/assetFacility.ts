@@ -64,7 +64,8 @@ import {
   getAllZoneController,
   getZoneByIdController,
   updateZoneController,
-  deleteZoneController
+  deleteZoneController,
+  completeRepairTicketController
 } from "../controllers/assetFacilityController";
 
 const router = express.Router();
@@ -105,6 +106,7 @@ router.post("/createFacilityLog/:facilityId", createFacilityLogController);
 router.post("/createFacilityMaintenanceLog/:facilityId", createFacilityMaintenanceLogController);
 router.put("/updateFacilityLog/:facilityLogId", updateFacilityLogController);
 router.delete("/deleteFacilityLog/:facilityLogId", deleteFacilityLogController);
+router.put("/completeRepairTicket/:facilityLogId", completeRepairTicketController);
 
 //Animal Feed
 router.post("/createNewAnimalFeed", createNewAnimalFeedController);

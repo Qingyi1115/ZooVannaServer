@@ -336,13 +336,16 @@ export async function getFacilityLogs(
   }
 }
 
+
+
 export async function createFacilityLog(
   facilityId: number,
   title: string,
   details: string,
   remarks: string,
   staffName: string,
-  facilityLogType: FacilityLogType
+  facilityLogType: FacilityLogType,
+  employeeIds: number[]
 ): Promise<FacilityLog> {
   try {
     const facility = await Facility.findOne({
@@ -361,6 +364,14 @@ export async function createFacilityLog(
       facilityLogType: facilityLogType
     })
     thirdParty.addFacilityLog(facilityLog);
+
+    if (facilityLogType == FacilityLogType.ACTIVE_REPAIR_TICKET){
+      if (employeeIds.length < 1) throw { message: "Employee ids empty!"}
+      for (const id of employeeIds){
+        const emp = await findEmployeeById(id);
+        await facilityLog.addGeneralStaff((await emp.getGeneralStaff()));
+      }
+    }
 
     return facilityLog;
   } catch (error: any) {
@@ -769,6 +780,22 @@ export async function deleteFacilityLogById(
     if (!facilityLog) throw {message:"Cannot find facility log id : " + facilityLogId}
     
     await facilityLog.destroy();
+  } catch (error: any) {
+    throw validationErrorHandler(error);
+  }
+}
+
+export async function completeRepairTicket(
+  facilityLogId: number,
+) {
+  try {
+    const facilityLog = await getFacilityLogById(facilityLogId);
+    if (!facilityLog) throw {message:"Cannot find facility log id : " + facilityLogId}
+
+    await facilityLog.setGeneralStaffs([]);
+    facilityLog.facilityLogType = FacilityLogType.COMPLETED_REPAIR_TICKET;
+
+    return await facilityLog.save();
   } catch (error: any) {
     throw validationErrorHandler(error);
   }
