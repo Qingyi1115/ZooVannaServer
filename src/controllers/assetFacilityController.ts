@@ -862,13 +862,13 @@ export async function createFacilityMaintenanceLogController(
       remarks,
       employee.employeeName
     );
-    const generalStaff = await employee.getGeneralStaff();
-    const facilities = await generalStaff?.getMaintainedFacilities() || [];
-    for (const facility of facilities) {
-      if ((await facility.getFacility()).facilityId == Number(facilityId))
-        generalStaff.removeMaintainedFacility(facility);
-    }
-    await generalStaff?.save();
+    // const generalStaff = await employee.getGeneralStaff();
+    // const facilities = await generalStaff?.getMaintainedFacilities() || [];
+    // for (const facility of facilities) {
+    //   if ((await facility.getFacility()).facilityId == Number(facilityId))
+    //     generalStaff.removeMaintainedFacility(facility);
+    // }
+    // await generalStaff?.save();
 
     return res.status(200).json({ maintenanceLog: maintenanceLog.toJSON() });
   } catch (error: any) {
@@ -1367,15 +1367,15 @@ export async function createSensorMaintenanceLogController(
       remarks,
       employee.employeeName
     );
-    const generalStaff = await employee?.getGeneralStaff();
-    if (generalStaff) {
-      let sensors = (await generalStaff?.getSensors()) || [];
-      for (const sensor of sensors) {
-        if (sensor.sensorId == Number(sensorId))
-          generalStaff.removeSensor(sensor);
-      }
-      await generalStaff?.save();
-    }
+    // const generalStaff = await employee?.getGeneralStaff();
+    // if (generalStaff) {
+    //   let sensors = (await generalStaff?.getSensors()) || [];
+    //   for (const sensor of sensors) {
+    //     if (sensor.sensorId == Number(sensorId))
+    //       generalStaff.removeSensor(sensor);
+    //   }
+    //   await generalStaff?.save();
+    // }
 
     return res.status(200).json({ sensor: sensor.toFullJSON() });
   } catch (error: any) {
