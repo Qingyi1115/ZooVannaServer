@@ -100,13 +100,14 @@ router.delete("/removeMaintenanceStaffFromFacility/:facilityId", removeMaintenan
 router.put("/assignOperationStaffToFacility/:facilityId", assignOperationStaffToFacilityController);
 router.delete("/removeOperationStaffFromFacility/:facilityId", removeOperationStaffFromFacilityController);
 
-router.get("/getFacilityLogs/:facilityId", getFacilityLogsController);
-router.get("/getFacilityLog/:facilityLogId", getFacilityLogByIdController);
+//Facility Logs
 router.post("/createFacilityLog/:facilityId", createFacilityLogController);
 router.post("/createFacilityMaintenanceLog/:facilityId", createFacilityMaintenanceLogController);
+router.get("/getFacilityLogs/:facilityId", getFacilityLogsController);
+router.get("/getFacilityLog/:facilityLogId", getFacilityLogByIdController);
 router.put("/updateFacilityLog/:facilityLogId", updateFacilityLogController);
+router.get("/completeRepairTicket/:facilityLogId", completeRepairTicketController);
 router.delete("/deleteFacilityLog/:facilityLogId", deleteFacilityLogController);
-router.put("/completeRepairTicket/:facilityLogId", completeRepairTicketController);
 
 //Animal Feed
 router.post("/createNewAnimalFeed", createNewAnimalFeedController);

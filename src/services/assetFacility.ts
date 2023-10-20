@@ -735,7 +735,8 @@ export async function getFacilityLogById(
     const facilityLog = await FacilityLog.findOne({
       where: {
         facilityLogId:facilityLogId
-      }
+      },
+      include:["inHouse", "generalStaffs"]
     });
     if (!facilityLog) throw {message:"Cannot find facility log id : " + facilityLogId}
     return facilityLog;

@@ -203,15 +203,13 @@ export const createDatabase = async (options: any) => {
   FacilityLog.belongsToMany(GeneralStaff, {
     foreignKey: "facilityLogId",
     through: "repairTicket_staff",
-    as: "facilityLogs",
-    onDelete: "CASCADE",
+    as: "generalStaffs",
   });
 
   GeneralStaff.belongsToMany(FacilityLog, {
     foreignKey: "generalStaffId",
     through: "repairTicket_staff",
-    as: "generalStaffs",
-    onDelete: "CASCADE",
+    as: "facilityLogs",
   });
 
   Facility.hasOne(ThirdParty, addCascadeOptions({ foreignKey: "FacilityId" }));

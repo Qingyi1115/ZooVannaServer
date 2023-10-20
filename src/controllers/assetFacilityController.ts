@@ -822,6 +822,7 @@ export async function createFacilityLogController(req: Request, res: Response) {
 
     return res.status(200).json({ facilityLog: facilityLog.toJSON() });
   } catch (error: any) {
+    console.log("error")
     res.status(400).json({ error: error.message });
   }
 }
