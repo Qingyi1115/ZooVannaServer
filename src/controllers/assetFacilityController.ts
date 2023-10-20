@@ -794,7 +794,10 @@ export async function createFacilityLogController(req: Request, res: Response) {
     const { title, details, remarks, facilityLogType, employeeIds } = req.body;
 
     if ([facilityId, title, details, remarks, facilityLogType].includes(undefined)) {
-      return res.status(400).json({ error: "Missing information!" });
+      return res.status(400).json({ 
+        error: "Missing information!" + 
+        facilityId, title, details, remarks, facilityLogType
+      });
     }
 
     if ( !employee.superAdmin && (
