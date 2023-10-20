@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { findEmployeeByEmail } from "../services/employee";
-import { GeneralStaffType, PlannerType } from "../models/enumerated";
+import { FacilityLogType, GeneralStaffType, PlannerType } from "../models/enumerated";
 import {
   getAllFacility,
   getAllHubs,
@@ -798,11 +798,11 @@ export async function createFacilityLogController(req: Request, res: Response) {
 
     let facilityLog: FacilityLog = await createFacilityLog(
       Number(facilityId),
-      false,
       title,
       details,
       remarks,
-      employee.employeeName
+      employee.employeeName,
+      FacilityLogType.OPERATION_LOG
     );
 
     return res.status(200).json({ facilityLog: facilityLog.toJSON() });
@@ -848,7 +848,7 @@ export async function createFacilityMaintenanceLogController(
     const facilities = await generalStaff?.getMaintainedFacilities() || [];
     for (const facility of facilities) {
       if ((await facility.getFacility()).facilityId == Number(facilityId))
-        generalStaff.removeMaintainedFacilities(facility);
+        generalStaff.removeMaintainedFacility(facility);
     }
     await generalStaff?.save();
 

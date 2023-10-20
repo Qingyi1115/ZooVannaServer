@@ -1,4 +1,4 @@
-import { GeneralStaffType, HubStatus, PlannerType, SensorType } from "../models/enumerated";
+import { FacilityLogType, GeneralStaffType, HubStatus, PlannerType, SensorType } from "../models/enumerated";
 import { validationErrorHandler } from "../helpers/errorHandler";
 import { Facility } from "../models/facility";
 import { Sensor } from "../models/sensor";
@@ -144,7 +144,7 @@ export async function getAllFacilityMaintenanceSuggestions(employee:Employee) {
     for (const facility of facilities) {
       let inHouse = await (facility as any).getFacilityDetail();
       let logs = (await inHouse.getFacilityLogs()) || [];
-      logs = logs.filter((log: FacilityLog) => log.isMaintenance);
+      logs = logs.filter((log: FacilityLog) => log.facilityLogType == FacilityLogType.MAINTENANCE_LOG);
       logs = logs.map((log: FacilityLog) => log.dateTime);
       (facility as any).dataValues["predictedMaintenanceDate"] = predictNextDate(logs);
       (facility as any).dataValues["facilityDetailJson"] = inHouse.toJSON();
@@ -338,11 +338,11 @@ export async function getFacilityLogs(
 
 export async function createFacilityLog(
   facilityId: number,
-  isMaintenance: boolean,
   title: string,
   details: string,
   remarks: string,
-  staffName: string
+  staffName: string,
+  facilityLogType: FacilityLogType
 ): Promise<FacilityLog> {
   try {
     const facility = await Facility.findOne({
@@ -354,11 +354,11 @@ export async function createFacilityLog(
 
     const facilityLog = await FacilityLog.create({
       dateTime: new Date(),
-      isMaintenance: isMaintenance,
       title: title,
       details: details,
       remarks: remarks,
-      staffName: staffName
+      staffName: staffName,
+      facilityLogType: facilityLogType
     })
     thirdParty.addFacilityLog(facilityLog);
 
@@ -541,7 +541,7 @@ export async function getFacilityMaintenanceSuggestions(
     if (!inHouse) throw {message:"InHouse not found, facility Id: " + facilityId}
     
     let logs = (await inHouse.getFacilityLogs()) || [];
-    logs = logs.filter((log: FacilityLog) => log.isMaintenance);
+    logs = logs.filter((log: FacilityLog) => log.facilityLogType == FacilityLogType.MAINTENANCE_LOG);
     let dateLogs = logs.map((log: FacilityLog) => log.dateTime);
     
     return {...predictCycleLength(dateLogs, predictionLength), name:facility.facilityName};
@@ -704,8 +704,8 @@ export async function createFacilityMaintenanceLog(
       title: title,
       details: details,
       remarks: remarks,
-      isMaintenance: true,
-      staffName : staffName
+      staffName : staffName,
+      facilityLogType : FacilityLogType.MAINTENANCE_LOG
     })
     inHouse.addFacilityLog(newLog);
     inHouse.lastMaintained = date;

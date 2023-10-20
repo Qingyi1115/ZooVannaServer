@@ -570,6 +570,14 @@ enum Reaction {
   UNDETERMINED="UNDETERMINED"
 }
 
+enum FacilityLogType{
+  ACTIVE_REPAIR_TICKET="ACTIVE_REPAIR_TICKET",
+  INACTIVE_REPAIR_TICKET="INACTIVE_REPAIR_TICKET",
+  REPAIR_LOG="REPAIR_LOG",
+  MAINTENANCE_LOG="MAINTENANCE_LOG",
+  OPERATION_LOG="OPERATION_LOG"
+}
+
 export {
   KeeperType,
   PlannerType,
@@ -609,4 +617,5 @@ export {
   RecurringPattern,
   RepeatPattern,
   Reaction,
+  FacilityLogType
 };
