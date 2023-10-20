@@ -1407,7 +1407,7 @@ export async function getFeedingPlansBySpeciesCode(
 
   try {
     const allFeedingPlans =
-      await AnimalService.getAnimalFeedingLogsBySpeciesCode(speciesCode);
+      await AnimalService.getFeedingPlansBySpeciesCode(speciesCode);
     return res
       .status(200)
       .json(allFeedingPlans?.map((feedingPlan) => feedingPlan.toJSON()));
