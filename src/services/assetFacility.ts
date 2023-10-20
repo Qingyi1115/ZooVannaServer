@@ -792,6 +792,7 @@ export async function completeRepairTicket(
   try {
     const facilityLog = await getFacilityLogById(facilityLogId);
     if (!facilityLog) throw {message:"Cannot find facility log id : " + facilityLogId}
+    if (facilityLog.facilityLogType != FacilityLogType.ACTIVE_REPAIR_TICKET) throw{message:"Not an active repair ticket!"}
 
     await facilityLog.setGeneralStaffs([]);
     facilityLog.facilityLogType = FacilityLogType.COMPLETED_REPAIR_TICKET;
