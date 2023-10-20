@@ -375,7 +375,7 @@ export const createDatabase = async (options: any) => {
   Animal.belongsToMany(FeedingPlan, {
     foreignKey: "animalId",
     through: "animal_feedingPlan",
-    as: "animalFeedingPlans",
+    as: "feedingPlans",
   });
   FeedingPlan.belongsToMany(Animal, {
     foreignKey: "feedingPlanId",
@@ -1697,6 +1697,31 @@ export const animalSeed = async () => {
 
   await AnimalService.assignAnimalsToActivity(1, ["ANM00001", "ANM00003"]);
   await AnimalService.assignItemToActivity(1, [1, 2]);
+
+  // -- Animal Feeding Plan
+  await AnimalService.createFeedingPlan(
+    "SPE001",
+    ["ANM00001", "ANM00002", "ANM00003"],
+    "Some description...",
+    new Date("2023-10-13"),
+    new Date("2023-10-22"),
+  );
+
+  await AnimalService.createFeedingPlan(
+    "SPE001",
+    ["ANM00003", "ANM00004", "ANM00005", "ANM00006"],
+    "Some description...",
+    new Date("2023-10-13"),
+    new Date("2023-10-22"),
+  );
+
+  await AnimalService.createFeedingPlan(
+    "SPE002",
+    ["ANM00011"],
+    "Some description...",
+    new Date("2023-10-13"),
+    new Date("2023-10-22"),
+  );
 };
 
 export const animalFeedSeed = async () => {
