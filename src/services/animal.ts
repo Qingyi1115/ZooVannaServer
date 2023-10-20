@@ -112,6 +112,11 @@ export async function getAnimalByAnimalCode(animalCode: string) {
         as: "children",
         required: false, // Include the children only if they exist
       },
+      {
+        model: FeedingPlan,
+        as: "feedingPlans",
+        required: false, // Include only if they exist
+      },
     ],
     attributes: {
       // Include the 'age' virtual field
@@ -1814,10 +1819,7 @@ export async function getFeedingPlansBySpeciesCode(speciesCode: string) {
 
 export async function getFeedingPlansByAnimalCode(animalCode: string) {
   try {
-    const animal = await Animal.findOne({
-      include: [Species],
-      where: { animalCode: animalCode },
-    });
+    const animal = await getAnimalByAnimalCode(animalCode);
 
     if (animal) {
       return animal.feedingPlans;
