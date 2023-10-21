@@ -156,7 +156,7 @@ export async function getZooEventById(
             "enclosure",
             "animal",
             "inHouse",
-            "animalActivitySession",
+            "animalActivity",
           ]
       });
 

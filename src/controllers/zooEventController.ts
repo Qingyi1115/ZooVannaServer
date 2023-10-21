@@ -29,7 +29,7 @@ export async function getAllZooEvents(req: Request, res: Response) {
     "enclosure",
     "animal",
     "inHouse",
-    "animalActivitySession",
+    "animalActivity",
   ]) {
     if (includes.includes(role)) _includes.push(role);
   }
@@ -40,7 +40,7 @@ export async function getAllZooEvents(req: Request, res: Response) {
       new Date(endDate),
       _includes
     );
-    return res.status(200).json({zooEvents:zooEvents});
+    return res.status(200).json({zooEvents:zooEvents.map(ze=>ze.toJSON())});
   } catch (error: any) {
     res.status(400).json({ error: error.message });
   }
@@ -104,11 +104,11 @@ export async function updateZooEventSingle(req: Request, res: Response) {
   if ("eventDurationHrs" in zooEventDetails) field["eventDurationHrs"] = Number(zooEventDetails["eventDurationHrs"]);
 
   try {
-    const newZooEvent = await ZooEvent.updateZooEventById(
+    const zooEvent = await ZooEvent.updateZooEventById(
       Number(zooEventId),
       field
     );
-    return res.status(200).json({zooEvent:newZooEvent});
+    return res.status(200).json({zooEvent:zooEvent.toJSON()});
   } catch (error: any) {
     res.status(400).json({ error: error.message });
   }

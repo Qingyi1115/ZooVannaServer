@@ -8,13 +8,16 @@ import {
     updateZooEventIncludeFuture, 
     updateZooEventSingle,
  } from "../controllers/zooEventController";
+
 const router = express.Router();
 
 router.use(authMiddleware);
 
 //species basic
-router.get("/getAllZooEvents", getAllZooEvents);
+router.post("/getAllZooEvents", getAllZooEvents);
 router.get("/getZooEventById/:zooEventId", getZooEventById);
 router.put("/updateZooEventSingle/:zooEventId", updateZooEventSingle);
 router.put("/updateZooEventIncludeFuture/:zooEventId", updateZooEventIncludeFuture);
 router.delete("/deleteZooEvent/:zooEventId", deleteZooEvent);
+
+export default router;

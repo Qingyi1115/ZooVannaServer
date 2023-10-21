@@ -30,6 +30,7 @@ class ZooEvent extends Model<
   declare eventDescription: string;
   declare eventIsPublic: boolean;
   declare eventType?: EventType;
+  declare eventStartDateTime: Date;
 
   // Internal
   declare eventDurationHrs: number;
@@ -37,7 +38,6 @@ class ZooEvent extends Model<
 
   // Public
   declare eventNotificationDate: Date;
-  declare eventStartDateTime: Date;
   declare eventEndDateTime: Date | null;
   declare imageUrl: CreationOptional<string>;
   
@@ -47,7 +47,7 @@ class ZooEvent extends Model<
   declare animal?: Animal;
   declare inHouse?: InHouse;
   declare animalClinic?: AnimalClinic;
-  declare AnimalActivity?: AnimalActivity;
+  declare animalActivity?: AnimalActivity;
 
   declare getPlanningStaff: BelongsToGetAssociationMixin<PlanningStaff>;
   declare setPlanningStaff: BelongsToSetAssociationMixin<PlanningStaff, number>;

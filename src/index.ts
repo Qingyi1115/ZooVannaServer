@@ -19,6 +19,7 @@ import animalRoutes from "./routes/animal";
 import promotionRoutes from "./routes/promotion";
 import listingRoutes from "./routes/listing";
 import listingCustomerRoutes from "./routes/listingCustomer";
+import zooEventRoutes from "./routes/zooEvent";
 import { seedDatabase, createDatabase } from "./models/index";
 import { conn } from "./db";
 
@@ -133,9 +134,10 @@ app.post("/fetchPayment", async (req: Request, res: Response) => {
 
 app.use("/api/employee/", employeeRoutes);
 app.use("/api/customer/", customerRoutes);
-app.use("/api/assetFacility/", assetFacilityRoutes);
+app.use("/api/assetFacility", assetFacilityRoutes);
 app.use("/api/species", speciesRoutes);
 app.use("/api/animal", animalRoutes);
 app.use("/api/promotion", promotionRoutes);
 app.use("/api/listing", listingRoutes);
 app.use("/api/listingCustomer", listingCustomerRoutes);
+app.use("/api/zooEvent", zooEventRoutes);
