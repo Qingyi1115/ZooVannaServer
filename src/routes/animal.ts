@@ -60,6 +60,10 @@ import {
   createFeedingPlanSessionDetail,
   updateFeedingPlanSessionDetail,
   deleteFeedingPlanSessionDetailById,
+  getAllFeedingItemsByPlanSessionId,
+  createFeedingItem,
+  updateFeedingItem,
+  deleteFeedingItemById,
 } from "../controllers/animalController";
 
 const router = express.Router();
@@ -213,5 +217,14 @@ router.delete(
   "/deleteFeedingPlanSessionDetailById/:feedingPlanDetailId",
   deleteFeedingPlanSessionDetailById,
 );
+
+//-- Animal Feeding Plan Food Item
+router.get(
+  "/getAllFeedingItemsByPlanSessionId/:feedingPlanDetailId",
+  getAllFeedingItemsByPlanSessionId,
+);
+router.post("/createFeedingItem", createFeedingItem);
+router.put("/updateFeedingItem", updateFeedingItem);
+router.delete("/deleteFeedingItemById/:feedingItemId", deleteFeedingItemById);
 
 export default router;

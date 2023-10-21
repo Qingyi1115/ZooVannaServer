@@ -1714,6 +1714,12 @@ export const animalSeed = async () => {
   await AnimalService.createFeedingPlanSessionDetail(1, "MONDAY", "AFTERNOON");
   await AnimalService.createFeedingPlanSessionDetail(1, "FRIDAY", "EVENING");
   await AnimalService.createFeedingPlanSessionDetail(2, "MONDAY", "AFTERNOON");
+
+  await AnimalService.createFeedingItem(1, "ANM00001", "FRUITS", 5, "KG");
+  await AnimalService.createFeedingItem(1, "ANM00001", "HAY", 20, "KG");
+  await AnimalService.createFeedingItem(1, "ANM00002", "FRUITS", 10, "KG");
+  await AnimalService.createFeedingItem(2, "ANM00001", "HAY", 2000, "KG");
+  await AnimalService.createFeedingItem(2, "ANM00003", "FRUITS", 5, "KG");
 };
 
 export const animalFeedSeed = async () => {
