@@ -1,9 +1,10 @@
-import { DayOfWeek, EventTimingType, RecurringPattern } from "../models/enumerated";
+import { DayOfWeek, EventTimingType, EventType, RecurringPattern } from "../models/enumerated";
 import { validationErrorHandler } from "../helpers/errorHandler";
 import * as AnimalService from "./animal";
 import { ZooEvent } from "../models/zooEvent";
 import { ADVANCE_DAYS_FOR_ZOO_EVENT_GENERATION, ANIMAL_ACTIVITY_NOTIFICATION_HOURS, DAY_IN_MILLISECONDS, HOUR_IN_MILLISECONDS } from "../helpers/staticValues";
 import { compareDates, getNextDayOfMonth, getNextDayOfWeek } from "../helpers/others";
+import { Op } from "Sequelize";
 
 function loopCallbackDateIntervals(
   callback: Function,
@@ -150,9 +151,16 @@ export async function getZooEventById(
       const zooEvent = await ZooEvent.findOne({
           where:{zooEventId:zooEventId},
           include:[
-              "animal",
+            "planningStaff",
+            "keepers",
+            "enclosure",
+            "animal",
+            "inHouse",
+            "animalActivitySession",
           ]
       });
+
+      if (!zooEvent) throw {message:"Zoo event not found id:" + zooEventId}
 
       return zooEvent;
   } catch (error: any) {
@@ -190,5 +198,102 @@ export async function updateZooEventById(
     return zooEvent;
   } catch (error: any) {
     throw validationErrorHandler(error);
+  }
+}
+
+export async function updateZooEventIncludeFuture(
+  zooEventId : number,
+  eventName : string, 
+  eventDescription : string,
+  eventIsPublic : boolean,
+  eventType : EventType,
+  eventStartDateTime : number,
+  // Internal
+  eventDurationHrs : number,
+  eventTiming : EventTimingType,
+  // Public
+  eventNotificationDate : number,
+  eventEndDateTime : number,
+) {
+  const zooEvent : ZooEvent = await getZooEventById(zooEventId);
+  
+  zooEvent.eventName = eventName;
+  zooEvent.eventDescription = eventDescription;
+  zooEvent.eventIsPublic = eventIsPublic;
+  zooEvent.eventType = eventType;
+  const originalStartDateTime = zooEvent.eventStartDateTime;
+  const deltaStartDateTime = eventStartDateTime - zooEvent.eventStartDateTime.getTime();
+  const iKeepMyPromises: Promise<any>[] = [];
+
+  if (eventIsPublic){
+    throw {message:"Not yet implemented!"}
+  }else{
+    const animalActivity = await zooEvent.getAnimalActivity();
+    if (animalActivity){
+      // Update future events
+      (await animalActivity.getZooEvents()).forEach(ze=>{
+        if (compareDates(ze.eventStartDateTime, originalStartDateTime) >= 0){
+          ze.eventStartDateTime = new Date(ze.eventStartDateTime.getTime() + deltaStartDateTime);
+          ze.eventName = eventName;
+          ze.eventDescription = eventDescription;
+          ze.eventIsPublic = eventIsPublic;
+          ze.eventType = eventType;
+          ze.eventDurationHrs = eventDurationHrs;
+          ze.eventTiming = eventTiming;
+          iKeepMyPromises.push(ze.save());
+        }
+      });
+      // Update generator
+      animalActivity.title = eventName;
+      animalActivity.details = eventDescription;
+      animalActivity.durationInMinutes = eventDurationHrs * 60;
+      animalActivity.eventTimingType = eventTiming;
+      if (animalActivity.recurringPattern == RecurringPattern.MONTHLY){
+        animalActivity.dayOfMonth= new Date(eventStartDateTime).getDay();
+      }else if (animalActivity.recurringPattern == RecurringPattern.WEEKLY){
+        const dayOfWeekMap : any = {
+          _1:DayOfWeek.MONDAY,
+          _2:DayOfWeek.TUESDAY,
+          _3:DayOfWeek.WEDNESDAY,
+          _4:DayOfWeek.THURSDAY,
+          _5:DayOfWeek.FRIDAY,
+          _6:DayOfWeek.SATURDAY,
+          _0:DayOfWeek.SUNDAY
+        };
+        const day = "_" + new Date(eventStartDateTime).getDay().toString();
+        animalActivity.dayOfWeek= dayOfWeekMap[day];
+      }
+      iKeepMyPromises.push(animalActivity.save());
+    }else{
+
+    }
+  }
+  
+  for (const p of iKeepMyPromises) await p;
+  try {
+    return await zooEvent.reload();
+  } catch (error: any) {
+    throw validationErrorHandler(error);
+  }
+}
+
+export async function getAllZooEvents(
+  startDate: Date,
+  endDate : Date,
+  includes : string[]
+) {
+  try {
+      const zooEvent = await ZooEvent.findAll({
+          where:{
+            eventStartDateTime:{
+              [Op.between]:[startDate, endDate]
+            }
+          },
+          include:includes
+      });
+
+      return zooEvent;
+  } catch (error: any) {
+      throw validationErrorHandler(error);
   }
 }

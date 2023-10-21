@@ -27,15 +27,20 @@ class ZooEvent extends Model<
 > {
   declare zooEventId: CreationOptional<number>;
   declare eventName: String;
-  declare eventNotificationDate: Date;
-  declare eventStartDateTime: Date;
-  declare eventEndDateTime: Date | null;
-  declare eventDurationHrs: number;
-  declare eventTiming: EventTimingType | null;
   declare eventDescription: string;
   declare eventIsPublic: boolean;
   declare eventType?: EventType;
 
+  // Internal
+  declare eventDurationHrs: number;
+  declare eventTiming: EventTimingType | null;
+
+  // Public
+  declare eventNotificationDate: Date;
+  declare eventStartDateTime: Date;
+  declare eventEndDateTime: Date | null;
+  declare imageUrl: CreationOptional<string>;
+  
   declare planningStaff?: PlanningStaff;
   declare keepers?: Keeper[]; // work
   declare enclosure?: Enclosure;
@@ -116,6 +121,9 @@ ZooEvent.init(
       values: Object.values(EventType),
       // allowNull: false,
     },
+    imageUrl:{
+      type: DataTypes.STRING,
+    }
   },
   {
     freezeTableName: true,
