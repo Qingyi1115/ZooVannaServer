@@ -15,6 +15,7 @@ import { conn } from "../db";
 import { AnimalFeedCategory, FoodUnit } from "./enumerated";
 import { FeedingPlan } from "./feedingPlan";
 import { Animal } from "./animal";
+import { FeedingPlanSessionDetail } from "./feedingPlanSessionDetail";
 
 class FeedingItem extends Model<
   InferAttributes<FeedingItem>,
@@ -27,15 +28,21 @@ class FeedingItem extends Model<
 
   //--FK
   declare animal?: Animal;
-  declare feedingPlans?: FeedingPlan;
+  declare feedingPlanSessionDetail?: FeedingPlanSessionDetail;
 
   declare getAnimal: BelongsToGetAssociationMixin<Animal>;
   declare setAnimal: BelongsToSetAssociationMixin<Animal, number>;
 
-  declare getFeedingPlans: HasManyGetAssociationsMixin<FeedingPlan>;
-  declare addFeedingPlan: HasManyAddAssociationMixin<FeedingPlan, number>;
-  declare setFeedingPlans: HasManySetAssociationsMixin<FeedingPlan, number>;
-  declare removeFeedingPlan: HasManyRemoveAssociationMixin<FeedingPlan, number>;
+  declare getFeedingPlanSessionDetail: BelongsToGetAssociationMixin<FeedingPlanSessionDetail>;
+  declare setFeedingPlanSessionDetail: BelongsToSetAssociationMixin<
+    FeedingPlanSessionDetail,
+    number
+  >;
+
+  // declare getFeedingPlans: HasManyGetAssociationsMixin<FeedingPlan>;
+  // declare addFeedingPlan: HasManyAddAssociationMixin<FeedingPlan, number>;
+  // declare setFeedingPlans: HasManySetAssociationsMixin<FeedingPlan, number>;
+  // declare removeFeedingPlan: HasManyRemoveAssociationMixin<FeedingPlan, number>;
 }
 
 FeedingItem.init(

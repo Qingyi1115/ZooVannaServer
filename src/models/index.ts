@@ -362,7 +362,7 @@ export const createDatabase = async (options: any) => {
   Animal.belongsToMany(FeedingPlan, {
     foreignKey: "animalId",
     through: "animal_feedingPlan",
-    as: "animalFeedingPlans",
+    as: "feedingPlans",
   });
   FeedingPlan.belongsToMany(Animal, {
     foreignKey: "feedingPlanId",
@@ -1684,6 +1684,42 @@ export const animalSeed = async () => {
 
   await AnimalService.assignAnimalsToActivity(1, ["ANM00001", "ANM00003"]);
   await AnimalService.assignItemToActivity(1, [1, 2]);
+
+  // -- Animal Feeding Plan
+  await AnimalService.createFeedingPlan(
+    "SPE001",
+    ["ANM00001", "ANM00002", "ANM00003"],
+    "Some description...",
+    new Date("2023-10-13"),
+    new Date("2023-10-22"),
+  );
+
+  await AnimalService.createFeedingPlan(
+    "SPE001",
+    ["ANM00003", "ANM00004", "ANM00005", "ANM00006"],
+    "Some description...",
+    new Date("2023-10-13"),
+    new Date("2023-10-22"),
+  );
+
+  await AnimalService.createFeedingPlan(
+    "SPE002",
+    ["ANM00011"],
+    "Some description...",
+    new Date("2023-10-13"),
+    new Date("2023-10-22"),
+  );
+
+  await AnimalService.createFeedingPlanSessionDetail(1, "MONDAY", "MORNING");
+  await AnimalService.createFeedingPlanSessionDetail(1, "MONDAY", "AFTERNOON");
+  await AnimalService.createFeedingPlanSessionDetail(1, "FRIDAY", "EVENING");
+  await AnimalService.createFeedingPlanSessionDetail(2, "MONDAY", "AFTERNOON");
+
+  await AnimalService.createFeedingItem(1, "ANM00001", "FRUITS", 5, "KG");
+  await AnimalService.createFeedingItem(1, "ANM00001", "HAY", 20, "KG");
+  await AnimalService.createFeedingItem(1, "ANM00002", "FRUITS", 10, "KG");
+  await AnimalService.createFeedingItem(2, "ANM00001", "HAY", 2000, "KG");
+  await AnimalService.createFeedingItem(2, "ANM00003", "FRUITS", 5, "KG");
 };
 
 export const animalFeedSeed = async () => {
