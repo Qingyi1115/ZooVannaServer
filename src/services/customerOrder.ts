@@ -89,33 +89,11 @@ export async function getTotalCustomerOrder(
 
     return result;
   } catch (error) {
-    throw { message: "Invalid Booking Reference!" };
+    throw { message: "Error grouping data" };
   }
 }
 
-// // Function to group data based on specified criteria
-// function groupData(orderItems: OrderItem[], groupBy: string[]) {
-//   return orderItems.reduce((groupedData, item) => {
-//     let currentGroup = groupedData;
-//     for (const groupByOption of groupBy) {
-//       const groupValue = getGroupValue(item, groupByOption);
-//       if (!currentGroup[groupByOption]) {
-//         currentGroup[groupByOption] = {};
-//       }
-//       currentGroup = currentGroup[groupByOption];
-
-//       if (!currentGroup[groupValue]) {
-//         currentGroup[groupValue] = [];
-//       }
-//       currentGroup = currentGroup[groupValue];
-//     }
-//     currentGroup.push(item);
-//     return groupedData;
-//   }, {});
-// }
-
 function groupData(orderItems: OrderItem[], groupBy: string[]): any {
-  // Initialize the groupedData as an empty object
   const groupedData: Record<string, any> = {};
 
   orderItems.forEach((item) => {
@@ -143,7 +121,7 @@ function groupData(orderItems: OrderItem[], groupBy: string[]): any {
   return groupedData;
 }
 
-// Initialize a function to perform nested grouping
+//perform nested grouping
 function groupByCriteria(data: any[], criteria: string[]): any {
   if (criteria.length === 0) {
     return data;
@@ -189,10 +167,9 @@ function calculateSizes(data: any, groupBy: string[]): any {
   return result;
 }
 
-// Helper function to get the value of a grouping option
+// function to get the value of a grouping option
 function getGroupValue(item: OrderItem, groupByOption: string) {
   if (groupByOption === "month" && item.customerOrder != null) {
-    // Extract the month from the 'timeRedeemed' field
     return item.customerOrder.entryDate.getMonth();
   } else if (groupByOption === "listingType" && item.listing != null) {
     return item.listing.listingType;
