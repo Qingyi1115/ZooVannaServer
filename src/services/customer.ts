@@ -12,6 +12,7 @@ import { Payment } from "../models/payment";
 const { Sequelize } = require("sequelize");
 import { conn } from "../db";
 import QRCode from "react-qr-code";
+import { getDateOrderCount } from "./orderItem";
 
 export async function sendEmailVerification(email: string) {
   let customer = await Customer.findOne({
@@ -322,6 +323,7 @@ export async function createCustomerOrderForGuest(
 ) {
   try {
     return await conn.transaction(async (t: any) => {
+      let sum = 0;
       let custOrder = await CustomerOrder.create(customerOrder, {
         transaction: t,
       });
@@ -334,6 +336,9 @@ export async function createCustomerOrderForGuest(
         console.log("does it go here again?");
 
         if (queriedListing) {
+          if (queriedListing.orderItems) {
+            sum += queriedListing.orderItems.length;
+          }
           for (const orderItem of listing.orderItems) {
             console.log("hmmmmmm");
             console.log(orderItem);
@@ -365,6 +370,17 @@ export async function createCustomerOrderForGuest(
         }
       }
 
+      const dateOrderCount: any = getDateOrderCount();
+
+      if (
+        (dateOrderCount[custOrder.entryDate.toLocaleDateString()] &&
+          dateOrderCount[custOrder.entryDate.toLocaleDateString()] + sum >
+            25) ||
+        sum > 25
+      ) {
+        throw { message: "Ticket is already sold out on that date" };
+      }
+
       return custOrder;
     });
   } catch (error) {
@@ -380,6 +396,7 @@ export async function createCustomerOrderForCustomer(
 ) {
   try {
     return await conn.transaction(async (t: any) => {
+      let sum = 0;
       let result = await Customer.findOne({
         where: { customerId: customerId },
       });
@@ -394,31 +411,23 @@ export async function createCustomerOrderForCustomer(
             where: { listingId: listing.listingId },
             transaction: t,
           });
-          console.log("does it go here again?");
 
           if (queriedListing) {
+            if (queriedListing.orderItems) {
+              sum += queriedListing.orderItems.length;
+            }
+
             for (const orderItem of listing.orderItems) {
-              console.log("hmmmmmm");
-              console.log(orderItem);
-              console.log(queriedListing);
-              console.log(listing);
               try {
                 let newOrderItem = await OrderItem.create(orderItem, {
                   transaction: t,
                 });
-                console.log(newOrderItem.toJSON());
 
-                console.log("is it okay here?");
                 queriedListing.addOrderItem(newOrderItem);
-                console.log("here");
                 newOrderItem.setListing(queriedListing);
-                console.log("yes here");
                 custOrder.addOrderItem(newOrderItem);
-                console.log("hereeeeee");
                 newOrderItem.setCustomerOrder(custOrder);
-                console.log("hmm??");
               } catch (error: any) {
-                console.log("yes");
                 console.log(error);
                 throw error;
               }
@@ -427,6 +436,18 @@ export async function createCustomerOrderForCustomer(
             throw { message: "Invalid listing" };
           }
         }
+
+        const dateOrderCount: any = getDateOrderCount();
+
+        if (
+          (dateOrderCount[custOrder.entryDate.toLocaleDateString()] &&
+            dateOrderCount[custOrder.entryDate.toLocaleDateString()] + sum >
+              25) ||
+          sum > 25
+        ) {
+          throw { message: "Ticket is already sold out on that date" };
+        }
+
         result.addCustomerOrder(custOrder);
         custOrder.setCustomer(result);
         return custOrder;
@@ -612,31 +633,18 @@ export async function purchaseTicket(
             where: { listingId: listing.listingId },
             transaction: t,
           });
-          console.log("does it go here again?");
 
           if (queriedListing) {
             for (const orderItem of listing.orderItems) {
-              console.log("hmmmmmm");
-              console.log(orderItem);
-              console.log(queriedListing);
-              console.log(listing);
               try {
                 let newOrderItem = await OrderItem.create(orderItem, {
                   transaction: t,
                 });
-                console.log(newOrderItem.toJSON());
-
-                console.log("is it okay here?");
                 queriedListing.addOrderItem(newOrderItem);
-                console.log("here");
                 newOrderItem.setListing(queriedListing);
-                console.log("yes here");
                 custOrder.addOrderItem(newOrderItem);
-                console.log("hereeeeee");
                 newOrderItem.setCustomerOrder(custOrder);
-                console.log("hmm??");
               } catch (error: any) {
-                console.log("yes");
                 console.log(error);
                 throw error;
               }
