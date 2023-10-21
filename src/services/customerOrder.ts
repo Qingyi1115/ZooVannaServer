@@ -83,7 +83,7 @@ export async function getTotalCustomerOrder(
     console.log(subgroupedData);
 
     // // Calculate the total order items for each group.
-    const result = calculateSubgroupSizes(subgroupedData);
+    const result = calculateSizes(subgroupedData, groupBy);
     console.log("---------result-----------");
     console.log(result);
 
@@ -168,20 +168,27 @@ function groupByCriteria(data: any[], criteria: string[]): any {
   return grouped;
 }
 
-function calculateSubgroupSizes(data: any): any {
+function calculateSizes(data: any, groupBy: string[]): any {
+  if (groupBy.length === 0) {
+    return data.length;
+  }
+
+  const currentGroupBy = groupBy[0];
+  const remainingGroupBy = groupBy.slice(1);
   const result: any = {};
 
-  for (const month in data) {
-    result[month] = {};
-    const monthData = data[month];
-
-    for (const listingId in monthData) {
-      result[month][listingId] = monthData[listingId].length;
+  for (const key in data) {
+    const subgroup = data[key];
+    if (remainingGroupBy.length > 0) {
+      result[key] = calculateSizes(subgroup, remainingGroupBy);
+    } else {
+      result[key] = subgroup.length;
     }
   }
 
   return result;
 }
+
 // Helper function to get the value of a grouping option
 function getGroupValue(item: OrderItem, groupByOption: string) {
   if (groupByOption === "month" && item.customerOrder != null) {
