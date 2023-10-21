@@ -93,7 +93,7 @@ router.get("/getFacilityMaintenancePredictionValues/:facilityId", getFacilityMai
 router.put("/updateFacility/:facilityId", updateFacilityController);
 router.delete("/deleteFacility/:facilityId", deleteFacilityController);
 router.get("/getAssignedMaintenanceStaffOfFacility/:facilityId", getAssignedMaintenanceStaffOfFacilityController);
-router.get("/getAllMaintenanceStaff/", getAllMaintenanceStaffController);
+router.get("/getAllMaintenanceStaff", getAllMaintenanceStaffController);
 router.put("/assignMaintenanceStaffToFacility/:facilityId", assignMaintenanceStaffToFacilityController);
 router.delete("/removeMaintenanceStaffFromFacility/:facilityId", removeMaintenanceStaffFromFacilityController);
 router.put("/assignOperationStaffToFacility/:facilityId", assignOperationStaffToFacilityController);

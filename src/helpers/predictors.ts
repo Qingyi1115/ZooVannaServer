@@ -1,7 +1,6 @@
 import { compareDates } from "./others";
 import getAugumentedDataset from "./holtwinters";
-
-const MS_TO_DAYS = 1000 * 60 * 60* 24
+import { DAY_IN_MILLISECONDS } from "./staticValues";
 
 export function predictNextDate(dates:Date[]):number|void{
     if (dates.length <= 1) return;
@@ -9,18 +8,18 @@ export function predictNextDate(dates:Date[]):number|void{
     let intervals :number[] = []
     for (let i =dateSorted.length -1; i >0 ; i--) {
         intervals.push(
-            compareDates(dateSorted[i-1], dateSorted[i])/ MS_TO_DAYS
+            compareDates(dateSorted[i-1], dateSorted[i])/ DAY_IN_MILLISECONDS
         )
     }
     if (dateSorted.length>7){
         const results = (getAugumentedDataset(intervals, 1)as any) ["augumentedDataset"];
-        return dateSorted[0].getTime() + results[results.length - 1] * MS_TO_DAYS;
+        return dateSorted[0].getTime() + results[results.length - 1] * DAY_IN_MILLISECONDS;
     }else{
         let average = 0
         for (const i in intervals){
             average = average + (i as any)/intervals.length
         }
-        return (dateSorted[0].getTime() + average * MS_TO_DAYS);
+        return (dateSorted[0].getTime() + average * DAY_IN_MILLISECONDS);
     }
 }
 
@@ -30,7 +29,7 @@ export function predictCycleLength(dates:Date[], predictionLength:number){
     let intervals :number[] = []
     for (let i =dateSorted.length -1; i >0 ; i--) {
         intervals.push(
-            compareDates(dateSorted[i-1], dateSorted[i]) / MS_TO_DAYS
+            compareDates(dateSorted[i-1], dateSorted[i]) / DAY_IN_MILLISECONDS
         )
     }
     console.log("dateSorted", dateSorted)
@@ -46,14 +45,14 @@ export function predictCycleLength(dates:Date[], predictionLength:number){
         let newDateResults : Date[] = []
         for (let i = predictionLength - 1; i >= 0; i--) {
             if (newDateResults.length){
-                newDateResults.unshift(new Date(newDateResults[0].getTime() + results[i] * MS_TO_DAYS ))
+                newDateResults.unshift(new Date(newDateResults[0].getTime() + results[i] * DAY_IN_MILLISECONDS ))
                 // console.log(newDateResults, results, i, 
                 //     results[i] , 
                 //     newDateResults[0].getTime(), 
-                //     newDateResults[0].getTime() + results[i] * MS_TO_DAYS, 
-                //     new Date(newDateResults[0].getTime() + results[i] * MS_TO_DAYS ))
+                //     newDateResults[0].getTime() + results[i] * DAY_IN_MILLISECONDS, 
+                //     new Date(newDateResults[0].getTime() + results[i] * DAY_IN_MILLISECONDS ))
             }else{
-                newDateResults.unshift(new Date(dateResults[0].getTime() + results[i] * MS_TO_DAYS ))
+                newDateResults.unshift(new Date(dateResults[0].getTime() + results[i] * DAY_IN_MILLISECONDS ))
             }
         };
         
@@ -75,7 +74,7 @@ export function predictCycleLength(dates:Date[], predictionLength:number){
         let newDateResults = []
         let newIntervals = []
         for (let i = 0; i < predictionLength; i++) {
-            newDateResults.unshift(new Date(dateResults[0].getTime() + average * MS_TO_DAYS ))
+            newDateResults.unshift(new Date(dateResults[0].getTime() + average * DAY_IN_MILLISECONDS ))
             newIntervals.unshift(average)
         };
 

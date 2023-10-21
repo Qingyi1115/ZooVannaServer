@@ -223,16 +223,6 @@ enum EventTimingType {
   EVENING = "EVENING",
 }
 
-enum DayOfTheWeek {
-  MONDAY = "MONDAY",
-  TUESDAY = "TUESDAY",
-  WEDNESDAY = "WEDNESDAY",
-  THURSDAY = "THURSDAY",
-  FRIDAY = "FRIDAY",
-  SATURDAY = "SATURDAY",
-  SUNDAY = "SUNDAY",
-}
-
 enum FoodUnit {
   KG = "KG",
   GRAM = "GRAM",
@@ -550,7 +540,14 @@ enum RepeatPattern{
   ANUALLY="ANUALLY"
 }
 
-enum Reaction{
+enum RecurringPattern{
+  NON_RECURRING="NON_RECURRING",
+  DAILY="DAILY",
+  WEEKLY="WEEKLY",
+  MONTHLY="MONTHLY"
+}
+
+enum Reaction {
   POSITIVE_RESPONSE="POSITIVE_RESPONSE",
   RESPONSIVE="RESPONSIVE",
   ENTHUSIASTIC="ENTHUSIASTIC",
@@ -608,7 +605,8 @@ export {
   IdentifierType,
   Rating,
   FoodUnit,
-  DayOfTheWeek,
+  DayOfWeek,
+  RecurringPattern,
   RepeatPattern,
   Reaction,
 };

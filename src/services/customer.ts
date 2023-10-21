@@ -14,37 +14,100 @@ import { conn } from "../db";
 import QRCode from "react-qr-code";
 import { getDateOrderCount } from "./orderItem";
 
+export async function sendEmailVerification(email: string) {
+  let customer = await Customer.findOne({
+    where: { email: email },
+  });
+
+  if (!customer) {
+    const token = uuidv4();
+
+    const verificationTokens: any = {
+      token: token,
+      email: email,
+      createdAt: Date.now(),
+      expiresAt: Date.now() + 3600000, //expires in 1 hour
+    };
+
+    try {
+      await Token.create(verificationTokens);
+
+      const transporter = nodemailer.createTransport({
+        service: "gmail",
+        auth: {
+          user: process.env.EMAIL_USERNAME,
+          pass: process.env.EMAIL_PASSWORD,
+        },
+      });
+
+      const mailOptions = {
+        from: process.env.EMAIL_USERNAME,
+        to: email,
+        subject: "ZooVanna Email Verification",
+        text: "Click the link below to verify your email: ",
+        html: `<a href="http://${process.env.LOCALHOST_ADDRESS}:5174/signup/${token}">Verify Email</a>`,
+      };
+
+      transporter.sendMail(mailOptions, (error, info) => {
+        if (error) {
+          console.error("Error sending email:", error);
+        } else {
+          console.log("Email sent:", info.response);
+        }
+      });
+    } catch (error: any) {
+      throw validationErrorHandler(error);
+    }
+  } else {
+    throw { message: "Email is already registered. Please log in instead." };
+  }
+}
+
 export async function createNewCustomer(
   customerPassword: string,
   firstName: string,
   lastName: string,
-  email: string,
   contactNo: string,
   birthday: Date,
   address: string,
   nationality: Country,
+  token: string,
 ) {
-  // console.log("Customer service triggered");
-  // hash the customer password with random salt
-  const randomSalt = (Math.random() + 1).toString(36).substring(7);
-  // const birthday = new Date(birthdayJSON);
+  let realToken = await Token.findOne({
+    where: { token: token },
+  });
 
-  const customer_details: any = {
-    passwordHash: hash(customerPassword + randomSalt),
-    salt: randomSalt,
-    firstName: firstName,
-    lastName: lastName,
-    email: email,
-    contactNo: contactNo,
-    birthday: birthday,
-    address: address,
-    nationality: nationality,
-  };
-  try {
-    let newCustomer = await Customer.create(customer_details);
-    return [newCustomer.toJSON()];
-  } catch (error: any) {
-    throw validationErrorHandler(error);
+  if (realToken) {
+    if (realToken.expiresAt.getTime() > Date.now()) {
+      realToken.destroy();
+      let email = realToken.email;
+      const randomSalt = (Math.random() + 1).toString(36).substring(7);
+
+      const customer_details: any = {
+        passwordHash: hash(customerPassword + randomSalt),
+        salt: randomSalt,
+        firstName: firstName,
+        lastName: lastName,
+        email: email,
+        contactNo: contactNo,
+        birthday: birthday,
+        address: address,
+        nationality: nationality,
+      };
+      try {
+        let newCustomer = await Customer.create(customer_details);
+        return [newCustomer.toJSON()];
+      } catch (error: any) {
+        throw validationErrorHandler(error);
+      }
+    } else {
+      realToken.destroy();
+      throw {
+        message: "Token has expired. Please try to verify your email again.",
+      };
+    }
+  } else {
+    throw { message: "Invalid token!" };
   }
 }
 
@@ -226,7 +289,7 @@ export async function sendResetPasswordLink(customerId: number) {
         to: result.email,
         subject: "Reset Password",
         text: "Click the link below to reset your password: ",
-        html: `<a href="http://localhost:5174/resetPasswordNew/${token}">Reset Password</a>`,
+        html: `<a href="http://${process.env.LOCALHOST_ADDRESS}:5174/resetPasswordNew/${token}">Reset Password</a>`,
       };
 
       transporter.sendMail(mailOptions, (error, info) => {

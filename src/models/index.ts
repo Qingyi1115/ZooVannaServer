@@ -39,7 +39,8 @@ import {
   AnimalSex,
   ActivityType,
   EventTimingType,
-  DayOfTheWeek,
+  DayOfWeek,
+  RecurringPattern,
 } from "./enumerated";
 import { ZooEvent } from "./zooEvent";
 import { Facility } from "./facility";
@@ -99,7 +100,8 @@ export const createDatabase = async (options: any) => {
     Employee,
     addCascadeOptions({ foreignKey: "employeeId" }),
   );
-  AnimalActivity.hasOne(
+
+  AnimalActivity.hasMany(
     ZooEvent,
     addCascadeOptions({ foreignKey: "animalActivityId" }),
   );
@@ -360,7 +362,7 @@ export const createDatabase = async (options: any) => {
   Animal.belongsToMany(FeedingPlan, {
     foreignKey: "animalId",
     through: "animal_feedingPlan",
-    as: "animalFeedingPlans",
+    as: "feedingPlans",
   });
   FeedingPlan.belongsToMany(Animal, {
     foreignKey: "feedingPlanId",
@@ -1611,6 +1613,8 @@ export const animalSeed = async () => {
     "Treat our pandas to a bamboo feast! We'll scatter bamboo leaves and shoots throughout their habitat to encourage natural foraging behavior.",
     new Date("2023-10-13"),
     new Date("2023-10-13"),
+    RecurringPattern.NON_RECURRING,
+    null,
     null,
     EventTimingType.AFTERNOON,
     45,
@@ -1622,6 +1626,8 @@ export const animalSeed = async () => {
     "Use a target stick to teach pandas to touch a designated spot. This aids in directing their movement and helps with medical check-ups.",
     new Date("2023-10-15"),
     new Date("2023-10-15"),
+    RecurringPattern.NON_RECURRING,
+    null,
     null,
     EventTimingType.MORNING,
     60,
@@ -1633,6 +1639,8 @@ export const animalSeed = async () => {
     "Text...",
     new Date("2023-10-16"),
     new Date("2023-10-16"),
+    RecurringPattern.NON_RECURRING,
+    null,
     null,
     EventTimingType.MORNING,
     60,
@@ -1642,8 +1650,10 @@ export const animalSeed = async () => {
     "Enrichment Activity 02",
     "Text...",
     new Date("2023-10-16"),
-    new Date("2023-10-16"),
+    new Date("2024-05-18"),
+    RecurringPattern.MONTHLY,
     null,
+    7,
     EventTimingType.MORNING,
     60,
   );
@@ -1652,7 +1662,9 @@ export const animalSeed = async () => {
     "Training Activity 01",
     "Text...",
     new Date("2023-10-18"),
-    new Date("2023-10-18"),
+    new Date("2023-11-18"),
+    RecurringPattern.WEEKLY,
+    DayOfWeek.FRIDAY,
     null,
     EventTimingType.AFTERNOON,
     60,
@@ -1662,14 +1674,41 @@ export const animalSeed = async () => {
     "Training Activity 02",
     "Text...",
     new Date("2023-10-18"),
-    new Date("2023-10-18"),
+    new Date("2023-11-18"),
+    RecurringPattern.DAILY,
+    null,
     null,
     EventTimingType.EVENING,
     60,
   );
 
-  await AnimalService.assignAnimalsToActivity("1", ["ANM00001", "ANM00003"]);
-  await AnimalService.assignItemToActivity("1", ["1", "2"]);
+  await AnimalService.assignAnimalsToActivity(1, ["ANM00001", "ANM00003"]);
+  await AnimalService.assignItemToActivity(1, [1, 2]);
+
+  // -- Animal Feeding Plan
+  await AnimalService.createFeedingPlan(
+    "SPE001",
+    ["ANM00001", "ANM00002", "ANM00003"],
+    "Some description...",
+    new Date("2023-10-13"),
+    new Date("2023-10-22"),
+  );
+
+  await AnimalService.createFeedingPlan(
+    "SPE001",
+    ["ANM00003", "ANM00004", "ANM00005", "ANM00006"],
+    "Some description...",
+    new Date("2023-10-13"),
+    new Date("2023-10-22"),
+  );
+
+  await AnimalService.createFeedingPlan(
+    "SPE002",
+    ["ANM00011"],
+    "Some description...",
+    new Date("2023-10-13"),
+    new Date("2023-10-22"),
+  );
 };
 
 export const animalFeedSeed = async () => {

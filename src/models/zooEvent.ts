@@ -31,11 +31,10 @@ class ZooEvent extends Model<
   declare eventStartDateTime: Date;
   declare eventEndDateTime: Date | null;
   declare eventDurationHrs: number;
-  declare isFlexible: boolean;
   declare eventTiming: EventTimingType | null;
   declare eventDescription: string;
   declare eventIsPublic: boolean;
-  declare eventType: EventType;
+  declare eventType?: EventType;
 
   declare planningStaff?: PlanningStaff;
   declare keepers?: Keeper[]; // work
@@ -101,10 +100,6 @@ ZooEvent.init(
     eventDurationHrs: {
       type: DataTypes.INTEGER,
     },
-    isFlexible: {
-      type: DataTypes.BOOLEAN,
-      allowNull: false,
-    },
     eventTiming: {
       type: DataTypes.ENUM,
       values: Object.values(EventTimingType),
@@ -119,7 +114,7 @@ ZooEvent.init(
     eventType: {
       type: DataTypes.ENUM,
       values: Object.values(EventType),
-      allowNull: false,
+      // allowNull: false,
     },
   },
   {

@@ -13,7 +13,7 @@ marry_account = {
     "employeeSalt": "NaCl",
     "employeeDoorAccessCode":"123456",
     "employeeEducation":"PHD in not eating",
-    "employeeBirthDate" : time.time(),
+    "employeeBirthDate" : time.time() * 1000,
     "isAccountManager": True,
 }
 
@@ -27,7 +27,7 @@ junior_keeper = {
     "employeeSalt":"NaAg",
     "employeeDoorAccessCode":"234567",
     "employeeEducation":"PHD in not sleeping",
-    "employeeBirthDate" : time.time(),
+    "employeeBirthDate" : time.time() * 1000,
     "isAccountManager": False,
 }
 
@@ -37,7 +37,7 @@ new_user_dat = {
     "employeeEmail":"manager3@gmail.com",
     "employeePhoneNumber": "0001",
     "employeeEducation":"Math Major",
-    "employeeBirthDate" : time.time(),
+    "employeeBirthDate" : time.time() * 1000,
     "isAccountManager":True,
     "role":"generalStaff",
     "roleJson": {
@@ -45,9 +45,21 @@ new_user_dat = {
     }
   }
 
+newAnimalActivityDetails = {
+    "activityType" : "ENRICHMENT",
+    "title" : "I like fishes",
+    "details" : "my new animal activity",
+    "startDate" : time.time() * 1000,
+    "endDate" : time.time() * 1000 + DAY_IN_MILLISECONDS * 30,
+    "recurringPattern" : "WEEKLY",
+    "dayOfWeek" : "THURSDAY",
+    "eventTimingType":"AFTERNOON",
+    "durationInMinutes" : 60
+}
+
 newAnimalActivityLogDetails = {
         "activityType": "ENRICHMENT",
-        "dateTime": time.time() - DAY_IN_MILLISECONDS * 2,
+        "dateTime": time.time() * 1000 - DAY_IN_MILLISECONDS * 2,
         "durationInMinutes": 60,
         "sessionRating": "EXCELLENT",
         "animalReaction": "PLAYFUL",

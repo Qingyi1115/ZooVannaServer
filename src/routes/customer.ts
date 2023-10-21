@@ -18,15 +18,23 @@ import {
   completePaymentForCustomerController,
   createCustomerOrderForGuestController,
   completePaymentForGuestController,
+  sendEmailVerification,
 } from "../controllers/customerController";
 import { authMiddleware } from "../middlewares/authMiddleware";
 
 const router = express.Router();
 
-router.post("/sendForgetPasswordLink/:email", sendForgetPasswordLink); //reset password by account manager (sent to employee's email)
-router.put("/resetForgottenPassword/:token", resetForgottenPasswordController); //Reset from the customer side using email
+
+
+//forgot password
+router.post("/sendForgetPasswordLink/:email", sendForgetPasswordLink); //send reset password link to customer email
+router.put("/resetForgottenPassword/:token", resetForgottenPasswordController); //reset from the customer side using email
+
+//verify email before signup
+router.post("/sendEmailVerification/:email", sendEmailVerification); //send reset password link to customer email
+
 // sign up/create account
-router.post("/createCustomer", createCustomer);
+router.post("/createCustomer/:token", createCustomer);
 
 // log in
 router.post("/login", login);

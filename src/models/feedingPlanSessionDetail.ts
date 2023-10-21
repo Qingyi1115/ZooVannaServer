@@ -12,7 +12,7 @@ import {
   CreationOptional,
 } from "Sequelize";
 import { conn } from "../db";
-import { EventTimingType } from "./enumerated";
+import { DayOfWeek, EventTimingType } from "./enumerated";
 import { ZooEvent } from "./zooEvent";
 import { FeedingPlan } from "./feedingPlan";
 import { FeedingItem } from "./feedingItem";
@@ -27,7 +27,7 @@ class FeedingPlanSessionDetail extends Model<
 
   //--FK
   declare feedingPlan?: FeedingPlan;
-  declare feedingItems?: FeedingItem;
+  declare feedingItems?: FeedingItem[];
   declare zooEvents?: ZooEvent[];
 
   declare getFeedingPlan: BelongsToGetAssociationMixin<FeedingPlan>;
@@ -52,8 +52,8 @@ FeedingPlanSessionDetail.init(
       primaryKey: true,
     },
     dayOftheWeek: {
-      type: DataTypes.STRING,
-      //   values: Object.values(DayOfTheWeek),
+      type: DataTypes.ENUM,
+      values: Object.values(DayOfWeek),
       allowNull: false,
     },
     eventTimingType: {

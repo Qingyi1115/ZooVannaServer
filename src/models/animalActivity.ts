@@ -15,7 +15,7 @@ import {
 } from "Sequelize";
 import { conn } from "../db";
 import { Animal } from "./animal";
-import { ActivityType, DayOfTheWeek, EventTimingType } from "./enumerated";
+import { ActivityType, DayOfWeek, EventTimingType, RecurringPattern } from "./enumerated";
 import { EnrichmentItem } from "./enrichmentItem";
 import { ZooEvent } from "./zooEvent";
 
@@ -29,7 +29,9 @@ class AnimalActivity extends Model<
   declare details: string;
   declare startDate:Date;
   declare endDate:Date;
-  declare dayOfTheWeek: DayOfTheWeek | null;
+  declare recurringPattern: RecurringPattern;
+  declare dayOfWeek: DayOfWeek | null;
+  declare dayOfMonth: number | null;
   declare eventTimingType: EventTimingType;
   declare durationInMinutes: number;
 
@@ -58,6 +60,24 @@ class AnimalActivity extends Model<
   declare addZooEvent: HasManyAddAssociationMixin<ZooEvent, number>;
   declare setZooEvents: HasManySetAssociationsMixin<ZooEvent, number>;
   declare removeZooEvent: HasManyRemoveAssociationMixin<ZooEvent, number>;
+  
+  public toJSON() {
+    return {
+      ...this.get(),
+      startDate : this.startDate?.getTime(),
+      endDate : this.endDate?.getTime(),
+
+    }
+  }
+
+  public async toFullJSON() {
+    return {
+      ...this.toJSON(),
+      animals: (await this.getAnimals())?.map(obj=> obj.toJSON()),
+      enrichmentItems: (await this.getEnrichmentItems())?.map(obj=> obj.toJSON()),
+      zooEvents: (await this.getZooEvents())?.map(obj=> obj.toJSON()),
+    };
+  }
 }
 
 AnimalActivity.init(
@@ -88,9 +108,17 @@ AnimalActivity.init(
       type: DataTypes.DATE,
       allowNull: false,
     },
-    dayOfTheWeek: {
+    recurringPattern: {
       type: DataTypes.ENUM,
-      values: Object.values(DayOfTheWeek)
+      values: Object.values(RecurringPattern),
+      allowNull: false,
+    },
+    dayOfWeek: {
+      type: DataTypes.ENUM,
+      values: Object.values(DayOfWeek)
+    },
+    dayOfMonth: {
+      type: DataTypes.INTEGER,
     },
     eventTimingType: {
       type: DataTypes.ENUM,

@@ -1,90 +1,80 @@
-import { Request } from "express";
+import { EventTimingType, EventType } from "../models/enumerated";
 import { validationErrorHandler } from "../helpers/errorHandler";
-import { EnrichmentItem } from "../models/enrichmentItem";
+import * as AnimalService from "./animal";
+import { ZooEvent } from "../models/zooEvent";
+import { ANIMAL_ACTIVITY_NOTIFICATION_HOURS, HOUR_IN_MILLISECONDS } from "../helpers/staticValues";
 
-export async function createNewEnrichmentItem(
-  enrichmentItemName: string,
-  enrichmentItemImageUrl: string,
+export async function createAnimalActivityZooEvent(
+  animalActivityId: number,
+  eventStartDateTime: Date,
+  eventDurationHrs: number,
+  eventTiming: EventTimingType | null,
+  eventDescription: string
 ) {
-  let newEnrichmentItem = {
-    enrichmentItemName: enrichmentItemName,
-    enrichmentItemImageUrl: enrichmentItemImageUrl,
-  } as any;
-
-  console.log(newEnrichmentItem);
-
+  const animalActivity = await AnimalService.getAnimalActivityById(animalActivityId);
   try {
-    return EnrichmentItem.create(newEnrichmentItem);
+    const newZooEvent = await ZooEvent.create({
+      eventName: animalActivity.title,
+      eventStartDateTime: eventStartDateTime,
+      eventDurationHrs: eventDurationHrs,
+      eventTiming: eventTiming,
+      eventDescription: eventDescription,
+      eventIsPublic: false,
+      eventNotificationDate : new Date(eventStartDateTime.getTime() - HOUR_IN_MILLISECONDS * ANIMAL_ACTIVITY_NOTIFICATION_HOURS),
+    });
+    
+    await animalActivity.addZooEvent(newZooEvent);
+    return animalActivity;
   } catch (error: any) {
     throw validationErrorHandler(error);
   }
 }
 
-export async function getAllEnrichmentItem(includes: string[] = []) {
-  try {
-    const allEnrichmentItem = await EnrichmentItem.findAll({
-      include: includes,
-    });
-    return allEnrichmentItem;
-  } catch (error: any) {
-    throw validationErrorHandler(error);
-  }
-}
-
-export async function getEnrichmentItemById(enrichmentItemId: number) {
-  let result = await EnrichmentItem.findOne({
-    where: { enrichmentItemId: enrichmentItemId },
-  });
-  if (result) {
-    return result;
-  }
-  throw { message: "Invalid enrichment item id!" };
-}
-
-export async function deleteEnrichmentItemByName(enrichmentItemName: string) {
-  let result = await EnrichmentItem.destroy({
-    where: { enrichmentItemName: enrichmentItemName },
-  });
-  if (result) {
-    return result;
-  }
-  throw { message: "Invalid enrichment item name!" };
-}
-
-export async function updateEnrichmentItemImage(
-  enrichmentItemId: number,
-  enrichmentItemName: string,
-  enrichmentItemImageUrl: string,
+export async function getZooEventById(
+  zooEventId:number,
 ) {
-  let updatedEnrichmentItem = {
-    enrichmentItemImageUrl: enrichmentItemImageUrl,
-  } as any;
-
-  console.log(updatedEnrichmentItem);
-
   try {
-    let enrichmentItem = await EnrichmentItem.update(updatedEnrichmentItem, {
-      where: { enrichmentItemId: enrichmentItemId },
-    });
+      const zooEvent = await ZooEvent.findOne({
+          where:{zooEventId:zooEventId},
+          include:[
+              "animal",
+          ]
+      });
+
+      return zooEvent;
   } catch (error: any) {
-    throw validationErrorHandler(error);
+      throw validationErrorHandler(error);
   }
 }
 
-export async function updateEnrichmentItem(
-  enrichmentItemId: number,
-  enrichmentItemName: string,
-) {
-  let updatedEnrichmentItem = {
-    enrichmentItemName: enrichmentItemName,
-  } as any;
+export async function deleteZooEvent(
+    zooEventId:number,
+  ) {
+    try {
+        const zooEvent = await ZooEvent.findOne({
+            where:{zooEventId:zooEventId}
+        });
+        if (!zooEvent) throw {message:"Unable to find Zoo Event with Id: " + zooEventId}
 
-  console.log(updatedEnrichmentItem);
+        return await zooEvent.destroy();
+    } catch (error: any) {
+        throw validationErrorHandler(error);
+    }
+}
+
+export async function updateZooEventById(
+  zooEventId: number,
+  zooEventAttributes: any
+) {
+  const zooEvent : any = await getZooEventById(zooEventId);
+
+  for (const [field, v] of Object.entries(zooEventAttributes)) {
+    zooEvent[field] = v;
+  }
 
   try {
-    let enrichmentItem = await EnrichmentItem.update(updatedEnrichmentItem, {
-      where: { enrichmentItemId: enrichmentItemId },
-    });
+    await zooEvent.save();
+    return zooEvent;
   } catch (error: any) {
     throw validationErrorHandler(error);
   }
