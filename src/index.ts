@@ -19,6 +19,7 @@ import animalRoutes from "./routes/animal";
 import promotionRoutes from "./routes/promotion";
 import listingRoutes from "./routes/listing";
 import listingCustomerRoutes from "./routes/listingCustomer";
+import orderItemRoutes from "./routes/orderItem";
 import { seedDatabase, createDatabase } from "./models/index";
 import { conn } from "./db";
 
@@ -139,3 +140,4 @@ app.use("/api/animal", animalRoutes);
 app.use("/api/promotion", promotionRoutes);
 app.use("/api/listing", listingRoutes);
 app.use("/api/listingCustomer", listingCustomerRoutes);
+app.use("/api/orderItem", orderItemRoutes);
