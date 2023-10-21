@@ -196,18 +196,3 @@ function getGroupValue(item: OrderItem, groupByOption: string) {
 
   return "-1";
 }
-
-function calculateTotalOrderItems(groupedData: any): number {
-  function calculateTotal(group: any): number {
-    if (Array.isArray(group)) {
-      return group.length;
-    } else {
-      return Object.keys(group).reduce(
-        (total: number, key: string) => total + calculateTotal(group[key]),
-        0,
-      );
-    }
-  }
-
-  return calculateTotal(groupedData);
-}
