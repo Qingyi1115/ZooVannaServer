@@ -34,6 +34,8 @@ import { AnimalActivityLog } from "../models/animalActivityLog";
 import { AnimalFeedingLog } from "../models/animalFeedingLog";
 import { FeedingPlan } from "../models/feedingPlan";
 import { ZooEvent } from "../models/zooEvent";
+import { FeedingPlanSessionDetail } from "../models/feedingPlanSessionDetail";
+import { FeedingItem } from "../models/feedingItem";
 
 //-- Animal Basic Info
 export async function getAnimalIdByCode(animalCode: string) {
@@ -1929,4 +1931,131 @@ export async function deleteFeedingPlanById(feedingPlanId: number) {
     return result;
   }
   throw new Error("Invalid Feeding Plan Id!");
+}
+
+//-- Animal Feeding Plan Session Detail
+export async function getAllFeedingPlanSessionDetails() {
+  try {
+    const allFeedingPlanSessionDetails = await FeedingPlanSessionDetail.findAll(
+      {
+        // include: [Species, Animal],
+        include: [
+          {
+            model: FeedingPlan,
+            required: true,
+          },
+          {
+            model: FeedingItem,
+            required: false,
+          },
+        ],
+      },
+    );
+    return allFeedingPlanSessionDetails;
+  } catch (error: any) {
+    throw validationErrorHandler(error);
+  }
+}
+
+export async function getAllFeedingPlanSessionDetailsByPlanId(
+  feedingPlanId: number,
+) {
+  let result: FeedingPlanSessionDetail[] = [];
+  let allFeedingPlanSessions = await getAllFeedingPlanSessionDetails();
+  if (allFeedingPlanSessions) {
+    for (let p of allFeedingPlanSessions) {
+      if (p.feedingPlan?.feedingPlanId === feedingPlanId) {
+        result.push(p);
+      }
+    }
+  }
+  if (result) {
+    return result;
+  }
+
+  throw new Error("Invalid Feeding Plan ID Code!");
+}
+
+export async function getFeedingPlanSessionDetailById(
+  feedingPlanDetailId: number,
+) {
+  try {
+    let planRecord = await FeedingPlanSessionDetail.findOne({
+      where: { feedingPlanDetailId: feedingPlanDetailId },
+      include: [
+        {
+          model: FeedingPlan,
+          required: true,
+        },
+        {
+          model: FeedingItem,
+          required: false,
+        },
+      ],
+    });
+    if (planRecord) {
+      return planRecord;
+    }
+  } catch (error: any) {
+    throw new Error("Invalid Feeding Plan Detail ID Code!");
+  }
+}
+
+// neeed to add EVent generator after Marcus done
+export async function createFeedingPlanSessionDetail(
+  feedingPlanId: number,
+  dayOftheWeek: string,
+  eventTimingType: string,
+) {
+  let newSession = {
+    dayOftheWeek: dayOftheWeek,
+    eventTimingType: eventTimingType,
+  } as any;
+
+  try {
+    let newSessionEntry = await FeedingPlanSessionDetail.create(newSession);
+    newSessionEntry.setFeedingPlan(await getFeedingPlanById(feedingPlanId));
+
+    // Set Event relationship here
+
+    return newSessionEntry;
+  } catch (error: any) {
+    console.log(error);
+    throw validationErrorHandler(error);
+  }
+}
+
+export async function updateFeedingPlanSessionDetail(
+  feedingPlanDetailId: number,
+  dayOftheWeek: string,
+  eventTimingType: string,
+) {
+  let updatedSession = {
+    dayOftheWeek: dayOftheWeek,
+    eventTimingType: eventTimingType,
+  } as any;
+
+  try {
+    await FeedingPlanSessionDetail.update(updatedSession, {
+      where: { feedingPlanDetailId: feedingPlanDetailId },
+    });
+
+    // Set Event relationship here
+
+    return updatedSession;
+  } catch (error: any) {
+    throw validationErrorHandler(error);
+  }
+}
+
+export async function deleteFeedingPlanSessionDetailById(
+  feedingPlanDetailId: number,
+) {
+  let result = await FeedingPlanSessionDetail.destroy({
+    where: { feedingPlanDetailId: feedingPlanDetailId },
+  });
+  if (result) {
+    return result;
+  }
+  throw new Error("Invalid Feeding Plan Session Detail Id!");
 }

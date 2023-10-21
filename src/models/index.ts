@@ -1709,6 +1709,11 @@ export const animalSeed = async () => {
     new Date("2023-10-13"),
     new Date("2023-10-22"),
   );
+
+  await AnimalService.createFeedingPlanSessionDetail(1, "MONDAY", "MORNING");
+  await AnimalService.createFeedingPlanSessionDetail(1, "MONDAY", "AFTERNOON");
+  await AnimalService.createFeedingPlanSessionDetail(1, "FRIDAY", "EVENING");
+  await AnimalService.createFeedingPlanSessionDetail(2, "MONDAY", "AFTERNOON");
 };
 
 export const animalFeedSeed = async () => {

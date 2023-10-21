@@ -54,6 +54,12 @@ import {
   deleteFeedingPlanById,
   updateFeedingPlan,
   createFeedingPlan,
+  getAllFeedingPlanSessionDetails,
+  getAllFeedingPlanSessionDetailsByPlanId,
+  getFeedingPlanSessionDetailById,
+  createFeedingPlanSessionDetail,
+  updateFeedingPlanSessionDetail,
+  deleteFeedingPlanSessionDetailById,
 } from "../controllers/animalController";
 
 const router = express.Router();
@@ -190,5 +196,22 @@ router.get(
 router.post("/createFeedingPlan", createFeedingPlan);
 router.put("/updateFeedingPlan", updateFeedingPlan);
 router.delete("/deleteFeedingPlanById/:feedingPlanId", deleteFeedingPlanById);
+
+//-- Animal Feeding Plan Session
+router.get("/getAllFeedingPlanSessionDetails", getAllFeedingPlanSessionDetails);
+router.get(
+  "/getAllFeedingPlanSessionDetailsByPlanId/:feedingPlanId",
+  getAllFeedingPlanSessionDetailsByPlanId,
+);
+router.get(
+  "/getFeedingPlanSessionDetailById/:feedingPlanDetailId",
+  getFeedingPlanSessionDetailById,
+);
+router.post("/createFeedingPlanSessionDetail", createFeedingPlanSessionDetail);
+router.put("/updateFeedingPlanSessionDetail", updateFeedingPlanSessionDetail);
+router.delete(
+  "/deleteFeedingPlanSessionDetailById/:feedingPlanDetailId",
+  deleteFeedingPlanSessionDetailById,
+);
 
 export default router;
