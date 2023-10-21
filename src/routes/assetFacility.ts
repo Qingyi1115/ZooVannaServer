@@ -104,7 +104,7 @@ router.delete("/removeOperationStaffFromFacility/:facilityId", removeOperationSt
 router.post("/createFacilityLog/:facilityId", createFacilityLogController);
 router.post("/createFacilityMaintenanceLog/:facilityId", createFacilityMaintenanceLogController);
 router.get("/getFacilityLogs/:facilityId", getFacilityLogsController);
-router.get("/getFacilityLog/:facilityLogId", getFacilityLogByIdController);
+router.post("/getFacilityLog/:facilityLogId", getFacilityLogByIdController);
 router.put("/updateFacilityLog/:facilityLogId", updateFacilityLogController);
 router.get("/completeRepairTicket/:facilityLogId", completeRepairTicketController);
 router.delete("/deleteFacilityLog/:facilityLogId", deleteFacilityLogController);

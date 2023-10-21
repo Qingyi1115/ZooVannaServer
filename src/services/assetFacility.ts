@@ -387,9 +387,9 @@ export async function createFacilityLog(
     })
     thirdParty.addFacilityLog(facilityLog);
 
-    if (facilityLogType == FacilityLogType.ACTIVE_REPAIR_TICKET){
-      if (employeeIds.length < 1) throw { message: "Employee ids empty!"}
-      for (const id of employeeIds){
+    if (facilityLogType == FacilityLogType.ACTIVE_REPAIR_TICKET) {
+      if (employeeIds.length < 1) throw { message: "Employee ids empty!" }
+      for (const id of employeeIds) {
         const emp = await findEmployeeById(id);
         await facilityLog.addGeneralStaff((await emp.getGeneralStaff()));
       }
@@ -753,8 +753,8 @@ export async function createFacilityMaintenanceLog(
       title: title,
       details: details,
       remarks: remarks,
-      staffName : staffName,
-      facilityLogType : FacilityLogType.MAINTENANCE_LOG
+      staffName: staffName,
+      facilityLogType: FacilityLogType.MAINTENANCE_LOG
     })
     inHouse.addFacilityLog(newLog);
     inHouse.lastMaintained = date;
@@ -768,13 +768,14 @@ export async function createFacilityMaintenanceLog(
 
 export async function getFacilityLogById(
   facilityLogId: number,
+  includes: string[] = []
 ): Promise<FacilityLog> {
   try {
     const facilityLog = await FacilityLog.findOne({
       where: {
-        facilityLogId:facilityLogId
+        facilityLogId: facilityLogId
       },
-      include:["inHouse", "generalStaffs"]
+      include: includes
     });
     if (!facilityLog)
       throw { message: "Cannot find facility log id : " + facilityLogId };
@@ -830,8 +831,8 @@ export async function completeRepairTicket(
 ) {
   try {
     const facilityLog = await getFacilityLogById(facilityLogId);
-    if (!facilityLog) throw {message:"Cannot find facility log id : " + facilityLogId}
-    if (facilityLog.facilityLogType != FacilityLogType.ACTIVE_REPAIR_TICKET) throw{message:"Not an active repair ticket!"}
+    if (!facilityLog) throw { message: "Cannot find facility log id : " + facilityLogId }
+    if (facilityLog.facilityLogType != FacilityLogType.ACTIVE_REPAIR_TICKET) throw { message: "Not an active repair ticket!" }
 
     await facilityLog.setGeneralStaffs([]);
     facilityLog.facilityLogType = FacilityLogType.COMPLETED_REPAIR_TICKET;
