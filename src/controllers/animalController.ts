@@ -1694,3 +1694,113 @@ export async function deleteFeedingPlanSessionDetailById(
     res.status(400).json({ error: error.message });
   }
 }
+
+//-- Animal Feeding Plan Food Item
+export async function getAllFeedingItemsByPlanSessionId(
+  req: Request,
+  res: Response,
+) {
+  const { feedingPlanDetailId } = req.params;
+
+  if (feedingPlanDetailId == undefined) {
+    console.log("Missing field(s): ", {
+      feedingPlanDetailId,
+    });
+    return res.status(400).json({ error: "Missing information!" });
+  }
+
+  try {
+    const feedingItems = await AnimalService.getAllFeedingItemsByPlanSessionId(
+      Number(feedingPlanDetailId),
+    );
+    return res.status(200).json(feedingItems.map((item) => item.toJSON()));
+  } catch (error: any) {
+    res.status(400).json({ error: error.message });
+  }
+}
+
+export async function createFeedingItem(req: Request, res: Response) {
+  try {
+    const { feedingPlanDetailId, animalCode, foodCategory, amount, unit } =
+      req.body;
+
+    if (
+      [feedingPlanDetailId, animalCode, foodCategory, amount, unit].includes(
+        undefined,
+      )
+    ) {
+      console.log("Missing field(s): ", {
+        feedingPlanDetailId,
+        animalCode,
+        foodCategory,
+        amount,
+        unit,
+      });
+      return res.status(400).json({ error: "Missing information!" });
+    }
+
+    // have to pass in req for image uploading
+    let feedingItem = await AnimalService.createFeedingItem(
+      Number(feedingPlanDetailId),
+      animalCode,
+      foodCategory,
+      Number(amount),
+      unit,
+    );
+
+    return res.status(200).json({ feedingItem });
+  } catch (error: any) {
+    res.status(400).json({ error: error.message });
+  }
+}
+
+export async function updateFeedingItem(req: Request, res: Response) {
+  try {
+    const { feedingItemId, foodCategory, amount, unit } = req.body;
+
+    if ([feedingItemId, foodCategory, amount, unit].includes(undefined)) {
+      console.log("Missing field(s): ", {
+        feedingItemId,
+        foodCategory,
+        amount,
+        unit,
+      });
+      return res.status(400).json({ error: "Missing information!" });
+    }
+
+    // have to pass in req for image uploading
+    let updatedFeedingItem = await AnimalService.updateFeedingItem(
+      Number(feedingItemId),
+      foodCategory,
+      Number(amount),
+      unit,
+    );
+
+    return res.status(200).json({
+      updatedFeedingItem: await updatedFeedingItem!.toJSON(),
+    });
+  } catch (error: any) {
+    console.log("error", error);
+    res.status(400).json({ error: error.message });
+  }
+}
+
+export async function deleteFeedingItemById(req: Request, res: Response) {
+  const { feedingItemId } = req.params;
+
+  if (feedingItemId == undefined) {
+    console.log("Missing field(s): ", {
+      feedingItemId,
+    });
+    return res.status(400).json({ error: "Missing information!" });
+  }
+
+  try {
+    const animalWeight = await AnimalService.deleteFeedingItemById(
+      Number(feedingItemId),
+    );
+    return res.status(200).json(animalWeight);
+  } catch (error: any) {
+    res.status(400).json({ error: error.message });
+  }
+}

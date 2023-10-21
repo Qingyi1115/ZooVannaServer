@@ -2000,7 +2000,6 @@ export async function getFeedingPlanSessionDetailById(
     throw new Error("Invalid Feeding Plan Detail ID Code!");
   }
 }
-
 // neeed to add EVent generator after Marcus done
 export async function createFeedingPlanSessionDetail(
   feedingPlanId: number,
@@ -2024,7 +2023,7 @@ export async function createFeedingPlanSessionDetail(
     throw validationErrorHandler(error);
   }
 }
-
+// neeed to add EVent generator after Marcus done
 export async function updateFeedingPlanSessionDetail(
   feedingPlanDetailId: number,
   dayOftheWeek: string,
@@ -2059,3 +2058,100 @@ export async function deleteFeedingPlanSessionDetailById(
   }
   throw new Error("Invalid Feeding Plan Session Detail Id!");
 }
+
+//-- Animal Feeding Plan Food Item
+export async function getAllFeedingItemsByPlanSessionId(
+  feedingPlanDetailId: number,
+) {
+  try {
+    let result: FeedingItem[] = [];
+    const feedingItems = await FeedingItem.findAll({
+      include: [
+        {
+          model: FeedingPlanSessionDetail,
+          required: true,
+        },
+        {
+          model: Animal,
+          required: true,
+        },
+      ],
+    });
+    if (feedingItems) {
+      for (let i of feedingItems) {
+        if (
+          i.feedingPlanSessionDetail?.feedingPlanDetailId ===
+          feedingPlanDetailId
+        ) {
+          result.push(i);
+        }
+      }
+    }
+    return result;
+  } catch (error: any) {
+    throw validationErrorHandler(error);
+  }
+}
+
+export async function createFeedingItem(
+  feedingPlanDetailId: number,
+  animalCode: string,
+  foodCategory: string,
+  amount: number,
+  unit: string,
+) {
+  let newItem = {
+    foodCategory: foodCategory,
+    amount: amount,
+    unit: unit,
+  } as any;
+
+  try {
+    let newFeedingItemEntry = await FeedingItem.create(newItem);
+    newFeedingItemEntry.setFeedingPlanSessionDetail(
+      await getFeedingPlanSessionDetailById(feedingPlanDetailId),
+    );
+    newFeedingItemEntry.setAnimal(await getAnimalByAnimalCode(animalCode));
+
+    return newFeedingItemEntry;
+  } catch (error: any) {
+    console.log(error);
+    throw validationErrorHandler(error);
+  }
+}
+
+export async function updateFeedingItem(
+  feedingItemId: number,
+  foodCategory: string,
+  amount: number,
+  unit: string,
+) {
+  let updatedItem = {
+    foodCategory: foodCategory,
+    amount: amount,
+    unit: unit,
+  } as any;
+
+  try {
+    await FeedingItem.update(updatedItem, {
+      where: { feedingItemId: feedingItemId },
+    });
+    return updatedItem;
+  } catch (error: any) {
+    throw validationErrorHandler(error);
+  }
+}
+
+export async function deleteFeedingItemById(feedingItemId: number) {
+  let result = await FeedingItem.destroy({
+    where: { feedingItemId: feedingItemId },
+  });
+  if (result) {
+    return result;
+  }
+  throw new Error("Invalid Feeding Item Id!");
+}
+
+// add in methods:
+// 1. Check if feedingItem good for Animal
+// 2. Check if Animal in special status, e.g., Pregnent, Sick, etc
