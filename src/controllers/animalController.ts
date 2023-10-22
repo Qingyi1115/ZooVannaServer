@@ -1353,6 +1353,7 @@ export async function updateAnimalActivityLog(req: Request, res: Response) {
       .status(200)
       .json({ animalActivityLog: animalActivityLog.toJSON() });
   } catch (error: any) {
+    console.log(error)
     res.status(400).json({ error: error.message });
   }
 }
