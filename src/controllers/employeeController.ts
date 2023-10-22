@@ -19,7 +19,7 @@ import {
   updateSpecializationType,
   getAllGeneralStaffs,
 } from "../services/employee";
-import { PlannerType } from "../models/enumerated";
+import { GeneralStaffType, PlannerType } from "../models/enumerated";
 import { GeneralStaff } from "../models/generalStaff";
 
 export async function login(req: Request, res: Response) {
@@ -269,7 +269,9 @@ export async function getAllGeneralStaffsController(
     if (
       !employee.isAccountManager &&
       (await employee.getPlanningStaff())?.plannerType !=
-        PlannerType.OPERATIONS_MANAGER
+        PlannerType.OPERATIONS_MANAGER &&
+      (await employee.getGeneralStaff())?.generalStaffType !=
+        GeneralStaffType.ZOO_MAINTENANCE
     ) {
       return res.status(403).json({ error: "Access Denied!" });
     }
