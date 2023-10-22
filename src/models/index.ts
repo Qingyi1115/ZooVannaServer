@@ -1142,24 +1142,24 @@ export const speciesSeed = async () => {
     70,
     100,
     21,
-    28,
-    AnimalGrowthStage.ELDER,
-  );
-
-  let pandaPhy6 = await SpeciesService.createPhysiologicalReferenceNorms(
-    "SPE001",
-    165,
-    195,
-    115,
-    185,
-    80,
-    115,
-    75,
-    105,
-    29,
     35,
     AnimalGrowthStage.ELDER,
   );
+
+  // let pandaPhy6 = await SpeciesService.createPhysiologicalReferenceNorms(
+  //   "SPE001",
+  //   165,
+  //   195,
+  //   115,
+  //   185,
+  //   80,
+  //   115,
+  //   75,
+  //   105,
+  //   29,
+  //   35,
+  //   AnimalGrowthStage.ELDER,
+  // );
 
   let pandaDietNeed1 = await SpeciesService.createDietNeed(
     "SPE001",
@@ -1188,6 +1188,21 @@ export const speciesSeed = async () => {
     AnimalGrowthStage.JUVENILE,
   );
   console.log(pandaDietNeed2.toJSON());
+
+  let pandaDietNeed3 = await SpeciesService.createDietNeed(
+    "SPE001",
+    AnimalFeedCategory.FISH,
+    1000,
+    800,
+    7000,
+    6600,
+    PresentationContainer.HANGING_FEEDERS,
+    PresentationMethod.WHOLE,
+    PresentationLocation.IN_CONTAINER,
+    AnimalGrowthStage.ELDER,
+  );
+  console.log(pandaDietNeed2.toJSON());
+
   let capybaraTemplate = {
     speciesCode: await Species.getNextSpeciesCode(),
     commonName: "Capybara",
@@ -1834,7 +1849,7 @@ export const facilityAssetsSeed = async () => {
         details: "Bla Bla Bla...",
         remarks: "Uncommon but common",
         staffName: "maint1",
-        facilityLogType: FacilityLogType.MAINTENANCE_LOG
+        facilityLogType: FacilityLogType.MAINTENANCE_LOG,
       }),
     );
   }
@@ -1884,7 +1899,7 @@ export const facilityAssetsSeed = async () => {
       details: "Bla Bla...",
       remarks: "my log haha",
       staffName: "maint1",
-      facilityLogType: FacilityLogType.MAINTENANCE_LOG
+      facilityLogType: FacilityLogType.MAINTENANCE_LOG,
     }),
     await FacilityLog.create({
       dateTime: new Date(Date.now() - 1000 * 60 * 60 * 24),
@@ -1892,7 +1907,7 @@ export const facilityAssetsSeed = async () => {
       details: "Bla Bla...",
       remarks: "my log haha",
       staffName: "maint1",
-      facilityLogType: FacilityLogType.MAINTENANCE_LOG
+      facilityLogType: FacilityLogType.MAINTENANCE_LOG,
     }),
     await FacilityLog.create({
       dateTime: new Date(Date.now() - 1000 * 60 * 60 * 24 * 2),
@@ -1900,7 +1915,7 @@ export const facilityAssetsSeed = async () => {
       details: "Bla Bla...",
       remarks: "my log haha",
       staffName: "maint1",
-      facilityLogType: FacilityLogType.MAINTENANCE_LOG
+      facilityLogType: FacilityLogType.MAINTENANCE_LOG,
     }),
     await FacilityLog.create({
       dateTime: new Date(Date.now() - 1000 * 60 * 60 * 24 * 3),
@@ -1908,7 +1923,7 @@ export const facilityAssetsSeed = async () => {
       details: "Bla Bla...",
       remarks: "my log haha",
       staffName: "maint1",
-      facilityLogType: FacilityLogType.MAINTENANCE_LOG
+      facilityLogType: FacilityLogType.MAINTENANCE_LOG,
     }),
     await FacilityLog.create({
       dateTime: new Date(Date.now() - 1000 * 60 * 60 * 24 * 5),
@@ -1916,7 +1931,7 @@ export const facilityAssetsSeed = async () => {
       details: "Bla Bla...",
       remarks: "my log haha",
       staffName: "maint1",
-      facilityLogType: FacilityLogType.MAINTENANCE_LOG
+      facilityLogType: FacilityLogType.MAINTENANCE_LOG,
     }),
   ]);
   // facility1.destroy();

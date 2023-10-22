@@ -64,6 +64,7 @@ import {
   createFeedingItem,
   updateFeedingItem,
   deleteFeedingItemById,
+  getFeedingItemAmtReco,
 } from "../controllers/animalController";
 
 const router = express.Router();
@@ -226,5 +227,5 @@ router.get(
 router.post("/createFeedingItem", createFeedingItem);
 router.put("/updateFeedingItem", updateFeedingItem);
 router.delete("/deleteFeedingItemById/:feedingItemId", deleteFeedingItemById);
-
+router.post("/getFeedingItemAmtReco", getFeedingItemAmtReco);
 export default router;
