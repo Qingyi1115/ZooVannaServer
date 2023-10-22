@@ -20,6 +20,7 @@ import { Animal } from "./animal";
 import { InHouse } from "./inHouse";
 import { AnimalClinic } from "./animalClinics";
 import { AnimalActivity } from "./animalActivity";
+import { FeedingPlanSessionDetail } from "./feedingPlanSessionDetail";
 
 class ZooEvent extends Model<
   InferAttributes<ZooEvent>,
@@ -27,22 +28,28 @@ class ZooEvent extends Model<
 > {
   declare zooEventId: CreationOptional<number>;
   declare eventName: String;
-  declare eventNotificationDate: Date;
-  declare eventStartDateTime: Date;
-  declare eventEndDateTime: Date | null;
-  declare eventDurationHrs: number;
-  declare eventTiming: EventTimingType | null;
   declare eventDescription: string;
   declare eventIsPublic: boolean;
   declare eventType?: EventType;
+  declare eventStartDateTime: Date;
 
+  // Internal
+  declare eventDurationHrs: number;
+  declare eventTiming: EventTimingType | null;
+
+  // Public
+  declare eventNotificationDate: Date;
+  declare eventEndDateTime: Date | null;
+  declare imageUrl: CreationOptional<string>;
+  
   declare planningStaff?: PlanningStaff;
   declare keepers?: Keeper[]; // work
   declare enclosure?: Enclosure;
   declare animal?: Animal;
   declare inHouse?: InHouse;
   declare animalClinic?: AnimalClinic;
-  declare AnimalActivity?: AnimalActivity;
+  declare animalActivity?: AnimalActivity;
+  declare feedingPlanSessionDetail?: FeedingPlanSessionDetail;
 
   declare getPlanningStaff: BelongsToGetAssociationMixin<PlanningStaff>;
   declare setPlanningStaff: BelongsToSetAssociationMixin<PlanningStaff, number>;
@@ -66,6 +73,9 @@ class ZooEvent extends Model<
   
   declare getAnimalActivity: BelongsToGetAssociationMixin<AnimalActivity>;
   declare setAnimalActivity: BelongsToSetAssociationMixin<AnimalActivity, number>;
+  
+  declare getFeedingPlanSessionDetail: BelongsToGetAssociationMixin<FeedingPlanSessionDetail>;
+  declare setFeedingPlanSessionDetail: BelongsToSetAssociationMixin<FeedingPlanSessionDetail, number>;
 
   public toJSON() {
       return {
@@ -116,6 +126,9 @@ ZooEvent.init(
       values: Object.values(EventType),
       // allowNull: false,
     },
+    imageUrl:{
+      type: DataTypes.STRING,
+    }
   },
   {
     freezeTableName: true,

@@ -1,10 +1,22 @@
-from Json import newAnimalActivityLogDetails, newAnimalActivityDetails
+from functools import reduce
+from Json import newAnimalActivityLogDetails, newAnimalActivityDetails, DAY_IN_MILLISECONDS
 from Annotations import UseAPI, getApi, login_as_marry, login_as_junior_keeper
 from time import time
+
+from datetime import datetime
+def debug_map(arr):
+    return list(
+        sorted(
+            map(lambda a: datetime.fromtimestamp(a["eventStartDateTime"]/1000), arr),
+            key = lambda a: a
+        ))
 
 # Animal Activity API
 @login_as_marry
 def createAnimalActivity(mockData, useAPI: UseAPI):
+    mockData["startDate"] = time() * 1000
+    mockData["endDate"] = time() * 1000 + DAY_IN_MILLISECONDS * 30
+    mockData["recurringPattern"] = "WEEKLY"
     res = useAPI.post("/api/animal/createAnimalActivity", 
                       json=mockData)
     response_json = res.json()
@@ -19,6 +31,7 @@ def getAnimalActivityById(mockData, useAPI: UseAPI):
     assert "animalActivity" in response_json, "No animalActivity! " + ("" if "error" not in response_json else response_json["error"])
     assert(response_json["animalActivity"]["details"] == mockData["details"])
     assert len(response_json["animalActivity"]["zooEvents"]) in [4,5], "Zoo events incorrectly created " + str(len(response_json["animalActivity"]["zooEvents"])) + " found!"
+    mockData["zooEvents"] = response_json["animalActivity"]["zooEvents"]
 
 @login_as_marry
 def updateAnimalActivity(mockData, useAPI: UseAPI):
@@ -27,7 +40,7 @@ def updateAnimalActivity(mockData, useAPI: UseAPI):
     res = useAPI.put("/api/animal/updateAnimalActivity", json=mockData)
     response_json = res.json()
     assert "updatedAnimalActivity" in response_json, "No updatedAnimalActivity! " + ("" if "error" not in response_json else response_json["error"])
-    assert(response_json["updatedAnimalActivity"]["details"] == mockData["details"])
+    assert response_json["updatedAnimalActivity"]["details"] == mockData["details"], "Details do not match!"
     assert len(response_json["updatedAnimalActivity"]["zooEvents"]) in [8,9], "Zoo events incorrectly created " + str(len(response_json["updatedAnimalActivity"]["zooEvents"])) + " found!"
     
     mockData["startDate"] = time() * 1000 - 1000 * 60 * 60 * 24 * 30
@@ -37,7 +50,15 @@ def updateAnimalActivity(mockData, useAPI: UseAPI):
     assert "updatedAnimalActivity" in response_json, "No updatedAnimalActivity! " + ("" if "error" not in response_json else response_json["error"])
     assert(response_json["updatedAnimalActivity"]["details"] == mockData["details"])
     assert len(response_json["updatedAnimalActivity"]["zooEvents"]) in [4,5], "Zoo events incorrectly created " + str(len(response_json["updatedAnimalActivity"]["zooEvents"])) + " found!"
-    
+
+    mockData["startDate"] = time() * 1000 + 1000 * 60 * 60 * 24 * 30
+    mockData["endDate"] = time() * 1000 + 1000 * 60 * 60 * 24 * 60
+    res = useAPI.put("/api/animal/updateAnimalActivity", json=mockData)
+    response_json = res.json()
+    assert "updatedAnimalActivity" in response_json, "No updatedAnimalActivity! " + ("" if "error" not in response_json else response_json["error"])
+    assert(response_json["updatedAnimalActivity"]["details"] == mockData["details"])
+    assert len(response_json["updatedAnimalActivity"]["zooEvents"]) in [4,5], "Zoo events incorrectly created " + str(len(response_json["updatedAnimalActivity"]["zooEvents"])) + " found!"
+
     mockData["recurringPattern"] = "NON_RECURRING"
     mockData["startDate"] = round(time()  +  60 * 60 * 24 * 10) * 1000
     mockData["endDate"] = mockData["startDate"]
@@ -66,6 +87,65 @@ ANIMAL_ACTIVITY_API_TESTS = [
     (getAnimalActivityById, newAnimalActivityDetails),
     (updateAnimalActivity, newAnimalActivityDetails),
     (deleteAnimalActivity, newAnimalActivityDetails)
+]
+
+# Zoo Events Log API 
+@login_as_marry
+def getAllZooEvents(mockData, useAPI: UseAPI):
+    res = useAPI.post("/api/zooEvent/getAllZooEvents", json=
+                    {
+                         "startDate" : mockData["startDate"],
+                         "endDate" : mockData["endDate"]
+                    } 
+    )
+    validIds = list(map(
+        lambda a:a["zooEventId"],
+        mockData["zooEvents"]
+    ))
+    response_json = res.json()
+    assert "zooEvents" in response_json, "No zooEvents! " + ("" if "error" not in response_json else response_json["error"])
+    assert len(list(filter(
+        lambda ze: ze["zooEventId"] in validIds, 
+        response_json["zooEvents"]
+    ))) == len(mockData["zooEvents"]), "Number of zoo events does not match!"
+    mockData["zooEventTesting"] = list(sorted(
+        mockData["zooEvents"], 
+        key = lambda a:a["eventStartDateTime"]
+    ))[-2]
+    
+@login_as_marry
+def updateZooEventSingle(mockData, useAPI: UseAPI):
+    mockData["zooEventTesting"]["eventName"] = "testing updateaa"
+    res = useAPI.put("/api/zooEvent/updateZooEventSingle/{}".format(mockData["zooEventTesting"]["zooEventId"]),
+                     json={"zooEventDetails":mockData["zooEventTesting"]})
+    response_json = res.json()
+    assert "zooEvent" in response_json, "No zooEvent! " + ("" if "error" not in response_json else response_json["error"])
+    assert response_json["zooEvent"]["eventName"] == mockData["zooEventTesting"]["eventName"], "Update did not change event name!"
+
+    
+@login_as_marry
+def updateZooEventIncludeFuture(mockData, useAPI: UseAPI):
+    return
+    mockData["zooEventTesting"]["eventName"] = "future name"
+    res = useAPI.put("/api/zooEvent/updateZooEventIncludeFuture/{}".format(mockData["zooEventTesting"]["zooEventId"]),
+                     json={"zooEventDetails":mockData["zooEventTesting"]})
+    response_json = res.json()
+    assert "zooEvent" in response_json, "No zooEvent! " + ("" if "error" not in response_json else response_json["error"])
+    assert response_json["zooEvent"]["eventName"] == mockData["zooEventTesting"]["eventName"], "Update did not change event name!"
+
+    
+@login_as_marry
+def deleteZooEvent(mockData, useAPI: UseAPI):
+    return 
+    
+
+ZOO_EVENTS_API_TESTS = [
+    (createAnimalActivity, newAnimalActivityDetails),
+    (getAnimalActivityById, newAnimalActivityDetails),
+    (getAllZooEvents, newAnimalActivityDetails), 
+    (updateZooEventSingle, newAnimalActivityDetails),
+    (updateZooEventIncludeFuture, newAnimalActivityDetails),
+    (deleteZooEvent, newAnimalActivityDetails),
 ]
 
 # Animal Activity Log API 
