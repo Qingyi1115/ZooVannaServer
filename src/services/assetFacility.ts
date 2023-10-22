@@ -343,15 +343,18 @@ export async function getFacilityLogs(
   facilityId: number,
 ): Promise<FacilityLog[]> {
   try {
-    const facility = await Facility.findOne({
-      where: { facilityId: facilityId },
-    });
+    const facility : Facility = await getFacilityById(facilityId);
     if (!facility) throw { message: "Unable to find facilityId: " + facility };
-    const thirdParty = await facility.getFacilityDetail();
+    const inHouse:InHouse = await facility.getFacilityDetail();
     if (facility.facilityDetail != "inHouse")
       throw { message: "Not an in-house facility!" };
 
-    return thirdParty.getFacilityLogs();
+    return inHouse.getFacilityLogs({
+      include:{
+        association:"generalStaffs",
+        include:["employee"]
+      }
+    });
   } catch (error: any) {
     throw validationErrorHandler(error);
   }
