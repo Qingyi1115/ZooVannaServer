@@ -777,9 +777,27 @@ export async function getFacilityLogByIdController(req: Request, res: Response) 
       return res.status(400).json({ error: "Missing information!" });
     }
 
-    const _includes: string[] = [];
+    const _includes: any[] = [];
     for (const role of ["inHouse", "generalStaffs"]) {
-      if (includes.includes(role)) _includes.push(role);
+      if (includes.includes(role)) {
+        if (role == "inHouse"){
+          _includes.push({
+            association: role,
+            required:false,
+            include: [
+              {
+                association: "facility",
+                required: true,
+              },
+            ],
+          });
+        }else{
+          _includes.push({
+            association: role,
+            required:false
+          });
+        }
+      }
     }
 
     let facilityLog: FacilityLog = await getFacilityLogById(Number(facilityLogId), _includes);
