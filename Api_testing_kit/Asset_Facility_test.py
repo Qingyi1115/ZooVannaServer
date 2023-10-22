@@ -1,6 +1,7 @@
 from Json import newRepairTicketDetails
 from Annotations import UseAPI, getApi, login_as_marry, login_as_junior_keeper
 from time import time
+import json
 
 # Facility Logs API
 @login_as_marry
@@ -14,7 +15,8 @@ def createFacilityLog(mockData, useAPI: UseAPI):
 
 @login_as_marry
 def getFacilityLog(mockData, useAPI: UseAPI):
-    res = useAPI.get("/api/assetFacility/getFacilityLog/{}".format(mockData["facilityLogId"]))
+    res = useAPI.post("/api/assetFacility/getFacilityLog/{}".format(mockData["facilityLogId"]),
+                      json={"facilityLogId":["inHouse", "generalStaffs"]})
     response_json = res.json()
     assert "facilityLog" in response_json, "No facilityLog! " + ("" if "error" not in response_json else response_json["error"])
     assert response_json["facilityLog"]["details"] == mockData["details"], "Data does not match"
@@ -35,7 +37,8 @@ def completeRepairTicket(mockData, useAPI: UseAPI):
     assert "result" in response_json, "No facilityLog! " + ("" if "error" not in response_json else response_json["error"])
     assert response_json["result"] == "success", "Data does not match"
 
-    res = useAPI.get("/api/assetFacility/getFacilityLog/{}".format(mockData["facilityLogId"]))
+    res = useAPI.post("/api/assetFacility/getFacilityLog/{}".format(mockData["facilityLogId"]),
+                      json={"includes":["generalStaffs"]})
     response_json = res.json()
     assert "facilityLog" in response_json, "No facilityLog! " + ("" if "error" not in response_json else response_json["error"])
     assert len(response_json["facilityLog"]["generalStaffs"])== 0, "Data does not match"
