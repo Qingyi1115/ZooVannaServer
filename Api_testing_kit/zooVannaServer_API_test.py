@@ -28,7 +28,7 @@ def do_tests(test_list):
             print("Details: ", e, "\n")
             # import traceback
             # traceback.print_exc()
-    print("Group test cases pass : ", passes,"/", cases, ", successes rate ", round(passes/cases * 100, 2), "%")
+    print("Group test cases pass : ", passes,"/", cases, ", Pass percentage ", round(passes/cases * 100, 2), "%")
 
     total_cases += cases
     total_passes += passes
@@ -60,7 +60,7 @@ def test_api():
     do_tests(FACILITY_LOG_API_TESTS)
     print("-----------Group test finish!---------------------\n")
 
-    print("All test cases finished!\nTotal test cases pass : ", total_passes,"/", total_cases, ", successes rate ", round(total_passes/total_cases * 100, 2), "%\n")
+    print("All test cases finished!\nTotal test cases pass : ", total_passes,"/", total_cases, ", Pass percentage ", round(total_passes/total_cases * 100, 2), "%\n")
     if len(all_fails):
         print("Failed test cases: ", ", ".join(all_fails))
 
