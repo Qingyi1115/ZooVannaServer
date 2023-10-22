@@ -45,6 +45,8 @@ class UseAPI:
         try:
             return self.req.json()
         except:
+            if self.req.status_code != 200:
+                raise Exception("Status code " + str(self.req.status_code) + "!")
             raise Exception("Exception while obtaining response json!")
             
 def getApi(func):

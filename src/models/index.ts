@@ -41,6 +41,7 @@ import {
   EventTimingType,
   DayOfWeek,
   RecurringPattern,
+  FacilityLogType,
 } from "./enumerated";
 import { ZooEvent } from "./zooEvent";
 import { Facility } from "./facility";
@@ -198,6 +199,18 @@ export const createDatabase = async (options: any) => {
     InHouse,
     addCascadeOptions({ foreignKey: "inHouseId" }),
   );
+
+  FacilityLog.belongsToMany(GeneralStaff, {
+    foreignKey: "facilityLogId",
+    through: "repairTicket_staff",
+    as: "generalStaffs",
+  });
+
+  GeneralStaff.belongsToMany(FacilityLog, {
+    foreignKey: "generalStaffId",
+    through: "repairTicket_staff",
+    as: "facilityLogs",
+  });
 
   Facility.hasOne(ThirdParty, addCascadeOptions({ foreignKey: "FacilityId" }));
   ThirdParty.belongsTo(
@@ -362,7 +375,7 @@ export const createDatabase = async (options: any) => {
   Animal.belongsToMany(FeedingPlan, {
     foreignKey: "animalId",
     through: "animal_feedingPlan",
-    as: "animalFeedingPlans",
+    as: "feedingPlans",
   });
   FeedingPlan.belongsToMany(Animal, {
     foreignKey: "feedingPlanId",
@@ -1684,6 +1697,42 @@ export const animalSeed = async () => {
 
   await AnimalService.assignAnimalsToActivity(1, ["ANM00001", "ANM00003"]);
   await AnimalService.assignItemToActivity(1, [1, 2]);
+
+  // -- Animal Feeding Plan
+  await AnimalService.createFeedingPlan(
+    "SPE001",
+    ["ANM00001", "ANM00002", "ANM00003"],
+    "Some description...",
+    new Date("2023-10-13"),
+    new Date("2023-10-22"),
+  );
+
+  await AnimalService.createFeedingPlan(
+    "SPE001",
+    ["ANM00003", "ANM00004", "ANM00005", "ANM00006"],
+    "Some description...",
+    new Date("2023-10-13"),
+    new Date("2023-10-22"),
+  );
+
+  await AnimalService.createFeedingPlan(
+    "SPE002",
+    ["ANM00011"],
+    "Some description...",
+    new Date("2023-10-13"),
+    new Date("2023-10-22"),
+  );
+
+  await AnimalService.createFeedingPlanSessionDetail(1, "MONDAY", "MORNING");
+  await AnimalService.createFeedingPlanSessionDetail(1, "MONDAY", "AFTERNOON");
+  await AnimalService.createFeedingPlanSessionDetail(1, "FRIDAY", "EVENING");
+  await AnimalService.createFeedingPlanSessionDetail(2, "MONDAY", "AFTERNOON");
+
+  await AnimalService.createFeedingItem(1, "ANM00001", "FRUITS", 5, "KG");
+  await AnimalService.createFeedingItem(1, "ANM00001", "HAY", 20, "KG");
+  await AnimalService.createFeedingItem(1, "ANM00002", "FRUITS", 10, "KG");
+  await AnimalService.createFeedingItem(2, "ANM00001", "HAY", 2000, "KG");
+  await AnimalService.createFeedingItem(2, "ANM00003", "FRUITS", 5, "KG");
 };
 
 export const animalFeedSeed = async () => {
@@ -1777,11 +1826,11 @@ export const facilityAssetsSeed = async () => {
     toiletInhouse.addFacilityLog(
       await FacilityLog.create({
         dateTime: _day,
-        isMaintenance: true,
         title: "Maintenance of " + _day.toDateString(),
         details: "Bla Bla Bla...",
         remarks: "Uncommon but common",
         staffName: "maint1",
+        facilityLogType: FacilityLogType.MAINTENANCE_LOG
       }),
     );
   }
@@ -1827,43 +1876,43 @@ export const facilityAssetsSeed = async () => {
   ih1.setFacilityLogs([
     await FacilityLog.create({
       dateTime: new Date(),
-      isMaintenance: false,
       title: "log1",
       details: "Bla Bla...",
       remarks: "my log haha",
       staffName: "maint1",
+      facilityLogType: FacilityLogType.MAINTENANCE_LOG
     }),
     await FacilityLog.create({
       dateTime: new Date(Date.now() - 1000 * 60 * 60 * 24),
-      isMaintenance: false,
       title: "log2",
       details: "Bla Bla...",
       remarks: "my log haha",
       staffName: "maint1",
+      facilityLogType: FacilityLogType.MAINTENANCE_LOG
     }),
     await FacilityLog.create({
       dateTime: new Date(Date.now() - 1000 * 60 * 60 * 24 * 2),
-      isMaintenance: false,
       title: "log3",
       details: "Bla Bla...",
       remarks: "my log haha",
       staffName: "maint1",
+      facilityLogType: FacilityLogType.MAINTENANCE_LOG
     }),
     await FacilityLog.create({
       dateTime: new Date(Date.now() - 1000 * 60 * 60 * 24 * 3),
-      isMaintenance: false,
       title: "log4",
       details: "Bla Bla...",
       remarks: "my log haha",
       staffName: "maint1",
+      facilityLogType: FacilityLogType.MAINTENANCE_LOG
     }),
     await FacilityLog.create({
       dateTime: new Date(Date.now() - 1000 * 60 * 60 * 24 * 5),
-      isMaintenance: false,
       title: "log5",
       details: "Bla Bla...",
       remarks: "my log haha",
       staffName: "maint1",
+      facilityLogType: FacilityLogType.MAINTENANCE_LOG
     }),
   ]);
   // facility1.destroy();
@@ -1909,7 +1958,7 @@ export const facilityAssetsSeed = async () => {
   )?.getGeneralStaff();
   let is1 = await tram1.getInHouse();
 
-  await gs?.addMaintainedFacilities(is1);
+  await gs?.addMaintainedFacility(is1);
 
   let tram2 = await Facility.create(
     {

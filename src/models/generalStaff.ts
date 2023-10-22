@@ -19,6 +19,7 @@ import { Employee } from "./employee";
 import { GeneralStaffType } from "./enumerated";
 import { InHouse } from "./inHouse";
 import { Sensor } from "./sensor";
+import { FacilityLog } from "./facilityLog";
 
 class GeneralStaff extends Model<
   InferAttributes<GeneralStaff>,
@@ -31,14 +32,15 @@ class GeneralStaff extends Model<
   declare maintainedFacilities?: InHouse[];
   declare operatedFacility?: InHouse;
   declare sensors?: Sensor[];
+  declare facilityLogs?: FacilityLog[];
 
   declare getEmployee: BelongsToGetAssociationMixin<Employee>;
   declare setEmployee: BelongsToSetAssociationMixin<Employee, number>;
 
   declare getMaintainedFacilities: BelongsToManyGetAssociationsMixin<InHouse>;
-  declare addMaintainedFacilities: BelongsToManyAddAssociationMixin<InHouse, number>;
+  declare addMaintainedFacility: BelongsToManyAddAssociationMixin<InHouse, number>;
   declare setMaintainedFacilities: BelongsToManySetAssociationsMixin<InHouse, number>;
-  declare removeMaintainedFacilities: BelongsToManyRemoveAssociationMixin<InHouse, number>;
+  declare removeMaintainedFacility: BelongsToManyRemoveAssociationMixin<InHouse, number>;
 
   declare getOperatedFacility: BelongsToGetAssociationMixin<InHouse>;
   declare setOperatedFacility: BelongsToSetAssociationMixin<InHouse, number>;
@@ -47,6 +49,12 @@ class GeneralStaff extends Model<
   declare addSensor: HasManyAddAssociationMixin<Sensor, number>;
   declare setSensors: HasManySetAssociationsMixin<Sensor, number>;
   declare removeSensor: HasManyRemoveAssociationMixin<Sensor, number>;
+
+  declare getFacilityLogs: BelongsToManyGetAssociationsMixin<FacilityLog>;
+  declare addFacilityLog: BelongsToManyAddAssociationMixin<FacilityLog, number>;
+  declare setFacilityLogs: BelongsToManySetAssociationsMixin<FacilityLog, number>;
+  declare removeFacilityLog: BelongsToManyRemoveAssociationMixin<FacilityLog, number>;
+
   
   public toJSON() {
     return {
