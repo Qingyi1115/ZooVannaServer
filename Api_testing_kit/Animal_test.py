@@ -108,34 +108,70 @@ def getAllZooEvents(mockData, useAPI: UseAPI):
         lambda ze: ze["zooEventId"] in validIds, 
         response_json["zooEvents"]
     ))) == len(mockData["zooEvents"]), "Number of zoo events does not match!"
-    mockData["zooEventTesting"] = list(sorted(
+    mockData["zooEventTestings"] = list(sorted(
         mockData["zooEvents"], 
         key = lambda a:a["eventStartDateTime"]
-    ))[-2]
+    ))
     
 @login_as_marry
 def updateZooEventSingle(mockData, useAPI: UseAPI):
-    mockData["zooEventTesting"]["eventName"] = "testing updateaa"
-    res = useAPI.put("/api/zooEvent/updateZooEventSingle/{}".format(mockData["zooEventTesting"]["zooEventId"]),
-                     json={"zooEventDetails":mockData["zooEventTesting"]})
+    mockData["zooEventTestings"][-2]["eventName"] = "testing updateaa"
+    res = useAPI.put("/api/zooEvent/updateZooEventSingle/{}".format(mockData["zooEventTestings"][-2]["zooEventId"]),
+                     json={"zooEventDetails":mockData["zooEventTestings"][-2]})
     response_json = res.json()
     assert "zooEvent" in response_json, "No zooEvent! " + ("" if "error" not in response_json else response_json["error"])
-    assert response_json["zooEvent"]["eventName"] == mockData["zooEventTesting"]["eventName"], "Update did not change event name!"
+    assert response_json["zooEvent"]["eventName"] == mockData["zooEventTestings"][-2]["eventName"], "Update did not change event name!"
 
     
 @login_as_marry
 def updateZooEventIncludeFuture(mockData, useAPI: UseAPI):
-    mockData["zooEventTesting"]["eventName"] = "future name"
-    res = useAPI.put("/api/zooEvent/updateZooEventIncludeFuture/{}".format(mockData["zooEventTesting"]["zooEventId"]),
-                     json={"zooEventDetails":mockData["zooEventTesting"]})
+    mockData["zooEventTestings"][-2]["eventName"] = "future name is unique number ALSDAKSDKAW"
+    res = useAPI.put("/api/zooEvent/updateZooEventIncludeFuture/{}".format(mockData["zooEventTestings"][-2]["zooEventId"]),
+                     json=mockData["zooEventTestings"][-2])
     response_json = res.json()
     assert "zooEvent" in response_json, "No zooEvent! " + ("" if "error" not in response_json else response_json["error"])
-    assert response_json["zooEvent"]["eventName"] == mockData["zooEventTesting"]["eventName"], "Update did not change event name!"
+    assert response_json["zooEvent"]["eventName"] == mockData["zooEventTestings"][-2]["eventName"], "Update did not change event name!"
+
+    res = useAPI.post("/api/zooEvent/getAllZooEvents", json=
+                    {
+                         "startDate" : mockData["startDate"],
+                         "endDate" : mockData["endDate"]
+                    } 
+    )
+    response_json = res.json()
+    assert "zooEvents" in response_json, "No zooEvents! " + ("" if "error" not in response_json else response_json["error"])
+    print(str(list(map(
+        lambda a:a["eventName"] + str(datetime.fromtimestamp(a["eventStartDateTime"]/1000)),
+        mockData["zooEventTestings"]
+    ))))
+    assert len(list(filter(
+        lambda ze: ze["eventName"]  == mockData["zooEventTestings"][-2]["eventName"], 
+        response_json["zooEvents"]
+    ))) == 2, "Number of zoo events Updated should be 2!" + \
+    str(list(map(
+        lambda a:a["eventName"]+ str(datetime.fromtimestamp(a["eventStartDateTime"]/1000)),
+        filter(
+            lambda a:a["eventName"] in ["I now do not like fishes", "future name is unique number ALSDAKSDKAW"],
+            response_json["zooEvents"]
+        )
+    ))) + \
+    str(len(list(filter(
+        lambda ze: ze["eventName"]  == mockData["zooEventTestings"][-2]["eventName"], 
+        response_json["zooEvents"]
+    ))))
+
 
     
 @login_as_marry
 def deleteZooEvent(mockData, useAPI: UseAPI):
-    return 
+    res = useAPI.delete("/api/zooEvent/deleteZooEvent/{}".format(mockData["zooEventTestings"][-2]["zooEventId"]))
+    response_json = res.json()
+    assert "result" in response_json, "No success message!"
+    assert(response_json["result"] == "success")
+
+    res = useAPI.get("/api/zooEvent/getZooEventById/{}".format(mockData["zooEventTestings"][-2]["zooEventId"]))
+    response_json = res.json()
+    assert("error" in response_json)
     
 
 ZOO_EVENTS_API_TESTS = [
