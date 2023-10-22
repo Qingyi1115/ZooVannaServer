@@ -979,7 +979,7 @@ export async function completeRepairTicketController(req: Request, res: Response
       employees.push(await staff.getEmployee());
     }
 
-    if (((await employee.getPlanningStaff()).plannerType != PlannerType.OPERATIONS_MANAGER) &&
+    if (((await employee.getPlanningStaff())?.plannerType != PlannerType.OPERATIONS_MANAGER) &&
       !employee.superAdmin &&
       !employees.find(emp => emp.employeeId == employee.employeeId)) throw { message: "Only creator of the log can delete!" }
 
