@@ -6,6 +6,7 @@ STORE = dict()
 
 from Employee_test import LOGIN_API_TESTS, USERS_API_TESTS
 from Animal_test import ANIMAL_ACTIVITY_LOG_API_TESTS, ANIMAL_ACTIVITY_API_TESTS
+from Asset_Facility_test import FACILITY_LOG_API_TESTS
 
 def do_tests(test_list):
     for tests in test_list:
@@ -23,23 +24,23 @@ def test_api():
     print("-----------LOGIN_API_TESTS initiating-----------")
     do_tests(LOGIN_API_TESTS)
     print("-----------Group test finish!-------------------\n")
-
     
     print("-----------USERS_API_TESTS initiating-----------")
     do_tests(USERS_API_TESTS)
     print("-----------Group test finish!-------------------\n")
 
-    
     print("-----------ANIMAL_ACTIVITY_LOG_API_TESTS initiating-----------")
     do_tests(ANIMAL_ACTIVITY_LOG_API_TESTS)
     print("-----------Group test finish!---------------------\n")
-
     
     print("-----------ANIMAL_ACTIVITY_API_TESTS initiating-----------")
     do_tests(ANIMAL_ACTIVITY_API_TESTS)
     print("-----------Group test finish!---------------------\n")
-
     
+    print("-----------FACILITY_LOG_API_TESTS initiating-----------")
+    do_tests(FACILITY_LOG_API_TESTS)
+    print("-----------Group test finish!---------------------\n")
+
 
     
 

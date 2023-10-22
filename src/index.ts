@@ -20,6 +20,7 @@ import promotionRoutes from "./routes/promotion";
 import customerOrderRoutes from "./routes/customerOrder";
 import listingRoutes from "./routes/listing";
 import listingCustomerRoutes from "./routes/listingCustomer";
+import orderItemRoutes from "./routes/orderItem";
 import { seedDatabase, createDatabase } from "./models/index";
 import { conn } from "./db";
 
@@ -141,3 +142,4 @@ app.use("/api/promotion", promotionRoutes);
 app.use("/api/customerOrder", customerOrderRoutes);
 app.use("/api/listing", listingRoutes);
 app.use("/api/listingCustomer", listingCustomerRoutes);
+app.use("/api/orderItem", orderItemRoutes);

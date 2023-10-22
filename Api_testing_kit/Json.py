@@ -66,3 +66,11 @@ newAnimalActivityLogDetails = {
         "details": "Blah ... my testing value",
         "animalCodes" : ["ANM00001", "ANM00002"]
 }
+
+newRepairTicketDetails = {
+    "title":"fake title",
+    "details":"bladhhh...",
+    "remarks" : "remarksaaaa",
+    "facilityLogType" : "ACTIVE_REPAIR_TICKET",
+    "employeeIds" : [8, 10]
+}
