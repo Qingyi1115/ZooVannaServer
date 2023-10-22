@@ -125,7 +125,6 @@ def updateZooEventSingle(mockData, useAPI: UseAPI):
     
 @login_as_marry
 def updateZooEventIncludeFuture(mockData, useAPI: UseAPI):
-    return
     mockData["zooEventTesting"]["eventName"] = "future name"
     res = useAPI.put("/api/zooEvent/updateZooEventIncludeFuture/{}".format(mockData["zooEventTesting"]["zooEventId"]),
                      json={"zooEventDetails":mockData["zooEventTesting"]})
