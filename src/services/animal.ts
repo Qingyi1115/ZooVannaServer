@@ -1702,6 +1702,17 @@ export async function updateFeedingPlan(
       planEntry.setAnimals(animals);
     }
 
+    const promises = [];
+    for (const feedingPlanSession of (await planEntry.getFeedingPlanSessionDetails())){
+      promises.push(updateFeedingPlanSessionDetail(
+        feedingPlanSession.feedingPlanSessionDetailId,
+        feedingPlanSession.dayOfWeek,
+        feedingPlanSession.eventTimingType,
+        feedingPlanSession.durationInMinutes,
+      ));
+    }
+    for (const p of promises) await p;
+
     return planEntry;
   } catch (error: any) {
     throw validationErrorHandler(error);
@@ -1814,22 +1825,30 @@ export async function createFeedingPlanSessionDetail(
 // neeed to add EVent generator after Marcus done
 export async function updateFeedingPlanSessionDetail(
   feedingPlanSessionDetailId: number,
-  dayOftheWeek: string,
-  eventTimingType: string,
+  dayOfWeek: DayOfWeek,
+  eventTimingType: EventTimingType,
+  durationInMinutes: number
 ) {
-  let updatedSession = {
-    dayOftheWeek: dayOftheWeek,
-    eventTimingType: eventTimingType,
-  } as any;
+  const feedingPlanSessionDetail = await getFeedingPlanSessionDetailById(feedingPlanSessionDetailId);
 
   try {
-    await FeedingPlanSessionDetail.update(updatedSession, {
-      where: { feedingPlanSessionDetailId: feedingPlanSessionDetailId },
-    });
+    feedingPlanSessionDetail.dayOfWeek = dayOfWeek;
+    feedingPlanSessionDetail.eventTimingType = eventTimingType;
+    feedingPlanSessionDetail.durationInMinutes = durationInMinutes;
 
-    // Set Event relationship here
+    const promises = [];
+    for (const ze of (await feedingPlanSessionDetail.getZooEvents())){
+      if (compareDates(new Date(), ze.eventStartDateTime)<=0){
+        promises.push(ze.destroy());
+      }
+    }
+    for (const p of promises) await p;
+    await feedingPlanSessionDetail.save();
 
-    return updatedSession;
+    return ZooEventService.generateMonthlyZooEventForFeedingPlanSession(
+      feedingPlanSessionDetail.feedingPlanSessionDetailId
+    );
+
   } catch (error: any) {
     throw validationErrorHandler(error);
   }

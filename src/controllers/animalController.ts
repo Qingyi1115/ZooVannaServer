@@ -1644,15 +1644,16 @@ export async function updateFeedingPlanSessionDetail(
   res: Response,
 ) {
   try {
-    const { feedingPlanDetailId, dayOftheWeek, eventTimingType } = req.body;
+    const { feedingPlanDetailId, dayOftheWeek, eventTimingType, durationInMinutes } = req.body;
 
     if (
-      [feedingPlanDetailId, dayOftheWeek, eventTimingType].includes(undefined)
+      [feedingPlanDetailId, dayOftheWeek, eventTimingType, durationInMinutes].includes(undefined)
     ) {
       console.log("Missing field(s): ", {
         feedingPlanDetailId,
         dayOftheWeek,
         eventTimingType,
+        durationInMinutes,
       });
       return res.status(400).json({ error: "Missing information!" });
     }
@@ -1663,6 +1664,7 @@ export async function updateFeedingPlanSessionDetail(
         Number(feedingPlanDetailId),
         dayOftheWeek,
         eventTimingType,
+        durationInMinutes
       );
 
     return res.status(200).json({
