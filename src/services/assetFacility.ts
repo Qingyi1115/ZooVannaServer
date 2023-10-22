@@ -130,11 +130,18 @@ export async function getAllFacilityMaintenanceSuggestions(employee: Employee) {
     } else if (!(await employee.getGeneralStaff())) {
       throw { message: "No access!" };
     } else {
-      const allInHouses = await (
-        await employee.getGeneralStaff()
-      ).getMaintainedFacilities();
+      const generalStaff = await employee.getGeneralStaff();
+      const allInHouses = await generalStaff.getMaintainedFacilities();
       for (const inHouse of allInHouses) {
         facilities.push(await inHouse.getFacility());
+      }
+
+      const facilityLogs = (await generalStaff.getFacilityLogs());
+      for (const log of facilityLogs) {
+        let repairFacility = (await (await log.getInHouse()).getFacility());
+        if (!facilities.find(facility=>facility.facilityId == repairFacility.facilityId)){
+          facilities.push(repairFacility);
+        }
       }
     }
 
@@ -347,11 +354,15 @@ export async function getFacilityLogs(
       where: { facilityId: facilityId },
     });
     if (!facility) throw { message: "Unable to find facilityId: " + facility };
-    const thirdParty = await facility.getFacilityDetail();
+    const inHouse : InHouse = await facility.getFacilityDetail();
     if (facility.facilityDetail != "inHouse")
       throw { message: "Not an in-house facility!" };
 
-    return thirdParty.getFacilityLogs();
+    return inHouse.getFacilityLogs(
+      {
+        include:["generalStaffs"]
+      }
+    );
   } catch (error: any) {
     throw validationErrorHandler(error);
   }
