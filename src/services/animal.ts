@@ -1632,9 +1632,10 @@ export async function getFeedingPlanById(feedingPlanId: number) {
         },
       ],
     });
-    if (planRecord) {
-      return planRecord;
+    if (!planRecord) {
+      throw new Error("Unable to find feeding plan with id: "+ feedingPlanId)
     }
+    return planRecord;
   } catch (error: any) {
     throw new Error("Invalid Animal Code!");
   }
@@ -1761,11 +1762,11 @@ export async function getAllFeedingPlanSessionDetailsByPlanId(
 }
 
 export async function getFeedingPlanSessionDetailById(
-  feedingPlanDetailId: number,
+  feedingPlanSessionDetailId: number,
 ) {
   try {
     let planRecord = await FeedingPlanSessionDetail.findOne({
-      where: { feedingPlanDetailId: feedingPlanDetailId },
+      where: { feedingPlanSessionDetailId: feedingPlanSessionDetailId },
       include: [
         {
           model: FeedingPlan,
@@ -1777,31 +1778,34 @@ export async function getFeedingPlanSessionDetailById(
         },
       ],
     });
-    if (planRecord) {
-      return planRecord;
+    if (!planRecord) {
+      throw new Error("Invalid Feeding Plan Detail ID Code: " + feedingPlanSessionDetailId)
     }
+    return planRecord;
   } catch (error: any) {
-    throw new Error("Invalid Feeding Plan Detail ID Code!");
+    throw validationErrorHandler(error);
   }
 }
 // neeed to add EVent generator after Marcus done
 export async function createFeedingPlanSessionDetail(
   feedingPlanId: number,
-  dayOftheWeek: string,
+  dayOfWeek: string,
   eventTimingType: string,
+  durationInMinutes: number
 ) {
   let newSession = {
-    dayOftheWeek: dayOftheWeek,
+    dayOfWeek: dayOfWeek,
     eventTimingType: eventTimingType,
+    durationInMinutes: durationInMinutes
   } as any;
 
   try {
     let newSessionEntry = await FeedingPlanSessionDetail.create(newSession);
-    newSessionEntry.setFeedingPlan(await getFeedingPlanById(feedingPlanId));
+    await newSessionEntry.setFeedingPlan(await getFeedingPlanById(feedingPlanId));
 
-    // Set Event relationship here
-
-    return newSessionEntry;
+    return await ZooEventService.generateMonthlyZooEventForFeedingPlanSession(
+      newSessionEntry.feedingPlanSessionDetailId
+    );
   } catch (error: any) {
     console.log(error);
     throw validationErrorHandler(error);
@@ -1809,7 +1813,7 @@ export async function createFeedingPlanSessionDetail(
 }
 // neeed to add EVent generator after Marcus done
 export async function updateFeedingPlanSessionDetail(
-  feedingPlanDetailId: number,
+  feedingPlanSessionDetailId: number,
   dayOftheWeek: string,
   eventTimingType: string,
 ) {
@@ -1820,7 +1824,7 @@ export async function updateFeedingPlanSessionDetail(
 
   try {
     await FeedingPlanSessionDetail.update(updatedSession, {
-      where: { feedingPlanDetailId: feedingPlanDetailId },
+      where: { feedingPlanSessionDetailId: feedingPlanSessionDetailId },
     });
 
     // Set Event relationship here
@@ -1832,10 +1836,10 @@ export async function updateFeedingPlanSessionDetail(
 }
 
 export async function deleteFeedingPlanSessionDetailById(
-  feedingPlanDetailId: number,
+  feedingPlanSessionDetailId: number,
 ) {
   let result = await FeedingPlanSessionDetail.destroy({
-    where: { feedingPlanDetailId: feedingPlanDetailId },
+    where: { feedingPlanSessionDetailId: feedingPlanSessionDetailId },
   });
   if (result) {
     return result;
@@ -1845,7 +1849,7 @@ export async function deleteFeedingPlanSessionDetailById(
 
 //-- Animal Feeding Plan Food Item
 export async function getAllFeedingItemsByPlanSessionId(
-  feedingPlanDetailId: number,
+  feedingPlanSessionDetailId: number,
 ) {
   try {
     let result: FeedingItem[] = [];
@@ -1864,8 +1868,8 @@ export async function getAllFeedingItemsByPlanSessionId(
     if (feedingItems) {
       for (let i of feedingItems) {
         if (
-          i.feedingPlanSessionDetail?.feedingPlanDetailId ===
-          feedingPlanDetailId
+          i.feedingPlanSessionDetail?.feedingPlanSessionDetailId ===
+          feedingPlanSessionDetailId
         ) {
           result.push(i);
         }
@@ -1878,7 +1882,7 @@ export async function getAllFeedingItemsByPlanSessionId(
 }
 
 export async function createFeedingItem(
-  feedingPlanDetailId: number,
+  feedingPlanSessionDetailId: number,
   animalCode: string,
   foodCategory: string,
   amount: number,
@@ -1893,7 +1897,7 @@ export async function createFeedingItem(
   try {
     let newFeedingItemEntry = await FeedingItem.create(newItem);
     newFeedingItemEntry.setFeedingPlanSessionDetail(
-      await getFeedingPlanSessionDetailById(feedingPlanDetailId),
+      await getFeedingPlanSessionDetailById(feedingPlanSessionDetailId),
     );
     newFeedingItemEntry.setAnimal(await getAnimalByAnimalCode(animalCode));
 

@@ -367,6 +367,9 @@ export const createDatabase = async (options: any) => {
   FeedingPlanSessionDetail.hasMany(FeedingItem, { onDelete: "CASCADE" });
   FeedingItem.belongsTo(FeedingPlanSessionDetail);
 
+  FeedingPlanSessionDetail.hasMany(ZooEvent, { onDelete: "CASCADE" });
+  ZooEvent.belongsTo(FeedingPlanSessionDetail);
+
   Animal.hasMany(FeedingItem, { onDelete: "CASCADE" });
   FeedingItem.belongsTo(Animal);
 
@@ -1723,10 +1726,10 @@ export const animalSeed = async () => {
     new Date("2023-10-22"),
   );
 
-  await AnimalService.createFeedingPlanSessionDetail(1, "MONDAY", "MORNING");
-  await AnimalService.createFeedingPlanSessionDetail(1, "MONDAY", "AFTERNOON");
-  await AnimalService.createFeedingPlanSessionDetail(1, "FRIDAY", "EVENING");
-  await AnimalService.createFeedingPlanSessionDetail(2, "MONDAY", "AFTERNOON");
+  await AnimalService.createFeedingPlanSessionDetail(1, "MONDAY", "MORNING", 120);
+  await AnimalService.createFeedingPlanSessionDetail(1, "MONDAY", "AFTERNOON", 120);
+  await AnimalService.createFeedingPlanSessionDetail(1, "FRIDAY", "EVENING", 120);
+  await AnimalService.createFeedingPlanSessionDetail(2, "MONDAY", "AFTERNOON", 120);
 
   await AnimalService.createFeedingItem(1, "ANM00001", "FRUITS", 5, "KG");
   await AnimalService.createFeedingItem(1, "ANM00001", "HAY", 20, "KG");

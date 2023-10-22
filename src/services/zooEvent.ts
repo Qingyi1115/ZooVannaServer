@@ -2,7 +2,7 @@ import { DayOfWeek, EventTimingType, EventType, RecurringPattern } from "../mode
 import { validationErrorHandler } from "../helpers/errorHandler";
 import * as AnimalService from "./animal";
 import { ZooEvent } from "../models/zooEvent";
-import { ADVANCE_DAYS_FOR_ZOO_EVENT_GENERATION, ANIMAL_ACTIVITY_NOTIFICATION_HOURS, DAY_IN_MILLISECONDS, HOUR_IN_MILLISECONDS } from "../helpers/staticValues";
+import { ADVANCE_DAYS_FOR_ZOO_EVENT_GENERATION, ANIMAL_ACTIVITY_NOTIFICATION_HOURS, ANIMAL_FEEDING_NOTIFICATION_HOURS, DAY_IN_MILLISECONDS, HOUR_IN_MILLISECONDS } from "../helpers/staticValues";
 import { compareDates, getNextDayOfMonth, getNextDayOfWeek } from "../helpers/others";
 import { Op } from "Sequelize";
 
@@ -139,6 +139,91 @@ export async function createAnimalActivityZooEvent(
     
     await animalActivity.addZooEvent(newZooEvent);
     return animalActivity;
+  } catch (error: any) {
+    throw validationErrorHandler(error);
+  }
+}
+
+export async function generateMonthlyZooEventForFeedingPlanSession(feedingPlanSessionDetailId:number){
+  const feedingPlanSessionDetail = await AnimalService.getFeedingPlanSessionDetailById(feedingPlanSessionDetailId);
+  const feedingPlan = await feedingPlanSessionDetail.getFeedingPlan();
+  const zooEvents = await feedingPlanSessionDetail.getZooEvents();
+
+  // Get start date for the generation
+  let startDate = compareDates(new Date(), feedingPlan.startDate) > 0 ? new Date() : feedingPlan.startDate;
+  startDate = new Date(Date.UTC(startDate.getFullYear(), startDate.getMonth(), startDate.getDate()));
+  if (zooEvents.length> 0){
+    const latestEventDate = zooEvents.reduce((a, b)=>compareDates(a.eventStartDateTime, b.eventStartDateTime) > 0 ? a : b).eventStartDateTime;
+    startDate = compareDates(latestEventDate, startDate) > 0 ? latestEventDate : startDate;
+    startDate = new Date(startDate.getTime() + DAY_IN_MILLISECONDS * 7)
+  }
+
+  // Get end date for generation
+  if (compareDates(new Date(), feedingPlan.endDate) > 0) return feedingPlanSessionDetail;
+  let lastDate = compareDates(new Date(Date.now() + DAY_IN_MILLISECONDS * ADVANCE_DAYS_FOR_ZOO_EVENT_GENERATION) , feedingPlan.endDate) < 0 
+  ? new Date(Date.now() + DAY_IN_MILLISECONDS * ADVANCE_DAYS_FOR_ZOO_EVENT_GENERATION) 
+  : feedingPlan.endDate ;
+  lastDate =new Date(Date.UTC(lastDate.getFullYear(), lastDate.getMonth(), lastDate.getDate()));
+
+  let interval = DAY_IN_MILLISECONDS * 7;
+
+  let iKeepMyPromises : Promise<any>[] = [];
+  
+  let dayOfWeekNumber = 0;
+  switch(feedingPlanSessionDetail.dayOfWeek){
+    case DayOfWeek.MONDAY: dayOfWeekNumber = 1; break;
+    case DayOfWeek.TUESDAY: dayOfWeekNumber = 2; break;
+    case DayOfWeek.WEDNESDAY: dayOfWeekNumber = 3; break;
+    case DayOfWeek.THURSDAY: dayOfWeekNumber = 4; break;
+    case DayOfWeek.FRIDAY: dayOfWeekNumber = 5; break;
+    case DayOfWeek.SATURDAY: dayOfWeekNumber = 6; break;
+  }
+  
+  iKeepMyPromises = loopCallbackDateIntervals(
+    (date: Date)=>{
+        return createFeedingPlanSessionDetailZooEvent(
+          feedingPlanSessionDetail.feedingPlanSessionDetailId,
+          date,
+          feedingPlanSessionDetail.durationInMinutes,
+          feedingPlanSessionDetail.eventTimingType,
+          feedingPlan.feedingPlanDesc
+      );
+    }, 
+    getNextDayOfWeek(startDate, dayOfWeekNumber),
+    lastDate,
+    interval,
+    false
+  );
+  
+  for (const p of iKeepMyPromises){
+    await p;
+  }
+  return feedingPlanSessionDetail;
+}
+
+export async function createFeedingPlanSessionDetailZooEvent(
+  feedingPlanSessionDetailId: number,
+  eventStartDateTime: Date,
+  eventDurationHrs: number,
+  eventTiming: EventTimingType | null,
+  eventDescription: string,
+  eventIsPublic: boolean = false,
+) {
+  const feedingPlanSessionDetail = await AnimalService.getFeedingPlanSessionDetailById(feedingPlanSessionDetailId);
+  const feedingPlan = (await feedingPlanSessionDetail.getFeedingPlan());
+  try {
+    const newZooEvent = await ZooEvent.create({
+      eventName: "Feeding session for " + (await feedingPlan.getSpecies()).aliasName,
+      eventStartDateTime: eventStartDateTime,
+      eventDurationHrs: eventDurationHrs,
+      eventTiming: eventTiming,
+      eventDescription: eventDescription,
+      eventIsPublic: eventIsPublic,
+      eventNotificationDate : new Date(eventStartDateTime.getTime() - HOUR_IN_MILLISECONDS * ANIMAL_FEEDING_NOTIFICATION_HOURS),
+    });
+    
+    await feedingPlanSessionDetail.addZooEvent(newZooEvent);
+    return feedingPlanSessionDetail;
   } catch (error: any) {
     throw validationErrorHandler(error);
   }
