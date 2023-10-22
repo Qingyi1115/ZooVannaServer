@@ -360,7 +360,10 @@ export async function getFacilityLogs(
 
     return inHouse.getFacilityLogs(
       {
-        include:["generalStaffs"]
+        include:{
+          association:"generalStaffs",
+          include:["employee"]
+        }
       }
     );
   } catch (error: any) {
