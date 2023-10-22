@@ -1473,12 +1473,12 @@ export async function createFeedingPlan(req: Request, res: Response) {
 
 export async function updateFeedingPlan(req: Request, res: Response) {
   try {
-    const { feedingPlanId, animalCodes, feedingPlanDesc, startDate, endDate } =
+    const { feedingPlanSessionDetailId, animalCodes, feedingPlanDesc, startDate, endDate } =
       req.body;
 
     if (
       [
-        feedingPlanId,
+        feedingPlanSessionDetailId,
         animalCodes,
         feedingPlanDesc,
         startDate,
@@ -1486,7 +1486,7 @@ export async function updateFeedingPlan(req: Request, res: Response) {
       ].includes(undefined)
     ) {
       console.log("Missing field(s): ", {
-        feedingPlanId,
+        feedingPlanSessionDetailId,
         animalCodes,
         feedingPlanDesc,
         startDate,
@@ -1497,7 +1497,7 @@ export async function updateFeedingPlan(req: Request, res: Response) {
 
     // have to pass in req for image uploading
     let updatedAnimalActivity = await AnimalService.updateFeedingPlan(
-      Number(feedingPlanId),
+      Number(feedingPlanSessionDetailId),
       animalCodes,
       feedingPlanDesc,
       new Date(startDate),
@@ -1514,18 +1514,18 @@ export async function updateFeedingPlan(req: Request, res: Response) {
 }
 
 export async function deleteFeedingPlanById(req: Request, res: Response) {
-  const { feedingPlanId } = req.params;
+  const { feedingPlanSessionDetailId } = req.params;
 
-  if (feedingPlanId == undefined) {
+  if (feedingPlanSessionDetailId == undefined) {
     console.log("Missing field(s): ", {
-      feedingPlanId,
+      feedingPlanSessionDetailId,
     });
     return res.status(400).json({ error: "Missing information!" });
   }
 
   try {
     const animalWeight = await AnimalService.deleteFeedingPlanById(
-      Number(feedingPlanId),
+      Number(feedingPlanSessionDetailId),
     );
     return res.status(200).json(animalWeight);
   } catch (error: any) {
@@ -1558,11 +1558,11 @@ export async function getAllFeedingPlanSessionDetailsByPlanId(
   req: Request,
   res: Response,
 ) {
-  const { feedingPlanId } = req.params;
+  const { feedingPlanSessionDetailId } = req.params;
 
-  if (feedingPlanId == undefined) {
+  if (feedingPlanSessionDetailId == undefined) {
     console.log("Missing field(s): ", {
-      feedingPlanId,
+      feedingPlanSessionDetailId,
     });
     return res.status(400).json({ error: "Missing information!" });
   }
@@ -1570,7 +1570,7 @@ export async function getAllFeedingPlanSessionDetailsByPlanId(
   try {
     const allFeedingPlanSessions =
       await AnimalService.getAllFeedingPlanSessionDetailsByPlanId(
-        Number(feedingPlanId),
+        Number(feedingPlanSessionDetailId),
       );
     return res
       .status(200)
@@ -1613,22 +1613,24 @@ export async function createFeedingPlanSessionDetail(
   res: Response,
 ) {
   try {
-    const { feedingPlanId, dayOftheWeek, eventTimingType } = req.body;
+    const { feedingPlanSessionDetailId, dayOftheWeek, eventTimingType, durationInMinutes } = req.body;
 
-    if ([feedingPlanId, dayOftheWeek, eventTimingType].includes(undefined)) {
+    if ([feedingPlanSessionDetailId, dayOftheWeek, eventTimingType, durationInMinutes].includes(undefined)) {
       console.log("Missing field(s): ", {
-        feedingPlanId,
+        feedingPlanSessionDetailId,
         dayOftheWeek,
         eventTimingType,
+        durationInMinutes,
       });
       return res.status(400).json({ error: "Missing information!" });
     }
 
     // have to pass in req for image uploading
     let feedingPlanSession = await AnimalService.createFeedingPlanSessionDetail(
-      Number(feedingPlanId),
+      Number(feedingPlanSessionDetailId),
       dayOftheWeek,
       eventTimingType,
+      durationInMinutes
     );
 
     return res.status(200).json({ feedingPlanSession });
@@ -1642,15 +1644,16 @@ export async function updateFeedingPlanSessionDetail(
   res: Response,
 ) {
   try {
-    const { feedingPlanDetailId, dayOftheWeek, eventTimingType } = req.body;
+    const { feedingPlanDetailId, dayOftheWeek, eventTimingType, durationInMinutes } = req.body;
 
     if (
-      [feedingPlanDetailId, dayOftheWeek, eventTimingType].includes(undefined)
+      [feedingPlanDetailId, dayOftheWeek, eventTimingType, durationInMinutes].includes(undefined)
     ) {
       console.log("Missing field(s): ", {
         feedingPlanDetailId,
         dayOftheWeek,
         eventTimingType,
+        durationInMinutes,
       });
       return res.status(400).json({ error: "Missing information!" });
     }
@@ -1661,6 +1664,7 @@ export async function updateFeedingPlanSessionDetail(
         Number(feedingPlanDetailId),
         dayOftheWeek,
         eventTimingType,
+        durationInMinutes
       );
 
     return res.status(200).json({
@@ -1800,6 +1804,32 @@ export async function deleteFeedingItemById(req: Request, res: Response) {
       Number(feedingItemId),
     );
     return res.status(200).json(animalWeight);
+  } catch (error: any) {
+    res.status(400).json({ error: error.message });
+  }
+}
+
+export async function getFeedingItemAmtReco(req: Request, res: Response) {
+  try {
+    const { animalCode, animalFeedCategory, weekOrMeal } = req.body;
+
+    if ([animalCode, animalFeedCategory, weekOrMeal].includes(undefined)) {
+      console.log("Missing field(s): ", {
+        animalCode,
+        animalFeedCategory,
+        weekOrMeal,
+      });
+      return res.status(400).json({ error: "Missing information!" });
+    }
+
+    // have to pass in req for image uploading
+    let recoAmt = await AnimalService.getFeedingItemAmtReco(
+      animalCode,
+      animalFeedCategory,
+      weekOrMeal,
+    );
+
+    return res.status(200).json({ recoAmt });
   } catch (error: any) {
     res.status(400).json({ error: error.message });
   }

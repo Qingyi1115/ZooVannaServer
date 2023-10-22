@@ -533,8 +533,10 @@ export async function deletePhysiologicalReferenceNorms(
 export async function createDietNeed(
   speciesCode: string,
   animalFeedCategory: string,
-  amountPerMealGram: number,
-  amountPerWeekGram: number,
+  amountPerMealGramMale: number,
+  amountPerMealGramFemale: number,
+  amountPerWeekGramMale: number,
+  amountPerWeekGramFemale: number,
   presentationContainer: string,
   presentationMethod: string,
   presentationLocation: string,
@@ -542,8 +544,10 @@ export async function createDietNeed(
 ) {
   let newDietNeed = {
     animalFeedCategory: animalFeedCategory,
-    amountPerMealGram: amountPerMealGram,
-    amountPerWeekGram: amountPerWeekGram,
+    amountPerMealGramMale: amountPerMealGramMale,
+    amountPerMealGramFemale: amountPerMealGramFemale,
+    amountPerWeekGramMale: amountPerWeekGramMale,
+    amountPerWeekGramFemale: amountPerWeekGramFemale,
     presentationContainer: presentationContainer,
     presentationMethod: presentationMethod,
     presentationLocation: presentationLocation,
@@ -591,8 +595,10 @@ export async function getDietNeedById(speciesDietNeedId: string) {
 export async function updateDietNeed(
   speciesDietNeedId: number,
   animalFeedCategory: string,
-  amountPerMealGram: number,
-  amountPerWeekGram: number,
+  amountPerMealGramMale: number,
+  amountPerMealGramFemale: number,
+  amountPerWeekGramMale: number,
+  amountPerWeekGramFemale: number,
   presentationContainer: string,
   presentationMethod: string,
   presentationLocation: string,
@@ -600,8 +606,10 @@ export async function updateDietNeed(
 ) {
   let updatedDietNeed = {
     animalFeedCategory: animalFeedCategory,
-    amountPerMealGram: amountPerMealGram,
-    amountPerWeekGram: amountPerWeekGram,
+    amountPerMealGramMale: amountPerMealGramMale,
+    amountPerMealGramFemale: amountPerMealGramFemale,
+    amountPerWeekGramMale: amountPerWeekGramMale,
+    amountPerWeekGramFemale: amountPerWeekGramFemale,
     presentationContainer: presentationContainer,
     presentationMethod: presentationMethod,
     presentationLocation: presentationLocation,
