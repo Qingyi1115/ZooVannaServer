@@ -199,12 +199,12 @@ router.get(
 );
 router.post("/createFeedingPlan", createFeedingPlan);
 router.put("/updateFeedingPlan", updateFeedingPlan);
-router.delete("/deleteFeedingPlanById/:feedingPlanId", deleteFeedingPlanById);
+router.delete("/deleteFeedingPlanById/:feedingPlanSessionDetailId", deleteFeedingPlanById);
 
 //-- Animal Feeding Plan Session
 router.get("/getAllFeedingPlanSessionDetails", getAllFeedingPlanSessionDetails);
 router.get(
-  "/getAllFeedingPlanSessionDetailsByPlanId/:feedingPlanId",
+  "/getAllFeedingPlanSessionDetailsByPlanId/:feedingPlanSessionDetailId",
   getAllFeedingPlanSessionDetailsByPlanId,
 );
 router.get(

@@ -21,9 +21,10 @@ class FeedingPlanSessionDetail extends Model<
   InferAttributes<FeedingPlanSessionDetail>,
   InferCreationAttributes<FeedingPlanSessionDetail>
 > {
-  declare feedingPlanDetailId: CreationOptional<number>;
-  declare dayOftheWeek: string;
-  declare eventTimingType: string;
+  declare feedingPlanSessionDetailId: CreationOptional<number>;
+  declare dayOfWeek: DayOfWeek;
+  declare eventTimingType: EventTimingType;
+  declare durationInMinutes: number;
 
   //--FK
   declare feedingPlan?: FeedingPlan;
@@ -46,12 +47,12 @@ class FeedingPlanSessionDetail extends Model<
 
 FeedingPlanSessionDetail.init(
   {
-    feedingPlanDetailId: {
+    feedingPlanSessionDetailId: {
       type: DataTypes.BIGINT,
       autoIncrement: true,
       primaryKey: true,
     },
-    dayOftheWeek: {
+    dayOfWeek: {
       type: DataTypes.ENUM,
       values: Object.values(DayOfWeek),
       allowNull: false,
@@ -61,6 +62,10 @@ FeedingPlanSessionDetail.init(
       values: Object.values(EventTimingType),
       allowNull: false,
     },
+    durationInMinutes:{
+      type: DataTypes.INTEGER,
+      allowNull: false,
+    }
   },
   {
     freezeTableName: true,
