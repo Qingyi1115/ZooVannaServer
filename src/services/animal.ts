@@ -36,6 +36,7 @@ import { FeedingPlan } from "../models/feedingPlan";
 import { ZooEvent } from "../models/zooEvent";
 import { FeedingPlanSessionDetail } from "../models/feedingPlanSessionDetail";
 import { FeedingItem } from "../models/feedingItem";
+import { SpeciesDietNeed } from "../models/speciesDietNeed";
 
 //-- Animal Basic Info
 export async function getAnimalIdByCode(animalCode: string) {
@@ -1959,6 +1960,151 @@ export async function deleteFeedingItemById(feedingItemId: number) {
   throw new Error("Invalid Feeding Item Id!");
 }
 
-// add in methods:
-// 1. Check if feedingItem good for Animal
-// 2. Check if Animal in special status, e.g., Pregnent, Sick, etc
+export async function getFeedingItemAmtReco(
+  animalCode: string,
+  animalFeedCategory: string,
+  weekOrMeal: string,
+) {
+  let animal = await Animal.findOne({
+    where: { animalCode: animalCode },
+    include: [
+      {
+        model: Species,
+        include: [
+          { model: PhysiologicalReferenceNorms, required: false },
+          { model: SpeciesDietNeed, required: false },
+        ],
+      },
+      {
+        model: AnimalWeight,
+        required: false, // Include the Animal Weights only if they exist
+      },
+    ],
+    attributes: {
+      // Include virtual fields
+      include: ["age", "growthStage"],
+    },
+  });
+
+  //if animal, growth stage, diet needs, weight record not empty
+  if (
+    animal &&
+    animal.growthStage &&
+    animal.species?.speciesDietNeeds &&
+    animal.species?.physiologicalReferenceNorms &&
+    animal.animalWeights
+  ) {
+    //get lastest weight record
+    let weightRecords = animal.animalWeights;
+    const latestWeightRecord = weightRecords.reduce(
+      (latest: AnimalWeight | null, record: AnimalWeight) => {
+        if (!latest || record.dateOfMeasure > latest.dateOfMeasure) {
+          return record;
+        }
+        return latest;
+      },
+      null,
+    );
+
+    // Find the physiological reference information for the given species and growth stage
+    let physiologicalNorm = null;
+    for (let p of animal.species.physiologicalReferenceNorms) {
+      if ((p.growthStage = animal.growthStage)) {
+        physiologicalNorm = p;
+      }
+    }
+
+    // Find the dietary information for the given food category
+    const dietaryInfo = await SpeciesDietNeed.findOne({
+      where: {
+        animalFeedCategory: animalFeedCategory,
+        growthStage: animal.growthStage,
+      },
+    });
+    if (latestWeightRecord && dietaryInfo && physiologicalNorm) {
+      // Calculate the recommended amount based on weight distribution and dietary information
+      if (weekOrMeal.toUpperCase() == "MEAL") {
+        if (animal.sex == AnimalSex.MALE) {
+          return calculateFeedingItemAmtReco(
+            dietaryInfo.amountPerMealGramMale,
+            latestWeightRecord.weightInKg,
+            physiologicalNorm.minWeightMaleKg,
+            physiologicalNorm.maxWeightMaleKg,
+          );
+        } else if (animal.sex == AnimalSex.FEMALE) {
+          return calculateFeedingItemAmtReco(
+            dietaryInfo.amountPerMealGramFemale,
+            latestWeightRecord.weightInKg,
+            physiologicalNorm.minWeightFemaleKg,
+            physiologicalNorm.maxWeightFemaleKg,
+          );
+        } else {
+          // Handle cases where animal sex is nonbinary or unknown
+          return "No dietary data found!";
+        }
+      } else if (weekOrMeal.toUpperCase() == "WEEK") {
+        if (animal.sex == AnimalSex.MALE) {
+          return calculateFeedingItemAmtReco(
+            dietaryInfo.amountPerWeekGramMale,
+            latestWeightRecord.weightInKg,
+            physiologicalNorm.minWeightMaleKg,
+            physiologicalNorm.maxWeightMaleKg,
+          );
+        } else if (animal.sex == AnimalSex.FEMALE) {
+          return calculateFeedingItemAmtReco(
+            dietaryInfo.amountPerWeekGramFemale,
+            latestWeightRecord.weightInKg,
+            physiologicalNorm.minWeightFemaleKg,
+            physiologicalNorm.maxWeightFemaleKg,
+          );
+        } else {
+          // Handle cases where animal sex is nonbinary or unknown
+          return "No dietary data found!";
+        }
+      } else {
+        throw new Error(
+          "Please enter MEAL or WEEK to calculate recommended amount!",
+        );
+      }
+    } else {
+      // Handle cases where dietary information is missing
+      return "No dietary data found!";
+    }
+  } else {
+    return "No dietary data found!";
+  }
+}
+
+async function calculateFeedingItemAmtReco(
+  recommendedAmount: number,
+  animalWeight: number,
+  lowerWeightRange: number,
+  upperWeightRange: number,
+) {
+  // Calculate the average weight within the specified range
+  const averageWeight = (lowerWeightRange + upperWeightRange) / 2;
+
+  // Calculate the weight difference from the average weight
+  const weightDifference = animalWeight - averageWeight;
+
+  // Calculate the ratio of weightDifference
+  const ratio = weightDifference / (upperWeightRange - averageWeight);
+
+  // for ration outside of range -1 ~ 1, add moderator
+  let moderator = 0;
+  if (ratio < -1) {
+    moderator = ratio + 1;
+  } else if (ratio > 1) {
+    moderator = ratio - 1;
+  }
+  // Calculate the adjustment factor
+  const adjustmentFactor = 1 + 0.1 * ratio - 0.05 * moderator;
+
+  // Adjust the recommended amount within the adjustment factor
+  let result = recommendedAmount * adjustmentFactor;
+
+  const formattedNumber: string = result.toFixed(2);
+  const roundedResult: number = parseFloat(formattedNumber);
+
+  return roundedResult;
+}
