@@ -967,23 +967,6 @@ export async function completePaymentForGuest(
        
         `;
 
-          if (orderItems) {
-            // Generate a ticket section for each ticket in the data
-            for (const orderItem of orderItems) {
-              const listing: Listing = await orderItem.getListing();
-              html += `
-            <div style="width:800px; display:flex; justify-content:center">
-                <div class="ticket">
-                    <h2>Ticket</h2>
-                    <p><strong>Ticket Verification Code: </strong>${orderItem.verificationCode}</p>
-                    <p><strong>Ticket Price:</strong> $${listing.price}</p>
-                    <p><strong>Ticket Type: </strong> ${listing.listingType} ${listing.name}</p>
-                </div>
-            </div>
-            `;
-            }
-          }
-
           // Close the HTML document
           html += `
             </body>
