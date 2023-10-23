@@ -6,6 +6,7 @@ import {
     deleteZooEvent, 
     getAllZooEvents, 
     getZooEventById, 
+    removeKeeperfromZooEvent, 
     updateZooEventIncludeFuture, 
     updateZooEventSingle,
  } from "../controllers/zooEventController";
@@ -20,6 +21,7 @@ router.get("/getZooEventById/:zooEventId", getZooEventById);
 router.put("/updateZooEventSingle/:zooEventId", updateZooEventSingle);
 router.put("/updateZooEventIncludeFuture/:zooEventId", updateZooEventIncludeFuture);
 router.put("/assignZooEventKeeper", assignZooEventKeeper);
+router.put("/removeKeeperfromZooEvent", removeKeeperfromZooEvent);
 router.delete("/deleteZooEvent/:zooEventId", deleteZooEvent);
 
 export default router;

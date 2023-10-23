@@ -412,6 +412,55 @@ export async function assignZooEventKeeper(
   }
 }
 
+export async function removeKeeperfromZooEvent(
+  zooEventIds: number[],
+  employeeIds : number[]
+) {
+  try {
+    const zooEvents = await ZooEvent.findAll({
+        where:{
+          zooEventId:{
+            [Op.or]: zooEventIds
+          }
+        }
+    });
+
+    for (const zooEventId of zooEventIds){
+      if (!zooEvents.find(ze=>ze.zooEventId == zooEventId)) throw {mesage:"Unable to find zoo event with Id " + zooEventId}
+    }
+
+    const employees = await Employee.findAll({
+        where:{
+          employeeId:{
+            [Op.or]: employeeIds
+          }
+        }
+    });
+
+    for (const empId of employeeIds){
+      if (!employees.find(e=>e.employeeId == empId)) throw {mesage:"Unable to find Keeper with employee Id " + empId}
+    }
+
+    const keepers = [];
+    for (const emp of employees) {
+      const keeper = (await emp.getKeeper());
+      if (!keeper) throw {message:"Keeper does not exist on employee :" + emp.employeeName}
+      keepers.push(keeper);
+    }
+
+    const promises = [];
+    for (const keeper of keepers) {
+      for (const zooEvent of zooEvents){
+        promises.push(keeper.removeZooEvent(zooEvent));
+      }
+    }
+    
+    for (const p of promises) await p;
+  } catch (error: any) {
+      throw validationErrorHandler(error);
+  }
+}
+
 export async function getAllZooEvents(
   startDate: Date,
   endDate : Date,

@@ -198,11 +198,44 @@ export async function assignZooEventKeeper(req: Request, res: Response) {
   }
 
   try {
-    const newZooEvent = await ZooEvent.assignZooEventKeeper(
+    await ZooEvent.assignZooEventKeeper(
       zooEventIds.forEach((zooEventId:string) => Number(zooEventId)),
       employeeIds.forEach((employeeId:string) => Number(employeeId)),
     );
-    return res.status(200).json({zooEvent:newZooEvent});
+    return res.status(200).json({result:"success"});
+  } catch (error: any) {
+    res.status(400).json({ error: error.message });
+  }
+}
+
+export async function removeKeeperfromZooEvent(req: Request, res: Response) {
+  const { email } = (req as any).locals.jwtPayload;
+  const employee = await findEmployeeByEmail(email);
+
+  const { 
+    zooEventIds, 
+    employeeIds,
+   } = req.body;
+
+
+  if ([
+    zooEventIds, 
+    employeeIds,
+  ].includes(undefined)) {
+
+    console.log("Missing field(s): ", {
+      zooEventIds, 
+      employeeIds,
+    });
+    return res.status(400).json({ error: "Missing information!" });
+  }
+
+  try {
+    await ZooEvent.removeKeeperfromZooEvent(
+      zooEventIds.forEach((zooEventId:string) => Number(zooEventId)),
+      employeeIds.forEach((employeeId:string) => Number(employeeId)),
+    );
+    return res.status(200).json({result:"success"});
   } catch (error: any) {
     res.status(400).json({ error: error.message });
   }
