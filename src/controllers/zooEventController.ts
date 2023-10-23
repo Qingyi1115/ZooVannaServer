@@ -175,6 +175,39 @@ export async function updateZooEventIncludeFuture(req: Request, res: Response) {
   }
 }
 
+export async function assignZooEventKeeper(req: Request, res: Response) {
+  const { email } = (req as any).locals.jwtPayload;
+  const employee = await findEmployeeByEmail(email);
+
+  const { 
+    zooEventIds, 
+    employeeIds,
+   } = req.body;
+
+
+  if ([
+    zooEventIds, 
+    employeeIds,
+  ].includes(undefined)) {
+
+    console.log("Missing field(s): ", {
+      zooEventIds, 
+      employeeIds,
+    });
+    return res.status(400).json({ error: "Missing information!" });
+  }
+
+  try {
+    const newZooEvent = await ZooEvent.assignZooEventKeeper(
+      zooEventIds.forEach((zooEventId:string) => Number(zooEventId)),
+      employeeIds.forEach((employeeId:string) => Number(employeeId)),
+    );
+    return res.status(200).json({zooEvent:newZooEvent});
+  } catch (error: any) {
+    res.status(400).json({ error: error.message });
+  }
+}
+
 export async function deleteZooEvent(req: Request, res: Response) {
   const { email } = (req as any).locals.jwtPayload;
   const employee = await findEmployeeByEmail(email);

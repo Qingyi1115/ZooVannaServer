@@ -5,6 +5,7 @@ import { ZooEvent } from "../models/zooEvent";
 import { ADVANCE_DAYS_FOR_ZOO_EVENT_GENERATION, ANIMAL_ACTIVITY_NOTIFICATION_HOURS, ANIMAL_FEEDING_NOTIFICATION_HOURS, DAY_IN_MILLISECONDS, HOUR_IN_MILLISECONDS } from "../helpers/staticValues";
 import { compareDates, getNextDayOfMonth, getNextDayOfWeek } from "../helpers/others";
 import { Op } from "Sequelize";
+import { Employee } from "models/employee";
 
 function loopCallbackDateIntervals(
   callback: Function,
@@ -359,6 +360,55 @@ export async function updateZooEventIncludeFuture(
     return await zooEvent.reload();
   } catch (error: any) {
     throw validationErrorHandler(error);
+  }
+}
+
+export async function assignZooEventKeeper(
+  zooEventIds: number[],
+  employeeIds : number[]
+) {
+  try {
+    const zooEvents = await ZooEvent.findAll({
+        where:{
+          zooEventId:{
+            [Op.or]: zooEventIds
+          }
+        }
+    });
+
+    for (const zooEventId of zooEventIds){
+      if (!zooEvents.find(ze=>ze.zooEventId == zooEventId)) throw {mesage:"Unable to find zoo event with Id " + zooEventId}
+    }
+
+    const employees = await Employee.findAll({
+        where:{
+          employeeId:{
+            [Op.or]: employeeIds
+          }
+        }
+    });
+
+    for (const empId of employeeIds){
+      if (!employees.find(e=>e.employeeId == empId)) throw {mesage:"Unable to find Keeper with employee Id " + empId}
+    }
+
+    const keepers = [];
+    for (const emp of employees) {
+      const keeper = (await emp.getKeeper());
+      if (!keeper) throw {message:"Keeper does not exist on employee :" + emp.employeeName}
+      keepers.push(keeper);
+    }
+
+    const promises = [];
+    for (const keeper of keepers) {
+      for (const zooEvent of zooEvents){
+        promises.push(keeper.addZooEvent(zooEvent));
+      }
+    }
+    
+    for (const p of promises) await p;
+  } catch (error: any) {
+      throw validationErrorHandler(error);
   }
 }
 
