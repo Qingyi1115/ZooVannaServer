@@ -122,7 +122,18 @@ export async function getAllFacilityMaintenanceSuggestions(employee: Employee) {
       (await employee.getPlanningStaff())?.plannerType ==
       PlannerType.OPERATIONS_MANAGER
     ) {
-      const allFacilities = await getAllFacility([], true);
+      const allFacilities = await getAllFacility(
+          [{
+            association:"inHouse",
+            include:{
+              association : "facilityLogs",
+              required:false,
+              include:{
+                association:"generalStaffs"
+              }
+            }
+          }]
+        , true);
       for (const facility of allFacilities) {
         const ih = await facility.getFacilityDetail();
         if (facility.facilityDetail == "inHouse") facilities.push(facility);
