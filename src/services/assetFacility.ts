@@ -141,19 +141,32 @@ export async function getAllFacilityMaintenanceSuggestions(employee: Employee) {
     } else if (!(await employee.getGeneralStaff())) {
       throw { message: "No access!" };
     } else {
+      facilities = await getAllFacility(
+          [{
+            association:"inHouse",
+            include:{
+              association : "facilityLogs",
+              required:true,
+              include:{
+                association:"generalStaffs",
+                include:{
+                  association: "employee",
+                  where:{
+                    employeeId: employee.employeeId
+                  }
+                }
+              }
+            }
+          }]
+        , true);
+        
       const generalStaff = await employee.getGeneralStaff();
       const allInHouses = await generalStaff.getMaintainedFacilities();
       for (const inHouse of allInHouses) {
-        facilities.push(await inHouse.getFacility());
+        const facilityNew = await inHouse.getFacility();
+        if (!facilities.find(facility=> facility.facilityId == facilityNew.facilityId)) facilities.push(facilityNew);
       }
 
-      const facilityLogs = (await generalStaff.getFacilityLogs());
-      for (const log of facilityLogs) {
-        let repairFacility = (await (await log.getInHouse()).getFacility());
-        if (!facilities.find(facility=>facility.facilityId == repairFacility.facilityId)){
-          facilities.push(repairFacility);
-        }
-      }
     }
 
     for (const facility of facilities) {
