@@ -159,11 +159,24 @@ export async function getAllFacilityMaintenanceSuggestions(employee: Employee) {
             }
           }]
         , true);
+        const maintenanceFacility = await getAllFacility(
+            [{
+              association:"inHouse",
+              include:{
+                association : "maintenanceStaffs",
+                required:true,
+                include:{
+                  association: "employee",
+                  where:{
+                    employeeId: employee.employeeId
+                  }
+                }
+              }
+            }]
+          , true);
         
-      const generalStaff = await employee.getGeneralStaff();
-      const allInHouses = await generalStaff.getMaintainedFacilities();
-      for (const inHouse of allInHouses) {
-        const facilityNew = await inHouse.getFacility();
+
+      for (const facilityNew of maintenanceFacility) {
         if (!facilities.find(facility=> facility.facilityId == facilityNew.facilityId)) facilities.push(facilityNew);
       }
 
