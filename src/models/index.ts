@@ -938,7 +938,7 @@ export const employeeSeed = async () => {
     name: "Adult",
     description: "Listing for local adult",
     price: 20,
-    listingType: ListingType.LOCAL_ADULT_ONETIME,
+    listingType: ListingType.LOCAL,
     listingStatus: ListingStatus.ACTIVE,
   });
 
@@ -946,7 +946,7 @@ export const employeeSeed = async () => {
     name: "Student",
     description: "Listing for local student (including university student)",
     price: 15,
-    listingType: ListingType.LOCAL_STUDENT_ONETIME,
+    listingType: ListingType.LOCAL,
     listingStatus: ListingStatus.ACTIVE,
   });
 
@@ -954,7 +954,7 @@ export const employeeSeed = async () => {
     name: "Child",
     description: "Listing for local child (aged <= 12 years old)",
     price: 15,
-    listingType: ListingType.LOCAL_CHILD_ONETIME,
+    listingType: ListingType.LOCAL,
     listingStatus: ListingStatus.ACTIVE,
   });
 
@@ -962,7 +962,7 @@ export const employeeSeed = async () => {
     name: "Senior",
     description: "Listing for local senior (aged >= 65 years old)",
     price: 10,
-    listingType: ListingType.LOCAL_SENIOR_ONETIME,
+    listingType: ListingType.LOCAL,
     listingStatus: ListingStatus.ACTIVE,
   });
 
@@ -970,7 +970,7 @@ export const employeeSeed = async () => {
     name: "Adult",
     description: "Listing for foreigner adult",
     price: 30,
-    listingType: ListingType.FOREIGNER_ADULT_ONETIME,
+    listingType: ListingType.FOREIGNER,
     listingStatus: ListingStatus.ACTIVE,
   });
 
@@ -978,7 +978,7 @@ export const employeeSeed = async () => {
     name: "Child",
     description: "Listing for foreigner child",
     price: 30,
-    listingType: ListingType.FOREIGNER_CHILD_ONETIME,
+    listingType: ListingType.FOREIGNER,
     listingStatus: ListingStatus.ACTIVE,
   });
 };

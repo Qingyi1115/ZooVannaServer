@@ -5,6 +5,8 @@ import {
   getAllCustomerOrders,
   getCustomerOrderByCustomerOrderId,
   getCustomerOrderByBookingReference,
+  getAllUpcomingCustomerOrderByCustomerController,
+  getPastCustomerOrderByCustomerController,
 } from "../controllers/customerOrderController";
 
 const router = express.Router();
@@ -16,6 +18,16 @@ router.get("/getOrderById/:customerOrderId", getCustomerOrderByCustomerOrderId);
 router.get(
   "/getOrderByBookingReference/:bookingReference",
   getCustomerOrderByBookingReference,
+);
+
+router.get(
+  "/getAllUpcomingCustomerOrderByCustomer",
+  getAllUpcomingCustomerOrderByCustomerController,
+);
+
+router.get(
+  "/getPastCustomerOrderByCustomer",
+  getPastCustomerOrderByCustomerController,
 );
 
 export default router;

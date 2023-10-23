@@ -86,3 +86,31 @@ export async function getCustomerOrderByBookingReference(
     res.status(400).json({ error: error.message });
   }
 }
+
+export async function getAllUpcomingCustomerOrderByCustomerController(
+  req: Request,
+  res: Response,
+) {
+  try {
+    const { email } = (req as any).locals.jwtPayload;
+    const results =
+      await CustomerOrderService.getAllUpcomingCustomerOrderByCustomer(email);
+    return res.status(200).json({ result: results.map((x) => x.toJSON()) });
+  } catch (error: any) {
+    res.status(400).json({ error: error.message });
+  }
+}
+
+export async function getPastCustomerOrderByCustomerController(
+  req: Request,
+  res: Response,
+) {
+  try {
+    const { email } = (req as any).locals.jwtPayload;
+    const results =
+      await CustomerOrderService.getPastCustomerOrderByCustomer(email);
+    return res.status(200).json({ result: results.map((x) => x.toJSON()) });
+  } catch (error: any) {
+    res.status(400).json({ error: error.message });
+  }
+}
