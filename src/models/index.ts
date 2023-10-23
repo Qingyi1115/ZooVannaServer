@@ -1727,6 +1727,7 @@ export const animalSeed = async () => {
     "Some description...",
     new Date("2023-10-13"),
     new Date("2023-10-22"),
+    [],
   );
 
   await AnimalService.createFeedingPlan(
@@ -1735,6 +1736,7 @@ export const animalSeed = async () => {
     "Some description...",
     new Date("2023-10-13"),
     new Date("2023-10-22"),
+    [],
   );
 
   await AnimalService.createFeedingPlan(
@@ -1743,12 +1745,37 @@ export const animalSeed = async () => {
     "Some description...",
     new Date("2023-10-13"),
     new Date("2023-10-22"),
+    [],
   );
 
-  await AnimalService.createFeedingPlanSessionDetail(1, "MONDAY", "MORNING", 120);
-  await AnimalService.createFeedingPlanSessionDetail(1, "MONDAY", "AFTERNOON", 120);
-  await AnimalService.createFeedingPlanSessionDetail(1, "FRIDAY", "EVENING", 120);
-  await AnimalService.createFeedingPlanSessionDetail(2, "MONDAY", "AFTERNOON", 120);
+  await AnimalService.createFeedingPlanSessionDetail(
+    1,
+    "MONDAY",
+    "MORNING",
+    120,
+    [],
+  );
+  await AnimalService.createFeedingPlanSessionDetail(
+    1,
+    "MONDAY",
+    "AFTERNOON",
+    120,
+    [],
+  );
+  await AnimalService.createFeedingPlanSessionDetail(
+    1,
+    "FRIDAY",
+    "EVENING",
+    120,
+    [],
+  );
+  await AnimalService.createFeedingPlanSessionDetail(
+    2,
+    "MONDAY",
+    "AFTERNOON",
+    120,
+    [],
+  );
 
   await AnimalService.createFeedingItem(1, "ANM00001", "FRUITS", 5, "KG");
   await AnimalService.createFeedingItem(1, "ANM00001", "HAY", 20, "KG");
