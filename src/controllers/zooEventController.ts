@@ -8,7 +8,19 @@ export async function getAllZooEvents(req: Request, res: Response) {
 
   // Check authentication
 
-  const { includes = [] } = req.body;
+  const { startDate, endDate, includes = [] } = req.body;
+  if (
+    [
+      startDate,
+      endDate,
+    ].includes(undefined)
+  ) {
+    console.log("Missing field(s): ", {
+      startDate,
+      endDate,
+    });
+    return res.status(400).json({ error: "Missing information!" });
+  }
 
   const _includes: string[] = [];
   for (const role of [
@@ -17,20 +29,24 @@ export async function getAllZooEvents(req: Request, res: Response) {
     "enclosure",
     "animal",
     "inHouse",
-    "animalActivitySession",
+    "animalActivity",
   ]) {
     if (includes.includes(role)) _includes.push(role);
   }
 
   try {
-    const zooEvents = await ZooEvent.getAllZooEvents(_includes);
-    return res.status(200).json({zooEvents:zooEvents});
+    const zooEvents = await ZooEvent.getAllZooEvents(
+      new Date(startDate),
+      new Date(endDate),
+      _includes
+    );
+    return res.status(200).json({zooEvents:zooEvents.map(ze=>ze.toJSON())});
   } catch (error: any) {
     res.status(400).json({ error: error.message });
   }
 }
 
-export async function getZooEvent(req: Request, res: Response) {
+export async function getZooEventById(req: Request, res: Response) {
   const { email } = (req as any).locals.jwtPayload;
   const employee = await findEmployeeByEmail(email);
 
@@ -45,141 +61,113 @@ export async function getZooEvent(req: Request, res: Response) {
   }
 }
 
-export async function createNewInternalZooEvent(req: Request, res: Response) {
+export async function updateZooEventSingle(req: Request, res: Response) {
   const { email } = (req as any).locals.jwtPayload;
   const employee = await findEmployeeByEmail(email);
 
   // Check authentication
 
-  const { 
-    eventName, 
-    eventNotificationDate,
-    eventStartDateTime,
-    eventEndDateTime,
-    eventDurationHrs,
-    isFlexible,
-    eventTiming,
-    eventDescription,
-    eventIsPublic,
-    eventType,
-    planningStaffEmployeeId,
-    animalActivitySessionId,
-   } = req.body;
-
-  if ([
-    eventName, 
-    eventNotificationDate,
-    eventStartDateTime,
-    eventEndDateTime,
-    eventDurationHrs,
-    isFlexible,
-    eventTiming,
-    eventDescription,
-    eventIsPublic,
-    eventType,
-    planningStaffEmployeeId,
-    animalActivitySessionId
-  ].includes(undefined)) {
-    console.log("Missing field(s): ", {
-      eventName, 
-      eventNotificationDate,
-      eventStartDateTime,
-      eventEndDateTime,
-      eventDurationHrs,
-      isFlexible,
-      eventTiming,
-      eventDescription,
-      eventIsPublic,
-      eventType,
-      planningStaffEmployeeId,
-      animalActivitySessionId
-    });
-    return res.status(400).json({ error: "Missing information!" });
-  }
-
-  try {
-    const newZooEvent = await ZooEvent.createNewInternalZooEvent(
-      eventName, 
-      new Date(eventNotificationDate),
-      new Date(eventStartDateTime),
-      new Date(eventEndDateTime),
-      Number(eventDurationHrs),
-      isFlexible,
-      eventTiming,
-      eventDescription,
-      eventIsPublic,
-      eventType,
-      Number(planningStaffEmployeeId),
-      Number(animalActivitySessionId)
-    );
-    return res.status(200).json({zooEvent:newZooEvent});
-  } catch (error: any) {
-    res.status(400).json({ error: error.message });
-  }
-}
-
-export async function updateZooEventDetails(req: Request, res: Response) {
-  const { email } = (req as any).locals.jwtPayload;
-  const employee = await findEmployeeByEmail(email);
-
-  // Check authentication
-
-  const { 
-    eventName, 
-    eventNotificationDate,
-    eventStartDateTime,
-    eventEndDateTime,
-    eventDurationHrs,
-    isFlexible,
-    eventTiming,
-    eventDescription,
-    eventIsPublic,
-    eventType
-   } = req.body;
+  const { zooEventDetails } = req.body;
 
    const {zooEventId} = req.params;
 
   if ([
     zooEventId,
-    eventName, 
-    eventNotificationDate,
-    eventStartDateTime,
-    eventEndDateTime,
-    eventDurationHrs,
-    isFlexible,
-    eventTiming,
-    eventDescription,
-    eventIsPublic,
-    eventType
+    zooEventDetails, 
   ].includes(undefined)) {
     console.log("Missing field(s): ", {
+      zooEventId, 
+      zooEventDetails
+    });
+    return res.status(400).json({ error: "Missing information!" });
+  }
+
+  const field : any = {};
+
+  for (const attribute of [
+    "eventName", 
+    "eventDescription",
+    "eventIsPublic",
+    "eventType",
+    "eventTiming",
+  ]){
+    if (attribute in zooEventDetails) field[attribute] = zooEventDetails[attribute];
+  }
+
+  for (const attribute of [
+    "eventNotificationDate", 
+    "eventStartDateTime",
+    "eventEndDateTime",
+  ]){
+    if (attribute in zooEventDetails) field[attribute] = new Date(zooEventDetails[attribute]);
+  }
+  if ("eventDurationHrs" in zooEventDetails) field["eventDurationHrs"] = Number(zooEventDetails["eventDurationHrs"]);
+
+  try {
+    const zooEvent = await ZooEvent.updateZooEventById(
+      Number(zooEventId),
+      field
+    );
+    return res.status(200).json({zooEvent:zooEvent.toJSON()});
+  } catch (error: any) {
+    res.status(400).json({ error: error.message });
+  }
+}
+
+export async function updateZooEventIncludeFuture(req: Request, res: Response) {
+  const { email } = (req as any).locals.jwtPayload;
+  const employee = await findEmployeeByEmail(email);
+
+  const { 
+    eventName, 
+    eventDescription,
+    eventIsPublic,
+    eventType,
+    eventStartDateTime,
+
+    eventDurationHrs,
+    eventTiming,
+    
+    eventNotificationDate,
+    eventEndDateTime,
+   } = req.body;
+
+   const { zooEventId } = req.params;
+
+  if ([
+    eventName, 
+    eventDescription,
+    eventIsPublic,
+    eventType,
+    eventStartDateTime
+  ].includes(undefined) || zooEventId == ""
+  || !eventIsPublic? [eventDurationHrs, eventTiming].includes(undefined) 
+                  :[eventNotificationDate, eventEndDateTime].includes(undefined)) {
+    console.log("Missing field(s): ", {
+      zooEventId, 
       eventName, 
-      eventNotificationDate,
-      eventStartDateTime,
-      eventEndDateTime,
-      eventDurationHrs,
-      isFlexible,
-      eventTiming,
       eventDescription,
       eventIsPublic,
-      eventType
+      eventType,
+      details: (eventIsPublic? [eventDurationHrs, eventTiming]:[eventNotificationDate, eventEndDateTime]),
     });
     return res.status(400).json({ error: "Missing information!" });
   }
 
   try {
-    const newZooEvent = await ZooEvent.updateZooEventDetails(
+    const newZooEvent = await ZooEvent.updateZooEventIncludeFuture(
       Number(zooEventId),
       eventName, 
-      new Date(eventNotificationDate),
-      new Date(eventStartDateTime),
-      new Date(eventEndDateTime),
-      Number(eventDurationHrs),
-      isFlexible,
-      eventTiming,
       eventDescription,
       eventIsPublic,
-      eventType
+      eventType,
+      eventStartDateTime,
+  
+      eventDurationHrs,
+      eventTiming,
+      
+      eventNotificationDate,
+      eventEndDateTime,
     );
     return res.status(200).json({zooEvent:newZooEvent});
   } catch (error: any) {

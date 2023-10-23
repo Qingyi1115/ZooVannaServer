@@ -54,6 +54,17 @@ import {
   deleteFeedingPlanById,
   updateFeedingPlan,
   createFeedingPlan,
+  getAllFeedingPlanSessionDetails,
+  getAllFeedingPlanSessionDetailsByPlanId,
+  getFeedingPlanSessionDetailById,
+  createFeedingPlanSessionDetail,
+  updateFeedingPlanSessionDetail,
+  deleteFeedingPlanSessionDetailById,
+  getAllFeedingItemsByPlanSessionId,
+  createFeedingItem,
+  updateFeedingItem,
+  deleteFeedingItemById,
+  getFeedingItemAmtReco,
 } from "../controllers/animalController";
 
 const router = express.Router();
@@ -189,6 +200,32 @@ router.get(
 );
 router.post("/createFeedingPlan", createFeedingPlan);
 router.put("/updateFeedingPlan", updateFeedingPlan);
-router.delete("/deleteFeedingPlanById/:feedingPlanId", deleteFeedingPlanById);
+router.delete("/deleteFeedingPlanById/:feedingPlanSessionDetailId", deleteFeedingPlanById);
 
+//-- Animal Feeding Plan Session
+router.get("/getAllFeedingPlanSessionDetails", getAllFeedingPlanSessionDetails);
+router.get(
+  "/getAllFeedingPlanSessionDetailsByPlanId/:feedingPlanSessionDetailId",
+  getAllFeedingPlanSessionDetailsByPlanId,
+);
+router.get(
+  "/getFeedingPlanSessionDetailById/:feedingPlanDetailId",
+  getFeedingPlanSessionDetailById,
+);
+router.post("/createFeedingPlanSessionDetail", createFeedingPlanSessionDetail);
+router.put("/updateFeedingPlanSessionDetail", updateFeedingPlanSessionDetail);
+router.delete(
+  "/deleteFeedingPlanSessionDetailById/:feedingPlanDetailId",
+  deleteFeedingPlanSessionDetailById,
+);
+
+//-- Animal Feeding Plan Food Item
+router.get(
+  "/getAllFeedingItemsByPlanSessionId/:feedingPlanDetailId",
+  getAllFeedingItemsByPlanSessionId,
+);
+router.post("/createFeedingItem", createFeedingItem);
+router.put("/updateFeedingItem", updateFeedingItem);
+router.delete("/deleteFeedingItemById/:feedingItemId", deleteFeedingItemById);
+router.post("/getFeedingItemAmtReco", getFeedingItemAmtReco);
 export default router;

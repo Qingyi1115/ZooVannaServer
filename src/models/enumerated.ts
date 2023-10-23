@@ -137,8 +137,8 @@ enum AcquisitionMethod {
 }
 
 enum AnimalFeedCategory {
-  RED_MEAT = "RED_MEAT",
-  WHITE_MEAT = "WHITE_MEAT",
+  RED_MEAT = "RED MEAT",
+  WHITE_MEAT = "WHITE MEAT",
   FISH = "FISH",
   INSECTS = "INSECTS",
   HAY = "HAY",
@@ -566,6 +566,13 @@ enum Reaction {
   UNDETERMINED = "UNDETERMINED",
 }
 
+enum FacilityLogType {
+  ACTIVE_REPAIR_TICKET = "ACTIVE_REPAIR_TICKET",
+  COMPLETED_REPAIR_TICKET = "COMPLETED_REPAIR_TICKET",
+  MAINTENANCE_LOG = "MAINTENANCE_LOG",
+  OPERATION_LOG = "OPERATION_LOG",
+}
+
 export {
   KeeperType,
   PlannerType,
@@ -605,4 +612,5 @@ export {
   RecurringPattern,
   RepeatPattern,
   Reaction,
+  FacilityLogType,
 };

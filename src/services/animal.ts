@@ -34,6 +34,9 @@ import { AnimalActivityLog } from "../models/animalActivityLog";
 import { AnimalFeedingLog } from "../models/animalFeedingLog";
 import { FeedingPlan } from "../models/feedingPlan";
 import { ZooEvent } from "../models/zooEvent";
+import { FeedingPlanSessionDetail } from "../models/feedingPlanSessionDetail";
+import { FeedingItem } from "../models/feedingItem";
+import { SpeciesDietNeed } from "../models/speciesDietNeed";
 
 //-- Animal Basic Info
 export async function getAnimalIdByCode(animalCode: string) {
@@ -819,7 +822,7 @@ export async function createAnimalActivity(
   durationInMinutes: number,
   // enrichmentItemIds:number[],
   // animalCodes:string[],
-) {
+): Promise<AnimalActivity> {
   let newActivity = {
     activityType: activityType,
     title: title,
@@ -844,89 +847,9 @@ export async function createAnimalActivity(
         details,
       );
     } else {
-      startDate =
-        compareDates(startDate, new Date()) >= 0
-          ? startDate
-          : new Date(
-              new Date().getFullYear(),
-              new Date().getMonth(),
-              new Date().getDate(),
-            );
-      const iKeepMyPromises = [];
-      if (recurringPattern == RecurringPattern.DAILY) {
-        while (compareDates(endDate, startDate) >= 0) {
-          iKeepMyPromises.push(
-            ZooEventService.createAnimalActivityZooEvent(
-              newActivityEntry.animalActivityId,
-              startDate,
-              durationInMinutes,
-              eventTimingType,
-              details,
-            ),
-          );
-          startDate = new Date(startDate.getTime() + DAY_IN_MILLISECONDS);
-        }
-      } else if (recurringPattern == RecurringPattern.WEEKLY) {
-        let weekInt = 0;
-        if (!dayOfWeek) throw { message: "Day Of Week missing!" };
-        switch (dayOfWeek) {
-          case DayOfWeek.MONDAY:
-            weekInt = 1;
-            break;
-          case DayOfWeek.TUESDAY:
-            weekInt = 2;
-            break;
-          case DayOfWeek.WEDNESDAY:
-            weekInt = 3;
-            break;
-          case DayOfWeek.THURSDAY:
-            weekInt = 4;
-            break;
-          case DayOfWeek.FRIDAY:
-            weekInt = 5;
-            break;
-          case DayOfWeek.SATURDAY:
-            weekInt = 6;
-            break;
-        }
-        startDate = getNextDayOfWeek(startDate, weekInt);
-        while (compareDates(endDate, startDate) >= 0) {
-          iKeepMyPromises.push(
-            ZooEventService.createAnimalActivityZooEvent(
-              newActivityEntry.animalActivityId,
-              startDate,
-              durationInMinutes,
-              eventTimingType,
-              details,
-            ),
-          );
-          startDate = new Date(startDate.getTime() + 7 * DAY_IN_MILLISECONDS);
-        }
-      } else if (recurringPattern == RecurringPattern.MONTHLY) {
-        if (!dayOfMonth) throw { message: "Day Of Month missing!" };
-        startDate = getNextDayOfMonth(startDate, dayOfMonth);
-        while (compareDates(endDate, startDate) >= 0) {
-          iKeepMyPromises.push(
-            ZooEventService.createAnimalActivityZooEvent(
-              newActivityEntry.animalActivityId,
-              startDate,
-              durationInMinutes,
-              eventTimingType,
-              details,
-            ),
-          );
-          startDate = new Date(
-            Date.UTC(
-              startDate.getFullYear(),
-              startDate.getMonth() + 1,
-              dayOfMonth,
-            ),
-          );
-        }
-      }
-      for (const p of iKeepMyPromises) {
-        await p;
-      }
+      return ZooEventService.generateMonthlyZooEventForAnimalActivity(
+        newActivityEntry.animalActivityId,
+      );
     }
     // const iKeepMyPromises = []
 
@@ -963,18 +886,19 @@ export async function updateAnimalActivity(
   durationInMinutes: number,
 ) {
   try {
-    const animalActivity = await AnimalActivity.findOne({
+    let animalActivity = await AnimalActivity.findOne({
       where: { animalActivityId: animalActivityId },
     });
 
-    if (!animalActivity)
+    if (!animalActivity) {
       throw {
         message: "Animal Activity not found with Id: " + animalActivityId,
       };
+    }
 
     animalActivity.activityType = activityType;
     animalActivity.details = details;
-    const zooEvents = await animalActivity.getZooEvents();
+    let zooEvents = await animalActivity.getZooEvents();
 
     if (animalActivity.title != title) {
       animalActivity.title = title;
@@ -994,6 +918,7 @@ export async function updateAnimalActivity(
         ze.eventDurationHrs = durationInMinutes / 60;
       }
     }
+    await animalActivity.save();
 
     if (
       zooEvents.length == 0 ||
@@ -1006,6 +931,7 @@ export async function updateAnimalActivity(
       animalActivity.recurringPattern = recurringPattern;
       animalActivity.dayOfMonth = dayOfMonth;
       animalActivity.dayOfWeek = dayOfWeek;
+      await animalActivity.save();
 
       console.log("regenerate all events");
       // Regenerate ALL events
@@ -1021,111 +947,52 @@ export async function updateAnimalActivity(
           details,
         );
       } else {
-        startDate =
-          compareDates(startDate, new Date()) >= 0
-            ? startDate
-            : new Date(
-                new Date().getFullYear(),
-                new Date().getMonth(),
-                new Date().getDate(),
-              );
-        const iKeepMyPromises = [];
-        if (recurringPattern == RecurringPattern.DAILY) {
-          while (compareDates(endDate, startDate) >= 0) {
-            iKeepMyPromises.push(
-              ZooEventService.createAnimalActivityZooEvent(
-                animalActivity.animalActivityId,
-                startDate,
-                durationInMinutes,
-                eventTimingType,
-                details,
-              ),
-            );
-            startDate = new Date(startDate.getTime() + DAY_IN_MILLISECONDS);
-          }
-        } else if (recurringPattern == RecurringPattern.WEEKLY) {
-          let weekInt = 0;
-          if (!dayOfWeek) throw { message: "Day Of Week missing!" };
-          switch (dayOfWeek) {
-            case DayOfWeek.MONDAY:
-              weekInt = 1;
-              break;
-            case DayOfWeek.TUESDAY:
-              weekInt = 2;
-              break;
-            case DayOfWeek.WEDNESDAY:
-              weekInt = 3;
-              break;
-            case DayOfWeek.THURSDAY:
-              weekInt = 4;
-              break;
-            case DayOfWeek.FRIDAY:
-              weekInt = 5;
-              break;
-            case DayOfWeek.SATURDAY:
-              weekInt = 6;
-              break;
-          }
-          startDate = getNextDayOfWeek(startDate, weekInt);
-          while (compareDates(endDate, startDate) >= 0) {
-            iKeepMyPromises.push(
-              ZooEventService.createAnimalActivityZooEvent(
-                animalActivity.animalActivityId,
-                startDate,
-                durationInMinutes,
-                eventTimingType,
-                details,
-              ),
-            );
-            startDate = new Date(startDate.getTime() + 7 * DAY_IN_MILLISECONDS);
-          }
-        } else if (recurringPattern == RecurringPattern.MONTHLY) {
-          if (!dayOfMonth) throw { message: "Day Of Month missing!" };
-          startDate = getNextDayOfMonth(startDate, dayOfMonth);
-          while (compareDates(endDate, startDate) >= 0) {
-            iKeepMyPromises.push(
-              ZooEventService.createAnimalActivityZooEvent(
-                animalActivity.animalActivityId,
-                startDate,
-                durationInMinutes,
-                eventTimingType,
-                details,
-              ),
-            );
-            startDate = new Date(
-              Date.UTC(
-                startDate.getFullYear(),
-                startDate.getMonth() + 1,
-                dayOfMonth,
-              ),
-            );
-          }
-        }
-        for (const p of iKeepMyPromises) {
-          await p;
-        }
+        return ZooEventService.generateMonthlyZooEventForAnimalActivity(
+          animalActivity.animalActivityId,
+        );
       }
     } else if (
       recurringPattern != RecurringPattern.NON_RECURRING &&
       (animalActivity.startDate != startDate ||
         animalActivity.endDate != endDate)
     ) {
-      console.log("Remove out of date events");
+      zooEvents = await animalActivity.getZooEvents();
+
       // If shortened duration in start or end dates
       if (
         compareDates(startDate, animalActivity.startDate) > 0 ||
         compareDates(endDate, animalActivity.endDate) < 0
       ) {
         for (const ze of zooEvents) {
+          // console.log("ze",ze.eventStartDateTime.toDateString(),
+          // " not before today ",compareDates(new Date(), ze.eventStartDateTime) < 0,
+          // " after end date ",compareDates(endDate, ze.eventStartDateTime) < 0 ,
+          // " before start date ", compareDates(startDate, ze.eventStartDateTime) > 0 );
           if (
             (compareDates(startDate, ze.eventStartDateTime) > 0 ||
               compareDates(endDate, ze.eventStartDateTime) < 0) &&
             compareDates(new Date(), ze.eventStartDateTime) < 0
-          )
+          ) {
             await ze.destroy();
+          }
         }
       }
+      zooEvents = await animalActivity.getZooEvents();
 
+      // If nothing left regenerate all zoo events
+      if (zooEvents.length == 0) {
+        animalActivity.startDate = startDate;
+        animalActivity.endDate = endDate;
+        animalActivity.recurringPattern = recurringPattern;
+        animalActivity.dayOfMonth = dayOfMonth;
+        animalActivity.dayOfWeek = dayOfWeek;
+        await animalActivity.save();
+        return await ZooEventService.generateMonthlyZooEventForAnimalActivity(
+          animalActivity.animalActivityId,
+        );
+      }
+
+      // Add earlier events
       if (compareDates(startDate, animalActivity.startDate) < 0) {
         console.log("Adding earlier events");
         const iKeepMyPromises = [];
@@ -1191,68 +1058,16 @@ export async function updateAnimalActivity(
         for (const p of iKeepMyPromises) await p;
       }
 
+      // Add later events
       if (compareDates(endDate, animalActivity.endDate) > 0) {
         console.log("Adding later events");
-        const iKeepMyPromises = [];
-        let latestDate = zooEvents.reduce((a, b) =>
-          compareDates(a.eventStartDateTime, b.eventStartDateTime) > 0 ? a : b,
-        ).eventStartDateTime;
-
-        if (
-          recurringPattern == RecurringPattern.DAILY ||
-          recurringPattern == RecurringPattern.WEEKLY
-        ) {
-          let interval = 0;
-          switch (recurringPattern) {
-            case RecurringPattern.DAILY:
-              interval = DAY_IN_MILLISECONDS;
-              break;
-            case RecurringPattern.WEEKLY:
-              interval = DAY_IN_MILLISECONDS * 7;
-              break;
-          }
-          latestDate = new Date(latestDate.getTime() + interval);
-          while (compareDates(endDate, latestDate) >= 0) {
-            iKeepMyPromises.push(
-              ZooEventService.createAnimalActivityZooEvent(
-                animalActivity.animalActivityId,
-                latestDate,
-                durationInMinutes,
-                eventTimingType,
-                details,
-              ),
-            );
-            latestDate = new Date(latestDate.getTime() + interval);
-          }
-        } else {
-          if (!dayOfMonth) throw { message: "Day Of Month missing!" };
-          latestDate = new Date(
-            Date.UTC(
-              latestDate.getFullYear(),
-              latestDate.getMonth() - 1,
-              dayOfMonth,
-            ),
-          );
-          while (compareDates(endDate, latestDate) >= 0) {
-            iKeepMyPromises.push(
-              ZooEventService.createAnimalActivityZooEvent(
-                animalActivity.animalActivityId,
-                latestDate,
-                durationInMinutes,
-                eventTimingType,
-                details,
-              ),
-            );
-            latestDate = new Date(
-              Date.UTC(
-                latestDate.getFullYear(),
-                latestDate.getMonth() - 1,
-                dayOfMonth,
-              ),
-            );
-          }
-        }
-        for (const p of iKeepMyPromises) await p;
+        animalActivity.recurringPattern = recurringPattern;
+        animalActivity.startDate = startDate;
+        animalActivity.endDate = endDate;
+        await animalActivity.save();
+        await ZooEventService.generateMonthlyZooEventForAnimalActivity(
+          animalActivity.animalActivityId,
+        );
       }
 
       animalActivity.recurringPattern = recurringPattern;
@@ -1846,12 +1661,25 @@ export async function getFeedingPlanById(feedingPlanId: number) {
         },
       ],
     });
-    if (planRecord) {
-      return planRecord;
+    if (!planRecord) {
+      throw new Error("Unable to find feeding plan with id: " + feedingPlanId);
     }
+    return planRecord;
   } catch (error: any) {
     throw new Error("Invalid Animal Code!");
   }
+}
+interface TempFeedingItem {
+  foodCategory: string;
+  amount: number;
+  unit: string;
+  animalCode: string;
+}
+interface TempFeedingPlanSessionDetail {
+  dayOfTheWeek: string;
+  eventTimingType: string;
+  durationInMinutes: number;
+  feedingItems: TempFeedingItem[];
 }
 
 export async function createFeedingPlan(
@@ -1860,6 +1688,7 @@ export async function createFeedingPlan(
   feedingPlanDesc: string,
   startDate: Date,
   endDate: Date,
+  sessions: TempFeedingPlanSessionDetail[],
 ) {
   let newPlan = {
     feedingPlanDesc: feedingPlanDesc,
@@ -1879,6 +1708,16 @@ export async function createFeedingPlan(
       animals.push(await getAnimalByAnimalCode(animalCodes[i]));
     }
     newPlanEntry.setAnimals(animals);
+
+    for (const i of sessions) {
+      await createFeedingPlanSessionDetail(
+        newPlanEntry.feedingPlanId,
+        i.dayOfTheWeek,
+        i.eventTimingType,
+        i.durationInMinutes,
+        i.feedingItems,
+      );
+    }
 
     return newPlanEntry;
   } catch (error: any) {
@@ -1915,6 +1754,19 @@ export async function updateFeedingPlan(
       planEntry.setAnimals(animals);
     }
 
+    const promises = [];
+    for (const feedingPlanSession of await planEntry.getFeedingPlanSessionDetails()) {
+      promises.push(
+        updateFeedingPlanSessionDetail(
+          feedingPlanSession.feedingPlanSessionDetailId,
+          feedingPlanSession.dayOfWeek,
+          feedingPlanSession.eventTimingType,
+          feedingPlanSession.durationInMinutes,
+        ),
+      );
+    }
+    for (const p of promises) await p;
+
     return planEntry;
   } catch (error: any) {
     throw validationErrorHandler(error);
@@ -1929,4 +1781,400 @@ export async function deleteFeedingPlanById(feedingPlanId: number) {
     return result;
   }
   throw new Error("Invalid Feeding Plan Id!");
+}
+
+//-- Animal Feeding Plan Session Detail
+export async function getAllFeedingPlanSessionDetails() {
+  try {
+    const allFeedingPlanSessionDetails = await FeedingPlanSessionDetail.findAll(
+      {
+        // include: [Species, Animal],
+        include: [
+          {
+            model: FeedingPlan,
+            required: true,
+          },
+          {
+            model: FeedingItem,
+            required: false,
+          },
+        ],
+      },
+    );
+    return allFeedingPlanSessionDetails;
+  } catch (error: any) {
+    throw validationErrorHandler(error);
+  }
+}
+
+export async function getAllFeedingPlanSessionDetailsByPlanId(
+  feedingPlanId: number,
+) {
+  let result: FeedingPlanSessionDetail[] = [];
+  let allFeedingPlanSessions = await getAllFeedingPlanSessionDetails();
+  if (allFeedingPlanSessions) {
+    for (let p of allFeedingPlanSessions) {
+      if (p.feedingPlan?.feedingPlanId === feedingPlanId) {
+        result.push(p);
+      }
+    }
+  }
+  if (result) {
+    return result;
+  }
+
+  throw new Error("Invalid Feeding Plan ID Code!");
+}
+
+export async function getFeedingPlanSessionDetailById(
+  feedingPlanSessionDetailId: number,
+) {
+  try {
+    let planRecord = await FeedingPlanSessionDetail.findOne({
+      where: { feedingPlanSessionDetailId: feedingPlanSessionDetailId },
+      include: [
+        {
+          model: FeedingPlan,
+          required: true,
+        },
+        {
+          model: FeedingItem,
+          required: false,
+        },
+      ],
+    });
+    if (!planRecord) {
+      throw new Error(
+        "Invalid Feeding Plan Detail ID Code: " + feedingPlanSessionDetailId,
+      );
+    }
+    return planRecord;
+  } catch (error: any) {
+    throw validationErrorHandler(error);
+  }
+}
+// neeed to add EVent generator after Marcus done
+export async function createFeedingPlanSessionDetail(
+  feedingPlanId: number,
+  dayOfWeek: string,
+  eventTimingType: string,
+  durationInMinutes: number,
+  items: TempFeedingItem[],
+) {
+  let newSession = {
+    dayOfWeek: dayOfWeek,
+    eventTimingType: eventTimingType,
+    durationInMinutes: durationInMinutes,
+  } as any;
+
+  try {
+    let newSessionEntry = await FeedingPlanSessionDetail.create(newSession);
+
+    await newSessionEntry.setFeedingPlan(
+      await getFeedingPlanById(feedingPlanId),
+    );
+
+    for (const i of items) {
+      await createFeedingItem(
+        newSessionEntry.feedingPlanSessionDetailId,
+        i.animalCode,
+        i.foodCategory,
+        i.amount,
+        i.unit,
+      );
+    }
+
+    return await ZooEventService.generateMonthlyZooEventForFeedingPlanSession(
+      newSessionEntry.feedingPlanSessionDetailId,
+    );
+  } catch (error: any) {
+    console.log(error);
+    throw validationErrorHandler(error);
+  }
+}
+// neeed to add EVent generator after Marcus done
+export async function updateFeedingPlanSessionDetail(
+  feedingPlanSessionDetailId: number,
+  dayOfWeek: DayOfWeek,
+  eventTimingType: EventTimingType,
+  durationInMinutes: number,
+) {
+  const feedingPlanSessionDetail = await getFeedingPlanSessionDetailById(
+    feedingPlanSessionDetailId,
+  );
+
+  try {
+    feedingPlanSessionDetail.dayOfWeek = dayOfWeek;
+    feedingPlanSessionDetail.eventTimingType = eventTimingType;
+    feedingPlanSessionDetail.durationInMinutes = durationInMinutes;
+
+    const promises = [];
+    for (const ze of await feedingPlanSessionDetail.getZooEvents()) {
+      if (compareDates(new Date(), ze.eventStartDateTime) <= 0) {
+        promises.push(ze.destroy());
+      }
+    }
+    for (const p of promises) await p;
+    await feedingPlanSessionDetail.save();
+
+    return ZooEventService.generateMonthlyZooEventForFeedingPlanSession(
+      feedingPlanSessionDetail.feedingPlanSessionDetailId,
+    );
+  } catch (error: any) {
+    throw validationErrorHandler(error);
+  }
+}
+
+export async function deleteFeedingPlanSessionDetailById(
+  feedingPlanSessionDetailId: number,
+) {
+  let result = await FeedingPlanSessionDetail.destroy({
+    where: { feedingPlanSessionDetailId: feedingPlanSessionDetailId },
+  });
+  if (result) {
+    return result;
+  }
+  throw new Error("Invalid Feeding Plan Session Detail Id!");
+}
+
+//-- Animal Feeding Plan Food Item
+export async function getAllFeedingItemsByPlanSessionId(
+  feedingPlanSessionDetailId: number,
+) {
+  try {
+    let result: FeedingItem[] = [];
+    const feedingItems = await FeedingItem.findAll({
+      include: [
+        {
+          model: FeedingPlanSessionDetail,
+          required: true,
+        },
+        {
+          model: Animal,
+          required: true,
+        },
+      ],
+    });
+    if (feedingItems) {
+      for (let i of feedingItems) {
+        if (
+          i.feedingPlanSessionDetail?.feedingPlanSessionDetailId ===
+          feedingPlanSessionDetailId
+        ) {
+          result.push(i);
+        }
+      }
+    }
+    return result;
+  } catch (error: any) {
+    throw validationErrorHandler(error);
+  }
+}
+
+export async function createFeedingItem(
+  feedingPlanSessionDetailId: number,
+  animalCode: string,
+  foodCategory: string,
+  amount: number,
+  unit: string,
+) {
+  let newItem = {
+    foodCategory: foodCategory,
+    amount: amount,
+    unit: unit,
+  } as any;
+
+  try {
+    let newFeedingItemEntry = await FeedingItem.create(newItem);
+    newFeedingItemEntry.setFeedingPlanSessionDetail(
+      await getFeedingPlanSessionDetailById(feedingPlanSessionDetailId),
+    );
+    newFeedingItemEntry.setAnimal(await getAnimalByAnimalCode(animalCode));
+
+    return newFeedingItemEntry;
+  } catch (error: any) {
+    console.log(error);
+    throw validationErrorHandler(error);
+  }
+}
+
+export async function updateFeedingItem(
+  feedingItemId: number,
+  foodCategory: string,
+  amount: number,
+  unit: string,
+) {
+  let updatedItem = {
+    foodCategory: foodCategory,
+    amount: amount,
+    unit: unit,
+  } as any;
+
+  try {
+    await FeedingItem.update(updatedItem, {
+      where: { feedingItemId: feedingItemId },
+    });
+    return updatedItem;
+  } catch (error: any) {
+    throw validationErrorHandler(error);
+  }
+}
+
+export async function deleteFeedingItemById(feedingItemId: number) {
+  let result = await FeedingItem.destroy({
+    where: { feedingItemId: feedingItemId },
+  });
+  if (result) {
+    return result;
+  }
+  throw new Error("Invalid Feeding Item Id!");
+}
+
+export async function getFeedingItemAmtReco(
+  animalCode: string,
+  animalFeedCategory: string,
+  weekOrMeal: string,
+) {
+  let animal = await Animal.findOne({
+    where: { animalCode: animalCode },
+    include: [
+      {
+        model: Species,
+        include: [
+          { model: PhysiologicalReferenceNorms, required: false },
+          { model: SpeciesDietNeed, required: false },
+        ],
+      },
+      {
+        model: AnimalWeight,
+        required: false, // Include the Animal Weights only if they exist
+      },
+    ],
+    attributes: {
+      // Include virtual fields
+      include: ["age", "growthStage"],
+    },
+  });
+
+  //if animal, growth stage, diet needs, weight record not empty
+  if (
+    animal &&
+    animal.growthStage &&
+    animal.species?.speciesDietNeeds &&
+    animal.species?.physiologicalReferenceNorms &&
+    animal.animalWeights
+  ) {
+    //get lastest weight record
+    let weightRecords = animal.animalWeights;
+    const latestWeightRecord = weightRecords.reduce(
+      (latest: AnimalWeight | null, record: AnimalWeight) => {
+        if (!latest || record.dateOfMeasure > latest.dateOfMeasure) {
+          return record;
+        }
+        return latest;
+      },
+      null,
+    );
+
+    // Find the physiological reference information for the given species and growth stage
+    let physiologicalNorm = null;
+    for (let p of animal.species.physiologicalReferenceNorms) {
+      if ((p.growthStage = animal.growthStage)) {
+        physiologicalNorm = p;
+      }
+    }
+
+    // Find the dietary information for the given food category
+    const dietaryInfo = await SpeciesDietNeed.findOne({
+      where: {
+        animalFeedCategory: animalFeedCategory,
+        growthStage: animal.growthStage,
+      },
+    });
+    if (latestWeightRecord && dietaryInfo && physiologicalNorm) {
+      // Calculate the recommended amount based on weight distribution and dietary information
+      if (weekOrMeal.toUpperCase() == "MEAL") {
+        if (animal.sex == AnimalSex.MALE) {
+          return calculateFeedingItemAmtReco(
+            dietaryInfo.amountPerMealGramMale,
+            latestWeightRecord.weightInKg,
+            physiologicalNorm.minWeightMaleKg,
+            physiologicalNorm.maxWeightMaleKg,
+          );
+        } else if (animal.sex == AnimalSex.FEMALE) {
+          return calculateFeedingItemAmtReco(
+            dietaryInfo.amountPerMealGramFemale,
+            latestWeightRecord.weightInKg,
+            physiologicalNorm.minWeightFemaleKg,
+            physiologicalNorm.maxWeightFemaleKg,
+          );
+        } else {
+          // Handle cases where animal sex is nonbinary or unknown
+          return "No dietary data found!";
+        }
+      } else if (weekOrMeal.toUpperCase() == "WEEK") {
+        if (animal.sex == AnimalSex.MALE) {
+          return calculateFeedingItemAmtReco(
+            dietaryInfo.amountPerWeekGramMale,
+            latestWeightRecord.weightInKg,
+            physiologicalNorm.minWeightMaleKg,
+            physiologicalNorm.maxWeightMaleKg,
+          );
+        } else if (animal.sex == AnimalSex.FEMALE) {
+          return calculateFeedingItemAmtReco(
+            dietaryInfo.amountPerWeekGramFemale,
+            latestWeightRecord.weightInKg,
+            physiologicalNorm.minWeightFemaleKg,
+            physiologicalNorm.maxWeightFemaleKg,
+          );
+        } else {
+          // Handle cases where animal sex is nonbinary or unknown
+          return "No dietary data found!";
+        }
+      } else {
+        throw new Error(
+          "Please enter MEAL or WEEK to calculate recommended amount!",
+        );
+      }
+    } else {
+      // Handle cases where dietary information is missing
+      return "No dietary data found!";
+    }
+  } else {
+    return "No dietary data found!";
+  }
+}
+
+async function calculateFeedingItemAmtReco(
+  recommendedAmount: number,
+  animalWeight: number,
+  lowerWeightRange: number,
+  upperWeightRange: number,
+) {
+  // Calculate the average weight within the specified range
+  const averageWeight = (lowerWeightRange + upperWeightRange) / 2;
+
+  // Calculate the weight difference from the average weight
+  const weightDifference = animalWeight - averageWeight;
+
+  // Calculate the ratio of weightDifference
+  const ratio = weightDifference / (upperWeightRange - averageWeight);
+
+  // for ration outside of range -1 ~ 1, add moderator
+  let moderator = 0;
+  if (ratio < -1) {
+    moderator = ratio + 1;
+  } else if (ratio > 1) {
+    moderator = ratio - 1;
+  }
+  // Calculate the adjustment factor
+  const adjustmentFactor = 1 + 0.1 * ratio - 0.05 * moderator;
+
+  // Adjust the recommended amount within the adjustment factor
+  let result = recommendedAmount * adjustmentFactor;
+
+  const formattedNumber: string = result.toFixed(2);
+  const roundedResult: number = parseFloat(formattedNumber);
+
+  return roundedResult;
 }

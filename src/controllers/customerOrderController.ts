@@ -114,3 +114,26 @@ export async function getPastCustomerOrderByCustomerController(
     res.status(400).json({ error: error.message });
   }
 }
+export async function getTotalCustomerOrder(req: Request, res: Response) {
+  const { startDate, endDate, groupBy } = req.body;
+
+  if (!startDate || !endDate || !groupBy) {
+    console.log("Missing field(s): ", {
+      startDate,
+      endDate,
+      groupBy,
+    });
+    return res.status(400).json({ error: "Missing required fields!" });
+  }
+
+  try {
+    const result = await CustomerOrderService.getTotalCustomerOrder(
+      startDate,
+      endDate,
+      groupBy,
+    ); // Replace with the actual function
+    return res.status(200).json(result);
+  } catch (error: any) {
+    res.status(400).json({ error: error.message });
+  }
+}

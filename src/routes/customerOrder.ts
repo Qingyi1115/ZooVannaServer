@@ -7,18 +7,23 @@ import {
   getCustomerOrderByBookingReference,
   getAllUpcomingCustomerOrderByCustomerController,
   getPastCustomerOrderByCustomerController,
+  getTotalCustomerOrder,
 } from "../controllers/customerOrderController";
 
 const router = express.Router();
 
 router.use(authMiddleware);
 
-router.get("/getAllCustomerOrders", getAllCustomerOrders);
-router.get("/getOrderById/:customerOrderId", getCustomerOrderByCustomerOrderId);
-router.get(
+router.post("/getAllCustomerOrders", getAllCustomerOrders);
+router.post(
+  "/getOrderById/:customerOrderId",
+  getCustomerOrderByCustomerOrderId,
+);
+router.post(
   "/getOrderByBookingReference/:bookingReference",
   getCustomerOrderByBookingReference,
 );
+router.get("/getTotalCustomerOrder", getTotalCustomerOrder);
 
 router.get(
   "/getAllUpcomingCustomerOrderByCustomer",

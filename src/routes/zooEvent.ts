@@ -2,19 +2,22 @@ import express from "express";
 
 import { authMiddleware } from "../middlewares/authMiddleware";
 import { 
-    createNewInternalZooEvent, 
     deleteZooEvent, 
     getAllZooEvents, 
-    getZooEvent, 
-    updateZooEventDetails,
+    getZooEventById, 
+    updateZooEventIncludeFuture, 
+    updateZooEventSingle,
  } from "../controllers/zooEventController";
+
 const router = express.Router();
 
 router.use(authMiddleware);
 
 //species basic
-router.get("/getAllZooEvents", getAllZooEvents);
-router.get("/getZooEvent/:zooEventId", getZooEvent);
-router.post("/createNewInternalZooEvent", createNewInternalZooEvent);
-router.put("/updateZooEventDetails/:zooEventId", updateZooEventDetails);
+router.post("/getAllZooEvents", getAllZooEvents);
+router.get("/getZooEventById/:zooEventId", getZooEventById);
+router.put("/updateZooEventSingle/:zooEventId", updateZooEventSingle);
+router.put("/updateZooEventIncludeFuture/:zooEventId", updateZooEventIncludeFuture);
 router.delete("/deleteZooEvent/:zooEventId", deleteZooEvent);
+
+export default router;
