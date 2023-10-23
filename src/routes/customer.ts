@@ -24,8 +24,6 @@ import { authMiddleware } from "../middlewares/authMiddleware";
 
 const router = express.Router();
 
-
-
 //forgot password
 router.post("/sendForgetPasswordLink/:email", sendForgetPasswordLink); //send reset password link to customer email
 router.put("/resetForgottenPassword/:token", resetForgottenPasswordController); //reset from the customer side using email
@@ -48,10 +46,6 @@ router.post(
   "/completePaymentForGuest/:customerOrderId",
   completePaymentForGuestController,
 );
-router.post(
-  "/completePaymentForCustomer/:customerOrderId",
-  completePaymentForGuestController,
-);
 
 router.use(authMiddleware);
 
@@ -65,6 +59,11 @@ router.delete("/deleteCustomer", deleteCustomerByEmail);
 router.post(
   "/createCustomerOrderForCustomer",
   createCustomerOrderForCustomerController,
+);
+
+router.post(
+  "/completePaymentForCustomer/:customerOrderId",
+  completePaymentForCustomerController,
 );
 
 export default router;
