@@ -631,7 +631,7 @@ async function generatePDF(custOrder: CustomerOrder) {
       doc
         .fontSize(8)
         .text(
-          "Any resale of tickets/vouchers is strictly prohibited unless authorized in writing by ZOOVANNA. ZOOVANNA reserves the right to invalidate tickets/vouchers in connection with any fraudulent/unauthorized resale transaction, without refund or other compensation. Tickets/Vouchers allow for a one (1) - time use only. If it is determined by RWS that there are multiple copies/usages of the ticket, usage of the ticket will be denied. In the event of any dispute, a final decision shall be made based on our electronic record.",
+          "Any resale of tickets/vouchers is strictly prohibited unless authorized in writing by ZOOVANNA. ZOOVANNA reserves the right to invalidate tickets/vouchers in connection with any fraudulent/unauthorized resale transaction, without refund or other compensation. Tickets/Vouchers allow for a one (1) - time use only. If it is determined by ZOOVANNA that there are multiple copies/usages of the ticket, usage of the ticket will be denied. In the event of any dispute, a final decision shall be made based on our electronic record.",
         );
 
       if (orderItem != orderItems[orderItems.length - 1]) {
