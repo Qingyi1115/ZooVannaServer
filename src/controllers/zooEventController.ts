@@ -30,6 +30,7 @@ export async function getAllZooEvents(req: Request, res: Response) {
     "animal",
     "inHouse",
     "animalActivity",
+    "feedingPlanSessionDetail",
   ]) {
     if (includes.includes(role)) _includes.push(role);
   }
