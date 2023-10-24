@@ -196,6 +196,7 @@ enum IdentifierType {
 enum ActivityType {
   TRAINING = "TRAINING",
   ENRICHMENT = "ENRICHMENT",
+  OBSERVATION = "OBSERVATION",
 }
 
 enum Rating {
