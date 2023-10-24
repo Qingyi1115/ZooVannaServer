@@ -1729,6 +1729,8 @@ export async function updateFeedingPlanSessionDetail(
       dayOftheWeek,
       eventTimingType,
       durationInMinutes,
+      isPublic,
+      publicEventStartTime
     } = req.body;
 
     if (
@@ -1737,13 +1739,15 @@ export async function updateFeedingPlanSessionDetail(
         dayOftheWeek,
         eventTimingType,
         durationInMinutes,
-      ].includes(undefined)
+      ].includes(undefined) ||
+      isPublic && [publicEventStartTime, ].includes(undefined)
     ) {
       console.log("Missing field(s): ", {
         feedingPlanDetailId,
         dayOftheWeek,
         eventTimingType,
         durationInMinutes,
+        isPublic : isPublic ? {publicEventStartTime} : isPublic,
       });
       return res.status(400).json({ error: "Missing information!" });
     }
@@ -1755,6 +1759,8 @@ export async function updateFeedingPlanSessionDetail(
         dayOftheWeek,
         eventTimingType,
         durationInMinutes,
+        isPublic,
+        publicEventStartTime
       );
 
     return res.status(200).json({

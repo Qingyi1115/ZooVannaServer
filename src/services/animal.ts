@@ -1757,39 +1757,39 @@ export async function updateFeedingPlan(
   startDate: Date,
   endDate: Date,
 ) {
-  let updatedPlan = {
-    feedingPlanDesc: feedingPlanDesc,
-    startDate: startDate,
-    endDate: endDate,
-  } as any;
-
   try {
-    await FeedingPlan.update(updatedPlan, {
-      where: { feedingPlanId: feedingPlanId },
-    });
-
     let planEntry = await getFeedingPlanById(feedingPlanId);
-    if (planEntry) {
-      let animals: Animal[] = [];
+    const dateChange = (compareDates(planEntry.startDate, startDate) != 0) 
+                        || (compareDates(planEntry.endDate, endDate) != 0);
 
-      for (let i = 0; i < animalCodes.length; i++) {
-        animals.push(await getAnimalByAnimalCode(animalCodes[i]));
+    planEntry.feedingPlanDesc = feedingPlanDesc;
+    planEntry.startDate = startDate;
+    planEntry.endDate = endDate;
+
+    await planEntry.save();
+
+    let animals: Animal[] = [];
+    for (let i = 0; i < animalCodes.length; i++) {
+      animals.push(await getAnimalByAnimalCode(animalCodes[i]));
+    }
+    planEntry.setAnimals(animals);
+
+    if (dateChange){
+      const promises = [];
+      for (const feedingPlanSession of await planEntry.getFeedingPlanSessionDetails()) {
+        promises.push(
+          updateFeedingPlanSessionDetail(
+            feedingPlanSession.feedingPlanSessionDetailId,
+            feedingPlanSession.dayOfWeek,
+            feedingPlanSession.eventTimingType,
+            feedingPlanSession.durationInMinutes,
+            feedingPlanSession.isPublic,
+            feedingPlanSession.publicEventStartTime
+          ),
+        );
       }
-      planEntry.setAnimals(animals);
+      for (const p of promises) await p;
     }
-
-    const promises = [];
-    for (const feedingPlanSession of await planEntry.getFeedingPlanSessionDetails()) {
-      promises.push(
-        updateFeedingPlanSessionDetail(
-          feedingPlanSession.feedingPlanSessionDetailId,
-          feedingPlanSession.dayOfWeek,
-          feedingPlanSession.eventTimingType,
-          feedingPlanSession.durationInMinutes,
-        ),
-      );
-    }
-    for (const p of promises) await p;
 
     return planEntry;
   } catch (error: any) {
@@ -1889,6 +1889,7 @@ export async function createFeedingPlanSessionDetail(
     dayOfWeek: dayOfWeek,
     eventTimingType: eventTimingType,
     durationInMinutes: durationInMinutes,
+    isPublic:false
   } as any;
 
   try {
@@ -1922,6 +1923,8 @@ export async function updateFeedingPlanSessionDetail(
   dayOfWeek: DayOfWeek,
   eventTimingType: EventTimingType,
   durationInMinutes: number,
+  isPublic : boolean,
+  publicEventStartTime: string | null
 ) {
   const feedingPlanSessionDetail = await getFeedingPlanSessionDetailById(
     feedingPlanSessionDetailId,
@@ -1931,6 +1934,9 @@ export async function updateFeedingPlanSessionDetail(
     feedingPlanSessionDetail.dayOfWeek = dayOfWeek;
     feedingPlanSessionDetail.eventTimingType = eventTimingType;
     feedingPlanSessionDetail.durationInMinutes = durationInMinutes;
+    feedingPlanSessionDetail.isPublic = isPublic;
+    feedingPlanSessionDetail.publicEventStartTime = publicEventStartTime;
+    await feedingPlanSessionDetail.save();
 
     const promises = [];
     for (const ze of await feedingPlanSessionDetail.getZooEvents()) {
@@ -1939,7 +1945,6 @@ export async function updateFeedingPlanSessionDetail(
       }
     }
     for (const p of promises) await p;
-    await feedingPlanSessionDetail.save();
 
     return ZooEventService.generateMonthlyZooEventForFeedingPlanSession(
       feedingPlanSessionDetail.feedingPlanSessionDetailId,

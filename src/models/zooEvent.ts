@@ -32,13 +32,13 @@ class ZooEvent extends Model<
   declare eventIsPublic: boolean;
   declare eventType?: EventType;
   declare eventStartDateTime: Date;
+  declare eventNotificationDate: Date;
 
   // Internal
   declare eventDurationHrs: number;
   declare eventTiming: EventTimingType | null;
 
   // Public
-  declare eventNotificationDate: Date;
   declare eventEndDateTime: Date | null;
   declare imageUrl: CreationOptional<string>;
   

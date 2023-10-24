@@ -5,7 +5,7 @@ import { ZooEvent } from "../models/zooEvent";
 import { ADVANCE_DAYS_FOR_ZOO_EVENT_GENERATION, ANIMAL_ACTIVITY_NOTIFICATION_HOURS, ANIMAL_FEEDING_NOTIFICATION_HOURS, DAY_IN_MILLISECONDS, HOUR_IN_MILLISECONDS } from "../helpers/staticValues";
 import { compareDates, getNextDayOfMonth, getNextDayOfWeek } from "../helpers/others";
 import { Op } from "Sequelize";
-import { Employee } from "models/employee";
+import { Employee } from "../models/employee";
 
 function loopCallbackDateIntervals(
   callback: Function,
@@ -187,7 +187,9 @@ export async function generateMonthlyZooEventForFeedingPlanSession(feedingPlanSe
           date,
           feedingPlanSessionDetail.durationInMinutes,
           feedingPlanSessionDetail.eventTimingType,
-          feedingPlan.feedingPlanDesc
+          feedingPlan.feedingPlanDesc,
+          feedingPlanSessionDetail.isPublic,
+          feedingPlanSessionDetail.publicEventStartTime || ""
       );
     }, 
     getNextDayOfWeek(startDate, dayOfWeekNumber),
@@ -208,11 +210,16 @@ export async function createFeedingPlanSessionDetailZooEvent(
   eventDurationHrs: number,
   eventTiming: EventTimingType | null,
   eventDescription: string,
-  eventIsPublic: boolean = false,
+  eventIsPublic: boolean,
+  publicEventStartTime: string,
 ) {
   const feedingPlanSessionDetail = await AnimalService.getFeedingPlanSessionDetailById(feedingPlanSessionDetailId);
   const feedingPlan = (await feedingPlanSessionDetail.getFeedingPlan());
   try {
+    if (eventIsPublic){
+      eventStartDateTime.setHours(parseInt(publicEventStartTime?.substring(0, 2)));
+      eventStartDateTime.setMinutes(parseInt(publicEventStartTime?.substring(3, 5)));
+    }
     const newZooEvent = await ZooEvent.create({
       eventName: "Feeding session for " + (await feedingPlan.getSpecies()).aliasName,
       eventStartDateTime: eventStartDateTime,
@@ -221,6 +228,7 @@ export async function createFeedingPlanSessionDetailZooEvent(
       eventDescription: eventDescription,
       eventIsPublic: eventIsPublic,
       eventNotificationDate : new Date(eventStartDateTime.getTime() - HOUR_IN_MILLISECONDS * ANIMAL_FEEDING_NOTIFICATION_HOURS),
+      eventEndDateTime : eventIsPublic? new Date(eventStartDateTime.getTime() + eventDurationHrs * HOUR_IN_MILLISECONDS) : null
     });
     
     await feedingPlanSessionDetail.addZooEvent(newZooEvent);
@@ -314,6 +322,7 @@ export async function updateZooEventIncludeFuture(
   if (eventIsPublic){
     throw {message:"Not yet implemented!"}
   }else{
+    // Internal event
     const animalActivity = await zooEvent.getAnimalActivity();
     if (animalActivity){
       // Update future events
