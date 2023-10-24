@@ -893,6 +893,7 @@ export async function makeAnimalActivityPrivate(animalActivityId: number) {
   // Add Method Code Here
   // Add Method Code Here
   // 1. update isPublic to FALSE
+  // 2. update all future event to private
 }
 
 export async function updateAnimalActivity(
