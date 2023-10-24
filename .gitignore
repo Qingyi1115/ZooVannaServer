@@ -132,6 +132,9 @@ dist
 #img path
 img
 
+#pdf path
+pdf
+
 # Python
 /__pycache__/*
 *.pyc

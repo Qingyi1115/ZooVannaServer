@@ -725,7 +725,7 @@ export async function completePaymentForCustomer(
           html += `
           <div>
               <div style="display:flex; justify-content:center; padding:5px; margin:0 auto">
-                  <table style="border: 0px; border-collapse: collapse; width:800px">
+                  <table style="border: 0px; border-collapse: collapse; width:800px;">
                   <tr>
                     <td>Booking Reference</td>
                     <td style="text-align:right">${result?.bookingReference}</td>
@@ -742,14 +742,15 @@ export async function completePaymentForCustomer(
                   </tr>
                   <tr>
                     <td>Order total</td>
-                    <td style="text-align:right">${totalAmount}</td>
+                    <td style="text-align:right">SGD ${totalAmount}</td>
                   </tr>
                   <tr>
                     <td>Discount</td>
                     <td style="text-align:right">${
                       result
-                        ? Number(totalAmount) - Number(result.totalAmount)
-                        : totalAmount
+                        ? "SGD " +
+                          (Number(totalAmount) - Number(result.totalAmount))
+                        : "SGD " + totalAmount
                     }</td>
                   </tr>
                   <tr>
@@ -783,8 +784,8 @@ export async function completePaymentForCustomer(
           }
 
           html += `
-            <a href="http://localhost:5174/tickets/purchasedTickets" target="_blank">
-              <button style="border:none; border-radius: 2px">
+            <a href="http://localhost:5174/tickets/purchasedTickets" target="_blank" style="display:flex">
+              <button style="border:none; border-radius: 2px; background-color:#3FD136; cursor: pointer; width: 800px; height:30px; font-size:15px; text-decoration: none">
                 View Bookings
               </button>
             </a>
@@ -802,7 +803,6 @@ export async function completePaymentForCustomer(
             </body>
             </html>
         `;
-          console.log(html);
 
           return html;
         } catch (error: any) {
@@ -836,6 +836,7 @@ export async function completePaymentForCustomer(
           console.log("Email sent:", info.response);
         }
       });
+      result.setPdfUrl(name);
       return pay;
     } else {
       throw { message: "Customer Order Id does not exist" };
@@ -946,14 +947,15 @@ export async function completePaymentForGuest(
                   </tr>
                   <tr>
                     <td>Order total</td>
-                    <td style="text-align:right">${totalAmount}</td>
+                    <td style="text-align:right">SGD ${totalAmount}</td>
                   </tr>
                   <tr>
                     <td>Discount</td>
                     <td style="text-align:right">${
                       result
-                        ? Number(totalAmount) - Number(result.totalAmount)
-                        : totalAmount
+                        ? "SGD " +
+                          (Number(totalAmount) - Number(result.totalAmount))
+                        : "SGD " + totalAmount
                     }</td>
                   </tr>
                   <tr>
@@ -972,7 +974,6 @@ export async function completePaymentForGuest(
             </body>
             </html>
         `;
-          console.log(html);
 
           return html;
         } catch (error: any) {
@@ -1007,6 +1008,7 @@ export async function completePaymentForGuest(
           console.log("Email sent:", info.response);
         }
       });
+      result.setPdfUrl(name);
       return pay;
     } else {
       throw { message: "Customer Order Id does not exist" };

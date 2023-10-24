@@ -41,6 +41,7 @@ app.use(compression());
 app.use(cookieParser());
 app.use(bodyParser.json());
 app.use("/img", express.static("img"));
+app.use("/pdf", express.static("pdf"));
 
 const server = http.createServer(app);
 
