@@ -122,12 +122,13 @@ app.post("/fetchPayment", async (req: Request, res: Response) => {
   console.log(
     paymentIntent.payment_method_options.card.length == 0 ? "PAYNOW" : "CARD",
   );
+
+  const paymentMethod = await stripe.paymentMethods.retrieve(
+    paymentIntent.payment_method,
+  );
   res.send({
     amount: paymentIntent.amount,
-    type:
-      paymentIntent.payment_method_options.card.length === 0
-        ? "PAYNOW"
-        : "CARD",
+    type: paymentMethod.type.toUpperCase(),
     description: paymentIntent.description,
     status: paymentIntent.status,
     secret: paymentIntent.client_secret,

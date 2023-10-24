@@ -2,7 +2,6 @@ import { Request, Response } from "express";
 import { createToken } from "../helpers/security";
 import * as CustomerService from "../services/customer";
 
-
 //verify customer email
 
 // export const verifyEmail = async (
@@ -22,12 +21,12 @@ import * as CustomerService from "../services/customer";
 export const sendEmailVerification = async (req: Request, res: Response) => {
   try {
     const { email } = req.params;
-      await CustomerService.sendEmailVerification(email);
-      console.log("success");
-      return res
-        .status(200)
-        .json({ message: "Email for verification has been sent successfully" });
-    } catch (error: any) {
+    await CustomerService.sendEmailVerification(email);
+    console.log("success");
+    return res
+      .status(200)
+      .json({ message: "Email for verification has been sent successfully" });
+  } catch (error: any) {
     console.log(error);
     return res.status(400).json({ error: error.message });
   }
@@ -386,14 +385,19 @@ export async function completePaymentForCustomerController(
   req: Request,
   res: Response,
 ) {
-  const { customerOrderId } = req.params;
-
-  if (!customerOrderId) {
-    return res.status(400).json({ error: "Missing Customer Order ID!" });
-  }
-
-  const { payment } = req.body;
   try {
+    const { email } = (req as any).locals.jwtPayload;
+    const { customerOrderId } = req.params;
+
+    if (!customerOrderId) {
+      return res.status(400).json({ error: "Missing Customer Order ID!" });
+    }
+
+    if (!email) {
+      return res.status(400).json({ error: "Customer not logged in!" });
+    }
+
+    const { payment } = req.body;
     const result = await CustomerService.completePaymentForCustomer(
       Number(customerOrderId),
       payment,
