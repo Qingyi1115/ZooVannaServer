@@ -1705,6 +1705,7 @@ export async function getFeedingPlanById(feedingPlanId: number) {
                   model: Animal,
                   as: "animal",
                   required: false,
+                  include: [Species]
                 }
               ]
             }
@@ -1719,6 +1720,7 @@ export async function getFeedingPlanById(feedingPlanId: number) {
           model: Animal,
           required: false, // Include only if they exist
           as: "animals",
+          include: [Species]
         },
       ],
     });
