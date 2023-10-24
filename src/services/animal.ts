@@ -1617,6 +1617,24 @@ export async function deleteAnimalFeedingLogById(animalFeedingLogId: number) {
 }
 
 //-- Animal Feeding Plan
+// export async function getFeedingPlanByFeedingPlanId(feedingPlanId: number) {
+//   let feedingPlanRecord = await FeedingPlan.findOne({
+//     where: { feedingPlanId: feedingPlanId },
+//     include: [
+//       {
+//         model: FeedingPlanSessionDetail,
+//         required: false, // Include only if they exist
+//         as: "feedingPlanSessionDetails",
+//       },
+//     ],
+//   });
+
+//   if (feedingPlanRecord) {
+//     return feedingPlanRecord;
+//   }
+//   throw new Error("Invalid Feeding Plan Id!");
+// }
+
 export async function getAllFeedingPlans() {
   try {
     const allFeedingPlans = await FeedingPlan.findAll({
@@ -1673,6 +1691,18 @@ export async function getFeedingPlanById(feedingPlanId: number) {
     let planRecord = await FeedingPlan.findOne({
       where: { feedingPlanId: feedingPlanId },
       include: [
+        {
+          model: FeedingPlanSessionDetail,
+          required: false, // Include only if they exist
+          as: "feedingPlanSessionDetails",
+          include: [
+            {
+              model: FeedingItem,
+              as: "feedingItems",
+              required: false,
+            }
+          ]
+        },
         {
           model: Species,
           required: false, // Include only if they exist

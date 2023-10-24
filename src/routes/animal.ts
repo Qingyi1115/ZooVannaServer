@@ -48,6 +48,7 @@ import {
   updateAnimalFeedingLog,
   deleteAnimalFeedingLogById,
   getAnimalActivityLogsByAnimalCode,
+  getFeedingPlanByFeedingPlanId,
   getAllFeedingPlans,
   getFeedingPlansBySpeciesCode,
   getFeedingPlansByAnimalCode,
@@ -196,6 +197,7 @@ router.delete(
 updateAnimalObservationLog;
 
 // -- Animal Feeding Plan
+router.get("/getFeedingPlanById/:feedingPlanId", getFeedingPlanByFeedingPlanId)
 router.get("/getAllFeedingPlans", getAllFeedingPlans);
 router.get(
   "/getFeedingPlansBySpeciesCode/:speciesCode",

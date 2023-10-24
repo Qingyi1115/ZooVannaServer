@@ -5,7 +5,7 @@ import { findEmployeeByEmail } from "../services/employee";
 
 // -- Animal Basic Info
 export async function getAllAnimals(req: Request, res: Response) {
-  const {} = req.body;
+  const { } = req.body;
   try {
     const allAnimals = await AnimalService.getAllAnimals();
     return res.status(200).json(allAnimals.map((animal) => animal.toJSON()));
@@ -484,7 +484,7 @@ export async function checkIfAbnormalWeight(req: Request, res: Response) {
 
 //-- Animal Activity
 export async function getAllAnimalActivities(req: Request, res: Response) {
-  const {} = req.body;
+  const { } = req.body;
   try {
     const allAnimalActivities = await AnimalService.getAllAnimalActivities();
     return res.status(200).json(allAnimalActivities);
@@ -1425,6 +1425,28 @@ export async function deleteAnimalActivityLogById(req: Request, res: Response) {
 }
 
 //-- Animal Feeding Plan
+export async function getFeedingPlanByFeedingPlanId(
+  req: Request,
+  res: Response,
+) {
+  const { feedingPlanId } = req.params;
+
+  if (feedingPlanId == undefined) {
+    console.log("Missing field(s): ", {
+      feedingPlanId,
+    });
+    return res.status(400).json({ error: "Missing information!" });
+  }
+
+  try {
+    const feedingPlan =
+      await AnimalService.getFeedingPlanById(Number(feedingPlanId));
+    return res.status(200).json(feedingPlan);
+  } catch (error: any) {
+    res.status(400).json({ error: error.message });
+  }
+}
+
 export async function getAllFeedingPlans(req: Request, res: Response) {
   // const {} = req.body;
   try {
