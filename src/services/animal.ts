@@ -1700,6 +1700,13 @@ export async function getFeedingPlanById(feedingPlanId: number) {
               model: FeedingItem,
               as: "feedingItems",
               required: false,
+              include: [
+                {
+                  model: Animal,
+                  as: "animal",
+                  required: false,
+                }
+              ]
             }
           ]
         },
