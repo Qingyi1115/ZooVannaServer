@@ -73,7 +73,10 @@ export async function getTotalCustomerOrder(
     console.log("---------order items-----------");
     console.log(orderItems);
 
-    // Group the data based on the 'groupBy' options.
+    if (groupBy.length === 0) {
+      return orderItems.length;
+    }
+
     const groupedData = groupData(orderItems, groupBy);
     console.log("---------valid data-----------");
     console.log(groupedData);

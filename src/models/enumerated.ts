@@ -491,6 +491,11 @@ enum ListingType {
   FOREIGNER_CHILD_ONETIME = "FOREIGNER_CHILD_ONETIME",
 }
 
+// enum ListingType {
+//   LOCAL = "LOCAL",
+//   FOREIGNER = "FOREIGNER",
+// }
+
 enum ListingStatus {
   ACTIVE = "ACTIVE",
   DISCONTINUED = "DISCONTINUED",

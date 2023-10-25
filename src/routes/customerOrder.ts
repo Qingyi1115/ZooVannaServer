@@ -21,6 +21,6 @@ router.post(
   "/getOrderByBookingReference/:bookingReference",
   getCustomerOrderByBookingReference,
 );
-router.get("/getTotalCustomerOrder", getTotalCustomerOrder);
+router.post("/getTotalCustomerOrder", getTotalCustomerOrder);
 
 export default router;
