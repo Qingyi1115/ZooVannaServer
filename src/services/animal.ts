@@ -1691,23 +1691,26 @@ export async function createFeedingPlan(
   endDate: Date,
   sessions: TempFeedingPlanSessionDetail[],
 ) {
-  let newPlan = {
-    feedingPlanDesc: feedingPlanDesc,
-    startDate: startDate,
-    endDate: endDate,
-  } as any;
 
   try {
-    let newPlanEntry = await FeedingPlan.create(newPlan);
-    newPlanEntry.setSpecies(
-      await SpeciesService.getSpeciesByCode(speciesCode, []),
-    );
 
     let animals: Animal[] = [];
 
     for (let i = 0; i < animalCodes.length; i++) {
       animals.push(await getAnimalByAnimalCode(animalCodes[i]));
     }
+
+    let newPlan = {
+      feedingPlanDesc: feedingPlanDesc,
+      startDate: startDate,
+      endDate: endDate,
+      title: "Feeding plan for " + (await animals[0].getSpecies()).commonName
+    };
+
+    let newPlanEntry = await FeedingPlan.create(newPlan);
+    newPlanEntry.setSpecies(
+      await SpeciesService.getSpeciesByCode(speciesCode, []),
+    );
     newPlanEntry.setAnimals(animals);
 
     for (const i of sessions) {
@@ -1735,6 +1738,7 @@ export async function updateFeedingPlan(
   feedingPlanDesc: string,
   startDate: Date,
   endDate: Date,
+  title: string
 ) {
   try {
     let planEntry = await getFeedingPlanById(feedingPlanId);
@@ -1744,6 +1748,7 @@ export async function updateFeedingPlan(
     planEntry.feedingPlanDesc = feedingPlanDesc;
     planEntry.startDate = startDate;
     planEntry.endDate = endDate;
+    planEntry.title = title;
 
     await planEntry.save();
 

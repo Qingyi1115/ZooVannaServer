@@ -22,7 +22,7 @@ export async function getAllZooEvents(req: Request, res: Response) {
     return res.status(400).json({ error: "Missing information!" });
   }
 
-  const _includes: string[] = [];
+  const _includes: any[] = [];
   for (const role of [
     "planningStaff",
     "keepers",
@@ -30,9 +30,24 @@ export async function getAllZooEvents(req: Request, res: Response) {
     "animal",
     "inHouse",
     "animalActivity",
-    "feedingPlanSessionDetail",
   ]) {
-    if (includes.includes(role)) _includes.push(role);
+    if (includes.includes(role)){
+      _includes.push({
+        association:role,
+        required:false
+      });
+    } 
+  }
+
+  if (includes.includes("feedingPlanSessionDetail")) {
+    _includes.push({
+      association: "feedingPlanSessionDetail",
+      required:false,
+      include:{
+        association:"feedingPlan",
+        required:false
+      }
+    });
   }
 
   try {

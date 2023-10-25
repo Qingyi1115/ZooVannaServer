@@ -1726,7 +1726,7 @@ export const animalSeed = async () => {
     ["ANM00001", "ANM00002", "ANM00003"],
     "Some description...",
     new Date("2023-10-13"),
-    new Date("2023-10-22"),
+    new Date("2024-01-22"),
     [],
   );
 
@@ -1735,7 +1735,7 @@ export const animalSeed = async () => {
     ["ANM00003", "ANM00004", "ANM00005", "ANM00006"],
     "Some description...",
     new Date("2023-10-13"),
-    new Date("2023-10-22"),
+    new Date("2024-01-22"),
     [],
   );
 
@@ -1744,7 +1744,7 @@ export const animalSeed = async () => {
     ["ANM00011"],
     "Some description...",
     new Date("2023-10-13"),
-    new Date("2023-10-22"),
+    new Date("2024-01-22"),
     [],
   );
 

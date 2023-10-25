@@ -1531,6 +1531,7 @@ export async function updateFeedingPlan(req: Request, res: Response) {
       feedingPlanDesc,
       startDate,
       endDate,
+      title
     } = req.body;
 
     if (
@@ -1540,6 +1541,7 @@ export async function updateFeedingPlan(req: Request, res: Response) {
         feedingPlanDesc,
         startDate,
         endDate,
+        title
       ].includes(undefined)
     ) {
       console.log("Missing field(s): ", {
@@ -1548,6 +1550,7 @@ export async function updateFeedingPlan(req: Request, res: Response) {
         feedingPlanDesc,
         startDate,
         endDate,
+        title
       });
       return res.status(400).json({ error: "Missing information!" });
     }
@@ -1559,6 +1562,7 @@ export async function updateFeedingPlan(req: Request, res: Response) {
       feedingPlanDesc,
       new Date(startDate),
       new Date(endDate),
+      title
     );
 
     return res.status(200).json({

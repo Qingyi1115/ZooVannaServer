@@ -250,13 +250,47 @@ export async function getZooEventById(
       const zooEvent = await ZooEvent.findOne({
           where:{zooEventId:zooEventId},
           include:[
-            "planningStaff",
-            "keepers",
-            "enclosure",
-            "animal",
-            "inHouse",
-            "animalActivity",
+            {
+            association:"planningStaff",
+            required:false,
+            include:[{
+              association:"employee",
+              required:false,
+            }]
+          },{
+            association:"keepers",
+            required:false,
+            include:[{
+              association:"employee",
+              required:false,
+            }]
+          },{
+            association:"enclosure",
+            required:false
+          },{
+            association:"animal",
+            required:false
+          },{
+            association:"inHouse",
+            required:false,
+            include:[{
+              association:"facility",
+              required:false,
+            }]
+          },{
+            association:"animalActivity",
+            required:false
+          },{
+            association:"feedingPlanSessionDetail",
+            required:false,
+            include:[{
+              association:"feedingPlan",
+              required:false,
+            }]
+          },
           ]
+
+          
       });
 
       if (!zooEvent) throw {message:"Zoo event not found id:" + zooEventId}
