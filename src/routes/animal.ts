@@ -57,6 +57,7 @@ import {
   createFeedingPlan,
   getAllFeedingPlanSessionDetails,
   getAllFeedingPlanSessionDetailsByPlanId,
+  getFeedingItemAmtRecoAllAnimalsOfSpecies,
   getFeedingPlanSessionDetailById,
   createFeedingPlanSessionDetail,
   updateFeedingPlanSessionDetail,
@@ -239,5 +240,6 @@ router.get(
 router.post("/createFeedingItem", createFeedingItem);
 router.put("/updateFeedingItem", updateFeedingItem);
 router.delete("/deleteFeedingItemById/:feedingItemId", deleteFeedingItemById);
+router.post("/getFeedingItemAmtRecoAllAnimalsOfSpecies", getFeedingItemAmtRecoAllAnimalsOfSpecies);
 router.post("/getFeedingItemAmtReco", getFeedingItemAmtReco);
 export default router;

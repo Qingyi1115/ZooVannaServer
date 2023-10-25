@@ -1920,6 +1920,32 @@ export async function deleteFeedingItemById(req: Request, res: Response) {
   }
 }
 
+export async function getFeedingItemAmtRecoAllAnimalsOfSpecies(req: Request, res: Response) {
+  try {
+    const { speciesCode, animalFeedCategory } = req.body;
+
+    if ([speciesCode, animalFeedCategory].includes(undefined)) {
+      console.log("Missing field(s): ", {
+        speciesCode,
+        animalFeedCategory,
+        // weekOrMeal,
+      });
+      return res.status(400).json({ error: "Missing information!" });
+    }
+
+    // have to pass in req for image uploading
+    let recoAmts = await AnimalService.getFeedingItemAmtRecoAllAnimalsOfSpecies(
+      speciesCode,
+      animalFeedCategory,
+      // weekOrMeal,
+    );
+
+    return res.status(200).json({ recoAmts });
+  } catch (error: any) {
+    res.status(400).json({ error: error.message });
+  }
+}
+
 export async function getFeedingItemAmtReco(req: Request, res: Response) {
   try {
     const { animalCode, animalFeedCategory, weekOrMeal } = req.body;
