@@ -462,8 +462,16 @@ export const createDatabase = async (options: any) => {
     addCascadeOptions({ foreignKey: "enclosureId" }),
   );
 
-  Animal.hasMany(ZooEvent, addCascadeOptions({ foreignKey: "animalId" }));
-  ZooEvent.belongsTo(Animal, addCascadeOptions({ foreignKey: "animalId" }));
+  Animal.belongsToMany(ZooEvent, {
+    foreignKey: "animalId",
+    through: "animal_zooEvent",
+    as: "zooEvents",
+  });
+  ZooEvent.belongsToMany(Animal, {
+    foreignKey: "zooEventId",
+    through: "animal_zooEvent",
+    as: "animals",
+  });
 
   InHouse.hasMany(ZooEvent, addCascadeOptions({ foreignKey: "inHouseId" }));
   ZooEvent.belongsTo(InHouse, addCascadeOptions({ foreignKey: "inHouseId" }));

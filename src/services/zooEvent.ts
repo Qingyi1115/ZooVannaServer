@@ -138,8 +138,10 @@ export async function createAnimalActivityZooEvent(
       eventNotificationDate : new Date(eventStartDateTime.getTime() - HOUR_IN_MILLISECONDS * ANIMAL_ACTIVITY_NOTIFICATION_HOURS),
       eventDurationHrs: eventDurationHrs,
       eventTiming: eventTiming,
-      eventEndDateTime: null
+      eventEndDateTime: null,
       });
+    
+    newZooEvent.setAnimals(await animalActivity.getAnimals());
     
     await animalActivity.addZooEvent(newZooEvent);
     return animalActivity;
@@ -235,6 +237,8 @@ export async function createFeedingPlanSessionDetailZooEvent(
       eventEndDateTime : eventIsPublic? new Date(eventStartDateTime.getTime() + eventDurationHrs * HOUR_IN_MILLISECONDS) : null,
       imageUrl: eventIsPublic? imageUrl: undefined
     });
+
+    newZooEvent.setAnimals(await feedingPlan.getAnimals());
     
     await feedingPlanSessionDetail.addZooEvent(newZooEvent);
     return feedingPlanSessionDetail;

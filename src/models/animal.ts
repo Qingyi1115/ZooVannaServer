@@ -158,10 +158,10 @@ class Animal extends Model<
   declare getEnclosure: BelongsToGetAssociationMixin<Enclosure>;
   declare setEnclosure: BelongsToSetAssociationMixin<Enclosure, number>;
 
-  declare getZooEvents: HasManyGetAssociationsMixin<ZooEvent>;
-  declare addZooEvent: HasManyAddAssociationMixin<ZooEvent, number>;
-  declare setZooEvents: HasManySetAssociationsMixin<ZooEvent, number>;
-  declare removeZooEvent: HasManyRemoveAssociationMixin<ZooEvent, number>;
+  declare getZooEvents: BelongsToManyGetAssociationsMixin<ZooEvent>;
+  declare addZooEvent: BelongsToManyAddAssociationMixin<ZooEvent, number>;
+  declare setZooEvents: BelongsToManySetAssociationsMixin<ZooEvent, number>;
+  declare removeZooEvent: BelongsToManyRemoveAssociationMixin<ZooEvent, number>;
 
   declare getFeedingPlans: HasManyGetAssociationsMixin<FeedingPlan>;
   declare addFeedingPlan: HasManyAddAssociationMixin<FeedingPlan, number>;

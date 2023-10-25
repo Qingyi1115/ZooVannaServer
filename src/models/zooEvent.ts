@@ -10,6 +10,7 @@ import {
   BelongsToManyAddAssociationMixin,
   HasManyRemoveAssociationMixin,
   CreationOptional,
+  BelongsToManyRemoveAssociationMixin,
 } from "Sequelize";
 import { conn } from "../db";
 import { EventTimingType, EventType } from "./enumerated";
@@ -45,7 +46,7 @@ class ZooEvent extends Model<
   declare planningStaff?: PlanningStaff;
   declare keepers?: Keeper[]; // work
   declare enclosure?: Enclosure;
-  declare animal?: Animal;
+  declare animals?: Animal[];
   declare inHouse?: InHouse;
   declare animalClinic?: AnimalClinic;
   declare animalActivity?: AnimalActivity;
@@ -57,13 +58,15 @@ class ZooEvent extends Model<
   declare getKeepers: BelongsToManyGetAssociationsMixin<Keeper>;
   declare addKeeper: BelongsToManyAddAssociationMixin<Keeper, number>;
   declare setKeepers: BelongsToManySetAssociationsMixin<Keeper, number>;
-  declare removeKeeper: HasManyRemoveAssociationMixin<Keeper, number>;
+  declare removeKeeper: BelongsToManyRemoveAssociationMixin<Keeper, number>;
 
   declare getEnclosure: BelongsToGetAssociationMixin<Enclosure>;
   declare setEnclosure: BelongsToSetAssociationMixin<Enclosure, number>;
 
-  declare getAnimal: BelongsToGetAssociationMixin<Animal>;
-  declare setAnimal: BelongsToSetAssociationMixin<Animal, number>;
+  declare getAnimals: BelongsToManyGetAssociationsMixin<Animal>;
+  declare addAnimal: BelongsToManyAddAssociationMixin<Animal, number>;
+  declare setAnimals: BelongsToManySetAssociationsMixin<Animal, number>;
+  declare removeAnimal: BelongsToManyRemoveAssociationMixin<Animal, number>;
 
   declare getInHouse: BelongsToGetAssociationMixin<InHouse>;
   declare setInHouse: BelongsToSetAssociationMixin<InHouse, number>;
