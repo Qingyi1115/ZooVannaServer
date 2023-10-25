@@ -489,6 +489,11 @@ enum ListingType {
   FOREIGNER = "FOREIGNER",
 }
 
+// enum ListingType {
+//   LOCAL = "LOCAL",
+//   FOREIGNER = "FOREIGNER",
+// }
+
 enum ListingStatus {
   ACTIVE = "ACTIVE",
   DISCONTINUED = "DISCONTINUED",
