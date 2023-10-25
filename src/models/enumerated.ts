@@ -196,6 +196,7 @@ enum IdentifierType {
 enum ActivityType {
   TRAINING = "TRAINING",
   ENRICHMENT = "ENRICHMENT",
+  OBSERVATION = "OBSERVATION",
 }
 
 enum Rating {
@@ -486,6 +487,11 @@ enum ListingType {
   LOCAL = "LOCAL",
   FOREIGNER = "FOREIGNER",
 }
+
+// enum ListingType {
+//   LOCAL = "LOCAL",
+//   FOREIGNER = "FOREIGNER",
+// }
 
 enum ListingStatus {
   ACTIVE = "ACTIVE",

@@ -809,6 +809,7 @@ export async function getAnimalActivityByAnimalCode(animalCode: string) {
   throw new Error("Invalid Animal Code!");
 }
 
+// !!! QY To Marcus: Added isPublic and start/end time, please update
 export async function createAnimalActivity(
   activityType: ActivityType,
   title: string,
@@ -820,8 +821,9 @@ export async function createAnimalActivity(
   dayOfMonth: number | null,
   eventTimingType: EventTimingType,
   durationInMinutes: number,
-  // enrichmentItemIds:number[],
-  // animalCodes:string[],
+  isPublic: Boolean, // * NEW *
+  publicEventStartTime: Date | null, // * NEW *
+  publicEventEndTime: Date | null, // * NEW *
 ): Promise<AnimalActivity> {
   let newActivity = {
     activityType: activityType,
@@ -834,6 +836,9 @@ export async function createAnimalActivity(
     dayOfMonth: dayOfMonth,
     eventTimingType: eventTimingType,
     durationInMinutes: durationInMinutes,
+    isPublic: isPublic,
+    publicEventStartTime: publicEventStartTime,
+    publicEventEndTime: publicEventEndTime,
   } as any;
   try {
     let newActivityEntry = await AnimalActivity.create(newActivity);
@@ -870,6 +875,25 @@ export async function createAnimalActivity(
     console.log(error);
     throw validationErrorHandler(error);
   }
+}
+
+// !!! QY To Marcus: New Method
+export async function makeAnimalActivityPublic(
+  animalActivityId: number,
+  publicEventStartTime: Date,
+  publicEventEndTime: Date,
+) {
+  // Add Method Code Here
+  // 1. update isPublic to TRUE
+  // 2. update all future event to public with start & end time
+}
+
+// !!! QY To Marcus: New Method
+export async function makeAnimalActivityPrivate(animalActivityId: number) {
+  // Add Method Code Here
+  // Add Method Code Here
+  // 1. update isPublic to FALSE
+  // 2. update all future event to private
 }
 
 export async function updateAnimalActivity(
