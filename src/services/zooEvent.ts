@@ -359,10 +359,49 @@ export async function updateZooEventIncludeFuture(
   const iKeepMyPromises: Promise<any>[] = [];
 
   if (eventIsPublic){
-    throw {message:"Not yet implemented!"}
+    const feedingPlanSessionDetail = await zooEvent.getFeedingPlanSessionDetail();
+    if (feedingPlanSessionDetail){
+      const feedingPlan = await feedingPlanSessionDetail.getFeedingPlan();
+      // Update future events
+      (await feedingPlanSessionDetail.getZooEvents()).forEach(ze=>{
+        if (compareDates(ze.eventStartDateTime, originalStartDateTime) >= 0){
+          ze.eventStartDateTime = new Date(ze.eventStartDateTime.getTime() + deltaStartDateTime);
+          ze.eventName = eventName;
+          ze.eventDescription = eventDescription;
+          ze.eventIsPublic = eventIsPublic;
+          ze.eventType = eventType;
+          ze.eventDurationHrs = eventDurationHrs;
+          ze.eventTiming = eventTiming;
+          iKeepMyPromises.push(ze.save());
+        }
+      })
+      // Update generator
+      feedingPlanSessionDetail.isPublic = eventIsPublic;
+      feedingPlanSessionDetail.eventTimingType = eventTiming;
+      feedingPlanSessionDetail.durationInMinutes = eventDurationHrs * 60;
+
+      const dayOfWeekMap : any = {
+        _1:DayOfWeek.MONDAY,
+        _2:DayOfWeek.TUESDAY,
+        _3:DayOfWeek.WEDNESDAY,
+        _4:DayOfWeek.THURSDAY,
+        _5:DayOfWeek.FRIDAY,
+        _6:DayOfWeek.SATURDAY,
+        _0:DayOfWeek.SUNDAY
+      };
+      const dateObj = new Date(eventStartDateTime);
+      const day = "_" + dateObj.getDay().toString();
+      feedingPlanSessionDetail.dayOfWeek= dayOfWeekMap[day];
+      feedingPlanSessionDetail.publicEventStartTime = "" + dateObj.getHours() + ":" + dateObj.getMinutes();
+
+      iKeepMyPromises.push(feedingPlanSessionDetail.save());
+    }else{
+      throw {message:"Public event not implemented for this yet!"}
+    }
   }else{
     // Internal event
     const animalActivity = await zooEvent.getAnimalActivity();
+    const feedingPlanSessionDetail = await zooEvent.getFeedingPlanSessionDetail();
     if (animalActivity){
       // Update future events
       (await animalActivity.getZooEvents()).forEach(ze=>{
@@ -398,8 +437,39 @@ export async function updateZooEventIncludeFuture(
         animalActivity.dayOfWeek= dayOfWeekMap[day];
       }
       iKeepMyPromises.push(animalActivity.save());
+    }else if (feedingPlanSessionDetail){
+      const feedingPlan = await feedingPlanSessionDetail.getFeedingPlan();
+      // Update future events
+      (await feedingPlanSessionDetail.getZooEvents()).forEach(ze=>{
+        if (compareDates(ze.eventStartDateTime, originalStartDateTime) >= 0){
+          ze.eventStartDateTime = new Date(ze.eventStartDateTime.getTime() + deltaStartDateTime);
+          ze.eventName = eventName;
+          ze.eventDescription = eventDescription;
+          ze.eventIsPublic = eventIsPublic;
+          ze.eventType = eventType;
+          ze.eventDurationHrs = eventDurationHrs;
+          ze.eventTiming = eventTiming;
+          iKeepMyPromises.push(ze.save());
+        }
+      })
+      // Update generator
+      feedingPlanSessionDetail.isPublic = eventIsPublic;
+      feedingPlanSessionDetail.eventTimingType = eventTiming;
+      feedingPlanSessionDetail.durationInMinutes = eventDurationHrs * 60;
+      const dayOfWeekMap : any = {
+        _1:DayOfWeek.MONDAY,
+        _2:DayOfWeek.TUESDAY,
+        _3:DayOfWeek.WEDNESDAY,
+        _4:DayOfWeek.THURSDAY,
+        _5:DayOfWeek.FRIDAY,
+        _6:DayOfWeek.SATURDAY,
+        _0:DayOfWeek.SUNDAY
+      };
+      const day = "_" + new Date(eventStartDateTime).getDay().toString();
+      feedingPlanSessionDetail.dayOfWeek= dayOfWeekMap[day];
+      iKeepMyPromises.push(feedingPlanSessionDetail.save());
     }else{
-
+      throw {message:"Unknown zoo event generator!"}
     }
   }
   
