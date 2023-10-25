@@ -27,7 +27,7 @@ export async function getAllZooEvents(req: Request, res: Response) {
     "planningStaff",
     "keepers",
     "enclosure",
-    "animal",
+    "animals",
     "inHouse",
     "animalActivity",
   ]) {

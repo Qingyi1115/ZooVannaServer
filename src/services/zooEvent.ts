@@ -272,7 +272,7 @@ export async function getZooEventById(
             association:"enclosure",
             required:false
           },{
-            association:"animal",
+            association:"animals",
             required:false
           },{
             association:"inHouse",
