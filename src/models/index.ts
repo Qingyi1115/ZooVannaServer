@@ -1750,30 +1750,47 @@ export const animalSeed = async () => {
 
   await AnimalService.createFeedingPlanSessionDetail(
     1,
-    "MONDAY",
-    "MORNING",
+    DayOfWeek.MONDAY,
+    EventTimingType.MORNING,
     120,
+    false,
+    null,
     [],
   );
   await AnimalService.createFeedingPlanSessionDetail(
     1,
-    "MONDAY",
-    "AFTERNOON",
+    DayOfWeek.MONDAY,
+    EventTimingType.AFTERNOON,
     120,
+    false,
+    null,
     [],
   );
   await AnimalService.createFeedingPlanSessionDetail(
     1,
-    "FRIDAY",
-    "EVENING",
+    DayOfWeek.FRIDAY,
+    EventTimingType.EVENING,
     120,
+    false,
+    null,
     [],
   );
   await AnimalService.createFeedingPlanSessionDetail(
     2,
-    "MONDAY",
-    "AFTERNOON",
+    DayOfWeek.MONDAY,
+    EventTimingType.AFTERNOON,
     120,
+    false,
+    null,
+    [],
+  );
+  await AnimalService.createFeedingPlanSessionDetail(
+    2,
+    DayOfWeek.MONDAY,
+    EventTimingType.AFTERNOON,
+    120,
+    true,
+    "13:15",
     [],
   );
 

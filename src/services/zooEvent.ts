@@ -218,6 +218,7 @@ export async function createFeedingPlanSessionDetailZooEvent(
 ) {
   const feedingPlanSessionDetail = await AnimalService.getFeedingPlanSessionDetailById(feedingPlanSessionDetailId);
   const feedingPlan = (await feedingPlanSessionDetail.getFeedingPlan());
+  const imageUrl = (await (await feedingPlan.getAnimals())[1].getSpecies()).imageUrl;
   try {
     if (eventIsPublic){
       eventStartDateTime.setHours(parseInt(publicEventStartTime?.substring(0, 2)));
@@ -231,7 +232,8 @@ export async function createFeedingPlanSessionDetailZooEvent(
       eventDescription: eventDescription,
       eventIsPublic: eventIsPublic,
       eventNotificationDate : new Date(eventStartDateTime.getTime() - HOUR_IN_MILLISECONDS * ANIMAL_FEEDING_NOTIFICATION_HOURS),
-      eventEndDateTime : eventIsPublic? new Date(eventStartDateTime.getTime() + eventDurationHrs * HOUR_IN_MILLISECONDS) : null
+      eventEndDateTime : eventIsPublic? new Date(eventStartDateTime.getTime() + eventDurationHrs * HOUR_IN_MILLISECONDS) : null,
+      imageUrl: eventIsPublic? imageUrl: undefined
     });
     
     await feedingPlanSessionDetail.addZooEvent(newZooEvent);

@@ -1675,9 +1675,11 @@ interface TempFeedingItem {
   animalCode: string;
 }
 interface TempFeedingPlanSessionDetail {
-  dayOfTheWeek: string;
-  eventTimingType: string;
+  dayOfTheWeek: DayOfWeek;
+  eventTimingType: EventTimingType;
   durationInMinutes: number;
+  isPublic : boolean;
+  publicEventStartTime : string | null;
   feedingItems: TempFeedingItem[];
 }
 
@@ -1714,6 +1716,8 @@ export async function createFeedingPlan(
         i.dayOfTheWeek,
         i.eventTimingType,
         i.durationInMinutes,
+        i.isPublic,
+        i.publicEventStartTime,
         i.feedingItems,
       );
     }
@@ -1855,23 +1859,28 @@ export async function getFeedingPlanSessionDetailById(
 // neeed to add EVent generator after Marcus done
 export async function createFeedingPlanSessionDetail(
   feedingPlanId: number,
-  dayOfWeek: string,
-  eventTimingType: string,
+  dayOfWeek: DayOfWeek,
+  eventTimingType: EventTimingType,
   durationInMinutes: number,
+  isPublic : boolean,
+  publicEventStartTime : string | null,
   items: TempFeedingItem[],
 ) {
   let newSession = {
     dayOfWeek: dayOfWeek,
     eventTimingType: eventTimingType,
     durationInMinutes: durationInMinutes,
-    isPublic:false
-  } as any;
+    isPublic:isPublic,
+    publicEventStartTime: publicEventStartTime
+  };
 
   try {
+    const feedingplan = await getFeedingPlanById(feedingPlanId);
+    
     let newSessionEntry = await FeedingPlanSessionDetail.create(newSession);
 
     await newSessionEntry.setFeedingPlan(
-      await getFeedingPlanById(feedingPlanId),
+      feedingplan,
     );
 
     for (const i of items) {

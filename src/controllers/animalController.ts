@@ -1675,6 +1675,8 @@ export async function createFeedingPlanSessionDetail(
       dayOftheWeek,
       eventTimingType,
       durationInMinutes,
+      isPublic,
+      publicEventStartTime,
       items,
     } = req.body;
 
@@ -1684,6 +1686,8 @@ export async function createFeedingPlanSessionDetail(
         dayOftheWeek,
         eventTimingType,
         durationInMinutes,
+        isPublic,
+        publicEventStartTime,
         items,
       ].includes(undefined)
     ) {
@@ -1692,6 +1696,8 @@ export async function createFeedingPlanSessionDetail(
         dayOftheWeek,
         eventTimingType,
         durationInMinutes,
+        isPublic,
+        publicEventStartTime,
       });
       return res.status(400).json({ error: "Missing information!" });
     }
@@ -1702,6 +1708,8 @@ export async function createFeedingPlanSessionDetail(
       dayOftheWeek,
       eventTimingType,
       durationInMinutes,
+      isPublic,
+      publicEventStartTime,
       items,
     );
 
