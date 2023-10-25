@@ -6,9 +6,15 @@ import {
   BelongsToGetAssociationMixin,
   BelongsToSetAssociationMixin,
   CreationOptional,
+  BelongsToManyGetAssociationsMixin,
+  BelongsToManyAddAssociationMixin,
+  BelongsToManySetAssociationsMixin,
+  BelongsToManyRemoveAssociationMixin,
 } from "Sequelize";
 import { conn } from "../db";
 import { InHouse } from "./inHouse";
+import { FacilityLogType } from "./enumerated";
+import { GeneralStaff } from "./generalStaff";
 
 class FacilityLog extends Model<
   InferAttributes<FacilityLog>,
@@ -16,18 +22,23 @@ class FacilityLog extends Model<
 > {
   declare facilityLogId: CreationOptional<number>;
   declare dateTime: Date;
-  declare isMaintenance: boolean;
   declare title: string;
-  // declare type: Type;
   declare details: string;
-  declare staffName: string;
   declare remarks: string;
+  declare staffName: string;
+  declare facilityLogType: FacilityLogType;
 
   declare inHouse?: InHouse;
+  declare generalStaffs?: GeneralStaff[];
 
   declare getInHouse: BelongsToGetAssociationMixin<InHouse>;
   declare setInHouse: BelongsToSetAssociationMixin<InHouse, number>;
-  
+
+  declare getGeneralStaffs: BelongsToManyGetAssociationsMixin<GeneralStaff>;
+  declare addGeneralStaff: BelongsToManyAddAssociationMixin<GeneralStaff, number>;
+  declare setGeneralStaffs: BelongsToManySetAssociationsMixin<GeneralStaff, number>;
+  declare removeGeneralStaff: BelongsToManyRemoveAssociationMixin<GeneralStaff, number>;
+
   public toJSON() {
     return {
       ...this.get(),
@@ -43,24 +54,11 @@ FacilityLog.init(
       autoIncrement: true,
       primaryKey: true,
     },
-    // type: {
-    //     type:   DataTypes.ENUM,
-    //     values: Object.values(Type),
-    //     allowNull: false
-    // },
     dateTime: {
       type: DataTypes.DATE,
       defaultValue: DataTypes.NOW,
     },
-    isMaintenance: {
-      type: DataTypes.BOOLEAN,
-      allowNull: false,
-    },
     title: {
-      type: DataTypes.STRING,
-      allowNull: false,
-    },
-    staffName: {
       type: DataTypes.STRING,
       allowNull: false,
     },
@@ -71,6 +69,15 @@ FacilityLog.init(
     remarks: {
       type: DataTypes.STRING,
     },
+    staffName:{
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    facilityLogType:{
+      type: DataTypes.ENUM,
+      values: Object.values(FacilityLogType),
+      allowNull: false,
+    }
   },
   {
     freezeTableName: true,

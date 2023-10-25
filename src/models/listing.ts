@@ -42,11 +42,11 @@ class Listing extends Model<
     this.listingStatus = ListingStatus.ACTIVE;
     this.save();
   }
-  
+
   public toJSON() {
     return {
-      ...this.get()
-    }
+      ...this.get(),
+    };
   }
 }
 
@@ -72,7 +72,7 @@ Listing.init(
     listingType: {
       type: DataTypes.ENUM,
       values: Object.values(ListingType),
-      allowNull: false,
+      allowNull: true,
     },
     listingStatus: {
       type: DataTypes.ENUM,

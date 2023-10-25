@@ -11,8 +11,11 @@ import { CustomerOrder } from "../models/customerOrder";
 import { Payment } from "../models/payment";
 const { Sequelize } = require("sequelize");
 import { conn } from "../db";
-import QRCode from "react-qr-code";
+import QRCode from "qrcode";
 import { getDateOrderCount } from "./orderItem";
+const { Op } = Sequelize;
+import PDFDocument from "pdfkit";
+import fs from "fs";
 
 export async function sendEmailVerification(email: string) {
   let customer = await Customer.findOne({
@@ -336,8 +339,8 @@ export async function createCustomerOrderForGuest(
         console.log("does it go here again?");
 
         if (queriedListing) {
-          if (queriedListing.orderItems) {
-            sum += queriedListing.orderItems.length;
+          if (listing.orderItems) {
+            sum += listing.orderItems.length;
           }
           for (const orderItem of listing.orderItems) {
             console.log("hmmmmmm");
@@ -370,14 +373,23 @@ export async function createCustomerOrderForGuest(
         }
       }
 
-      const dateOrderCount: any = getDateOrderCount();
+      sum =
+        (await OrderItem.count({
+          where: {
+            "$customerOrder.entryDate$": custOrder.entryDate, // Assumes the Order model has a createdAt field
+          },
+          transaction: t,
+          include: [
+            {
+              model: CustomerOrder,
+              attributes: [],
+            },
+          ],
+        })) + sum;
 
-      if (
-        (dateOrderCount[custOrder.entryDate.toLocaleDateString()] &&
-          dateOrderCount[custOrder.entryDate.toLocaleDateString()] + sum >
-            25) ||
-        sum > 25
-      ) {
+      console.log("sum is " + sum);
+
+      if (sum > 25) {
         throw { message: "Ticket is already sold out on that date" };
       }
 
@@ -413,8 +425,8 @@ export async function createCustomerOrderForCustomer(
           });
 
           if (queriedListing) {
-            if (queriedListing.orderItems) {
-              sum += queriedListing.orderItems.length;
+            if (listing.orderItems) {
+              sum += listing.orderItems.length;
             }
 
             for (const orderItem of listing.orderItems) {
@@ -437,14 +449,23 @@ export async function createCustomerOrderForCustomer(
           }
         }
 
-        const dateOrderCount: any = getDateOrderCount();
+        sum =
+          (await OrderItem.count({
+            where: {
+              "$customerOrder.entryDate$": custOrder.entryDate, // Assumes the Order model has a createdAt field
+            },
+            transaction: t,
+            include: [
+              {
+                model: CustomerOrder,
+                attributes: [],
+              },
+            ],
+          })) + sum;
 
-        if (
-          (dateOrderCount[custOrder.entryDate.toLocaleDateString()] &&
-            dateOrderCount[custOrder.entryDate.toLocaleDateString()] + sum >
-              25) ||
-          sum > 25
-        ) {
+        console.log("sum is " + sum);
+
+        if (sum > 25) {
           throw { message: "Ticket is already sold out on that date" };
         }
 
@@ -461,6 +482,167 @@ export async function createCustomerOrderForCustomer(
   }
 }
 
+async function generateQRCode(verificationCode: string): Promise<void> {
+  return new Promise((resolve, reject) => {
+    QRCode.toFile(
+      `img/qr-code/${verificationCode}.png`,
+      `http://localhost:3000/api/orderItem/verify/${verificationCode}`,
+      {
+        errorCorrectionLevel: "H",
+        type: "png",
+        margin: 2,
+      },
+      (err) => {
+        if (err) {
+          reject(err);
+        } else {
+          console.log("QR code created!");
+          resolve();
+        }
+      },
+    );
+  });
+}
+
+async function generatePDF(custOrder: CustomerOrder) {
+  const doc = new PDFDocument();
+  const name: string = "ZooVannaTicket-" + custOrder.bookingReference + ".pdf";
+
+  doc.pipe(fs.createWriteStream(`pdf/${name}`));
+  const orderItems = custOrder.orderItems;
+
+  if (orderItems) {
+    for (const orderItem of orderItems) {
+      await generateQRCode(orderItem.verificationCode);
+
+      doc.image("img/logos/black-elephant-only.png", 25, 30, {
+        fit: [80, 50],
+      });
+
+      console.log("after elephant");
+
+      doc
+        .font("Helvetica-Bold")
+        .fontSize(12)
+        .fillColor("black")
+        .text("ZooVanna", 25, 100);
+      doc
+        .fontSize(12)
+        .text(
+          `Customer: ${custOrder.customerFirstName} ${custOrder.customerLastName}`,
+          320,
+          100,
+        );
+      doc.fontSize(12).text(`Order #: ${custOrder.bookingReference}`, 320, 115);
+      doc.fontSize(12).text("Admission Ticket", 25, 115);
+
+      doc
+        .fontSize(12)
+        .text(`VALID ON ${new Date(custOrder.entryDate).toDateString()}`);
+      doc.moveDown();
+
+      doc
+        .fontSize(12)
+        .text("Valid on the specifed date above. VALID FOR ONE GUEST ONLY");
+
+      doc.rect(25, 180, 560, 115).fillColor("darkgreen").fill();
+      doc
+        .fontSize(14)
+        .fillColor("white")
+        .text("THIS IS YOUR E-TICKET.", 230, 195);
+      doc.moveDown();
+
+      let scan = 0;
+
+      (await orderItem.getListing()).listingType == "FOREIGNER"
+        ? (scan = 250)
+        : (scan = 265);
+
+      doc.text(
+        `${(await orderItem.getListing()).listingType} ${
+          (await orderItem.getListing()).name
+        }`,
+        scan,
+      );
+
+      doc.moveDown();
+
+      doc
+        .fontSize(10)
+        .text("PLEASE APPROACH THE STAFF TO SCAN THE QR CODE.", 165);
+
+      doc
+        .fontSize(10)
+        .text(
+          "THE TICKET IS NON-TRANSFERABLE, NON-REFUNDABLE AND VOID IF ALTERED",
+          105,
+        );
+
+      console.log("before qr code");
+
+      //add image here
+      doc.image(`img/qr-code/${orderItem.verificationCode}.png`, 260, 307.5, {
+        fit: [100, 200],
+        align: "center",
+      });
+      console.log("after qr code");
+
+      doc
+        .font("Helvetica")
+        .fillColor("black")
+        .text("HOW TO USE THIS E-TICKET:", 25, 420);
+      doc.moveDown();
+
+      doc
+        .font("Helvetica-Bold")
+        .text("1. SCAN THIS ORIGINAL E-TICKET AT THE ZOOVANNA ENTRANCE");
+      doc
+        .text("2. PHOTO ID VERIFICATION")
+        .font("Helvetica")
+        .text("- May be required for verification.", 158, 454.5);
+      doc
+        .font("Helvetica-Bold")
+        .text(
+          "3. BAG CHECK WILL BE CONDUCTED ON ALL PERSONAL AND/OR HAND CARRY BAGGAGE FOR SAFETY",
+          25,
+        )
+        .text("& SECURITY PURPOSES.", 35);
+      doc.text(
+        "4. THIS TICKET IS ONLY APPLICABLE DURING REGULAR OPERATING HOURS ",
+        25,
+      );
+
+      doc.text(
+        "____________________________________________________________________________________________",
+      );
+
+      doc.moveDown();
+
+      doc.font("Helvetica").text("TERMS AND CONDITIONS:");
+      doc.moveDown();
+      doc
+        .fontSize(9)
+        .font("Helvetica-Bold")
+        .text(
+          "VALID FOR ONE (1) GUEST ONLY • TICKETS UTILISED ARE NON-TRANSFERABLE • NOT FOR SALE OR EXCHANGE • NO REVALIDATION, NON-CANCELLABLE, NON-REFUNDABLE, EVEN IN CASES OF INCLEMENT WEATHER • VOID IF ALTERED • STRICTLY NO OUTSIDE FOOD OR BEVERAGES PERMITTED • HAND STAMP AND TICKET REQUIRED FOR SAME DAY RE-ENTRY • NOT VALID DURING SPECIAL EVENTS • NOT TO BE USED FOR PROMOTIONAL PURPOSES UNLESS APPROVED IN WRITING BY ZOOVANNA • NOT INCLUSIVE OF ALL SEPARATE TICKETED EXPERIENCE DURING THE EVENT • NO COSTUMES, FULL FACE MAKE UP OR FULL FACE MASKS ALLOWED AT THIS EVENT • EVENT OPERATING HOURS ARE SUBJECT TO CHANGE WITHOUT PRIOR NOTICE, GUEST MAY VISIT ZOOVANNA WEBSITE FOR UPDATES PRIOR TO VISIT • ONLY PROGRAMMES AND/OR SERVICES AUTHORIZED BY ZOOVANNA ARE PERMITTED IN ZOOVANNA • ZOOVANNA RESERVES THE RIGHT TO VARY OR AMEND ANY TERMS AND CONDITIONS WITHOUT PRIOR NOTICE",
+        );
+
+      doc.moveDown();
+      doc
+        .fontSize(8)
+        .text(
+          "Any resale of tickets/vouchers is strictly prohibited unless authorized in writing by ZOOVANNA. ZOOVANNA reserves the right to invalidate tickets/vouchers in connection with any fraudulent/unauthorized resale transaction, without refund or other compensation. Tickets/Vouchers allow for a one (1) - time use only. If it is determined by ZOOVANNA that there are multiple copies/usages of the ticket, usage of the ticket will be denied. In the event of any dispute, a final decision shall be made based on our electronic record.",
+        );
+
+      if (orderItem != orderItems[orderItems.length - 1]) {
+        doc.addPage();
+      }
+    }
+    // end and display the document in the iframe to the right
+    doc.end();
+  }
+}
+
 export async function completePaymentForCustomer(
   customerOrderId: number,
   payment: any,
@@ -468,13 +650,194 @@ export async function completePaymentForCustomer(
   try {
     let result = await CustomerOrder.findOne({
       where: { customerOrderId: customerOrderId },
+      include: ["orderItems"],
     });
 
-    if (result) {
+    if (result && (await result.getPayments()).length === 0) {
       let pay = await Payment.create(payment);
       pay.setCustomerOrder(result);
       result.addPayment(pay);
       result.setCompleted();
+
+      const transporter = nodemailer.createTransport({
+        service: "gmail",
+        auth: {
+          user: process.env.EMAIL_USERNAME,
+          pass: process.env.EMAIL_PASSWORD,
+        },
+      });
+
+      let orderItems = result?.orderItems;
+      let totalAmount = 0;
+
+      if (orderItems) {
+        for (const orderItem of orderItems) {
+          totalAmount += Number((await orderItem.getListing()).price);
+          console.log((await orderItem.getListing()).listingId);
+        }
+      }
+
+      console.log(totalAmount);
+
+      const generateHTMLContent = async () => {
+        try {
+          let html = `
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <title>Zoo Admission Tickets</title>
+                <style>
+                    html {
+                      background-color: gray;
+                    }
+                    body {
+                        font-family: Arial, sans-serif;
+                        min-width: fit-content;
+                        margin: 0 auto;
+                        
+                    }
+                    .ticket {
+                        border: 1px solid #000;
+                        padding: 10px;
+                        margin: 10px;
+                        width: 300px;
+                        text-align: center;
+                        justify-content:center;
+                    }
+                    .ticket h2 {
+                        margin: 0;
+                        font-size: 18px;
+                    }
+                    .ticket p {
+                        margin: 5px 0;
+                    }
+                    .booking-reference {
+                      justify-content: space-between;
+                      display: flex;
+                      margin-top: 4px;
+                      min-width: 100px;
+                  }
+                </style>
+            </head>
+            <body>
+        `;
+
+          html += `
+          <div>
+              <div style="display:flex; justify-content:center; padding:5px; margin:0 auto">
+                  <table style="border: 0px; border-collapse: collapse; width:800px;">
+                  <tr>
+                    <td>Booking Reference</td>
+                    <td style="text-align:right">${result?.bookingReference}</td>
+                  </tr>
+                  <tr>
+                    <td>Activity date</td>
+                    <td style="text-align:right">${new Date(
+                      result ? result.entryDate : "",
+                    ).toDateString()}</td>
+                  </tr>
+                  <tr>
+                    <td>Payment type</td>
+                    <td style="text-align:right">${pay.paymentType}</td>
+                  </tr>
+                  <tr>
+                    <td>Order total</td>
+                    <td style="text-align:right">SGD ${totalAmount}</td>
+                  </tr>
+                  <tr>
+                    <td>Discount</td>
+                    <td style="text-align:right">${
+                      result
+                        ? "SGD " +
+                          (Number(totalAmount) - Number(result.totalAmount))
+                        : "SGD " + totalAmount
+                    }</td>
+                  </tr>
+                  <tr>
+                    <td style="font-weight: bold">Total amount</td>
+                    <td style="text-align:right; font-weight:bold ">SGD ${result?.totalAmount}</td>
+                  </tr>
+                </table>
+              </div>  
+              <hr style="border-top: 3px solid #bbb; width:800px margin-top:2px"/>
+        </div>
+       
+        `;
+
+          {
+            /*if (orderItems) {
+            // Generate a ticket section for each ticket in the data
+            for (const orderItem of orderItems) {
+              const listing: Listing = await orderItem.getListing();
+              html += `
+            <div style="width:800px; display:flex; justify-content:center">
+                <div class="ticket">
+                    <h2>Ticket</h2>
+                    <p><strong>Ticket Verification Code: </strong>${orderItem.verificationCode}</p>
+                    <p><strong>Ticket Price:</strong> $${listing.price}</p>
+                    <p><strong>Ticket Type: </strong> ${listing.listingType} ${listing.name}</p>
+                </div>
+            </div>
+            `;
+            }
+          }*/
+          }
+
+          html += `
+            <a href="http://localhost:5174/tickets/purchasedTickets" target="_blank" style="display:flex">
+              <button style="border:none; border-radius: 2px; background-color:#3FD136; cursor: pointer; width: 800px; height:30px; font-size:15px; text-decoration: none">
+                View Bookings
+              </button>
+            </a>
+            
+
+            <script>
+              function myFunction() {
+                window.open('http://localhost:5174/tickets/purchasedTickets', '_blank');
+              }
+            </script>
+          `;
+
+          // Close the HTML document
+          html += `
+            </body>
+            </html>
+        `;
+
+          return html;
+        } catch (error: any) {
+          throw { message: "Error " + error };
+        }
+      };
+
+      await generatePDF(result);
+      console.log("before attachment");
+
+      const name: string = "ZooVannaTicket-" + result.bookingReference + ".pdf";
+
+      const mailOptions = {
+        from: process.env.EMAIL_USERNAME,
+        to: result.customerEmail,
+        subject: "Ticket Purchase Order",
+        text: "Here is your customer order",
+        html: await generateHTMLContent(),
+        attachments: [
+          {
+            fileName: name,
+            path: `pdf/${name}`,
+          },
+        ],
+      };
+
+      transporter.sendMail(mailOptions, (error, info) => {
+        if (error) {
+          console.error("Error sending email:", error);
+        } else {
+          console.log("Email sent:", info.response);
+        }
+      });
+      result.setPdfUrl(name);
+      return pay;
     } else {
       throw { message: "Customer Order Id does not exist" };
     }
@@ -511,15 +874,32 @@ export async function completePaymentForGuest(
         },
       });
 
+      let orderItems = result?.orderItems;
+      let totalAmount = 0;
+
+      if (orderItems) {
+        for (const orderItem of orderItems) {
+          totalAmount += Number((await orderItem.getListing()).price);
+        }
+      }
+
       const generateHTMLContent = async () => {
-        let html = `
+        try {
+          let html = `
             <!DOCTYPE html>
             <html>
             <head>
                 <title>Zoo Admission Tickets</title>
                 <style>
+                    html {
+                      background-color: gray;
+                    }
                     body {
                         font-family: Arial, sans-serif;
+                        min-width: fit-content;
+                        justify-content: center;
+                        margin: 0 auto;
+                        
                     }
                     .ticket {
                         border: 1px solid #000;
@@ -527,6 +907,7 @@ export async function completePaymentForGuest(
                         margin: 10px;
                         width: 300px;
                         text-align: center;
+                        justify-content:center;
                     }
                     .ticket h2 {
                         margin: 0;
@@ -536,56 +917,73 @@ export async function completePaymentForGuest(
                         margin: 5px 0;
                     }
                     .booking-reference {
-                      margin-top: 20px;
-                      font-weight: bold;
+                      justify-content: space-between;
+                      display: flex;
+                      margin-top: 4px;
+                      min-width: 100px;
                   }
                 </style>
             </head>
             <body>
         `;
 
-        html += `
-        <div class="booking-reference">
-            <p><strong>Booking Reference:</strong> ${result?.bookingReference}</p>
-            
+          html += `
+          <div>
+              <div style="display:flex; justify-content:center; padding:5px; margin:0 auto">
+                  <table style="border: 0px; border-collapse: collapse; width:800px">
+                  <tr>
+                    <td>Booking Reference</td>
+                    <td style="text-align:right; font-weight:bold">${result?.bookingReference}</td>
+                  </tr>
+                  <tr>
+                    <td>Activity date</td>
+                    <td style="text-align:right; font-weight:bold">${new Date(
+                      result ? result.entryDate : "",
+                    ).toDateString()}</td>
+                  </tr>
+                  <tr>
+                    <td>Payment type</td>
+                    <td style="text-align:right">${pay.paymentType}</td>
+                  </tr>
+                  <tr>
+                    <td>Order total</td>
+                    <td style="text-align:right">SGD ${totalAmount}</td>
+                  </tr>
+                  <tr>
+                    <td>Discount</td>
+                    <td style="text-align:right">${
+                      result
+                        ? "SGD " +
+                          (Number(totalAmount) - Number(result.totalAmount))
+                        : "SGD " + totalAmount
+                    }</td>
+                  </tr>
+                  <tr>
+                    <td style="font-weight: bold">Total amount</td>
+                    <td style="text-align:right; font-weight:bold ">SGD ${result?.totalAmount}</td>
+                  </tr>
+                </table>
+              </div>  
+              <hr style="border-top: 3px solid #bbb; width:800px margin-top:2px"/>
         </div>
-        <div>
-          <p><strong>Visitor Name:</strong> ${result?.customerFirstName} ${result?.customerLastName}</p>
-          <p><strong>Date of Visit:</strong> ${result?.entryDate}</p>
-        </div>
-    `;
+       
+        `;
 
-        let orderItems = result?.orderItems;
-
-        if (orderItems) {
-          // Generate a ticket section for each ticket in the data
-          for (const orderItem of orderItems) {
-            const listing: Listing = await orderItem.getListing();
-            html += `
-                <div class="ticket">
-                    <h2>Ticket</h2>
-                    <p><strong>Ticket Verification Code: </strong>${orderItem.verificationCode}</p>
-                    <p><strong>Ticket Price:</strong> $${listing.price}</p>
-                    <p><strong>Ticket Type: </strong> ${listing.listingType}</p>
-                </div>
-            `;
-          }
-        }
-
-        html += `
-        <div class="total-price">
-            <p><strong>Total Price:</strong> $${result?.totalAmount}</p>
-        </div>
-    `;
-
-        // Close the HTML document
-        html += `
+          // Close the HTML document
+          html += `
             </body>
             </html>
         `;
 
-        return html;
+          return html;
+        } catch (error: any) {
+          throw { message: "Error " + error };
+        }
       };
+
+      await generatePDF(result);
+
+      const name: string = "ZooVannaTicket-" + result.bookingReference + ".pdf";
 
       const mailOptions = {
         from: process.env.EMAIL_USERNAME,
@@ -593,7 +991,15 @@ export async function completePaymentForGuest(
         subject: "Ticket Purchase Order",
         text: "Here is your customer order",
         html: await generateHTMLContent(),
+        attachments: [
+          {
+            fileName: name,
+            path: `pdf/${name}`,
+          },
+        ],
       };
+
+      console.log("here");
 
       transporter.sendMail(mailOptions, (error, info) => {
         if (error) {
@@ -602,6 +1008,7 @@ export async function completePaymentForGuest(
           console.log("Email sent:", info.response);
         }
       });
+      result.setPdfUrl(name);
       return pay;
     } else {
       throw { message: "Customer Order Id does not exist" };

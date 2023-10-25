@@ -23,8 +23,10 @@ class SpeciesDietNeed extends Model<
 > {
   declare speciesDietNeedId: CreationOptional<number>;
   declare animalFeedCategory: AnimalFeedCategory;
-  declare amountPerMealGram: number;
-  declare amountPerWeekGram: number;
+  declare amountPerMealGramMale: number;
+  declare amountPerMealGramFemale: number;
+  declare amountPerWeekGramMale: number;
+  declare amountPerWeekGramFemale: number;
   declare presentationContainer: PresentationContainer;
   declare presentationMethod: PresentationMethod;
   declare presentationLocation: PresentationLocation;
@@ -36,11 +38,11 @@ class SpeciesDietNeed extends Model<
   // declare setSpecies: HasManySetAssociationsMixin<Species, number>;
   declare getSpecies: BelongsToGetAssociationMixin<Species>;
   declare setSpecies: BelongsToSetAssociationMixin<Species, number>;
-  
+
   public toJSON() {
     return {
       ...this.get(),
-    }
+    };
   }
 }
 
@@ -56,11 +58,19 @@ SpeciesDietNeed.init(
       values: Object.values(AnimalFeedCategory),
       allowNull: false,
     },
-    amountPerMealGram: {
+    amountPerMealGramMale: {
       type: DataTypes.DOUBLE,
       allowNull: false,
     },
-    amountPerWeekGram: {
+    amountPerMealGramFemale: {
+      type: DataTypes.DOUBLE,
+      allowNull: false,
+    },
+    amountPerWeekGramMale: {
+      type: DataTypes.DOUBLE,
+      allowNull: false,
+    },
+    amountPerWeekGramFemale: {
       type: DataTypes.DOUBLE,
       allowNull: false,
     },

@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { findEmployeeByEmail } from "../services/employee";
-import { GeneralStaffType, PlannerType } from "../models/enumerated";
+import { FacilityLogType, GeneralStaffType, PlannerType } from "../models/enumerated";
 import {
   getAllFacility,
   getAllHubs,
@@ -51,6 +51,7 @@ import {
   getZoneById,
   updateZone,
   deleteZoneById,
+  completeRepairTicket,
 } from "../services/assetFacility";
 import { Facility } from "../models/facility";
 import { Sensor } from "../models/sensor";
@@ -102,7 +103,7 @@ export async function getAllZoneController(
       await getAllZones();
     return res
       .status(200)
-      .json({zones : allZones.map((zone) => zone.toJSON())}
+      .json({ zones: allZones.map((zone) => zone.toJSON()) }
       );
   } catch (error: any) {
     res.status(400).json({ error: error.message });
@@ -178,7 +179,7 @@ export async function deleteZoneController(
   }
 
   try {
-    
+
     await deleteZoneById(
       Number(zoneId),
     );
@@ -193,7 +194,7 @@ export async function createFacilityController(req: Request, res: Response) {
     const { email } = (req as any).locals.jwtPayload;
     const employee = await findEmployeeByEmail(email);
 
-    if ( !employee.superAdmin &&
+    if (!employee.superAdmin &&
       !(
         (await employee.getPlanningStaff())?.plannerType ==
         PlannerType.OPERATIONS_MANAGER
@@ -306,7 +307,7 @@ export async function getMyOperationFacilityController(
     const { email } = (req as any).locals.jwtPayload;
     const employee = await findEmployeeByEmail(email);
 
-    if ( !employee.superAdmin && (
+    if (!employee.superAdmin && (
       !(await employee.getGeneralStaff()) ||
       (await employee.getGeneralStaff()).isDisabled)
     ) {
@@ -335,7 +336,7 @@ export async function getMyMaintainedFacilityController(
     const { email } = (req as any).locals.jwtPayload;
     const employee = await findEmployeeByEmail(email);
 
-    if ( !employee.superAdmin && (
+    if (!employee.superAdmin && (
       !(await employee.getGeneralStaff()) ||
       (await employee.getGeneralStaff()).isDisabled)
     ) {
@@ -402,7 +403,7 @@ export async function getFacilityMaintenanceSuggestionsController(
     const { email } = (req as any).locals.jwtPayload;
     const employee = await findEmployeeByEmail(email);
 
-    if ( !employee.superAdmin && (
+    if (!employee.superAdmin && (
       !(
         (await employee.getPlanningStaff())?.plannerType ==
         PlannerType.OPERATIONS_MANAGER
@@ -430,7 +431,7 @@ export async function getFacilityMaintenancePredictionValuesController(
     const { email } = (req as any).locals.jwtPayload;
     const employee = await findEmployeeByEmail(email);
 
-    if ( !employee.superAdmin && (
+    if (!employee.superAdmin && (
       !(
         (await employee.getPlanningStaff())?.plannerType ==
         PlannerType.OPERATIONS_MANAGER
@@ -463,7 +464,7 @@ export async function updateFacilityController(req: Request, res: Response) {
     const { email } = (req as any).locals.jwtPayload;
     const employee = await findEmployeeByEmail(email);
 
-    if ( !employee.superAdmin && 
+    if (!employee.superAdmin &&
       !(
         (await employee.getPlanningStaff())?.plannerType ==
         PlannerType.OPERATIONS_MANAGER
@@ -530,7 +531,7 @@ export async function getAssignedMaintenanceStaffOfFacilityController(
     const { email } = (req as any).locals.jwtPayload;
     const employee = await findEmployeeByEmail(email);
 
-    if ( !employee.superAdmin && 
+    if (!employee.superAdmin &&
       !(
         (await employee.getPlanningStaff())?.plannerType ==
         PlannerType.OPERATIONS_MANAGER
@@ -565,7 +566,7 @@ export async function getAllMaintenanceStaffController(
     const { email } = (req as any).locals.jwtPayload;
     const employee = await findEmployeeByEmail(email);
 
-    if ( !employee.superAdmin && 
+    if (!employee.superAdmin &&
       !(
         (await employee.getPlanningStaff())?.plannerType ==
         PlannerType.OPERATIONS_MANAGER
@@ -601,7 +602,7 @@ export async function assignMaintenanceStaffToFacilityController(
     const { email } = (req as any).locals.jwtPayload;
     const employee = await findEmployeeByEmail(email);
 
-    if ( !employee.superAdmin && 
+    if (!employee.superAdmin &&
       !(
         (await employee.getPlanningStaff())?.plannerType ==
         PlannerType.OPERATIONS_MANAGER
@@ -639,7 +640,7 @@ export async function removeMaintenanceStaffFromFacilityController(
     const { email } = (req as any).locals.jwtPayload;
     const employee = await findEmployeeByEmail(email);
 
-    if ( !employee.superAdmin && 
+    if (!employee.superAdmin &&
       !(
         (await employee.getPlanningStaff())?.plannerType ==
         PlannerType.OPERATIONS_MANAGER
@@ -676,7 +677,7 @@ export async function assignOperationStaffToFacilityController(
     const { email } = (req as any).locals.jwtPayload;
     const employee = await findEmployeeByEmail(email);
 
-    if ( !employee.superAdmin && 
+    if (!employee.superAdmin &&
       !(
         (await employee.getPlanningStaff())?.plannerType ==
         PlannerType.OPERATIONS_MANAGER
@@ -713,7 +714,7 @@ export async function removeOperationStaffFromFacilityController(
     const { email } = (req as any).locals.jwtPayload;
     const employee = await findEmployeeByEmail(email);
 
-    if ( !employee.superAdmin && 
+    if (!employee.superAdmin &&
       !(
         (await employee.getPlanningStaff())?.plannerType ==
         PlannerType.OPERATIONS_MANAGER
@@ -769,17 +770,43 @@ export async function getFacilityLogByIdController(req: Request, res: Response) 
     // const employee = await findEmployeeByEmail(email);
 
     const { facilityLogId } = req.params;
+    let { includes } = req.body;
+    includes = includes || [];
 
     if (facilityLogId == "") {
       return res.status(400).json({ error: "Missing information!" });
     }
 
-    let facilityLog: FacilityLog = await getFacilityLogById(Number(facilityLogId));
+    const _includes: any[] = [];
+    for (const role of ["inHouse", "generalStaffs"]) {
+      if (includes.includes(role)) {
+        if (role == "inHouse"){
+          _includes.push({
+            association: role,
+            required:false,
+            include: [
+              {
+                association: "facility",
+                required: true,
+              },
+            ],
+          });
+        }else{
+          _includes.push({
+            association: role,
+            required:false
+          });
+        }
+      }
+    }
+
+    let facilityLog: FacilityLog = await getFacilityLogById(Number(facilityLogId), _includes);
 
     return res
       .status(200)
       .json({ facilityLog: facilityLog.toJSON() });
   } catch (error: any) {
+    console.log(error);
     res.status(400).json({ error: error.message });
   }
 }
@@ -790,23 +817,40 @@ export async function createFacilityLogController(req: Request, res: Response) {
     const employee = await findEmployeeByEmail(email);
 
     const { facilityId } = req.params;
-    const { title, details, remarks } = req.body;
+    const { title, details, remarks, facilityLogType, employeeIds } = req.body;
 
-    if ([facilityId, title, details, remarks].includes(undefined)) {
-      return res.status(400).json({ error: "Missing information!" });
+    if ([facilityId, title, details, remarks, facilityLogType].includes(undefined)) {
+      return res.status(400).json({
+        error: "Missing information!"
+      });
     }
+
+    if (!employee.superAdmin && (
+      !(
+        ((await employee.getGeneralStaff())?.generalStaffType ==
+          GeneralStaffType.ZOO_MAINTENANCE && facilityLogType == FacilityLogType.MAINTENANCE_LOG) ||
+        (await employee.getGeneralStaff())?.generalStaffType ==
+        GeneralStaffType.ZOO_OPERATIONS && facilityLogType == FacilityLogType.OPERATION_LOG
+      ) &&
+      !(await employee.getPlanningStaff()))
+    )
+      return res
+        .status(403)
+        .json({ error: "Access Denied! Operation managers only!" });
 
     let facilityLog: FacilityLog = await createFacilityLog(
       Number(facilityId),
-      false,
       title,
       details,
       remarks,
-      employee.employeeName
+      employee.employeeName,
+      facilityLogType,
+      employeeIds
     );
 
     return res.status(200).json({ facilityLog: facilityLog.toJSON() });
   } catch (error: any) {
+    console.log("error")
     res.status(400).json({ error: error.message });
   }
 }
@@ -819,7 +863,7 @@ export async function createFacilityMaintenanceLogController(
     const { email } = (req as any).locals.jwtPayload;
     const employee = await findEmployeeByEmail(email);
 
-    if ( !employee.superAdmin && (
+    if (!employee.superAdmin && (
       !(
         (await employee.getGeneralStaff())?.generalStaffType ==
         GeneralStaffType.ZOO_MAINTENANCE
@@ -844,17 +888,17 @@ export async function createFacilityMaintenanceLogController(
       remarks,
       employee.employeeName
     );
-    const generalStaff = await employee.getGeneralStaff();
-    const facilities = await generalStaff?.getMaintainedFacilities() || [];
-    for (const facility of facilities) {
-      if ((await facility.getFacility()).facilityId == Number(facilityId))
-        generalStaff.removeMaintainedFacilities(facility);
-    }
-    await generalStaff?.save();
+    // const generalStaff = await employee.getGeneralStaff();
+    // const facilities = await generalStaff?.getMaintainedFacilities() || [];
+    // for (const facility of facilities) {
+    //   if ((await facility.getFacility()).facilityId == Number(facilityId))
+    //     generalStaff.removeMaintainedFacility(facility);
+    // }
+    // await generalStaff?.save();
 
     return res.status(200).json({ maintenanceLog: maintenanceLog.toJSON() });
   } catch (error: any) {
-    console.log("error",error)
+    console.log("error", error)
     res.status(400).json({ error: error.message });
   }
 }
@@ -871,9 +915,17 @@ export async function updateFacilityLogController(req: Request, res: Response) {
       return res.status(400).json({ error: "Missing information!" });
     }
 
-    if ( ((await employee.getPlanningStaff()).plannerType != PlannerType.OPERATIONS_MANAGER) && 
-    !employee.superAdmin && 
-    (await getFacilityLogById(Number(facilityLogId))).staffName != employee.employeeName) throw {message: "Only creator of the log can edit!"}
+    const facilityLogFound = await getFacilityLogById(Number(facilityLogId));
+
+    const employees = [];
+    for (const staff of await facilityLogFound.getGeneralStaffs()) {
+      employees.push(await staff.getEmployee());
+    }
+
+    if (((await employee.getPlanningStaff()).plannerType != PlannerType.OPERATIONS_MANAGER) &&
+      !employee.superAdmin &&
+      (facilityLogFound.staffName != employee.employeeName) &&
+      !(employees.find(emp => emp.employeeId == employee.employeeId))) throw { message: "Only creator of the log can edit!" }
 
     let facilityLog: FacilityLog = await updateFacilityLog(
       Number(facilityLogId),
@@ -895,9 +947,9 @@ export async function deleteFacilityLogController(req: Request, res: Response) {
 
     const { facilityLogId } = req.params;
 
-    if ( ((await employee.getPlanningStaff()).plannerType != PlannerType.OPERATIONS_MANAGER) && 
-    !employee.superAdmin && 
-    (await getFacilityLogById(Number(facilityLogId))).staffName != employee.employeeName) throw {message: "Only creator of the log can delete!"}
+    if (((await employee.getPlanningStaff()).plannerType != PlannerType.OPERATIONS_MANAGER) &&
+      !employee.superAdmin &&
+      (await getFacilityLogById(Number(facilityLogId))).staffName != employee.employeeName) throw { message: "Only creator of the log can delete!" }
 
     if ([facilityLogId].includes("")) {
       return res.status(400).json({ error: "Missing information!" });
@@ -913,12 +965,45 @@ export async function deleteFacilityLogController(req: Request, res: Response) {
   }
 }
 
+export async function completeRepairTicketController(req: Request, res: Response) {
+  try {
+    const { email } = (req as any).locals.jwtPayload;
+    const employee = await findEmployeeByEmail(email);
+
+    const { facilityLogId } = req.params;
+
+    const facilityLogFound = await getFacilityLogById(Number(facilityLogId));
+
+    const employees = [];
+    for (const staff of await facilityLogFound.getGeneralStaffs()) {
+      employees.push(await staff.getEmployee());
+    }
+
+    if (((await employee.getPlanningStaff()).plannerType != PlannerType.OPERATIONS_MANAGER) &&
+      !employee.superAdmin &&
+      !employees.find(emp => emp.employeeId == employee.employeeId)) throw { message: "Only creator of the log can delete!" }
+
+    if ([facilityLogId].includes("")) {
+      return res.status(400).json({ error: "Missing information!" });
+    }
+
+    await completeRepairTicket(
+      Number(facilityLogId)
+    );
+
+    return res.status(200).json({ result: "success" });
+  } catch (error: any) {
+    console.log("error",error)
+    res.status(400).json({ error: error.message });
+  }
+}
+
 export async function deleteFacilityController(req: Request, res: Response) {
   try {
     const { email } = (req as any).locals.jwtPayload;
     const employee = await findEmployeeByEmail(email);
 
-    if ( !employee.superAdmin && 
+    if (!employee.superAdmin &&
       !(
         (await employee.getPlanningStaff())?.plannerType ==
         PlannerType.OPERATIONS_MANAGER
@@ -945,7 +1030,7 @@ export async function addHubToFacilityController(req: Request, res: Response) {
     const { email } = (req as any).locals.jwtPayload;
     const employee = await findEmployeeByEmail(email);
 
-    if ( !employee.superAdmin && 
+    if (!employee.superAdmin &&
       !(
         (await employee.getPlanningStaff())?.plannerType ==
         PlannerType.OPERATIONS_MANAGER
@@ -977,7 +1062,7 @@ export async function getAllHubsController(req: Request, res: Response) {
     const { email } = (req as any).locals.jwtPayload;
     const employee = await findEmployeeByEmail(email);
 
-    if ( !employee.superAdmin && 
+    if (!employee.superAdmin &&
       !(
         (await employee.getPlanningStaff())?.plannerType ==
         PlannerType.OPERATIONS_MANAGER
@@ -1007,7 +1092,7 @@ export async function getHubProcessorController(req: Request, res: Response) {
     const { email } = (req as any).locals.jwtPayload;
     const employee = await findEmployeeByEmail(email);
 
-    if ( !employee.superAdmin && (
+    if (!employee.superAdmin && (
       !(
         (await employee.getPlanningStaff())?.plannerType ==
         PlannerType.OPERATIONS_MANAGER
@@ -1043,7 +1128,7 @@ export async function getAllSensorsController(req: Request, res: Response) {
     const { email } = (req as any).locals.jwtPayload;
     const employee = await findEmployeeByEmail(email);
 
-    if ( !employee.superAdmin && 
+    if (!employee.superAdmin &&
       !(
         (await employee.getPlanningStaff())?.plannerType ==
         PlannerType.OPERATIONS_MANAGER
@@ -1075,7 +1160,7 @@ export async function getSensorController(req: Request, res: Response) {
     const { email } = (req as any).locals.jwtPayload;
     const employee = await findEmployeeByEmail(email);
 
-    if ( !employee.superAdmin && (
+    if (!employee.superAdmin && (
       !(
         (await employee.getPlanningStaff())?.plannerType ==
         PlannerType.OPERATIONS_MANAGER
@@ -1156,7 +1241,7 @@ export async function updateHubController(req: Request, res: Response) {
     const { email } = (req as any).locals.jwtPayload;
     const employee = await findEmployeeByEmail(email);
 
-    if ( !employee.superAdmin && 
+    if (!employee.superAdmin &&
       !(
         (await employee.getPlanningStaff())?.plannerType ==
         PlannerType.OPERATIONS_MANAGER
@@ -1189,7 +1274,7 @@ export async function updateSensorController(req: Request, res: Response) {
     const { email } = (req as any).locals.jwtPayload;
     const employee = await findEmployeeByEmail(email);
 
-    if ( !employee.superAdmin && 
+    if (!employee.superAdmin &&
       !(
         (await employee.getPlanningStaff())?.plannerType ==
         PlannerType.OPERATIONS_MANAGER
@@ -1229,7 +1314,7 @@ export async function deleteHubController(req: Request, res: Response) {
     const { email } = (req as any).locals.jwtPayload;
     const employee = await findEmployeeByEmail(email);
 
-    if ( !employee.superAdmin && 
+    if (!employee.superAdmin &&
       !(
         (await employee.getPlanningStaff())?.plannerType ==
         PlannerType.OPERATIONS_MANAGER
@@ -1253,7 +1338,7 @@ export async function deleteSensorController(req: Request, res: Response) {
     const { email } = (req as any).locals.jwtPayload;
     const employee = await findEmployeeByEmail(email);
 
-    if ( !employee.superAdmin && 
+    if (!employee.superAdmin &&
       !(
         (await employee.getPlanningStaff())?.plannerType ==
         PlannerType.OPERATIONS_MANAGER
@@ -1281,7 +1366,7 @@ export async function createSensorMaintenanceLogController(
     const { email } = (req as any).locals.jwtPayload;
     const employee = await findEmployeeByEmail(email);
 
-    if ( !employee.superAdmin && (
+    if (!employee.superAdmin && (
       !(
         (await employee.getGeneralStaff())?.generalStaffType ==
         GeneralStaffType.ZOO_MAINTENANCE
@@ -1309,15 +1394,15 @@ export async function createSensorMaintenanceLogController(
       remarks,
       employee.employeeName
     );
-    const generalStaff = await employee?.getGeneralStaff();
-    if (generalStaff) {
-      let sensors = (await generalStaff?.getSensors()) || [];
-      for (const sensor of sensors) {
-        if (sensor.sensorId == Number(sensorId))
-          generalStaff.removeSensor(sensor);
-      }
-      await generalStaff?.save();
-    }
+    // const generalStaff = await employee?.getGeneralStaff();
+    // if (generalStaff) {
+    //   let sensors = (await generalStaff?.getSensors()) || [];
+    //   for (const sensor of sensors) {
+    //     if (sensor.sensorId == Number(sensorId))
+    //       generalStaff.removeSensor(sensor);
+    //   }
+    //   await generalStaff?.save();
+    // }
 
     return res.status(200).json({ sensor: sensor.toFullJSON() });
   } catch (error: any) {
@@ -1355,7 +1440,7 @@ export async function getAllSensorMaintenanceLogsController(
     const { email } = (req as any).locals.jwtPayload;
     const employee = await findEmployeeByEmail(email);
 
-    if ( !employee.superAdmin && (
+    if (!employee.superAdmin && (
       !(
         (await employee.getGeneralStaff())?.generalStaffType ==
         GeneralStaffType.ZOO_MAINTENANCE
@@ -1391,15 +1476,15 @@ export async function updateSensorMaintenanceLogController(req: Request, res: Re
 
     const { sensorMaintenanceLogId } = req.params;
     const { title, details, remarks } = req.body;
-    
+
 
     if (sensorMaintenanceLogId == "" || [title, details, remarks].includes(undefined)) {
       return res.status(400).json({ error: "Missing information!" });
     }
 
-    if ( ((await employee.getPlanningStaff()).plannerType != PlannerType.OPERATIONS_MANAGER) && 
-    !employee.superAdmin && 
-    (await getSensorMaintenanceLogById(Number(sensorMaintenanceLogId))).staffName != employee.employeeName) throw {message: "Only creator of the log can edit!"}
+    if (((await employee.getPlanningStaff()).plannerType != PlannerType.OPERATIONS_MANAGER) &&
+      !employee.superAdmin &&
+      (await getSensorMaintenanceLogById(Number(sensorMaintenanceLogId))).staffName != employee.employeeName) throw { message: "Only creator of the log can edit!" }
 
     let maintenanceLog: MaintenanceLog = await updateSensorMaintenanceLog(
       Number(sensorMaintenanceLogId),
@@ -1425,9 +1510,9 @@ export async function deleteSensorMaintenanceLogController(req: Request, res: Re
       return res.status(400).json({ error: "Missing information!" });
     }
 
-    if ( ((await employee.getPlanningStaff()).plannerType != PlannerType.OPERATIONS_MANAGER) && 
-    !employee.superAdmin && 
-    (await getSensorMaintenanceLogById(Number(sensorMaintenanceLogId))).staffName != employee.employeeName) throw {message: "Only creator of the log can delete!"}
+    if (((await employee.getPlanningStaff()).plannerType != PlannerType.OPERATIONS_MANAGER) &&
+      !employee.superAdmin &&
+      (await getSensorMaintenanceLogById(Number(sensorMaintenanceLogId))).staffName != employee.employeeName) throw { message: "Only creator of the log can delete!" }
 
     await deleteSensorMaintenanceLogById(
       Number(sensorMaintenanceLogId)
@@ -1444,7 +1529,7 @@ export async function addSensorToHubController(req: Request, res: Response) {
     const { email } = (req as any).locals.jwtPayload;
     const employee = await findEmployeeByEmail(email);
 
-    if ( !employee.superAdmin && 
+    if (!employee.superAdmin &&
       !(
         (await employee.getPlanningStaff())?.plannerType ==
         PlannerType.OPERATIONS_MANAGER
@@ -1498,7 +1583,7 @@ export async function pushSensorReadingsController(
     let ipaddress = req.socket.remoteAddress || "127.0.0.1";
     ipaddress = ipaddress == "::1" ? "127.0.0.1" : ipaddress.split(":")[3];
 
-    const processor : HubProcessor = await findProcessorByName(processorName);
+    const processor: HubProcessor = await findProcessorByName(processorName);
     if (!processor.validatePayload(jsonPayloadString, sha256)) {
       try {
         return res
@@ -1529,7 +1614,7 @@ export async function pushSensorReadingsController(
         sensors: (await processor.getSensors()).map(
           (sensor) => sensor.sensorName,
         ),
-        radioGroup: processor.radioGroup 
+        radioGroup: processor.radioGroup
       });
   } catch (error: any) {
     console.log(error);
@@ -1545,7 +1630,7 @@ export async function getSensorMaintenanceSuggestionsController(
     const { email } = (req as any).locals.jwtPayload;
     const employee = await findEmployeeByEmail(email);
 
-    if ( !employee.superAdmin && (
+    if (!employee.superAdmin && (
       !(
         (await employee.getPlanningStaff())?.plannerType ==
         PlannerType.OPERATIONS_MANAGER
@@ -1574,7 +1659,7 @@ export async function getSensorMaintenancePredictionValuesController(
     const { email } = (req as any).locals.jwtPayload;
     const employee = await findEmployeeByEmail(email);
 
-    if ( !employee.superAdmin && (
+    if (!employee.superAdmin && (
       !(
         (await employee.getPlanningStaff())?.plannerType ==
         PlannerType.OPERATIONS_MANAGER
@@ -1643,7 +1728,7 @@ export async function assignMaintenanceStaffToSensorController(
     const { email } = (req as any).locals.jwtPayload;
     const employee = await findEmployeeByEmail(email);
 
-    if ( !employee.superAdmin && 
+    if (!employee.superAdmin &&
       !(
         (await employee.getPlanningStaff())?.plannerType ==
         PlannerType.OPERATIONS_MANAGER
@@ -1682,7 +1767,7 @@ export async function removeMaintenanceStaffFromSensorController(
     const { email } = (req as any).locals.jwtPayload;
     const employee = await findEmployeeByEmail(email);
 
-    if ( !employee.superAdmin && 
+    if (!employee.superAdmin &&
       !(
         (await employee.getPlanningStaff())?.plannerType ==
         PlannerType.OPERATIONS_MANAGER
@@ -1721,7 +1806,7 @@ export async function getAuthorizationForCameraController(
     const { email } = (req as any).locals.jwtPayload;
     const employee = await findEmployeeByEmail(email);
 
-    if ( !employee.superAdmin && 
+    if (!employee.superAdmin &&
       !(
         (await employee.getPlanningStaff())?.plannerType ==
         PlannerType.OPERATIONS_MANAGER
@@ -1759,7 +1844,7 @@ export async function createNewAnimalFeedController(
     const { email } = (req as any).locals.jwtPayload;
     const employee = await findEmployeeByEmail(email);
 
-    if ( !employee.superAdmin && 
+    if (!employee.superAdmin &&
       !((await employee.getPlanningStaff())?.plannerType == PlannerType.CURATOR)
     )
       return res
@@ -1855,7 +1940,7 @@ export async function updateAnimalFeedController(req: Request, res: Response) {
     const { email } = (req as any).locals.jwtPayload;
     const employee = await findEmployeeByEmail(email);
 
-    if ( !employee.superAdmin && 
+    if (!employee.superAdmin &&
       !((await employee.getPlanningStaff())?.plannerType == PlannerType.CURATOR)
     )
       return res
@@ -1912,7 +1997,7 @@ export async function updateAnimalFeedImageController(
     const { email } = (req as any).locals.jwtPayload;
     const employee = await findEmployeeByEmail(email);
 
-    if ( !employee.superAdmin && 
+    if (!employee.superAdmin &&
       !((await employee.getPlanningStaff())?.plannerType == PlannerType.CURATOR)
     )
       return res
@@ -1952,7 +2037,7 @@ export async function deleteAnimalFeedByNameController(
   const { email } = (req as any).locals.jwtPayload;
   const employee = await findEmployeeByEmail(email);
 
-  if ( !employee.superAdmin && 
+  if (!employee.superAdmin &&
     !((await employee.getPlanningStaff())?.plannerType == PlannerType.CURATOR)
   )
     return res
@@ -1985,7 +2070,7 @@ export async function createNewEnrichmentItemController(
     const { email } = (req as any).locals.jwtPayload;
     const employee = await findEmployeeByEmail(email);
 
-    if ( !employee.superAdmin && 
+    if (!employee.superAdmin &&
       !((await employee.getPlanningStaff())?.plannerType == PlannerType.CURATOR)
     )
       return res
@@ -2067,7 +2152,7 @@ export async function updateEnrichmentItemController(
     const { email } = (req as any).locals.jwtPayload;
     const employee = await findEmployeeByEmail(email);
 
-    if ( !employee.superAdmin && 
+    if (!employee.superAdmin &&
       !((await employee.getPlanningStaff())?.plannerType == PlannerType.CURATOR)
     )
       return res
@@ -2105,7 +2190,7 @@ export async function updateEnrichmentItemImageController(
     const { email } = (req as any).locals.jwtPayload;
     const employee = await findEmployeeByEmail(email);
 
-    if ( !employee.superAdmin && 
+    if (!employee.superAdmin &&
       !((await employee.getPlanningStaff())?.plannerType == PlannerType.CURATOR)
     )
       return res
@@ -2146,7 +2231,7 @@ export async function deleteEnrichmentItemByNameController(
   const { email } = (req as any).locals.jwtPayload;
   const employee = await findEmployeeByEmail(email);
 
-  if ( !employee.superAdmin && 
+  if (!employee.superAdmin &&
     !((await employee.getPlanningStaff())?.plannerType == PlannerType.CURATOR)
   )
     return res

@@ -20,6 +20,7 @@ import promotionRoutes from "./routes/promotion";
 import customerOrderRoutes from "./routes/customerOrder";
 import listingRoutes from "./routes/listing";
 import listingCustomerRoutes from "./routes/listingCustomer";
+import zooEventRoutes from "./routes/zooEvent";
 import orderItemRoutes from "./routes/orderItem";
 import { seedDatabase, createDatabase } from "./models/index";
 import { conn } from "./db";
@@ -40,6 +41,7 @@ app.use(compression());
 app.use(cookieParser());
 app.use(bodyParser.json());
 app.use("/img", express.static("img"));
+app.use("/pdf", express.static("pdf"));
 
 const server = http.createServer(app);
 
@@ -121,12 +123,13 @@ app.post("/fetchPayment", async (req: Request, res: Response) => {
   console.log(
     paymentIntent.payment_method_options.card.length == 0 ? "PAYNOW" : "CARD",
   );
+
+  const paymentMethod = await stripe.paymentMethods.retrieve(
+    paymentIntent.payment_method,
+  );
   res.send({
     amount: paymentIntent.amount,
-    type:
-      paymentIntent.payment_method_options.card.length === 0
-        ? "PAYNOW"
-        : "CARD",
+    type: paymentMethod.type.toUpperCase(),
     description: paymentIntent.description,
     status: paymentIntent.status,
     secret: paymentIntent.client_secret,
@@ -135,11 +138,12 @@ app.post("/fetchPayment", async (req: Request, res: Response) => {
 
 app.use("/api/employee/", employeeRoutes);
 app.use("/api/customer/", customerRoutes);
-app.use("/api/assetFacility/", assetFacilityRoutes);
+app.use("/api/assetFacility", assetFacilityRoutes);
 app.use("/api/species", speciesRoutes);
 app.use("/api/animal", animalRoutes);
 app.use("/api/promotion", promotionRoutes);
 app.use("/api/customerOrder", customerOrderRoutes);
 app.use("/api/listing", listingRoutes);
 app.use("/api/listingCustomer", listingCustomerRoutes);
+app.use("/api/zooEvent", zooEventRoutes);
 app.use("/api/orderItem", orderItemRoutes);

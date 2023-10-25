@@ -1,6 +1,6 @@
 import { Listing } from "../models/listing";
 import { validationErrorHandler } from "../helpers/errorHandler";
-import { ListingStatus } from "../models/enumerated";
+import { ListingStatus, ListingType } from "../models/enumerated";
 const Sequelize = require("sequelize");
 
 export async function createListing(
@@ -107,9 +107,7 @@ export async function getLocalListing() {
   try {
     let result = await Listing.findAll({
       where: {
-        listingType: {
-          [op.like]: "%LOCAL%",
-        },
+        listingType: ListingType.LOCAL,
       },
     });
     return result;
@@ -123,9 +121,7 @@ export async function getForeignerListing() {
   try {
     let result = await Listing.findAll({
       where: {
-        listingType: {
-          [op.like]: "%FOREIGNER%",
-        },
+        listingType: ListingType.FOREIGNER,
       },
     });
     return result;

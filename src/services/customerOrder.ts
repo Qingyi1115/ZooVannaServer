@@ -2,6 +2,7 @@ import { Request } from "express";
 import { Op } from "Sequelize";
 import { validationErrorHandler } from "../helpers/errorHandler";
 import { CustomerOrder } from "../models/customerOrder";
+import { Customer } from "../models/customer";
 import { OrderItem } from "../models/orderItem";
 import { Listing } from "../models/listing";
 
@@ -9,6 +10,50 @@ export async function getAllCustomerOrders(includes: string[]) {
   try {
     const allPromo = await CustomerOrder.findAll({ include: includes });
     return allPromo;
+  } catch (error: any) {
+    throw validationErrorHandler(error);
+  }
+}
+
+export async function getAllUpcomingCustomerOrderByCustomer(
+  customerEmail: string,
+) {
+  try {
+    const today = new Date(Date.now());
+    today.setHours(0, 0, 0);
+    let result = await CustomerOrder.findAll({
+      where: { entryDate: { [Op.gte]: today }, customerEmail: customerEmail },
+      include: ["orderItems", "payments"],
+      order: [["entryDate", "ASC"]],
+    });
+
+    for (let i in result) {
+      result[i].getOrderItems();
+      console.log(result[i]);
+    }
+
+    return result;
+  } catch (error: any) {
+    throw validationErrorHandler(error);
+  }
+}
+
+export async function getPastCustomerOrderByCustomer(customerEmail: string) {
+  try {
+    const today = new Date(Date.now());
+    today.setHours(0, 0, 0);
+    let result = await CustomerOrder.findAll({
+      where: { entryDate: { [Op.lt]: today }, customerEmail: customerEmail },
+      include: ["orderItems", "payments"],
+      order: [["entryDate", "ASC"]],
+    });
+
+    for (let i in result) {
+      result[i].getOrderItems();
+      console.log(result[i]);
+    }
+
+    return result;
   } catch (error: any) {
     throw validationErrorHandler(error);
   }
@@ -53,6 +98,14 @@ export async function getTotalCustomerOrder(
     // console.log(endDate);
     // console.log(groupBy);
 
+    //   try {
+    //     let customerOrder = await CustomerOrder.update(updatedCustomerOrder, {
+    //       where: { customerOrderId: customerOrderId },
+    //     });
+    //   } catch (error: any) {
+    //     throw validationErrorHandler(error);
+    //   }
+    // }
     const orderItems = await OrderItem.findAll({
       include: [
         {

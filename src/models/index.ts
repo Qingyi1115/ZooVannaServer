@@ -41,6 +41,7 @@ import {
   EventTimingType,
   DayOfWeek,
   RecurringPattern,
+  FacilityLogType,
 } from "./enumerated";
 import { ZooEvent } from "./zooEvent";
 import { Facility } from "./facility";
@@ -199,6 +200,18 @@ export const createDatabase = async (options: any) => {
     addCascadeOptions({ foreignKey: "inHouseId" }),
   );
 
+  FacilityLog.belongsToMany(GeneralStaff, {
+    foreignKey: "facilityLogId",
+    through: "repairTicket_staff",
+    as: "generalStaffs",
+  });
+
+  GeneralStaff.belongsToMany(FacilityLog, {
+    foreignKey: "generalStaffId",
+    through: "repairTicket_staff",
+    as: "facilityLogs",
+  });
+
   Facility.hasOne(ThirdParty, addCascadeOptions({ foreignKey: "FacilityId" }));
   ThirdParty.belongsTo(
     Facility,
@@ -353,6 +366,9 @@ export const createDatabase = async (options: any) => {
 
   FeedingPlanSessionDetail.hasMany(FeedingItem, { onDelete: "CASCADE" });
   FeedingItem.belongsTo(FeedingPlanSessionDetail);
+
+  FeedingPlanSessionDetail.hasMany(ZooEvent, { onDelete: "CASCADE" });
+  ZooEvent.belongsTo(FeedingPlanSessionDetail);
 
   Animal.hasMany(FeedingItem, { onDelete: "CASCADE" });
   FeedingItem.belongsTo(Animal);
@@ -938,7 +954,7 @@ export const employeeSeed = async () => {
     name: "Adult",
     description: "Listing for local adult",
     price: 20,
-    listingType: ListingType.LOCAL_ADULT_ONETIME,
+    listingType: ListingType.LOCAL,
     listingStatus: ListingStatus.ACTIVE,
   });
 
@@ -946,7 +962,7 @@ export const employeeSeed = async () => {
     name: "Student",
     description: "Listing for local student (including university student)",
     price: 15,
-    listingType: ListingType.LOCAL_STUDENT_ONETIME,
+    listingType: ListingType.LOCAL,
     listingStatus: ListingStatus.ACTIVE,
   });
 
@@ -954,7 +970,7 @@ export const employeeSeed = async () => {
     name: "Child",
     description: "Listing for local child (aged <= 12 years old)",
     price: 15,
-    listingType: ListingType.LOCAL_CHILD_ONETIME,
+    listingType: ListingType.LOCAL,
     listingStatus: ListingStatus.ACTIVE,
   });
 
@@ -962,7 +978,7 @@ export const employeeSeed = async () => {
     name: "Senior",
     description: "Listing for local senior (aged >= 65 years old)",
     price: 10,
-    listingType: ListingType.LOCAL_SENIOR_ONETIME,
+    listingType: ListingType.LOCAL,
     listingStatus: ListingStatus.ACTIVE,
   });
 
@@ -970,7 +986,7 @@ export const employeeSeed = async () => {
     name: "Adult",
     description: "Listing for foreigner adult",
     price: 30,
-    listingType: ListingType.FOREIGNER_ADULT_ONETIME,
+    listingType: ListingType.FOREIGNER,
     listingStatus: ListingStatus.ACTIVE,
   });
 
@@ -978,7 +994,7 @@ export const employeeSeed = async () => {
     name: "Child",
     description: "Listing for foreigner child",
     price: 30,
-    listingType: ListingType.FOREIGNER_CHILD_ONETIME,
+    listingType: ListingType.FOREIGNER,
     listingStatus: ListingStatus.ACTIVE,
   });
 };
@@ -1129,30 +1145,32 @@ export const speciesSeed = async () => {
     70,
     100,
     21,
-    28,
-    AnimalGrowthStage.ELDER,
-  );
-
-  let pandaPhy6 = await SpeciesService.createPhysiologicalReferenceNorms(
-    "SPE001",
-    165,
-    195,
-    115,
-    185,
-    80,
-    115,
-    75,
-    105,
-    29,
     35,
     AnimalGrowthStage.ELDER,
   );
 
+  // let pandaPhy6 = await SpeciesService.createPhysiologicalReferenceNorms(
+  //   "SPE001",
+  //   165,
+  //   195,
+  //   115,
+  //   185,
+  //   80,
+  //   115,
+  //   75,
+  //   105,
+  //   29,
+  //   35,
+  //   AnimalGrowthStage.ELDER,
+  // );
+
   let pandaDietNeed1 = await SpeciesService.createDietNeed(
     "SPE001",
     AnimalFeedCategory.FISH,
+    120,
     100,
     1000,
+    900,
     PresentationContainer.SILICONE_DISH,
     PresentationMethod.CHOPPED,
     PresentationLocation.IN_CONTAINER,
@@ -1164,13 +1182,30 @@ export const speciesSeed = async () => {
     "SPE001",
     AnimalFeedCategory.HAY,
     1000,
+    800,
     7000,
+    6600,
     PresentationContainer.HANGING_FEEDERS,
     PresentationMethod.WHOLE,
     PresentationLocation.IN_CONTAINER,
     AnimalGrowthStage.JUVENILE,
   );
   console.log(pandaDietNeed2.toJSON());
+
+  let pandaDietNeed3 = await SpeciesService.createDietNeed(
+    "SPE001",
+    AnimalFeedCategory.FISH,
+    1000,
+    800,
+    7000,
+    6600,
+    PresentationContainer.HANGING_FEEDERS,
+    PresentationMethod.WHOLE,
+    PresentationLocation.IN_CONTAINER,
+    AnimalGrowthStage.ELDER,
+  );
+  console.log(pandaDietNeed2.toJSON());
+
   let capybaraTemplate = {
     speciesCode: await Species.getNextSpeciesCode(),
     commonName: "Capybara",
@@ -1618,6 +1653,9 @@ export const animalSeed = async () => {
     null,
     EventTimingType.AFTERNOON,
     45,
+    false,
+    null,
+    null,
   );
 
   let animalActivity2 = await AnimalService.createAnimalActivity(
@@ -1631,6 +1669,9 @@ export const animalSeed = async () => {
     null,
     EventTimingType.MORNING,
     60,
+    false,
+    null,
+    null,
   );
 
   let animalActivity3 = await AnimalService.createAnimalActivity(
@@ -1644,6 +1685,9 @@ export const animalSeed = async () => {
     null,
     EventTimingType.MORNING,
     60,
+    false,
+    null,
+    null,
   );
   let animalActivity4 = await AnimalService.createAnimalActivity(
     ActivityType.ENRICHMENT,
@@ -1656,6 +1700,9 @@ export const animalSeed = async () => {
     7,
     EventTimingType.MORNING,
     60,
+    false,
+    null,
+    null,
   );
   let animalActivity5 = await AnimalService.createAnimalActivity(
     ActivityType.TRAINING,
@@ -1668,6 +1715,9 @@ export const animalSeed = async () => {
     null,
     EventTimingType.AFTERNOON,
     60,
+    false,
+    null,
+    null,
   );
   let animalActivity6 = await AnimalService.createAnimalActivity(
     ActivityType.TRAINING,
@@ -1680,6 +1730,9 @@ export const animalSeed = async () => {
     null,
     EventTimingType.EVENING,
     60,
+    false,
+    null,
+    null,
   );
 
   await AnimalService.assignAnimalsToActivity(1, ["ANM00001", "ANM00003"]);
@@ -1692,6 +1745,7 @@ export const animalSeed = async () => {
     "Some description...",
     new Date("2023-10-13"),
     new Date("2023-10-22"),
+    [],
   );
 
   await AnimalService.createFeedingPlan(
@@ -1700,6 +1754,7 @@ export const animalSeed = async () => {
     "Some description...",
     new Date("2023-10-13"),
     new Date("2023-10-22"),
+    [],
   );
 
   await AnimalService.createFeedingPlan(
@@ -1708,12 +1763,37 @@ export const animalSeed = async () => {
     "Some description...",
     new Date("2023-10-13"),
     new Date("2023-10-22"),
+    [],
   );
 
-  await AnimalService.createFeedingPlanSessionDetail(1, "MONDAY", "MORNING");
-  await AnimalService.createFeedingPlanSessionDetail(1, "MONDAY", "AFTERNOON");
-  await AnimalService.createFeedingPlanSessionDetail(1, "FRIDAY", "EVENING");
-  await AnimalService.createFeedingPlanSessionDetail(2, "MONDAY", "AFTERNOON");
+  await AnimalService.createFeedingPlanSessionDetail(
+    1,
+    "MONDAY",
+    "MORNING",
+    120,
+    [],
+  );
+  await AnimalService.createFeedingPlanSessionDetail(
+    1,
+    "MONDAY",
+    "AFTERNOON",
+    120,
+    [],
+  );
+  await AnimalService.createFeedingPlanSessionDetail(
+    1,
+    "FRIDAY",
+    "EVENING",
+    120,
+    [],
+  );
+  await AnimalService.createFeedingPlanSessionDetail(
+    2,
+    "MONDAY",
+    "AFTERNOON",
+    120,
+    [],
+  );
 
   await AnimalService.createFeedingItem(1, "ANM00001", "FRUITS", 5, "KG");
   await AnimalService.createFeedingItem(1, "ANM00001", "HAY", 20, "KG");
@@ -1813,11 +1893,11 @@ export const facilityAssetsSeed = async () => {
     toiletInhouse.addFacilityLog(
       await FacilityLog.create({
         dateTime: _day,
-        isMaintenance: true,
         title: "Maintenance of " + _day.toDateString(),
         details: "Bla Bla Bla...",
         remarks: "Uncommon but common",
         staffName: "maint1",
+        facilityLogType: FacilityLogType.MAINTENANCE_LOG,
       }),
     );
   }
@@ -1863,43 +1943,43 @@ export const facilityAssetsSeed = async () => {
   ih1.setFacilityLogs([
     await FacilityLog.create({
       dateTime: new Date(),
-      isMaintenance: false,
       title: "log1",
       details: "Bla Bla...",
       remarks: "my log haha",
       staffName: "maint1",
+      facilityLogType: FacilityLogType.MAINTENANCE_LOG,
     }),
     await FacilityLog.create({
       dateTime: new Date(Date.now() - 1000 * 60 * 60 * 24),
-      isMaintenance: false,
       title: "log2",
       details: "Bla Bla...",
       remarks: "my log haha",
       staffName: "maint1",
+      facilityLogType: FacilityLogType.MAINTENANCE_LOG,
     }),
     await FacilityLog.create({
       dateTime: new Date(Date.now() - 1000 * 60 * 60 * 24 * 2),
-      isMaintenance: false,
       title: "log3",
       details: "Bla Bla...",
       remarks: "my log haha",
       staffName: "maint1",
+      facilityLogType: FacilityLogType.MAINTENANCE_LOG,
     }),
     await FacilityLog.create({
       dateTime: new Date(Date.now() - 1000 * 60 * 60 * 24 * 3),
-      isMaintenance: false,
       title: "log4",
       details: "Bla Bla...",
       remarks: "my log haha",
       staffName: "maint1",
+      facilityLogType: FacilityLogType.MAINTENANCE_LOG,
     }),
     await FacilityLog.create({
       dateTime: new Date(Date.now() - 1000 * 60 * 60 * 24 * 5),
-      isMaintenance: false,
       title: "log5",
       details: "Bla Bla...",
       remarks: "my log haha",
       staffName: "maint1",
+      facilityLogType: FacilityLogType.MAINTENANCE_LOG,
     }),
   ]);
   // facility1.destroy();
@@ -1945,7 +2025,7 @@ export const facilityAssetsSeed = async () => {
   )?.getGeneralStaff();
   let is1 = await tram1.getInHouse();
 
-  await gs?.addMaintainedFacilities(is1);
+  await gs?.addMaintainedFacility(is1);
 
   let tram2 = await Facility.create(
     {

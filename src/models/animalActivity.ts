@@ -15,9 +15,19 @@ import {
 } from "Sequelize";
 import { conn } from "../db";
 import { Animal } from "./animal";
-import { ActivityType, DayOfWeek, EventTimingType, RecurringPattern } from "./enumerated";
+import {
+  ActivityType,
+  DayOfWeek,
+  EventTimingType,
+  RecurringPattern,
+} from "./enumerated";
 import { EnrichmentItem } from "./enrichmentItem";
 import { ZooEvent } from "./zooEvent";
+
+// type Time = {
+//   hours: number;
+//   minutes: number;
+// };
 
 class AnimalActivity extends Model<
   InferAttributes<AnimalActivity>,
@@ -27,13 +37,16 @@ class AnimalActivity extends Model<
   declare activityType: ActivityType;
   declare title: string;
   declare details: string;
-  declare startDate:Date;
-  declare endDate:Date;
+  declare startDate: Date;
+  declare endDate: Date;
   declare recurringPattern: RecurringPattern;
   declare dayOfWeek: DayOfWeek | null;
   declare dayOfMonth: number | null;
   declare eventTimingType: EventTimingType;
   declare durationInMinutes: number;
+  declare isPublic: Boolean;
+  declare publicEventStartTime: Date | null;
+  declare publicEventEndTime: Date | null;
 
   // declare declare  FK
   declare animals?: Animal[];
@@ -60,22 +73,23 @@ class AnimalActivity extends Model<
   declare addZooEvent: HasManyAddAssociationMixin<ZooEvent, number>;
   declare setZooEvents: HasManySetAssociationsMixin<ZooEvent, number>;
   declare removeZooEvent: HasManyRemoveAssociationMixin<ZooEvent, number>;
-  
+
   public toJSON() {
     return {
       ...this.get(),
-      startDate : this.startDate?.getTime(),
-      endDate : this.endDate?.getTime(),
-
-    }
+      startDate: this.startDate?.getTime(),
+      endDate: this.endDate?.getTime(),
+    };
   }
 
   public async toFullJSON() {
     return {
       ...this.toJSON(),
-      animals: (await this.getAnimals())?.map(obj=> obj.toJSON()),
-      enrichmentItems: (await this.getEnrichmentItems())?.map(obj=> obj.toJSON()),
-      zooEvents: (await this.getZooEvents())?.map(obj=> obj.toJSON()),
+      animals: (await this.getAnimals())?.map((obj) => obj.toJSON()),
+      enrichmentItems: (await this.getEnrichmentItems())?.map((obj) =>
+        obj.toJSON(),
+      ),
+      zooEvents: (await this.getZooEvents())?.map((obj) => obj.toJSON()),
     };
   }
 }
@@ -115,18 +129,30 @@ AnimalActivity.init(
     },
     dayOfWeek: {
       type: DataTypes.ENUM,
-      values: Object.values(DayOfWeek)
+      values: Object.values(DayOfWeek),
     },
     dayOfMonth: {
       type: DataTypes.INTEGER,
     },
     eventTimingType: {
       type: DataTypes.ENUM,
-      values: Object.values(EventTimingType)
+      values: Object.values(EventTimingType),
     },
     durationInMinutes: {
       type: DataTypes.INTEGER,
       allowNull: false,
+    },
+    isPublic: {
+      type: DataTypes.BOOLEAN,
+      allowNull: false,
+    },
+    publicEventStartTime: {
+      type: DataTypes.DATE,
+      allowNull: true,
+    },
+    publicEventEndTime: {
+      type: DataTypes.DATE,
+      allowNull: true,
     },
   },
   {

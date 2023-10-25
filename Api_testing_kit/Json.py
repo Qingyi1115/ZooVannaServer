@@ -47,7 +47,7 @@ new_user_dat = {
 
 newAnimalActivityDetails = {
     "activityType" : "ENRICHMENT",
-    "title" : "I like fishes",
+    "title" : "I now do not like fishes",
     "details" : "my new animal activity",
     "startDate" : time.time() * 1000,
     "endDate" : time.time() * 1000 + DAY_IN_MILLISECONDS * 30,
@@ -65,4 +65,12 @@ newAnimalActivityLogDetails = {
         "animalReaction": "PLAYFUL",
         "details": "Blah ... my testing value",
         "animalCodes" : ["ANM00001", "ANM00002"]
+}
+
+newRepairTicketDetails = {
+    "title":"fake title",
+    "details":"bladhhh...",
+    "remarks" : "remarksaaaa",
+    "facilityLogType" : "ACTIVE_REPAIR_TICKET",
+    "employeeIds" : [8, 10]
 }
