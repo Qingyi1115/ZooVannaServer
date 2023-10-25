@@ -44,9 +44,6 @@ class AnimalActivity extends Model<
   declare dayOfMonth: number | null;
   declare eventTimingType: EventTimingType;
   declare durationInMinutes: number;
-  declare isPublic: Boolean;
-  declare publicEventStartTime: Date | null;
-  declare publicEventEndTime: Date | null;
 
   // declare declare  FK
   declare animals?: Animal[];
@@ -141,19 +138,7 @@ AnimalActivity.init(
     durationInMinutes: {
       type: DataTypes.INTEGER,
       allowNull: false,
-    },
-    isPublic: {
-      type: DataTypes.BOOLEAN,
-      allowNull: false,
-    },
-    publicEventStartTime: {
-      type: DataTypes.DATE,
-      allowNull: true,
-    },
-    publicEventEndTime: {
-      type: DataTypes.DATE,
-      allowNull: true,
-    },
+    }
   },
   {
     freezeTableName: true,

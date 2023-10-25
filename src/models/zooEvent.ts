@@ -27,7 +27,7 @@ class ZooEvent extends Model<
   InferCreationAttributes<ZooEvent>
 > {
   declare zooEventId: CreationOptional<number>;
-  declare eventName: String;
+  declare eventName: string;
   declare eventDescription: string;
   declare eventIsPublic: boolean;
   declare eventType?: EventType;

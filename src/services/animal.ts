@@ -24,7 +24,7 @@ import { findEmployeeById } from "./employee";
 import { AnimalObservationLog } from "../models/animalObservationLog";
 import { AnimalActivity } from "../models/animalActivity";
 import * as ZooEventService from "./zooEvent";
-import { DAY_IN_MILLISECONDS } from "../helpers/staticValues";
+import { DAY_IN_MILLISECONDS, MINUTES_IN_MILLISECONDS } from "../helpers/staticValues";
 import {
   compareDates,
   getNextDayOfMonth,
@@ -821,9 +821,6 @@ export async function createAnimalActivity(
   dayOfMonth: number | null,
   eventTimingType: EventTimingType,
   durationInMinutes: number,
-  isPublic: Boolean, // * NEW *
-  publicEventStartTime: Date | null, // * NEW *
-  publicEventEndTime: Date | null, // * NEW *
 ): Promise<AnimalActivity> {
   let newActivity = {
     activityType: activityType,
@@ -836,10 +833,7 @@ export async function createAnimalActivity(
     dayOfMonth: dayOfMonth,
     eventTimingType: eventTimingType,
     durationInMinutes: durationInMinutes,
-    isPublic: isPublic,
-    publicEventStartTime: publicEventStartTime,
-    publicEventEndTime: publicEventEndTime,
-  } as any;
+  };
   try {
     let newActivityEntry = await AnimalActivity.create(newActivity);
 
@@ -875,25 +869,6 @@ export async function createAnimalActivity(
     console.log(error);
     throw validationErrorHandler(error);
   }
-}
-
-// !!! QY To Marcus: New Method
-export async function makeAnimalActivityPublic(
-  animalActivityId: number,
-  publicEventStartTime: Date,
-  publicEventEndTime: Date,
-) {
-  // Add Method Code Here
-  // 1. update isPublic to TRUE
-  // 2. update all future event to public with start & end time
-}
-
-// !!! QY To Marcus: New Method
-export async function makeAnimalActivityPrivate(animalActivityId: number) {
-  // Add Method Code Here
-  // Add Method Code Here
-  // 1. update isPublic to FALSE
-  // 2. update all future event to private
 }
 
 export async function updateAnimalActivity(

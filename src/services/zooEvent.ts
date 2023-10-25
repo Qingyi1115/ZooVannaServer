@@ -2,7 +2,7 @@ import { DayOfWeek, EventTimingType, EventType, RecurringPattern } from "../mode
 import { validationErrorHandler } from "../helpers/errorHandler";
 import * as AnimalService from "./animal";
 import { ZooEvent } from "../models/zooEvent";
-import { ADVANCE_DAYS_FOR_ZOO_EVENT_GENERATION, ANIMAL_ACTIVITY_NOTIFICATION_HOURS, ANIMAL_FEEDING_NOTIFICATION_HOURS, DAY_IN_MILLISECONDS, HOUR_IN_MILLISECONDS } from "../helpers/staticValues";
+import { ADVANCE_DAYS_FOR_ZOO_EVENT_GENERATION, ANIMAL_ACTIVITY_NOTIFICATION_HOURS, ANIMAL_FEEDING_NOTIFICATION_HOURS, DAY_IN_MILLISECONDS, HOUR_IN_MILLISECONDS, MINUTES_IN_MILLISECONDS } from "../helpers/staticValues";
 import { compareDates, getNextDayOfMonth, getNextDayOfWeek } from "../helpers/others";
 import { Op } from "Sequelize";
 import { Employee } from "../models/employee";
@@ -124,19 +124,22 @@ export async function createAnimalActivityZooEvent(
   eventStartDateTime: Date,
   eventDurationHrs: number,
   eventTiming: EventTimingType | null,
-  eventDescription: string
+  eventDescription: string,
 ) {
   const animalActivity = await AnimalService.getAnimalActivityById(animalActivityId);
+  // const imageURL = (await (await animalActivity.getAnimals())[0].getSpecies()).imageUrl;
   try {
     const newZooEvent = await ZooEvent.create({
       eventName: animalActivity.title,
-      eventStartDateTime: eventStartDateTime,
-      eventDurationHrs: eventDurationHrs,
-      eventTiming: eventTiming,
       eventDescription: eventDescription,
       eventIsPublic: false,
+      eventType: animalActivity.activityType as any,
+      eventStartDateTime: eventStartDateTime,
       eventNotificationDate : new Date(eventStartDateTime.getTime() - HOUR_IN_MILLISECONDS * ANIMAL_ACTIVITY_NOTIFICATION_HOURS),
-    });
+      eventDurationHrs: eventDurationHrs,
+      eventTiming: eventTiming,
+      eventEndDateTime: null
+      });
     
     await animalActivity.addZooEvent(newZooEvent);
     return animalActivity;

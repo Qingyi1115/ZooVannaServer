@@ -65,8 +65,6 @@ import {
   updateFeedingItem,
   deleteFeedingItemById,
   getFeedingItemAmtReco,
-  makeAnimalActivityPublic,
-  makeAnimalActivityPrivate,
 } from "../controllers/animalController";
 
 const router = express.Router();
@@ -111,11 +109,11 @@ router.get(
 );
 router.post("/createAnimalActivity", createAnimalActivity);
 router.put("/updateAnimalActivity", updateAnimalActivity);
-router.put("/makeAnimalActivityPublic", makeAnimalActivityPublic);
-router.get(
-  "/makeAnimalActivityPrivate/:animalActivityId",
-  makeAnimalActivityPrivate,
-);
+// router.put("/makeAnimalActivityPublic", makeAnimalActivityPublic);
+// router.get(
+//   "/makeAnimalActivityPrivate/:animalActivityId",
+//   makeAnimalActivityPrivate,
+// );
 router.delete("/deleteAnimalActivity/:animalActivityId", deleteAnimalActivity);
 
 router.put("/assignAnimalsToActivity", assignAnimalsToActivity);

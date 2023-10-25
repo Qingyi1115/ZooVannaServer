@@ -1653,9 +1653,6 @@ export const animalSeed = async () => {
     null,
     EventTimingType.AFTERNOON,
     45,
-    false,
-    null,
-    null,
   );
 
   let animalActivity2 = await AnimalService.createAnimalActivity(
@@ -1669,9 +1666,6 @@ export const animalSeed = async () => {
     null,
     EventTimingType.MORNING,
     60,
-    false,
-    null,
-    null,
   );
 
   let animalActivity3 = await AnimalService.createAnimalActivity(
@@ -1685,9 +1679,6 @@ export const animalSeed = async () => {
     null,
     EventTimingType.MORNING,
     60,
-    false,
-    null,
-    null,
   );
   let animalActivity4 = await AnimalService.createAnimalActivity(
     ActivityType.ENRICHMENT,
@@ -1700,9 +1691,6 @@ export const animalSeed = async () => {
     7,
     EventTimingType.MORNING,
     60,
-    false,
-    null,
-    null,
   );
   let animalActivity5 = await AnimalService.createAnimalActivity(
     ActivityType.TRAINING,
@@ -1715,9 +1703,6 @@ export const animalSeed = async () => {
     null,
     EventTimingType.AFTERNOON,
     60,
-    false,
-    null,
-    null,
   );
   let animalActivity6 = await AnimalService.createAnimalActivity(
     ActivityType.TRAINING,
@@ -1730,9 +1715,6 @@ export const animalSeed = async () => {
     null,
     EventTimingType.EVENING,
     60,
-    false,
-    null,
-    null,
   );
 
   await AnimalService.assignAnimalsToActivity(1, ["ANM00001", "ANM00003"]);

@@ -548,9 +548,6 @@ export async function createAnimalActivity(req: Request, res: Response) {
       dayOfMonth,
       eventTimingType,
       durationInMinutes,
-      isPublic,
-      publicEventStartTime,
-      publicEventEndTime,
     } = req.body;
 
     if (
@@ -562,7 +559,6 @@ export async function createAnimalActivity(req: Request, res: Response) {
         recurringPattern,
         eventTimingType,
         durationInMinutes,
-        isPublic,
       ].includes(undefined)
     ) {
       console.log("Missing field(s): ", {
@@ -573,7 +569,6 @@ export async function createAnimalActivity(req: Request, res: Response) {
         recurringPattern,
         eventTimingType,
         durationInMinutes,
-        isPublic,
       });
       return res.status(400).json({ error: "Missing information!" });
     }
@@ -594,9 +589,6 @@ export async function createAnimalActivity(req: Request, res: Response) {
       dayOfMonth,
       eventTimingType,
       Number(durationInMinutes),
-      Boolean(isPublic),
-      new Date(publicEventStartTime),
-      new Date(publicEventEndTime),
     );
 
     return res.status(200).json({ animalActivity: animalActivity.toJSON() });
@@ -605,51 +597,51 @@ export async function createAnimalActivity(req: Request, res: Response) {
   }
 }
 
-export async function makeAnimalActivityPublic(req: Request, res: Response) {
-  try {
-    let { animalActivityId, publicEventStartTime, publicEventEndTime } =
-      req.body;
+// export async function makeAnimalActivityPublic(req: Request, res: Response) {
+//   try {
+//     let { animalActivityId, publicEventStartTime, publicEventEndTime } =
+//       req.body;
 
-    if (
-      [animalActivityId, publicEventStartTime, publicEventEndTime].includes(
-        undefined,
-      )
-    ) {
-      console.log("Missing field(s): ", {
-        animalActivityId,
-        publicEventStartTime,
-        publicEventEndTime,
-      });
-      return res.status(400).json({ error: "Missing information!" });
-    }
+//     if (
+//       [animalActivityId, publicEventStartTime, publicEventEndTime].includes(
+//         undefined,
+//       )
+//     ) {
+//       console.log("Missing field(s): ", {
+//         animalActivityId,
+//         publicEventStartTime,
+//         publicEventEndTime,
+//       });
+//       return res.status(400).json({ error: "Missing information!" });
+//     }
 
-    // have to pass in req for image uploading
-    let animalActivity = await AnimalService.makeAnimalActivityPublic(
-      Number(animalActivityId),
-      new Date(publicEventStartTime),
-      new Date(publicEventEndTime),
-    );
-    return res.status(200);
-    // return res.status(200).json({ animalActivity: animalActivity.toJSON() });
-  } catch (error: any) {
-    res.status(400).json({ error: error.message });
-  }
-}
+//     // have to pass in req for image uploading
+//     let animalActivity = await AnimalService.makeAnimalActivityPublic(
+//       Number(animalActivityId),
+//       new Date(publicEventStartTime),
+//       new Date(publicEventEndTime),
+//     );
+//     return res.status(200);
+//     // return res.status(200).json({ animalActivity: animalActivity.toJSON() });
+//   } catch (error: any) {
+//     res.status(400).json({ error: error.message });
+//   }
+// }
 
-export async function makeAnimalActivityPrivate(req: Request, res: Response) {
-  try {
-    const { animalActivityId } = req.params;
+// export async function makeAnimalActivityPrivate(req: Request, res: Response) {
+//   try {
+//     const { animalActivityId } = req.params;
 
-    // have to pass in req for image uploading
-    let animalActivity = await AnimalService.makeAnimalActivityPrivate(
-      Number(animalActivityId),
-    );
-    return res.status(200);
-    // return res.status(200).json({ animalActivity: animalActivity.toJSON() });
-  } catch (error: any) {
-    res.status(400).json({ error: error.message });
-  }
-}
+//     // have to pass in req for image uploading
+//     let animalActivity = await AnimalService.makeAnimalActivityPrivate(
+//       Number(animalActivityId),
+//     );
+//     return res.status(200);
+//     // return res.status(200).json({ animalActivity: animalActivity.toJSON() });
+//   } catch (error: any) {
+//     res.status(400).json({ error: error.message });
+//   }
+// }
 
 export async function updateAnimalActivity(req: Request, res: Response) {
   try {
