@@ -15,7 +15,7 @@ class CustomerReportLog extends Model<
   InferAttributes<CustomerReportLog>,
   InferCreationAttributes<CustomerReportLog>
 > {
-    declare CustomerReportLogId : CreationOptional<number>;
+    declare customerReportLogId : CreationOptional<number>;
     declare dateTime : Date;
     declare title : string;
     declare remarks: string;
@@ -40,7 +40,7 @@ class CustomerReportLog extends Model<
   
   CustomerReportLog.init(
     {
-        CustomerReportLogId: {
+      customerReportLogId: {
         type: DataTypes.BIGINT,
         autoIncrement: true,
         primaryKey: true,
