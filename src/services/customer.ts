@@ -783,8 +783,10 @@ export async function completePaymentForCustomer(
           }*/
           }
 
+          const localhost_address = process.env.LOCALHOST_ADDRESS;
+
           html += `
-            <a href="http://localhost:5174/tickets/purchasedTickets" target="_blank" style="display:flex">
+            <a href="http://${localhost_address}:5174/tickets/purchasedTickets" target="_blank" style="display:flex">
               <button style="border:none; border-radius: 2px; background-color:#3FD136; cursor: pointer; width: 800px; height:30px; font-size:15px; text-decoration: none">
                 View Bookings
               </button>
@@ -793,7 +795,7 @@ export async function completePaymentForCustomer(
 
             <script>
               function myFunction() {
-                window.open('http://localhost:5174/tickets/purchasedTickets', '_blank');
+                window.open('http://${localhost_address}:5174/tickets/purchasedTickets', '_blank');
               }
             </script>
           `;
