@@ -1780,7 +1780,7 @@ export async function getFeedingPlanById(feedingPlanId: number) {
     }
     return planRecord;
   } catch (error: any) {
-    throw new Error("Invalid Animal Code!");
+    throw new Error("Error when getting feeding plan by Id!");
   }
 }
 interface TempFeedingItem {

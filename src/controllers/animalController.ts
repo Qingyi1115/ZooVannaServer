@@ -1605,7 +1605,7 @@ export async function createFeedingPlan(req: Request, res: Response) {
 export async function updateFeedingPlan(req: Request, res: Response) {
   try {
     const {
-      feedingPlanSessionDetailId,
+      feedingPlanId,
       animalCodes,
       feedingPlanDesc,
       startDate,
@@ -1615,7 +1615,7 @@ export async function updateFeedingPlan(req: Request, res: Response) {
 
     if (
       [
-        feedingPlanSessionDetailId,
+        feedingPlanId,
         animalCodes,
         feedingPlanDesc,
         startDate,
@@ -1624,7 +1624,7 @@ export async function updateFeedingPlan(req: Request, res: Response) {
       ].includes(undefined)
     ) {
       console.log("Missing field(s): ", {
-        feedingPlanSessionDetailId,
+        feedingPlanId,
         animalCodes,
         feedingPlanDesc,
         startDate,
@@ -1636,7 +1636,7 @@ export async function updateFeedingPlan(req: Request, res: Response) {
 
     // have to pass in req for image uploading
     let updatedAnimalActivity = await AnimalService.updateFeedingPlan(
-      Number(feedingPlanSessionDetailId),
+      Number(feedingPlanId),
       animalCodes,
       feedingPlanDesc,
       new Date(startDate),
