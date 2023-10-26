@@ -343,6 +343,9 @@ export const createDatabase = async (options: any) => {
     as: "animals",
   });
 
+  AnimalActivity.hasMany(AnimalActivityLog,addCascadeOptions({}));
+  AnimalActivityLog.belongsTo(AnimalActivity);
+
   Animal.belongsToMany(AnimalFeedingLog, {
     foreignKey: "animalId",
     through: "animal_feedingLog",
@@ -456,14 +459,33 @@ export const createDatabase = async (options: any) => {
   Keeper.hasMany(AnimalFeedingLog, { foreignKey: "keeperId" });
   AnimalFeedingLog.belongsTo(Keeper, { foreignKey: "keeperId" });
 
+  Keeper.belongsToMany(Enclosure, {
+    foreignKey: "keeperId",
+    through: "keeper_enclosure",
+    as: "enclosures",
+  });
+  Enclosure.belongsToMany(Keeper, {
+    foreignKey: "enclosureId",
+    through: "keeper_enclosure",
+    as: "keepers",
+  });
+
   Enclosure.hasMany(ZooEvent, addCascadeOptions({ foreignKey: "enclosureId" }));
   ZooEvent.belongsTo(
     Enclosure,
     addCascadeOptions({ foreignKey: "enclosureId" }),
   );
 
-  Animal.hasMany(ZooEvent, addCascadeOptions({ foreignKey: "animalId" }));
-  ZooEvent.belongsTo(Animal, addCascadeOptions({ foreignKey: "animalId" }));
+  Animal.belongsToMany(ZooEvent, {
+    foreignKey: "animalId",
+    through: "animal_zooEvent",
+    as: "zooEvents",
+  });
+  ZooEvent.belongsToMany(Animal, {
+    foreignKey: "zooEventId",
+    through: "animal_zooEvent",
+    as: "animals",
+  });
 
   InHouse.hasMany(ZooEvent, addCascadeOptions({ foreignKey: "inHouseId" }));
   ZooEvent.belongsTo(InHouse, addCascadeOptions({ foreignKey: "inHouseId" }));
@@ -1653,9 +1675,7 @@ export const animalSeed = async () => {
     null,
     EventTimingType.AFTERNOON,
     45,
-    false,
-    null,
-    null,
+    1
   );
 
   let animalActivity2 = await AnimalService.createAnimalActivity(
@@ -1669,9 +1689,7 @@ export const animalSeed = async () => {
     null,
     EventTimingType.MORNING,
     60,
-    false,
-    null,
-    null,
+    1
   );
 
   let animalActivity3 = await AnimalService.createAnimalActivity(
@@ -1685,9 +1703,7 @@ export const animalSeed = async () => {
     null,
     EventTimingType.MORNING,
     60,
-    false,
-    null,
-    null,
+    1
   );
   let animalActivity4 = await AnimalService.createAnimalActivity(
     ActivityType.ENRICHMENT,
@@ -1700,9 +1716,7 @@ export const animalSeed = async () => {
     7,
     EventTimingType.MORNING,
     60,
-    false,
-    null,
-    null,
+    1
   );
   let animalActivity5 = await AnimalService.createAnimalActivity(
     ActivityType.TRAINING,
@@ -1715,9 +1729,7 @@ export const animalSeed = async () => {
     null,
     EventTimingType.AFTERNOON,
     60,
-    false,
-    null,
-    null,
+    1
   );
   let animalActivity6 = await AnimalService.createAnimalActivity(
     ActivityType.TRAINING,
@@ -1730,9 +1742,7 @@ export const animalSeed = async () => {
     null,
     EventTimingType.EVENING,
     60,
-    false,
-    null,
-    null,
+    1
   );
 
   await AnimalService.assignAnimalsToActivity(1, ["ANM00001", "ANM00003"]);
@@ -1744,7 +1754,7 @@ export const animalSeed = async () => {
     ["ANM00001", "ANM00002", "ANM00003"],
     "Some description...",
     new Date("2023-10-13"),
-    new Date("2023-10-22"),
+    new Date("2024-01-22"),
     [],
   );
 
@@ -1753,7 +1763,7 @@ export const animalSeed = async () => {
     ["ANM00003", "ANM00004", "ANM00005", "ANM00006"],
     "Some description...",
     new Date("2023-10-13"),
-    new Date("2023-10-22"),
+    new Date("2024-01-22"),
     [],
   );
 
@@ -1762,37 +1772,59 @@ export const animalSeed = async () => {
     ["ANM00011"],
     "Some description...",
     new Date("2023-10-13"),
-    new Date("2023-10-22"),
+    new Date("2024-01-22"),
     [],
   );
 
   await AnimalService.createFeedingPlanSessionDetail(
     1,
-    "MONDAY",
-    "MORNING",
+    DayOfWeek.MONDAY,
+    EventTimingType.MORNING,
     120,
+    false,
+    null,
     [],
+    1
   );
   await AnimalService.createFeedingPlanSessionDetail(
     1,
-    "MONDAY",
-    "AFTERNOON",
+    DayOfWeek.MONDAY,
+    EventTimingType.AFTERNOON,
     120,
+    false,
+    null,
     [],
+    1
   );
   await AnimalService.createFeedingPlanSessionDetail(
     1,
-    "FRIDAY",
-    "EVENING",
+    DayOfWeek.FRIDAY,
+    EventTimingType.EVENING,
     120,
+    false,
+    null,
     [],
+    1
   );
   await AnimalService.createFeedingPlanSessionDetail(
     2,
-    "MONDAY",
-    "AFTERNOON",
+    DayOfWeek.MONDAY,
+    EventTimingType.AFTERNOON,
     120,
+    false,
+    null,
     [],
+    1
+  );
+  await AnimalService.createFeedingPlanSessionDetail(
+    2,
+    DayOfWeek.MONDAY,
+    EventTimingType.AFTERNOON,
+    120,
+    true,
+    "13:15",
+    [],
+    1
   );
 
   await AnimalService.createFeedingItem(1, "ANM00001", "FRUITS", 5, "KG");

@@ -15,6 +15,8 @@ import {
   Rating,
   RecurringPattern,
   Reaction,
+  IdentifierType,
+  AcquisitionMethod,
 } from "../models/enumerated";
 import { AnimalWeight } from "../models/animalWeight";
 import * as SpeciesService from "../services/species";
@@ -24,7 +26,7 @@ import { findEmployeeById } from "./employee";
 import { AnimalObservationLog } from "../models/animalObservationLog";
 import { AnimalActivity } from "../models/animalActivity";
 import * as ZooEventService from "./zooEvent";
-import { DAY_IN_MILLISECONDS } from "../helpers/staticValues";
+import { DAY_IN_MILLISECONDS, MINUTES_IN_MILLISECONDS } from "../helpers/staticValues";
 import {
   compareDates,
   getNextDayOfMonth,
@@ -140,16 +142,16 @@ export async function createNewAnimal(
   speciesCode: string,
   isGroup: boolean,
   houseName: string,
-  sex: string | null,
+  sex: AnimalSex | null,
   dateOfBirth: Date | null,
   placeOfBirth: string | null,
-  identifierType: string | null,
+  identifierType: IdentifierType | null,
   identifierValue: string | null,
-  acquisitionMethod: string,
-  dateOfAcquisition: Date,
+  acquisitionMethod: AcquisitionMethod,
+  dateOfAcquisition: Date | null,
   acquisitionRemarks: string | null,
-  physicalDefiningCharacteristics: string | null,
-  behavioralDefiningCharacteristics: string | null,
+  physicalDefiningCharacteristics: string,
+  behavioralDefiningCharacteristics: string,
   dateOfDeath: Date | null,
   locationOfDeath: string | null,
   causeOfDeath: string | null,
@@ -822,9 +824,7 @@ export async function createAnimalActivity(
   dayOfMonth: number | null,
   eventTimingType: EventTimingType,
   durationInMinutes: number,
-  isPublic: Boolean, // * NEW *
-  publicEventStartTime: Date | null, // * NEW *
-  publicEventEndTime: Date | null, // * NEW *
+  requiredNumberOfKeeper:number
 ): Promise<AnimalActivity> {
   let newActivity = {
     activityType: activityType,
@@ -837,10 +837,8 @@ export async function createAnimalActivity(
     dayOfMonth: dayOfMonth,
     eventTimingType: eventTimingType,
     durationInMinutes: durationInMinutes,
-    isPublic: isPublic,
-    publicEventStartTime: publicEventStartTime,
-    publicEventEndTime: publicEventEndTime,
-  } as any;
+    requiredNumberOfKeeper: requiredNumberOfKeeper
+  };
   try {
     let newActivityEntry = await AnimalActivity.create(newActivity);
 
@@ -851,6 +849,7 @@ export async function createAnimalActivity(
         durationInMinutes,
         eventTimingType,
         details,
+        requiredNumberOfKeeper
       );
     } else {
       return ZooEventService.generateMonthlyZooEventForAnimalActivity(
@@ -878,25 +877,6 @@ export async function createAnimalActivity(
   }
 }
 
-// !!! QY To Marcus: New Method
-export async function makeAnimalActivityPublic(
-  animalActivityId: number,
-  publicEventStartTime: Date,
-  publicEventEndTime: Date,
-) {
-  // Add Method Code Here
-  // 1. update isPublic to TRUE
-  // 2. update all future event to public with start & end time
-}
-
-// !!! QY To Marcus: New Method
-export async function makeAnimalActivityPrivate(animalActivityId: number) {
-  // Add Method Code Here
-  // Add Method Code Here
-  // 1. update isPublic to FALSE
-  // 2. update all future event to private
-}
-
 export async function updateAnimalActivity(
   animalActivityId: number,
   activityType: ActivityType,
@@ -909,6 +889,7 @@ export async function updateAnimalActivity(
   dayOfMonth: number | null,
   eventTimingType: EventTimingType,
   durationInMinutes: number,
+  requiredNumberOfKeeper:number
 ) {
   try {
     let animalActivity = await AnimalActivity.findOne({
@@ -970,6 +951,7 @@ export async function updateAnimalActivity(
           durationInMinutes,
           eventTimingType,
           details,
+          requiredNumberOfKeeper
         );
       } else {
         return ZooEventService.generateMonthlyZooEventForAnimalActivity(
@@ -1048,6 +1030,7 @@ export async function updateAnimalActivity(
                 durationInMinutes,
                 eventTimingType,
                 details,
+                requiredNumberOfKeeper
               ),
             );
             earliestDate = new Date(earliestDate.getTime() - interval);
@@ -1069,6 +1052,7 @@ export async function updateAnimalActivity(
                 durationInMinutes,
                 eventTimingType,
                 details,
+                requiredNumberOfKeeper
               ),
             );
             earliestDate = new Date(
@@ -1321,6 +1305,7 @@ export async function deleteAnimalObservationLogById(
 
 export async function createAnimalActivityLog(
   employeeId: number,
+  animalActivityId: number,
   activityType: ActivityType,
   dateTime: Date,
   durationInMinutes: number,
@@ -1330,6 +1315,7 @@ export async function createAnimalActivityLog(
   animalCodes: string[],
 ) {
   const keeper = await (await findEmployeeById(employeeId)).getKeeper();
+  const animalActivity = await getAnimalActivityById(animalActivityId);
 
   if (!keeper)
     throw { message: "No keeper found with employee ID : " + employeeId };
@@ -1360,6 +1346,7 @@ export async function createAnimalActivityLog(
     });
 
     await keeper.addAnimalActivityLog(newAnimalActivityLog);
+    await animalActivity.addAnimalActivityLog(newAnimalActivityLog);
 
     return newAnimalActivityLog;
   } catch (error: any) {
@@ -1399,6 +1386,38 @@ export async function getAnimalActivityLogById(animalActivityLogId: number) {
       message: "Unable to find animalActivityLog with Id " + animalActivityLog,
     };
   return animalActivityLog;
+}
+
+export async function getAnimalActivityLogsByAnimalActivityId(animalActivityId: number) {
+  try{
+  return await AnimalActivityLog.findAll({
+    include: [
+      {
+        association: "animals",
+        required: false,
+      },{
+        association: "animalActivity",
+        required:true,
+        where:{
+          animalActivityId:animalActivityId
+        }
+      },
+      {
+        association: "keeper",
+        required: false,
+        include: [
+          {
+            association: "employee",
+            required: false,
+          },
+        ],
+      },
+    ],
+  });
+  } catch (error: any) {
+    console.log(error);
+    throw validationErrorHandler(error);
+  }
 }
 
 export async function getAnimalActivityLogsByAnimalCode(animalCode: string) {
@@ -1512,7 +1531,6 @@ export async function createAnimalFeedingLog(
 
     return newAnimalFeedingLog;
   } catch (error: any) {
-    console.log(error);
     throw validationErrorHandler(error);
   }
 }
@@ -1548,6 +1566,38 @@ export async function getAnimalFeedingLogById(animalFeedingLogId: number) {
       message: "Unable to find animalFeedingLog with Id " + animalFeedingLog,
     };
   return animalFeedingLog;
+}
+
+export async function getAnimalFeedingLogByFeedingPlanId(feedingPlanId: number) {
+  try{
+    return AnimalFeedingLog.findAll({
+      include: [
+        {
+          association: "animals",
+          required: false,
+        },
+        {
+          association: "keeper",
+          required: false,
+          include: [
+            {
+              association: "employee",
+              required: false,
+            },
+          ],
+        },{
+          association:"feedingPlan",
+          required:true,
+          where:{
+            feedingPlanId:feedingPlanId
+          }
+        }
+      ],
+    });
+  
+  } catch (error: any) {
+    throw validationErrorHandler(error);
+  }
 }
 
 export async function getAnimalFeedingLogsByAnimalCode(animalCode: string) {
@@ -1706,11 +1756,11 @@ export async function getFeedingPlanById(feedingPlanId: number) {
                   model: Animal,
                   as: "animal",
                   required: false,
-                  include: [Species]
-                }
-              ]
-            }
-          ]
+                  include: [Species],
+                },
+              ],
+            },
+          ],
         },
         {
           model: Species,
@@ -1721,7 +1771,7 @@ export async function getFeedingPlanById(feedingPlanId: number) {
           model: Animal,
           required: false, // Include only if they exist
           as: "animals",
-          include: [Species]
+          include: [Species],
         },
       ],
     });
@@ -1740,10 +1790,13 @@ interface TempFeedingItem {
   animalCode: string;
 }
 interface TempFeedingPlanSessionDetail {
-  dayOfTheWeek: string;
-  eventTimingType: string;
+  dayOfTheWeek: DayOfWeek;
+  eventTimingType: EventTimingType;
   durationInMinutes: number;
+  isPublic : boolean;
+  publicEventStartTime : string | null;
   feedingItems: TempFeedingItem[];
+  requiredNumberOfKeeper: number;
 }
 
 export async function createFeedingPlan(
@@ -1754,23 +1807,26 @@ export async function createFeedingPlan(
   endDate: Date,
   sessions: TempFeedingPlanSessionDetail[],
 ) {
-  let newPlan = {
-    feedingPlanDesc: feedingPlanDesc,
-    startDate: startDate,
-    endDate: endDate,
-  } as any;
 
   try {
-    let newPlanEntry = await FeedingPlan.create(newPlan);
-    newPlanEntry.setSpecies(
-      await SpeciesService.getSpeciesByCode(speciesCode, []),
-    );
 
     let animals: Animal[] = [];
 
     for (let i = 0; i < animalCodes.length; i++) {
       animals.push(await getAnimalByAnimalCode(animalCodes[i]));
     }
+
+    let newPlan = {
+      feedingPlanDesc: feedingPlanDesc,
+      startDate: startDate,
+      endDate: endDate,
+      title: "Feeding plan for " + (await animals[0].getSpecies()).commonName
+    };
+
+    let newPlanEntry = await FeedingPlan.create(newPlan);
+    newPlanEntry.setSpecies(
+      await SpeciesService.getSpeciesByCode(speciesCode, []),
+    );
     newPlanEntry.setAnimals(animals);
 
     for (const i of sessions) {
@@ -1779,7 +1835,10 @@ export async function createFeedingPlan(
         i.dayOfTheWeek,
         i.eventTimingType,
         i.durationInMinutes,
+        i.isPublic,
+        i.publicEventStartTime,
         i.feedingItems,
+        i.requiredNumberOfKeeper
       );
     }
 
@@ -1796,40 +1855,44 @@ export async function updateFeedingPlan(
   feedingPlanDesc: string,
   startDate: Date,
   endDate: Date,
+  title: string
 ) {
-  let updatedPlan = {
-    feedingPlanDesc: feedingPlanDesc,
-    startDate: startDate,
-    endDate: endDate,
-  } as any;
-
   try {
-    await FeedingPlan.update(updatedPlan, {
-      where: { feedingPlanId: feedingPlanId },
-    });
-
     let planEntry = await getFeedingPlanById(feedingPlanId);
-    if (planEntry) {
-      let animals: Animal[] = [];
+    const dateChange = (compareDates(planEntry.startDate, startDate) != 0) 
+                        || (compareDates(planEntry.endDate, endDate) != 0);
 
-      for (let i = 0; i < animalCodes.length; i++) {
-        animals.push(await getAnimalByAnimalCode(animalCodes[i]));
+    planEntry.feedingPlanDesc = feedingPlanDesc;
+    planEntry.startDate = startDate;
+    planEntry.endDate = endDate;
+    planEntry.title = title;
+
+    await planEntry.save();
+
+    let animals: Animal[] = [];
+    for (let i = 0; i < animalCodes.length; i++) {
+      animals.push(await getAnimalByAnimalCode(animalCodes[i]));
+    }
+    planEntry.setAnimals(animals);
+
+    if (dateChange){
+      const promises = [];
+      for (const feedingPlanSession of await planEntry.getFeedingPlanSessionDetails()) {
+        promises.push(
+          updateFeedingPlanSessionDetail(
+            feedingPlanSession.feedingPlanSessionDetailId,
+            feedingPlanSession.dayOfWeek,
+            feedingPlanSession.eventTimingType,
+            feedingPlanSession.durationInMinutes,
+            null,
+            feedingPlanSession.isPublic,
+            feedingPlanSession.publicEventStartTime,
+            feedingPlanSession.requiredNumberOfKeeper
+          ),
+        );
       }
-      planEntry.setAnimals(animals);
+      for (const p of promises) await p;
     }
-
-    const promises = [];
-    for (const feedingPlanSession of await planEntry.getFeedingPlanSessionDetails()) {
-      promises.push(
-        updateFeedingPlanSessionDetail(
-          feedingPlanSession.feedingPlanSessionDetailId,
-          feedingPlanSession.dayOfWeek,
-          feedingPlanSession.eventTimingType,
-          feedingPlanSession.durationInMinutes,
-        ),
-      );
-    }
-    for (const p of promises) await p;
 
     return planEntry;
   } catch (error: any) {
@@ -1920,22 +1983,30 @@ export async function getFeedingPlanSessionDetailById(
 // neeed to add EVent generator after Marcus done
 export async function createFeedingPlanSessionDetail(
   feedingPlanId: number,
-  dayOfWeek: string,
-  eventTimingType: string,
+  dayOfWeek: DayOfWeek,
+  eventTimingType: EventTimingType,
   durationInMinutes: number,
+  isPublic : boolean,
+  publicEventStartTime : string | null,
   items: TempFeedingItem[],
+  requiredNumberOfKeeper:number
 ) {
   let newSession = {
     dayOfWeek: dayOfWeek,
     eventTimingType: eventTimingType,
     durationInMinutes: durationInMinutes,
-  } as any;
+    isPublic:isPublic,
+    publicEventStartTime: publicEventStartTime,
+    requiredNumberOfKeeper: requiredNumberOfKeeper
+  };
 
   try {
+    const feedingplan = await getFeedingPlanById(feedingPlanId);
+    
     let newSessionEntry = await FeedingPlanSessionDetail.create(newSession);
 
     await newSessionEntry.setFeedingPlan(
-      await getFeedingPlanById(feedingPlanId),
+      feedingplan,
     );
 
     for (const i of items) {
@@ -1962,6 +2033,10 @@ export async function updateFeedingPlanSessionDetail(
   dayOfWeek: DayOfWeek,
   eventTimingType: EventTimingType,
   durationInMinutes: number,
+  items: TempFeedingItem[] | null,
+  isPublic : boolean,
+  publicEventStartTime: string | null,
+  requiredNumberOfKeeper: number
 ) {
   const feedingPlanSessionDetail = await getFeedingPlanSessionDetailById(
     feedingPlanSessionDetailId,
@@ -1971,6 +2046,9 @@ export async function updateFeedingPlanSessionDetail(
     feedingPlanSessionDetail.dayOfWeek = dayOfWeek;
     feedingPlanSessionDetail.eventTimingType = eventTimingType;
     feedingPlanSessionDetail.durationInMinutes = durationInMinutes;
+    feedingPlanSessionDetail.isPublic = isPublic;
+    feedingPlanSessionDetail.publicEventStartTime = publicEventStartTime;
+    feedingPlanSessionDetail.requiredNumberOfKeeper = requiredNumberOfKeeper;
 
     const promises = [];
     for (const ze of await feedingPlanSessionDetail.getZooEvents()) {
@@ -1980,6 +2058,25 @@ export async function updateFeedingPlanSessionDetail(
     }
     for (const p of promises) await p;
     await feedingPlanSessionDetail.save();
+
+    if (items){
+      let currentItems = await getAllFeedingItemsByPlanSessionId(
+        feedingPlanSessionDetailId,
+      );
+      currentItems.forEach((item) => {
+        deleteFeedingItemById(item.feedingItemId);
+      });
+
+      for (const i of items) {
+        await createFeedingItem(
+          feedingPlanSessionDetailId,
+          i.animalCode,
+          i.foodCategory,
+          i.amount,
+          i.unit,
+        );
+      }
+    }
 
     return ZooEventService.generateMonthlyZooEventForFeedingPlanSession(
       feedingPlanSessionDetail.feedingPlanSessionDetailId,
@@ -1992,13 +2089,20 @@ export async function updateFeedingPlanSessionDetail(
 export async function deleteFeedingPlanSessionDetailById(
   feedingPlanSessionDetailId: number,
 ) {
-  let result = await FeedingPlanSessionDetail.destroy({
-    where: { feedingPlanSessionDetailId: feedingPlanSessionDetailId },
-  });
-  if (result) {
-    return result;
-  }
-  throw new Error("Invalid Feeding Plan Session Detail Id!");
+  try{
+    const promises:Promise<any>[] = [];
+    let feedingPlanSessionDetail = await getFeedingPlanSessionDetailById(feedingPlanSessionDetailId);
+    (await feedingPlanSessionDetail.getZooEvents()).forEach(ze=>{
+      if (compareDates(ze.eventStartDateTime, new Date()) > 0){
+        promises.push(ze.destroy());
+      }
+    })
+    for (const p of promises) await p;
+    return await feedingPlanSessionDetail.setFeedingPlan(undefined);
+  
+} catch (error: any) {
+  throw validationErrorHandler(error);
+}
 }
 
 //-- Animal Feeding Plan Food Item
@@ -2046,7 +2150,7 @@ export async function createFeedingItem(
     foodCategory: foodCategory,
     amount: amount,
     unit: unit,
-  } as any;
+  };
 
   try {
     let newFeedingItemEntry = await FeedingItem.create(newItem);
@@ -2100,7 +2204,6 @@ export async function getFeedingItemAmtRecoAllAnimalsOfSpecies(
   animalFeedCategory: string,
   // weekOrMeal: string,
 ) {
-
   interface RecoAmount {
     animalCode: string;
     weekOrMeal: string;
@@ -2109,31 +2212,41 @@ export async function getFeedingItemAmtRecoAllAnimalsOfSpecies(
   }
 
   // get all animals of current species
-  let animals: Animal[] = await getAllAnimalsBySpeciesCode(speciesCode)
+  let animals: Animal[] = await getAllAnimalsBySpeciesCode(speciesCode);
 
-  let recoAmtsArray: RecoAmount[] = []
+  let recoAmtsArray: RecoAmount[] = [];
   for (var animal of animals) {
-    const curRecoAmountWeek = await getFeedingItemAmtReco(animal.animalCode, animalFeedCategory, "week")
+    const curRecoAmountWeek = await getFeedingItemAmtReco(
+      animal.animalCode,
+      animalFeedCategory,
+      "week",
+    );
     let newRecoAmountWeek = {
       animalCode: animal.animalCode,
       weekOrMeal: "week",
       animalFeedCategory: animalFeedCategory,
       recoAmt: curRecoAmountWeek,
-    }
-    recoAmtsArray.push(newRecoAmountWeek)
-    const curRecoAmountMeal = await getFeedingItemAmtReco(animal.animalCode, animalFeedCategory, "meal")
+    };
+    recoAmtsArray.push(newRecoAmountWeek);
+    const curRecoAmountMeal = await getFeedingItemAmtReco(
+      animal.animalCode,
+      animalFeedCategory,
+      "meal",
+    );
     let newRecoAmountMeal = {
       animalCode: animal.animalCode,
       weekOrMeal: "meal",
       animalFeedCategory: animalFeedCategory,
       recoAmt: curRecoAmountMeal,
-    }
-    recoAmtsArray.push(newRecoAmountMeal)
+    };
+    recoAmtsArray.push(newRecoAmountMeal);
   }
   if (recoAmtsArray.length > 0) {
-    return recoAmtsArray
+    return recoAmtsArray;
   } else {
-    throw new Error("Unexpected error while getting recommended feeding amount!");
+    throw new Error(
+      "Unexpected error while getting recommended feeding amount!",
+    );
   }
 }
 
