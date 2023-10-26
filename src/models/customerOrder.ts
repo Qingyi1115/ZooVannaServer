@@ -33,6 +33,7 @@ class CustomerOrder extends Model<
   declare customerContactNo: string;
   declare customerEmail: string;
   declare paymentStatus: PaymentStatus;
+  declare pdfUrl: string;
 
   declare promotion?: Promotion;
   declare customer?: Customer;
@@ -69,6 +70,11 @@ class CustomerOrder extends Model<
 
   public setPending() {
     this.paymentStatus = PaymentStatus.PENDING;
+    this.save();
+  }
+
+  public setPdfUrl(url: string) {
+    this.pdfUrl = url;
     this.save();
   }
 }
@@ -115,6 +121,10 @@ CustomerOrder.init(
       type: DataTypes.ENUM,
       values: Object.values(PaymentStatus),
       allowNull: false,
+    },
+    pdfUrl: {
+      type: DataTypes.STRING,
+      allowNull: true,
     },
   },
   {
