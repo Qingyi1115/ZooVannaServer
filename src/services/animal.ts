@@ -1388,6 +1388,38 @@ export async function getAnimalActivityLogById(animalActivityLogId: number) {
   return animalActivityLog;
 }
 
+export async function getAnimalActivityLogsByAnimalActivityId(animalActivityId: number) {
+  try{
+  return await AnimalActivityLog.findAll({
+    include: [
+      {
+        association: "animals",
+        required: false,
+      },{
+        association: "animalActivity",
+        required:true,
+        where:{
+          animalActivityId:animalActivityId
+        }
+      },
+      {
+        association: "keeper",
+        required: false,
+        include: [
+          {
+            association: "employee",
+            required: false,
+          },
+        ],
+      },
+    ],
+  });
+  } catch (error: any) {
+    console.log(error);
+    throw validationErrorHandler(error);
+  }
+}
+
 export async function getAnimalActivityLogsByAnimalCode(animalCode: string) {
   return AnimalActivityLog.findAll({
     include: [

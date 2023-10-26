@@ -67,6 +67,7 @@ import {
   updateFeedingItem,
   deleteFeedingItemById,
   getFeedingItemAmtReco,
+  getAnimalActivityLogsByAnimalActivityId,
 } from "../controllers/animalController";
 
 const router = express.Router();
@@ -152,6 +153,10 @@ router.post("/createAnimalActivityLog", createAnimalActivityLog);
 router.get(
   "/getAnimalActivityLogById/:animalActivityLogId",
   getAnimalActivityLogById,
+);
+router.get(
+  "/getAnimalActivityLogsByAnimalActivityId/:animalActivityId",
+  getAnimalActivityLogsByAnimalActivityId,
 );
 router.get(
   "/getAnimalActivityLogsByAnimalCode/:animalCode",

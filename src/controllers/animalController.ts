@@ -1301,6 +1301,27 @@ export async function getAnimalActivityLogById(req: Request, res: Response) {
   }
 }
 
+export async function getAnimalActivityLogsByAnimalActivityId(req: Request, res: Response) {
+  try {
+    const { animalActivityId } = req.params;
+
+    if ([animalActivityId].includes("")) {
+      console.log("Missing field(s): ", {
+        animalActivityId,
+      });
+      return res.status(400).json({ error: "Missing information!" });
+    }
+
+    let animalActivityLogs = await AnimalService.getAnimalActivityLogsByAnimalActivityId(
+      Number(animalActivityId),
+    );
+
+    return res.status(200).json({ animalActivityLogs:animalActivityLogs.map(log=>log.toJSON()) });
+  } catch (error: any) {
+    res.status(400).json({ error: error.message });
+  }
+}
+
 export async function getAnimalActivityLogsByAnimalCode(
   req: Request,
   res: Response,
