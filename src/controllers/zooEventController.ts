@@ -223,6 +223,7 @@ export async function assignZooEventKeeper(req: Request, res: Response) {
     );
     return res.status(200).json({result:"success"});
   } catch (error: any) {
+    console.log("error",error)
     res.status(400).json({ error: error.message });
   }
 }

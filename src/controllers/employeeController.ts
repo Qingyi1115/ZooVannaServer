@@ -245,9 +245,19 @@ export async function getAllEmployeesController(req: Request, res: Response) {
     }
 
     const { includes = [] } = req.body;
-    const _includes: string[] = [];
-    for (const role of ["keeper", "generalStaff", "planningStaff"]) {
+    const _includes: any[] = [];
+    for (const role of ["generalStaff", "planningStaff"]) {
       if (includes.includes(role)) _includes.push(role);
+    }
+    if (includes.includes["keeper"]){
+      _includes.push({
+        association:"keeper",
+        required:false,
+        include:[{
+          association:"zooEvents",
+          required:false
+        }]
+      });
     }
 
     let result = await getAllEmployees(_includes);
