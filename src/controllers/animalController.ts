@@ -5,7 +5,7 @@ import { findEmployeeByEmail } from "../services/employee";
 
 // -- Animal Basic Info
 export async function getAllAnimals(req: Request, res: Response) {
-  const { } = req.body;
+  const {} = req.body;
   try {
     const allAnimals = await AnimalService.getAllAnimals();
     return res.status(200).json(allAnimals.map((animal) => animal.toJSON()));
@@ -484,7 +484,7 @@ export async function checkIfAbnormalWeight(req: Request, res: Response) {
 
 //-- Animal Activity
 export async function getAllAnimalActivities(req: Request, res: Response) {
-  const { } = req.body;
+  const {} = req.body;
   try {
     const allAnimalActivities = await AnimalService.getAllAnimalActivities();
     return res.status(200).json(allAnimalActivities);
@@ -1439,8 +1439,9 @@ export async function getFeedingPlanByFeedingPlanId(
   }
 
   try {
-    const feedingPlan =
-      await AnimalService.getFeedingPlanById(Number(feedingPlanId));
+    const feedingPlan = await AnimalService.getFeedingPlanById(
+      Number(feedingPlanId),
+    );
     return res.status(200).json(feedingPlan);
   } catch (error: any) {
     res.status(400).json({ error: error.message });
@@ -1750,6 +1751,7 @@ export async function updateFeedingPlanSessionDetail(
       dayOftheWeek,
       eventTimingType,
       durationInMinutes,
+      items,
     } = req.body;
 
     if (
@@ -1758,6 +1760,7 @@ export async function updateFeedingPlanSessionDetail(
         dayOftheWeek,
         eventTimingType,
         durationInMinutes,
+        items,
       ].includes(undefined)
     ) {
       console.log("Missing field(s): ", {
@@ -1765,6 +1768,7 @@ export async function updateFeedingPlanSessionDetail(
         dayOftheWeek,
         eventTimingType,
         durationInMinutes,
+        items,
       });
       return res.status(400).json({ error: "Missing information!" });
     }
@@ -1776,6 +1780,7 @@ export async function updateFeedingPlanSessionDetail(
         dayOftheWeek,
         eventTimingType,
         durationInMinutes,
+        items,
       );
 
     return res.status(200).json({
@@ -1920,7 +1925,10 @@ export async function deleteFeedingItemById(req: Request, res: Response) {
   }
 }
 
-export async function getFeedingItemAmtRecoAllAnimalsOfSpecies(req: Request, res: Response) {
+export async function getFeedingItemAmtRecoAllAnimalsOfSpecies(
+  req: Request,
+  res: Response,
+) {
   try {
     const { speciesCode, animalFeedCategory } = req.body;
 
