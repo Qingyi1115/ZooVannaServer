@@ -1531,7 +1531,6 @@ export async function createAnimalFeedingLog(
 
     return newAnimalFeedingLog;
   } catch (error: any) {
-    console.log(error);
     throw validationErrorHandler(error);
   }
 }
@@ -1567,6 +1566,38 @@ export async function getAnimalFeedingLogById(animalFeedingLogId: number) {
       message: "Unable to find animalFeedingLog with Id " + animalFeedingLog,
     };
   return animalFeedingLog;
+}
+
+export async function getAnimalFeedingLogByFeedingPlanId(feedingPlanId: number) {
+  try{
+    return AnimalFeedingLog.findAll({
+      include: [
+        {
+          association: "animals",
+          required: false,
+        },
+        {
+          association: "keeper",
+          required: false,
+          include: [
+            {
+              association: "employee",
+              required: false,
+            },
+          ],
+        },{
+          association:"feedingPlan",
+          required:true,
+          where:{
+            feedingPlanId:feedingPlanId
+          }
+        }
+      ],
+    });
+  
+  } catch (error: any) {
+    throw validationErrorHandler(error);
+  }
 }
 
 export async function getAnimalFeedingLogsByAnimalCode(animalCode: string) {

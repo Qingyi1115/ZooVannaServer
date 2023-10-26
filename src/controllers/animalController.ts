@@ -1104,6 +1104,29 @@ export async function getAnimalFeedingLogById(req: Request, res: Response) {
   }
 }
 
+export async function getAnimalFeedingLogByFeedingPlanId(req: Request, res: Response) {
+  try {
+    const { feedingPlanId } = req.params;
+
+    if ([feedingPlanId].includes("")) {
+      console.log("Missing field(s): ", {
+        feedingPlanId,
+      });
+      return res.status(400).json({ error: "Missing information!" });
+    }
+
+    let animalFeedingLogs = await AnimalService.getAnimalFeedingLogByFeedingPlanId(
+      Number(feedingPlanId),
+    );
+
+    return res
+      .status(200)
+      .json({ animalFeedingLogs: animalFeedingLogs.forEach(log=>log.toJSON()) });
+  } catch (error: any) {
+    res.status(400).json({ error: error.message });
+  }
+}
+
 export async function getAnimalFeedingLogsByAnimalCode(
   req: Request,
   res: Response,
