@@ -1725,11 +1725,11 @@ export async function getFeedingPlanById(feedingPlanId: number) {
                   model: Animal,
                   as: "animal",
                   required: false,
-                  include: [Species]
-                }
-              ]
-            }
-          ]
+                  include: [Species],
+                },
+              ],
+            },
+          ],
         },
         {
           model: Species,
@@ -1740,7 +1740,7 @@ export async function getFeedingPlanById(feedingPlanId: number) {
           model: Animal,
           required: false, // Include only if they exist
           as: "animals",
-          include: [Species]
+          include: [Species],
         },
       ],
     });
@@ -1853,6 +1853,7 @@ export async function updateFeedingPlan(
             feedingPlanSession.dayOfWeek,
             feedingPlanSession.eventTimingType,
             feedingPlanSession.durationInMinutes,
+            null,
             feedingPlanSession.isPublic,
             feedingPlanSession.publicEventStartTime,
             feedingPlanSession.requiredNumberOfKeeper
@@ -2001,6 +2002,7 @@ export async function updateFeedingPlanSessionDetail(
   dayOfWeek: DayOfWeek,
   eventTimingType: EventTimingType,
   durationInMinutes: number,
+  items: TempFeedingItem[] | null,
   isPublic : boolean,
   publicEventStartTime: string | null,
   requiredNumberOfKeeper: number
@@ -2016,7 +2018,6 @@ export async function updateFeedingPlanSessionDetail(
     feedingPlanSessionDetail.isPublic = isPublic;
     feedingPlanSessionDetail.publicEventStartTime = publicEventStartTime;
     feedingPlanSessionDetail.requiredNumberOfKeeper = requiredNumberOfKeeper;
-    await feedingPlanSessionDetail.save();
 
     const promises = [];
     for (const ze of await feedingPlanSessionDetail.getZooEvents()) {
@@ -2025,6 +2026,26 @@ export async function updateFeedingPlanSessionDetail(
       }
     }
     for (const p of promises) await p;
+    await feedingPlanSessionDetail.save();
+
+    if (items){
+      let currentItems = await getAllFeedingItemsByPlanSessionId(
+        feedingPlanSessionDetailId,
+      );
+      currentItems.forEach((item) => {
+        deleteFeedingItemById(item.feedingItemId);
+      });
+
+      for (const i of items) {
+        await createFeedingItem(
+          feedingPlanSessionDetailId,
+          i.animalCode,
+          i.foodCategory,
+          i.amount,
+          i.unit,
+        );
+      }
+    }
 
     return ZooEventService.generateMonthlyZooEventForFeedingPlanSession(
       feedingPlanSessionDetail.feedingPlanSessionDetailId,
@@ -2037,13 +2058,20 @@ export async function updateFeedingPlanSessionDetail(
 export async function deleteFeedingPlanSessionDetailById(
   feedingPlanSessionDetailId: number,
 ) {
-  let result = await FeedingPlanSessionDetail.destroy({
-    where: { feedingPlanSessionDetailId: feedingPlanSessionDetailId },
-  });
-  if (result) {
-    return result;
-  }
-  throw new Error("Invalid Feeding Plan Session Detail Id!");
+  try{
+    const promises:Promise<any>[] = [];
+    let feedingPlanSessionDetail = await getFeedingPlanSessionDetailById(feedingPlanSessionDetailId);
+    (await feedingPlanSessionDetail.getZooEvents()).forEach(ze=>{
+      if (compareDates(ze.eventStartDateTime, new Date()) > 0){
+        promises.push(ze.destroy());
+      }
+    })
+    for (const p of promises) await p;
+    return await feedingPlanSessionDetail.setFeedingPlan(undefined);
+  
+} catch (error: any) {
+  throw validationErrorHandler(error);
+}
 }
 
 //-- Animal Feeding Plan Food Item
@@ -2145,7 +2173,6 @@ export async function getFeedingItemAmtRecoAllAnimalsOfSpecies(
   animalFeedCategory: string,
   // weekOrMeal: string,
 ) {
-
   interface RecoAmount {
     animalCode: string;
     weekOrMeal: string;
@@ -2154,31 +2181,41 @@ export async function getFeedingItemAmtRecoAllAnimalsOfSpecies(
   }
 
   // get all animals of current species
-  let animals: Animal[] = await getAllAnimalsBySpeciesCode(speciesCode)
+  let animals: Animal[] = await getAllAnimalsBySpeciesCode(speciesCode);
 
-  let recoAmtsArray: RecoAmount[] = []
+  let recoAmtsArray: RecoAmount[] = [];
   for (var animal of animals) {
-    const curRecoAmountWeek = await getFeedingItemAmtReco(animal.animalCode, animalFeedCategory, "week")
+    const curRecoAmountWeek = await getFeedingItemAmtReco(
+      animal.animalCode,
+      animalFeedCategory,
+      "week",
+    );
     let newRecoAmountWeek = {
       animalCode: animal.animalCode,
       weekOrMeal: "week",
       animalFeedCategory: animalFeedCategory,
       recoAmt: curRecoAmountWeek,
-    }
-    recoAmtsArray.push(newRecoAmountWeek)
-    const curRecoAmountMeal = await getFeedingItemAmtReco(animal.animalCode, animalFeedCategory, "meal")
+    };
+    recoAmtsArray.push(newRecoAmountWeek);
+    const curRecoAmountMeal = await getFeedingItemAmtReco(
+      animal.animalCode,
+      animalFeedCategory,
+      "meal",
+    );
     let newRecoAmountMeal = {
       animalCode: animal.animalCode,
       weekOrMeal: "meal",
       animalFeedCategory: animalFeedCategory,
       recoAmt: curRecoAmountMeal,
-    }
-    recoAmtsArray.push(newRecoAmountMeal)
+    };
+    recoAmtsArray.push(newRecoAmountMeal);
   }
   if (recoAmtsArray.length > 0) {
-    return recoAmtsArray
+    return recoAmtsArray;
   } else {
-    throw new Error("Unexpected error while getting recommended feeding amount!");
+    throw new Error(
+      "Unexpected error while getting recommended feeding amount!",
+    );
   }
 }
 
