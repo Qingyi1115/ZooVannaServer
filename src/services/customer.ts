@@ -377,6 +377,7 @@ export async function createCustomerOrderForGuest(
         (await OrderItem.count({
           where: {
             "$customerOrder.entryDate$": custOrder.entryDate, // Assumes the Order model has a createdAt field
+            "$customerOrder.paymentStatus$": PaymentStatus.COMPLETED,
           },
           transaction: t,
           include: [
@@ -453,6 +454,7 @@ export async function createCustomerOrderForCustomer(
           (await OrderItem.count({
             where: {
               "$customerOrder.entryDate$": custOrder.entryDate, // Assumes the Order model has a createdAt field
+              "$customerOrder.paymentStatus$": PaymentStatus.COMPLETED, //need to make sure the orderItem is already paid for
             },
             transaction: t,
             include: [
@@ -783,8 +785,10 @@ export async function completePaymentForCustomer(
           }*/
           }
 
+          const localhost_address = process.env.LOCALHOST_ADDRESS;
+
           html += `
-            <a href="http://localhost:5174/tickets/purchasedTickets" target="_blank" style="display:flex">
+            <a href="http://${localhost_address}:5174/tickets/purchasedTickets" target="_blank" style="display:flex">
               <button style="border:none; border-radius: 2px; background-color:#3FD136; cursor: pointer; width: 800px; height:30px; font-size:15px; text-decoration: none">
                 View Bookings
               </button>
@@ -793,7 +797,7 @@ export async function completePaymentForCustomer(
 
             <script>
               function myFunction() {
-                window.open('http://localhost:5174/tickets/purchasedTickets', '_blank');
+                window.open('http://${localhost_address}:5174/tickets/purchasedTickets', '_blank');
               }
             </script>
           `;

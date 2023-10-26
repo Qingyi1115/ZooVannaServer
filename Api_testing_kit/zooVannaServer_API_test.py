@@ -51,13 +51,13 @@ def test_api():
     print("-----------ANIMAL_ACTIVITY_API_TESTS initiating-----------")
     do_tests(ANIMAL_ACTIVITY_API_TESTS)
     print("-----------Group test finish!---------------------\n")
-    
-    print("-----------ZOO_EVENTS_API_TESTS initiating-----------")
-    do_tests(ZOO_EVENTS_API_TESTS)
-    print("-----------Group test finish!---------------------\n")
         
     print("-----------FACILITY_LOG_API_TESTS initiating-----------")
     do_tests(FACILITY_LOG_API_TESTS)
+    print("-----------Group test finish!---------------------\n")
+    
+    print("-----------ZOO_EVENTS_API_TESTS initiating-----------")
+    do_tests(ZOO_EVENTS_API_TESTS)
     print("-----------Group test finish!---------------------\n")
 
     print("All test cases finished!\nTotal test cases pass : ", total_passes,"/", total_cases, ", Pass percentage ", round(total_passes/total_cases * 100, 2), "%\n")

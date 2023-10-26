@@ -48,6 +48,7 @@ import {
   updateAnimalFeedingLog,
   deleteAnimalFeedingLogById,
   getAnimalActivityLogsByAnimalCode,
+  getFeedingPlanByFeedingPlanId,
   getAllFeedingPlans,
   getFeedingPlansBySpeciesCode,
   getFeedingPlansByAnimalCode,
@@ -56,6 +57,7 @@ import {
   createFeedingPlan,
   getAllFeedingPlanSessionDetails,
   getAllFeedingPlanSessionDetailsByPlanId,
+  getFeedingItemAmtRecoAllAnimalsOfSpecies,
   getFeedingPlanSessionDetailById,
   createFeedingPlanSessionDetail,
   updateFeedingPlanSessionDetail,
@@ -65,8 +67,8 @@ import {
   updateFeedingItem,
   deleteFeedingItemById,
   getFeedingItemAmtReco,
-  makeAnimalActivityPublic,
-  makeAnimalActivityPrivate,
+  getAnimalActivityLogsByAnimalActivityId,
+  getAnimalFeedingLogByFeedingPlanId,
 } from "../controllers/animalController";
 
 const router = express.Router();
@@ -111,11 +113,11 @@ router.get(
 );
 router.post("/createAnimalActivity", createAnimalActivity);
 router.put("/updateAnimalActivity", updateAnimalActivity);
-router.put("/makeAnimalActivityPublic", makeAnimalActivityPublic);
-router.get(
-  "/makeAnimalActivityPrivate/:animalActivityId",
-  makeAnimalActivityPrivate,
-);
+// router.put("/makeAnimalActivityPublic", makeAnimalActivityPublic);
+// router.get(
+//   "/makeAnimalActivityPrivate/:animalActivityId",
+//   makeAnimalActivityPrivate,
+// );
 router.delete("/deleteAnimalActivity/:animalActivityId", deleteAnimalActivity);
 
 router.put("/assignAnimalsToActivity", assignAnimalsToActivity);
@@ -154,6 +156,10 @@ router.get(
   getAnimalActivityLogById,
 );
 router.get(
+  "/getAnimalActivityLogsByAnimalActivityId/:animalActivityId",
+  getAnimalActivityLogsByAnimalActivityId,
+);
+router.get(
   "/getAnimalActivityLogsByAnimalCode/:animalCode",
   getAnimalActivityLogsByAnimalCode,
 );
@@ -177,6 +183,10 @@ router.get(
   getAnimalFeedingLogById,
 );
 router.get(
+  "/getAnimalFeedingLogByFeedingPlanId/:feedingPlanId",
+  getAnimalFeedingLogByFeedingPlanId,
+);
+router.get(
   "/getAnimalFeedingLogsByAnimalCode/:animalCode",
   getAnimalFeedingLogsByAnimalCode,
 );
@@ -196,6 +206,7 @@ router.delete(
 updateAnimalObservationLog;
 
 // -- Animal Feeding Plan
+router.get("/getFeedingPlanById/:feedingPlanId", getFeedingPlanByFeedingPlanId)
 router.get("/getAllFeedingPlans", getAllFeedingPlans);
 router.get(
   "/getFeedingPlansBySpeciesCode/:speciesCode",
@@ -237,5 +248,6 @@ router.get(
 router.post("/createFeedingItem", createFeedingItem);
 router.put("/updateFeedingItem", updateFeedingItem);
 router.delete("/deleteFeedingItemById/:feedingItemId", deleteFeedingItemById);
+router.post("/getFeedingItemAmtRecoAllAnimalsOfSpecies", getFeedingItemAmtRecoAllAnimalsOfSpecies);
 router.post("/getFeedingItemAmtReco", getFeedingItemAmtReco);
 export default router;
