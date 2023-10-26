@@ -48,6 +48,7 @@ import {
   updateAnimalFeedingLog,
   deleteAnimalFeedingLogById,
   getAnimalActivityLogsByAnimalCode,
+  getFeedingPlanByFeedingPlanId,
   getAllFeedingPlans,
   getFeedingPlansBySpeciesCode,
   getFeedingPlansByAnimalCode,
@@ -56,6 +57,7 @@ import {
   createFeedingPlan,
   getAllFeedingPlanSessionDetails,
   getAllFeedingPlanSessionDetailsByPlanId,
+  getFeedingItemAmtRecoAllAnimalsOfSpecies,
   getFeedingPlanSessionDetailById,
   createFeedingPlanSessionDetail,
   updateFeedingPlanSessionDetail,
@@ -196,6 +198,7 @@ router.delete(
 updateAnimalObservationLog;
 
 // -- Animal Feeding Plan
+router.get("/getFeedingPlanById/:feedingPlanId", getFeedingPlanByFeedingPlanId)
 router.get("/getAllFeedingPlans", getAllFeedingPlans);
 router.get(
   "/getFeedingPlansBySpeciesCode/:speciesCode",
@@ -237,5 +240,6 @@ router.get(
 router.post("/createFeedingItem", createFeedingItem);
 router.put("/updateFeedingItem", updateFeedingItem);
 router.delete("/deleteFeedingItemById/:feedingItemId", deleteFeedingItemById);
+router.post("/getFeedingItemAmtRecoAllAnimalsOfSpecies", getFeedingItemAmtRecoAllAnimalsOfSpecies);
 router.post("/getFeedingItemAmtReco", getFeedingItemAmtReco);
 export default router;
