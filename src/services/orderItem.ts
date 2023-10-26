@@ -2,7 +2,7 @@ import { OrderItem } from "../models/orderItem";
 import { CustomerOrder } from "../models/customerOrder";
 import { conn } from "../db";
 import { Listing } from "models/listing";
-import { PaymentStatus } from "models/enumerated";
+import { PaymentStatus } from "../models/enumerated";
 const Sequelize = require("sequelize");
 const { Op } = Sequelize;
 
