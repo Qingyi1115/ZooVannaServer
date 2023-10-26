@@ -377,6 +377,7 @@ export async function createCustomerOrderForGuest(
         (await OrderItem.count({
           where: {
             "$customerOrder.entryDate$": custOrder.entryDate, // Assumes the Order model has a createdAt field
+            "$customerOrder.paymentStatus$": PaymentStatus.COMPLETED,
           },
           transaction: t,
           include: [
@@ -453,6 +454,7 @@ export async function createCustomerOrderForCustomer(
           (await OrderItem.count({
             where: {
               "$customerOrder.entryDate$": custOrder.entryDate, // Assumes the Order model has a createdAt field
+              "$customerOrder.paymentStatus$": PaymentStatus.COMPLETED, //need to make sure the orderItem is already paid for
             },
             transaction: t,
             include: [

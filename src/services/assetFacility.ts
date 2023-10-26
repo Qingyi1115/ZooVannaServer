@@ -1,4 +1,10 @@
-import { FacilityLogType, GeneralStaffType, HubStatus, PlannerType, SensorType } from "../models/enumerated";
+import {
+  FacilityLogType,
+  GeneralStaffType,
+  HubStatus,
+  PlannerType,
+  SensorType,
+} from "../models/enumerated";
 import { validationErrorHandler } from "../helpers/errorHandler";
 import { Facility } from "../models/facility";
 import { Sensor } from "../models/sensor";
@@ -141,7 +147,10 @@ export async function getAllFacilityMaintenanceSuggestions(employee: Employee) {
     for (const facility of facilities) {
       let inHouse = await (facility as any).getFacilityDetail();
       let logs = (await inHouse.getFacilityLogs()) || [];
-      logs = logs.filter((log: FacilityLog) => log.facilityLogType == FacilityLogType.MAINTENANCE_LOG);
+      logs = logs.filter(
+        (log: FacilityLog) =>
+          log.facilityLogType == FacilityLogType.MAINTENANCE_LOG,
+      );
       logs = logs.map((log: FacilityLog) => log.dateTime);
       (facility as any).dataValues["predictedMaintenanceDate"] =
         predictNextDate(logs);
@@ -357,8 +366,6 @@ export async function getFacilityLogs(
   }
 }
 
-
-
 export async function createFacilityLog(
   facilityId: number,
   title: string,
@@ -366,7 +373,7 @@ export async function createFacilityLog(
   remarks: string,
   staffName: string,
   facilityLogType: FacilityLogType,
-  employeeIds: number[]
+  employeeIds: number[],
 ): Promise<FacilityLog> {
   try {
     const facility = await Facility.findOne({
@@ -383,15 +390,15 @@ export async function createFacilityLog(
       details: details,
       remarks: remarks,
       staffName: staffName,
-      facilityLogType: facilityLogType
-    })
+      facilityLogType: facilityLogType,
+    });
     thirdParty.addFacilityLog(facilityLog);
 
     if (facilityLogType == FacilityLogType.ACTIVE_REPAIR_TICKET) {
-      if (employeeIds.length < 1) throw { message: "Employee ids empty!" }
+      if (employeeIds.length < 1) throw { message: "Employee ids empty!" };
       for (const id of employeeIds) {
         const emp = await findEmployeeById(id);
-        await facilityLog.addGeneralStaff((await emp.getGeneralStaff()));
+        await facilityLog.addGeneralStaff(await emp.getGeneralStaff());
       }
     }
 
@@ -583,7 +590,10 @@ export async function getFacilityMaintenanceSuggestions(
       throw { message: "InHouse not found, facility Id: " + facilityId };
 
     let logs = (await inHouse.getFacilityLogs()) || [];
-    logs = logs.filter((log: FacilityLog) => log.facilityLogType == FacilityLogType.MAINTENANCE_LOG);
+    logs = logs.filter(
+      (log: FacilityLog) =>
+        log.facilityLogType == FacilityLogType.MAINTENANCE_LOG,
+    );
     let dateLogs = logs.map((log: FacilityLog) => log.dateTime);
 
     return {
@@ -754,8 +764,8 @@ export async function createFacilityMaintenanceLog(
       details: details,
       remarks: remarks,
       staffName: staffName,
-      facilityLogType: FacilityLogType.MAINTENANCE_LOG
-    })
+      facilityLogType: FacilityLogType.MAINTENANCE_LOG,
+    });
     inHouse.addFacilityLog(newLog);
     inHouse.lastMaintained = date;
     await inHouse.save();
@@ -768,14 +778,14 @@ export async function createFacilityMaintenanceLog(
 
 export async function getFacilityLogById(
   facilityLogId: number,
-  includes: string[] = []
+  includes: string[] = [],
 ): Promise<FacilityLog> {
   try {
     const facilityLog = await FacilityLog.findOne({
       where: {
-        facilityLogId: facilityLogId
+        facilityLogId: facilityLogId,
       },
-      include: includes
+      include: includes,
     });
     if (!facilityLog)
       throw { message: "Cannot find facility log id : " + facilityLogId };
@@ -826,13 +836,13 @@ export async function deleteFacilityLogById(facilityLogId: number) {
   }
 }
 
-export async function completeRepairTicket(
-  facilityLogId: number,
-) {
+export async function completeRepairTicket(facilityLogId: number) {
   try {
     const facilityLog = await getFacilityLogById(facilityLogId);
-    if (!facilityLog) throw { message: "Cannot find facility log id : " + facilityLogId }
-    if (facilityLog.facilityLogType != FacilityLogType.ACTIVE_REPAIR_TICKET) throw { message: "Not an active repair ticket!" }
+    if (!facilityLog)
+      throw { message: "Cannot find facility log id : " + facilityLogId };
+    if (facilityLog.facilityLogType != FacilityLogType.ACTIVE_REPAIR_TICKET)
+      throw { message: "Not an active repair ticket!" };
 
     await facilityLog.setGeneralStaffs([]);
     facilityLog.facilityLogType = FacilityLogType.COMPLETED_REPAIR_TICKET;
