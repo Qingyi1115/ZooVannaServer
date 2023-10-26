@@ -23,6 +23,7 @@ import {
 } from "./enumerated";
 import { EnrichmentItem } from "./enrichmentItem";
 import { ZooEvent } from "./zooEvent";
+import { AnimalActivityLog } from "./animalActivityLog";
 
 // type Time = {
 //   hours: number;
@@ -50,6 +51,7 @@ class AnimalActivity extends Model<
   declare animals?: Animal[];
   declare enrichmentItems?: EnrichmentItem[];
   declare zooEvents?: ZooEvent[];
+  declare animalActivityLog?: AnimalActivityLog[];
 
   declare getAnimals: HasManyGetAssociationsMixin<Animal>;
   declare addAnimal: HasManyAddAssociationMixin<Animal, number>;
@@ -71,6 +73,11 @@ class AnimalActivity extends Model<
   declare addZooEvent: HasManyAddAssociationMixin<ZooEvent, number>;
   declare setZooEvents: HasManySetAssociationsMixin<ZooEvent, number>;
   declare removeZooEvent: HasManyRemoveAssociationMixin<ZooEvent, number>;
+
+  declare getAnimalActivityLogs: HasManyGetAssociationsMixin<AnimalActivityLog>;
+  declare addAnimalActivityLog: HasManyAddAssociationMixin<AnimalActivityLog, number>;
+  declare setAnimalActivityLogs: HasManySetAssociationsMixin<AnimalActivityLog, number>;
+  declare removeAnimalActivityLog: HasManyRemoveAssociationMixin<AnimalActivityLog, number>;
 
   public toJSON() {
     return {

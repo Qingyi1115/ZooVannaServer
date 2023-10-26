@@ -1225,6 +1225,7 @@ export async function createAnimalActivityLog(req: Request, res: Response) {
     const employee = await findEmployeeByEmail(email);
     const {
       activityType,
+      animalActivityId,
       dateTime,
       durationInMinutes,
       sessionRating,
@@ -1236,6 +1237,7 @@ export async function createAnimalActivityLog(req: Request, res: Response) {
     if (
       [
         activityType,
+        animalActivityId,
         dateTime,
         durationInMinutes,
         sessionRating,
@@ -1246,6 +1248,7 @@ export async function createAnimalActivityLog(req: Request, res: Response) {
     ) {
       console.log("Missing field(s): ", {
         activityType,
+        animalActivityId,
         dateTime,
         durationInMinutes,
         sessionRating,
@@ -1259,6 +1262,7 @@ export async function createAnimalActivityLog(req: Request, res: Response) {
     // have to pass in req for image uploading
     let animalActivityLog = await AnimalService.createAnimalActivityLog(
       employee.employeeId,
+      animalActivityId,
       activityType,
       new Date(dateTime),
       Number(durationInMinutes),

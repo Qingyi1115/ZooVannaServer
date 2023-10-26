@@ -646,7 +646,10 @@ function convertEventTimingTypeToDate(date:Date, eventTimingType:EventTimingType
   } 
 }
 
-function greedyAssign(zooEvent: ZooEvent, zooEvents:ZooEvent[], keepers:Keeper[]){
+async function greedyAssign(zooEvent: ZooEvent, zooEvents:ZooEvent[], keepers:Keeper[]){
+  for (const ze of zooEvents) await ze.reload();
+  await zooEvent.reload();
+  for (const kp of keepers) await kp.reload();
   const [zooEventStart, zooEventEnd] = zooEvent.eventIsPublic ? 
         [zooEvent.eventStartDateTime, zooEvent.eventEndDateTime] : 
         convertEventTimingTypeToDate(zooEvent.eventStartDateTime, zooEvent.eventTiming as EventTimingType);
@@ -657,6 +660,7 @@ function greedyAssign(zooEvent: ZooEvent, zooEvents:ZooEvent[], keepers:Keeper[]
     return compareDates(zeStart, zooEventEnd as Date) < 0
         && compareDates(zeEnd as Date, zooEventStart) > 0;
   });
+
 
   const availableKeeper =  keepers.filter(keeper=>{
     // Filter only availiable keepers given 
@@ -690,7 +694,7 @@ function greedyAssign(zooEvent: ZooEvent, zooEvents:ZooEvent[], keepers:Keeper[]
     }
   ).sort((a,b)=>a.totalCost - b.totalCost);
 
-  console.log("sortedKeeper",sortedKeeper);
+  await zooEvent.addKeeper(sortedKeeper[0].keeper);
 }
 
 export async function autoAssignKeeperToZooEvent(
@@ -745,8 +749,10 @@ export async function autoAssignKeeperToZooEvent(
         ]
       });
 
-      for (const zooEvent of zooEvents){
-        greedyAssign(zooEvent, zooEvents, keepers);
+      for (let zooEvent of zooEvents){
+        while (zooEvent.requiredNumberOfKeeper < (await zooEvent.getKeepers()).length){
+          await greedyAssign(zooEvent, zooEvents, keepers);
+        }
       }
 
 

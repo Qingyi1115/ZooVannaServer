@@ -1305,6 +1305,7 @@ export async function deleteAnimalObservationLogById(
 
 export async function createAnimalActivityLog(
   employeeId: number,
+  animalActivityId: number,
   activityType: ActivityType,
   dateTime: Date,
   durationInMinutes: number,
@@ -1314,6 +1315,7 @@ export async function createAnimalActivityLog(
   animalCodes: string[],
 ) {
   const keeper = await (await findEmployeeById(employeeId)).getKeeper();
+  const animalActivity = await getAnimalActivityById(animalActivityId);
 
   if (!keeper)
     throw { message: "No keeper found with employee ID : " + employeeId };
@@ -1344,6 +1346,7 @@ export async function createAnimalActivityLog(
     });
 
     await keeper.addAnimalActivityLog(newAnimalActivityLog);
+    await animalActivity.addAnimalActivityLog(newAnimalActivityLog);
 
     return newAnimalActivityLog;
   } catch (error: any) {
