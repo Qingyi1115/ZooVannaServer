@@ -279,9 +279,6 @@ export async function getZooEventById(
               required:false,
             }]
           },{
-            association:"enclosure",
-            required:false
-          },{
             association:"animals",
             required:false
           },{
@@ -304,10 +301,6 @@ export async function getZooEventById(
           },{
             association:"enclosure",
             required:false,
-            include:[{
-              association:"feedingPlan",
-              required:false,
-            }]
           }
           ]
 

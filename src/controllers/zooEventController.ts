@@ -159,9 +159,8 @@ export async function updateZooEventIncludeFuture(req: Request, res: Response) {
     eventType,
     eventStartDateTime,
     requiredNumberOfKeeper,
-  ].includes(undefined) || zooEventId == ""
-  || !eventIsPublic? [eventDurationHrs, eventTiming].includes(undefined) 
-                  :[eventNotificationDate, eventEndDateTime].includes(undefined)) {
+    eventIsPublic,
+  ].includes(undefined) || zooEventId == "") {
     console.log("Missing field(s): ", {
       zooEventId, 
       eventName, 
