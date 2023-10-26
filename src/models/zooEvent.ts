@@ -34,6 +34,7 @@ class ZooEvent extends Model<
   declare eventType?: EventType;
   declare eventStartDateTime: Date;
   declare eventNotificationDate: Date;
+  declare requiredNumberOfKeeper: number;
 
   // Internal
   declare eventDurationHrs: number;
@@ -131,7 +132,12 @@ ZooEvent.init(
     },
     imageUrl:{
       type: DataTypes.STRING,
-    }
+    },
+    requiredNumberOfKeeper: {
+      type: DataTypes.INTEGER,
+      allowNull:false
+    },
+    
   },
   {
     freezeTableName: true,

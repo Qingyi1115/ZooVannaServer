@@ -42,9 +42,9 @@ class Animal extends Model<
   declare animalCode: string;
   declare isGroup: boolean;
   declare houseName: string;
-  declare sex: AnimalSex;
-  declare dateOfBirth: Date;
-  declare placeOfBirth: string;
+  declare sex: AnimalSex | null;
+  declare dateOfBirth: Date | null;
+  declare placeOfBirth: string | null;
   // declare rfidTagNum: string;
   declare identifierType: IdentifierType;
   declare identifierValue: string;
@@ -54,9 +54,9 @@ class Animal extends Model<
   // declare currentWeight: number;
   declare physicalDefiningCharacteristics: string;
   declare behavioralDefiningCharacteristics: string;
-  declare dateOfDeath: Date;
-  declare locationOfDeath: string;
-  declare causeOfDeath: string;
+  declare dateOfDeath: Date | null;
+  declare locationOfDeath: string | null;
+  declare causeOfDeath: string | null;
   declare animalStatus: string;
   declare imageUrl: string;
 

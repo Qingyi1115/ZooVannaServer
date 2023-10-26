@@ -15,6 +15,8 @@ import {
   Rating,
   RecurringPattern,
   Reaction,
+  IdentifierType,
+  AcquisitionMethod,
 } from "../models/enumerated";
 import { AnimalWeight } from "../models/animalWeight";
 import * as SpeciesService from "../services/species";
@@ -140,16 +142,16 @@ export async function createNewAnimal(
   speciesCode: string,
   isGroup: boolean,
   houseName: string,
-  sex: string | null,
+  sex: AnimalSex | null,
   dateOfBirth: Date | null,
   placeOfBirth: string | null,
-  identifierType: string | null,
+  identifierType: IdentifierType | null,
   identifierValue: string | null,
-  acquisitionMethod: string,
-  dateOfAcquisition: Date,
+  acquisitionMethod: AcquisitionMethod,
+  dateOfAcquisition: Date | null,
   acquisitionRemarks: string | null,
-  physicalDefiningCharacteristics: string | null,
-  behavioralDefiningCharacteristics: string | null,
+  physicalDefiningCharacteristics: string,
+  behavioralDefiningCharacteristics: string,
   dateOfDeath: Date | null,
   locationOfDeath: string | null,
   causeOfDeath: string | null,
@@ -822,6 +824,7 @@ export async function createAnimalActivity(
   dayOfMonth: number | null,
   eventTimingType: EventTimingType,
   durationInMinutes: number,
+  requiredNumberOfKeeper:number
 ): Promise<AnimalActivity> {
   let newActivity = {
     activityType: activityType,
@@ -834,6 +837,7 @@ export async function createAnimalActivity(
     dayOfMonth: dayOfMonth,
     eventTimingType: eventTimingType,
     durationInMinutes: durationInMinutes,
+    requiredNumberOfKeeper: requiredNumberOfKeeper
   };
   try {
     let newActivityEntry = await AnimalActivity.create(newActivity);
@@ -845,6 +849,7 @@ export async function createAnimalActivity(
         durationInMinutes,
         eventTimingType,
         details,
+        requiredNumberOfKeeper
       );
     } else {
       return ZooEventService.generateMonthlyZooEventForAnimalActivity(
@@ -884,6 +889,7 @@ export async function updateAnimalActivity(
   dayOfMonth: number | null,
   eventTimingType: EventTimingType,
   durationInMinutes: number,
+  requiredNumberOfKeeper:number
 ) {
   try {
     let animalActivity = await AnimalActivity.findOne({
@@ -945,6 +951,7 @@ export async function updateAnimalActivity(
           durationInMinutes,
           eventTimingType,
           details,
+          requiredNumberOfKeeper
         );
       } else {
         return ZooEventService.generateMonthlyZooEventForAnimalActivity(
@@ -1023,6 +1030,7 @@ export async function updateAnimalActivity(
                 durationInMinutes,
                 eventTimingType,
                 details,
+                requiredNumberOfKeeper
               ),
             );
             earliestDate = new Date(earliestDate.getTime() - interval);
@@ -1044,6 +1052,7 @@ export async function updateAnimalActivity(
                 durationInMinutes,
                 eventTimingType,
                 details,
+                requiredNumberOfKeeper
               ),
             );
             earliestDate = new Date(
@@ -1721,6 +1730,7 @@ interface TempFeedingPlanSessionDetail {
   isPublic : boolean;
   publicEventStartTime : string | null;
   feedingItems: TempFeedingItem[];
+  requiredNumberOfKeeper: number;
 }
 
 export async function createFeedingPlan(
@@ -1762,6 +1772,7 @@ export async function createFeedingPlan(
         i.isPublic,
         i.publicEventStartTime,
         i.feedingItems,
+        i.requiredNumberOfKeeper
       );
     }
 
@@ -1808,7 +1819,8 @@ export async function updateFeedingPlan(
             feedingPlanSession.eventTimingType,
             feedingPlanSession.durationInMinutes,
             feedingPlanSession.isPublic,
-            feedingPlanSession.publicEventStartTime
+            feedingPlanSession.publicEventStartTime,
+            feedingPlanSession.requiredNumberOfKeeper
           ),
         );
       }
@@ -1910,13 +1922,15 @@ export async function createFeedingPlanSessionDetail(
   isPublic : boolean,
   publicEventStartTime : string | null,
   items: TempFeedingItem[],
+  requiredNumberOfKeeper:number
 ) {
   let newSession = {
     dayOfWeek: dayOfWeek,
     eventTimingType: eventTimingType,
     durationInMinutes: durationInMinutes,
     isPublic:isPublic,
-    publicEventStartTime: publicEventStartTime
+    publicEventStartTime: publicEventStartTime,
+    requiredNumberOfKeeper: requiredNumberOfKeeper
   };
 
   try {
@@ -1953,7 +1967,8 @@ export async function updateFeedingPlanSessionDetail(
   eventTimingType: EventTimingType,
   durationInMinutes: number,
   isPublic : boolean,
-  publicEventStartTime: string | null
+  publicEventStartTime: string | null,
+  requiredNumberOfKeeper: number
 ) {
   const feedingPlanSessionDetail = await getFeedingPlanSessionDetailById(
     feedingPlanSessionDetailId,
@@ -1965,6 +1980,7 @@ export async function updateFeedingPlanSessionDetail(
     feedingPlanSessionDetail.durationInMinutes = durationInMinutes;
     feedingPlanSessionDetail.isPublic = isPublic;
     feedingPlanSessionDetail.publicEventStartTime = publicEventStartTime;
+    feedingPlanSessionDetail.requiredNumberOfKeeper = requiredNumberOfKeeper;
     await feedingPlanSessionDetail.save();
 
     const promises = [];
@@ -2040,7 +2056,7 @@ export async function createFeedingItem(
     foodCategory: foodCategory,
     amount: amount,
     unit: unit,
-  } as any;
+  };
 
   try {
     let newFeedingItemEntry = await FeedingItem.create(newItem);

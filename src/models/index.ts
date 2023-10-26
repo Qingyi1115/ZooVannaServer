@@ -456,6 +456,17 @@ export const createDatabase = async (options: any) => {
   Keeper.hasMany(AnimalFeedingLog, { foreignKey: "keeperId" });
   AnimalFeedingLog.belongsTo(Keeper, { foreignKey: "keeperId" });
 
+  Keeper.belongsToMany(Enclosure, {
+    foreignKey: "keeperId",
+    through: "keeper_enclosure",
+    as: "enclosures",
+  });
+  Enclosure.belongsToMany(Keeper, {
+    foreignKey: "enclosureId",
+    through: "keeper_enclosure",
+    as: "keepers",
+  });
+
   Enclosure.hasMany(ZooEvent, addCascadeOptions({ foreignKey: "enclosureId" }));
   ZooEvent.belongsTo(
     Enclosure,
@@ -1661,6 +1672,7 @@ export const animalSeed = async () => {
     null,
     EventTimingType.AFTERNOON,
     45,
+    1
   );
 
   let animalActivity2 = await AnimalService.createAnimalActivity(
@@ -1674,6 +1686,7 @@ export const animalSeed = async () => {
     null,
     EventTimingType.MORNING,
     60,
+    1
   );
 
   let animalActivity3 = await AnimalService.createAnimalActivity(
@@ -1687,6 +1700,7 @@ export const animalSeed = async () => {
     null,
     EventTimingType.MORNING,
     60,
+    1
   );
   let animalActivity4 = await AnimalService.createAnimalActivity(
     ActivityType.ENRICHMENT,
@@ -1699,6 +1713,7 @@ export const animalSeed = async () => {
     7,
     EventTimingType.MORNING,
     60,
+    1
   );
   let animalActivity5 = await AnimalService.createAnimalActivity(
     ActivityType.TRAINING,
@@ -1711,6 +1726,7 @@ export const animalSeed = async () => {
     null,
     EventTimingType.AFTERNOON,
     60,
+    1
   );
   let animalActivity6 = await AnimalService.createAnimalActivity(
     ActivityType.TRAINING,
@@ -1723,6 +1739,7 @@ export const animalSeed = async () => {
     null,
     EventTimingType.EVENING,
     60,
+    1
   );
 
   await AnimalService.assignAnimalsToActivity(1, ["ANM00001", "ANM00003"]);
@@ -1764,6 +1781,7 @@ export const animalSeed = async () => {
     false,
     null,
     [],
+    1
   );
   await AnimalService.createFeedingPlanSessionDetail(
     1,
@@ -1773,6 +1791,7 @@ export const animalSeed = async () => {
     false,
     null,
     [],
+    1
   );
   await AnimalService.createFeedingPlanSessionDetail(
     1,
@@ -1782,6 +1801,7 @@ export const animalSeed = async () => {
     false,
     null,
     [],
+    1
   );
   await AnimalService.createFeedingPlanSessionDetail(
     2,
@@ -1791,6 +1811,7 @@ export const animalSeed = async () => {
     false,
     null,
     [],
+    1
   );
   await AnimalService.createFeedingPlanSessionDetail(
     2,
@@ -1800,6 +1821,7 @@ export const animalSeed = async () => {
     true,
     "13:15",
     [],
+    1
   );
 
   await AnimalService.createFeedingItem(1, "ANM00001", "FRUITS", 5, "KG");

@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import * as ZooEvent from "../services/zooEvent";
 import { findEmployeeByEmail } from "../services/employee";
+import { PlannerType } from "../models/enumerated";
 
 export async function getAllZooEvents(req: Request, res: Response) {
   const { email } = (req as any).locals.jwtPayload;
@@ -140,6 +141,7 @@ export async function updateZooEventIncludeFuture(req: Request, res: Response) {
     eventIsPublic,
     eventType,
     eventStartDateTime,
+    requiredNumberOfKeeper,
 
     eventDurationHrs,
     eventTiming,
@@ -155,7 +157,8 @@ export async function updateZooEventIncludeFuture(req: Request, res: Response) {
     eventDescription,
     eventIsPublic,
     eventType,
-    eventStartDateTime
+    eventStartDateTime,
+    requiredNumberOfKeeper,
   ].includes(undefined) || zooEventId == ""
   || !eventIsPublic? [eventDurationHrs, eventTiming].includes(undefined) 
                   :[eventNotificationDate, eventEndDateTime].includes(undefined)) {
@@ -178,6 +181,7 @@ export async function updateZooEventIncludeFuture(req: Request, res: Response) {
       eventIsPublic,
       eventType,
       eventStartDateTime,
+      requiredNumberOfKeeper,
   
       eventDurationHrs,
       eventTiming,
@@ -255,6 +259,31 @@ export async function removeKeeperfromZooEvent(req: Request, res: Response) {
   } catch (error: any) {
     res.status(400).json({ error: error.message });
   }
+}
+
+export async function autoAssignKeeperToZooEvent(req: Request, res: Response){
+    try {
+      const { email } = (req as any).locals.jwtPayload;
+      const employee = await findEmployeeByEmail(email);
+  
+      if (!employee.superAdmin && (
+        !(
+          (await employee.getPlanningStaff())?.plannerType ==
+          PlannerType.OPERATIONS_MANAGER
+        ) &&
+        !(await employee.getGeneralStaff()))
+      )
+        return res
+          .status(403)
+          .json({ error: "Access Denied! Operation managers only!" });
+
+
+
+      return res.status(200).json({zooEvents : await ZooEvent.autoAssignKeeperToZooEvent()});
+  } catch (error: any) {
+    res.status(400).json({ error: error.message });
+  }
+
 }
 
 export async function deleteZooEvent(req: Request, res: Response) {
