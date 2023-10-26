@@ -1,6 +1,7 @@
 import { OrderItem } from "../models/orderItem";
 import { CustomerOrder } from "../models/customerOrder";
 import { conn } from "../db";
+import { Listing } from "models/listing";
 const Sequelize = require("sequelize");
 const { Op } = Sequelize;
 
@@ -43,6 +44,24 @@ export async function getDateOrderCount() {
       });
       console.log(dateItemCounts);
       return dateItemCounts;
+    });
+
+    return result;
+  } catch (error: any) {
+    throw { message: error.message };
+  }
+}
+
+export async function getOrderByVerificationCode(verificationCode: string) {
+  try {
+    const now = new Date();
+    now.setHours(0, 0, 0);
+
+    const result = await OrderItem.findOne({
+      where: {
+        verificationCode: verificationCode,
+      },
+      include: ["listing", "customerOrder"],
     });
 
     return result;

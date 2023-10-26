@@ -486,7 +486,7 @@ async function generateQRCode(verificationCode: string): Promise<void> {
   return new Promise((resolve, reject) => {
     QRCode.toFile(
       `img/qr-code/${verificationCode}.png`,
-      `http://localhost:3000/api/orderItem/verify/${verificationCode}`,
+      `${verificationCode}`,
       {
         errorCorrectionLevel: "H",
         type: "png",
