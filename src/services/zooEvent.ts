@@ -133,7 +133,7 @@ export async function createAnimalActivityZooEvent(
   requiredNumberOfKeeper: number,
 ) {
   const animalActivity = await AnimalService.getAnimalActivityById(animalActivityId);
-  // const imageURL = (await (await animalActivity.getAnimals())[0].getSpecies()).imageUrl;
+  const imageURL = (await (await animalActivity.getAnimals())[0]?.getSpecies())?.imageUrl;
   try {
     const newZooEvent = await ZooEvent.create({
       eventName: animalActivity.title,
@@ -145,10 +145,12 @@ export async function createAnimalActivityZooEvent(
       eventDurationHrs: eventDurationHrs,
       eventTiming: eventTiming,
       eventEndDateTime: null,
-      requiredNumberOfKeeper: requiredNumberOfKeeper
+      requiredNumberOfKeeper: requiredNumberOfKeeper,
+      imageUrl : imageURL
       });
     
     newZooEvent.setAnimals(await animalActivity.getAnimals());
+    newZooEvent.setEnclosure(await (await animalActivity.getAnimals())[0]?.getEnclosure());
     
     await animalActivity.addZooEvent(newZooEvent);
     return animalActivity;
@@ -229,7 +231,7 @@ export async function createFeedingPlanSessionDetailZooEvent(
 ) {
   const feedingPlanSessionDetail = await AnimalService.getFeedingPlanSessionDetailById(feedingPlanSessionDetailId);
   const feedingPlan = (await feedingPlanSessionDetail.getFeedingPlan());
-  const imageUrl = (await (await feedingPlan.getAnimals())[1].getSpecies()).imageUrl;
+  const imageUrl = (await (await feedingPlan.getAnimals())[0]?.getSpecies())?.imageUrl;
   try {
     if (eventIsPublic){
       eventStartDateTime.setHours(parseInt(publicEventStartTime?.substring(0, 2)));
@@ -249,6 +251,7 @@ export async function createFeedingPlanSessionDetailZooEvent(
     });
 
     newZooEvent.setAnimals(await feedingPlan.getAnimals());
+    newZooEvent.setEnclosure(await (await feedingPlan.getAnimals())[0]?.getEnclosure());
     
     await feedingPlanSessionDetail.addZooEvent(newZooEvent);
     return feedingPlanSessionDetail;
