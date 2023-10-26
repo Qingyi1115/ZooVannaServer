@@ -185,8 +185,8 @@ export async function updateZooEventIncludeFuture(req: Request, res: Response) {
       eventDurationHrs,
       eventTiming,
       
-      eventNotificationDate,
-      eventEndDateTime,
+      eventIsPublic? new Date(eventNotificationDate) : new Date,
+      eventIsPublic ? new Date(eventEndDateTime) : new Date(),
     );
     return res.status(200).json({zooEvent:newZooEvent});
   } catch (error: any) {
@@ -218,8 +218,8 @@ export async function assignZooEventKeeper(req: Request, res: Response) {
 
   try {
     await ZooEvent.assignZooEventKeeper(
-      zooEventIds.forEach((zooEventId:string) => Number(zooEventId)),
-      employeeIds.forEach((employeeId:string) => Number(employeeId)),
+      zooEventIds.map((zooEventId:string) => Number(zooEventId)),
+      employeeIds.map((employeeId:string) => Number(employeeId)),
     );
     return res.status(200).json({result:"success"});
   } catch (error: any) {
@@ -252,8 +252,8 @@ export async function removeKeeperfromZooEvent(req: Request, res: Response) {
 
   try {
     await ZooEvent.removeKeeperfromZooEvent(
-      zooEventIds.forEach((zooEventId:string) => Number(zooEventId)),
-      employeeIds.forEach((employeeId:string) => Number(employeeId)),
+      zooEventIds.map((zooEventId:string) => Number(zooEventId)),
+      employeeIds.map((employeeId:string) => Number(employeeId)),
     );
     return res.status(200).json({result:"success"});
   } catch (error: any) {

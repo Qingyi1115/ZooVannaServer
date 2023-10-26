@@ -403,8 +403,8 @@ export async function updateZooEventIncludeFuture(
   eventDurationHrs : number,
   eventTiming : EventTimingType,
   // Public
-  eventNotificationDate : number,
-  eventEndDateTime : number,
+  eventNotificationDate : Date,
+  eventEndDateTime : Date,
 ) {
   const zooEvent : ZooEvent = await getZooEventById(zooEventId);
   
@@ -432,6 +432,7 @@ export async function updateZooEventIncludeFuture(
           ze.eventDurationHrs = eventDurationHrs;
           ze.eventTiming = eventTiming;
           ze.requiredNumberOfKeeper = requiredNumberOfKeeper;
+          ze.eventNotificationDate = eventNotificationDate;
           iKeepMyPromises.push(ze.save());
         }
       })
