@@ -277,6 +277,9 @@ export async function getZooEventById(
             include:[{
               association:"employee",
               required:false,
+            },{
+              association:"zooEvents",
+              required:false,
             }]
           },{
             association:"animals",
@@ -325,6 +328,46 @@ export async function deleteZooEvent(
         if (!zooEvent) throw {message:"Unable to find Zoo Event with Id: " + zooEventId}
 
         return await zooEvent.destroy();
+    } catch (error: any) {
+        throw validationErrorHandler(error);
+    }
+}
+
+export async function getKeepersForZooEvent(
+    zooEventId:number,
+  ) {
+    try {
+      const zooEvent = await getZooEventById(zooEventId);
+      const currentKeepers = zooEvent.keepers;
+
+      let availiableKeepers = (await Keeper.findAll({
+        include:[{
+          association:"employee"
+        },{
+          association:"zooEvents",
+          required:false
+        },{
+          association:"enclosures",
+          required:false
+        },
+      ]
+      })).filter(keeper=>!currentKeepers?.find(kp=>kp.employee?.employeeId == keeper.employee?.employeeId));
+    
+      availiableKeepers = availiableKeepers.filter(keeper=>{
+        const [zooEventStart, zooEventEnd] = zooEvent.eventIsPublic ? 
+          [zooEvent.eventStartDateTime, zooEvent.eventEndDateTime] : 
+          convertEventTimingTypeToDate(zooEvent.eventStartDateTime, zooEvent.eventTiming as EventTimingType);
+          
+          return !keeper.zooEvents?.find(ze=>{
+            const [zeStart, zeEnd] = ze.eventIsPublic ? [ze.eventStartDateTime, ze.eventEndDateTime] 
+                    : convertEventTimingTypeToDate(ze.eventStartDateTime, ze.eventTiming as EventTimingType);
+            return compareDates(zeStart, zooEventEnd as Date) < 0
+                && compareDates(zeEnd as Date, zooEventStart) > 0;
+          });
+
+      });
+      
+      return [availiableKeepers, currentKeepers];
     } catch (error: any) {
         throw validationErrorHandler(error);
     }
