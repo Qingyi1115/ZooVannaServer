@@ -37,6 +37,7 @@ import { ZooEvent } from "../models/zooEvent";
 import { FeedingPlanSessionDetail } from "../models/feedingPlanSessionDetail";
 import { FeedingItem } from "../models/feedingItem";
 import { SpeciesDietNeed } from "../models/speciesDietNeed";
+import { spec } from "node:test/reporters";
 
 //-- Animal Basic Info
 export async function getAnimalIdByCode(animalCode: string) {
@@ -1592,6 +1593,24 @@ export async function deleteAnimalFeedingLogById(animalFeedingLogId: number) {
 }
 
 //-- Animal Feeding Plan
+// export async function getFeedingPlanByFeedingPlanId(feedingPlanId: number) {
+//   let feedingPlanRecord = await FeedingPlan.findOne({
+//     where: { feedingPlanId: feedingPlanId },
+//     include: [
+//       {
+//         model: FeedingPlanSessionDetail,
+//         required: false, // Include only if they exist
+//         as: "feedingPlanSessionDetails",
+//       },
+//     ],
+//   });
+
+//   if (feedingPlanRecord) {
+//     return feedingPlanRecord;
+//   }
+//   throw new Error("Invalid Feeding Plan Id!");
+// }
+
 export async function getAllFeedingPlans() {
   try {
     const allFeedingPlans = await FeedingPlan.findAll({
@@ -1649,6 +1668,26 @@ export async function getFeedingPlanById(feedingPlanId: number) {
       where: { feedingPlanId: feedingPlanId },
       include: [
         {
+          model: FeedingPlanSessionDetail,
+          required: false, // Include only if they exist
+          as: "feedingPlanSessionDetails",
+          include: [
+            {
+              model: FeedingItem,
+              as: "feedingItems",
+              required: false,
+              include: [
+                {
+                  model: Animal,
+                  as: "animal",
+                  required: false,
+                  include: [Species]
+                }
+              ]
+            }
+          ]
+        },
+        {
           model: Species,
           required: false, // Include only if they exist
           as: "species",
@@ -1657,6 +1696,7 @@ export async function getFeedingPlanById(feedingPlanId: number) {
           model: Animal,
           required: false, // Include only if they exist
           as: "animals",
+          include: [Species]
         },
       ],
     });
@@ -2046,6 +2086,49 @@ export async function deleteFeedingItemById(feedingItemId: number) {
     return result;
   }
   throw new Error("Invalid Feeding Item Id!");
+}
+
+// written by Jason
+export async function getFeedingItemAmtRecoAllAnimalsOfSpecies(
+  speciesCode: string,
+  animalFeedCategory: string,
+  // weekOrMeal: string,
+) {
+
+  interface RecoAmount {
+    animalCode: string;
+    weekOrMeal: string;
+    animalFeedCategory: string;
+    recoAmt: number | string | null;
+  }
+
+  // get all animals of current species
+  let animals: Animal[] = await getAllAnimalsBySpeciesCode(speciesCode)
+
+  let recoAmtsArray: RecoAmount[] = []
+  for (var animal of animals) {
+    const curRecoAmountWeek = await getFeedingItemAmtReco(animal.animalCode, animalFeedCategory, "week")
+    let newRecoAmountWeek = {
+      animalCode: animal.animalCode,
+      weekOrMeal: "week",
+      animalFeedCategory: animalFeedCategory,
+      recoAmt: curRecoAmountWeek,
+    }
+    recoAmtsArray.push(newRecoAmountWeek)
+    const curRecoAmountMeal = await getFeedingItemAmtReco(animal.animalCode, animalFeedCategory, "meal")
+    let newRecoAmountMeal = {
+      animalCode: animal.animalCode,
+      weekOrMeal: "meal",
+      animalFeedCategory: animalFeedCategory,
+      recoAmt: curRecoAmountMeal,
+    }
+    recoAmtsArray.push(newRecoAmountMeal)
+  }
+  if (recoAmtsArray.length > 0) {
+    return recoAmtsArray
+  } else {
+    throw new Error("Unexpected error while getting recommended feeding amount!");
+  }
 }
 
 export async function getFeedingItemAmtReco(
