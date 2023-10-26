@@ -29,7 +29,7 @@ router.post("/sendForgetPasswordLink/:email", sendForgetPasswordLink); //send re
 router.put("/resetForgottenPassword/:token", resetForgottenPasswordController); //reset from the customer side using email
 
 //verify email before signup
-router.post("/sendEmailVerification/:email", sendEmailVerification); //send reset password link to customer email
+router.get("/sendEmailVerification/:email", sendEmailVerification); //send reset password link to customer email
 
 // sign up/create account
 router.post("/createCustomer/:token", createCustomer);
