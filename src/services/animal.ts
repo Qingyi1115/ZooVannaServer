@@ -824,7 +824,7 @@ export async function createAnimalActivity(
   dayOfMonth: number | null,
   eventTimingType: EventTimingType,
   durationInMinutes: number,
-  requiredNumberOfKeeper:number
+  requiredNumberOfKeeper: number
 ): Promise<AnimalActivity> {
   let newActivity = {
     activityType: activityType,
@@ -889,7 +889,7 @@ export async function updateAnimalActivity(
   dayOfMonth: number | null,
   eventTimingType: EventTimingType,
   durationInMinutes: number,
-  requiredNumberOfKeeper:number
+  requiredNumberOfKeeper: number
 ) {
   try {
     let animalActivity = await AnimalActivity.findOne({
@@ -1389,31 +1389,31 @@ export async function getAnimalActivityLogById(animalActivityLogId: number) {
 }
 
 export async function getAnimalActivityLogsByAnimalActivityId(animalActivityId: number) {
-  try{
-  return await AnimalActivityLog.findAll({
-    include: [
-      {
-        association: "animals",
-        required: false,
-      },{
-        association: "animalActivity",
-        required:true,
-        where:{
-          animalActivityId:animalActivityId
-        }
-      },
-      {
-        association: "keeper",
-        required: false,
-        include: [
-          {
-            association: "employee",
-            required: false,
-          },
-        ],
-      },
-    ],
-  });
+  try {
+    return await AnimalActivityLog.findAll({
+      include: [
+        {
+          association: "animals",
+          required: false,
+        }, {
+          association: "animalActivity",
+          required: true,
+          where: {
+            animalActivityId: animalActivityId
+          }
+        },
+        {
+          association: "keeper",
+          required: false,
+          include: [
+            {
+              association: "employee",
+              required: false,
+            },
+          ],
+        },
+      ],
+    });
   } catch (error: any) {
     console.log(error);
     throw validationErrorHandler(error);
@@ -1569,7 +1569,7 @@ export async function getAnimalFeedingLogById(animalFeedingLogId: number) {
 }
 
 export async function getAnimalFeedingLogByFeedingPlanId(feedingPlanId: number) {
-  try{
+  try {
     return AnimalFeedingLog.findAll({
       include: [
         {
@@ -1585,16 +1585,16 @@ export async function getAnimalFeedingLogByFeedingPlanId(feedingPlanId: number) 
               required: false,
             },
           ],
-        },{
-          association:"feedingPlan",
-          required:true,
-          where:{
-            feedingPlanId:feedingPlanId
+        }, {
+          association: "feedingPlan",
+          required: true,
+          where: {
+            feedingPlanId: feedingPlanId
           }
         }
       ],
     });
-  
+
   } catch (error: any) {
     throw validationErrorHandler(error);
   }
@@ -1793,8 +1793,8 @@ interface TempFeedingPlanSessionDetail {
   dayOfTheWeek: DayOfWeek;
   eventTimingType: EventTimingType;
   durationInMinutes: number;
-  isPublic : boolean;
-  publicEventStartTime : string | null;
+  isPublic: boolean;
+  publicEventStartTime: string | null;
   feedingItems: TempFeedingItem[];
   requiredNumberOfKeeper: number;
 }
@@ -1859,8 +1859,8 @@ export async function updateFeedingPlan(
 ) {
   try {
     let planEntry = await getFeedingPlanById(feedingPlanId);
-    const dateChange = (compareDates(planEntry.startDate, startDate) != 0) 
-                        || (compareDates(planEntry.endDate, endDate) != 0);
+    const dateChange = (compareDates(planEntry.startDate, startDate) != 0)
+      || (compareDates(planEntry.endDate, endDate) != 0);
 
     planEntry.feedingPlanDesc = feedingPlanDesc;
     planEntry.startDate = startDate;
@@ -1875,7 +1875,7 @@ export async function updateFeedingPlan(
     }
     planEntry.setAnimals(animals);
 
-    if (dateChange){
+    if (dateChange) {
       const promises = [];
       for (const feedingPlanSession of await planEntry.getFeedingPlanSessionDetails()) {
         promises.push(
@@ -1986,23 +1986,23 @@ export async function createFeedingPlanSessionDetail(
   dayOfWeek: DayOfWeek,
   eventTimingType: EventTimingType,
   durationInMinutes: number,
-  isPublic : boolean,
-  publicEventStartTime : string | null,
+  isPublic: boolean,
+  publicEventStartTime: string | null,
   items: TempFeedingItem[],
-  requiredNumberOfKeeper:number
+  requiredNumberOfKeeper: number
 ) {
   let newSession = {
     dayOfWeek: dayOfWeek,
     eventTimingType: eventTimingType,
     durationInMinutes: durationInMinutes,
-    isPublic:isPublic,
+    isPublic: isPublic,
     publicEventStartTime: publicEventStartTime,
     requiredNumberOfKeeper: requiredNumberOfKeeper
   };
 
   try {
     const feedingplan = await getFeedingPlanById(feedingPlanId);
-    
+
     let newSessionEntry = await FeedingPlanSessionDetail.create(newSession);
 
     await newSessionEntry.setFeedingPlan(
@@ -2034,7 +2034,7 @@ export async function updateFeedingPlanSessionDetail(
   eventTimingType: EventTimingType,
   durationInMinutes: number,
   items: TempFeedingItem[] | null,
-  isPublic : boolean,
+  isPublic: boolean,
   publicEventStartTime: string | null,
   requiredNumberOfKeeper: number
 ) {
@@ -2059,7 +2059,7 @@ export async function updateFeedingPlanSessionDetail(
     for (const p of promises) await p;
     await feedingPlanSessionDetail.save();
 
-    if (items){
+    if (items) {
       let currentItems = await getAllFeedingItemsByPlanSessionId(
         feedingPlanSessionDetailId,
       );
@@ -2089,20 +2089,20 @@ export async function updateFeedingPlanSessionDetail(
 export async function deleteFeedingPlanSessionDetailById(
   feedingPlanSessionDetailId: number,
 ) {
-  try{
-    const promises:Promise<any>[] = [];
+  try {
+    const promises: Promise<any>[] = [];
     let feedingPlanSessionDetail = await getFeedingPlanSessionDetailById(feedingPlanSessionDetailId);
-    (await feedingPlanSessionDetail.getZooEvents()).forEach(ze=>{
-      if (compareDates(ze.eventStartDateTime, new Date()) > 0){
+    (await feedingPlanSessionDetail.getZooEvents()).forEach(ze => {
+      if (compareDates(ze.eventStartDateTime, new Date()) > 0) {
         promises.push(ze.destroy());
       }
     })
     for (const p of promises) await p;
     return await feedingPlanSessionDetail.setFeedingPlan(undefined);
-  
-} catch (error: any) {
-  throw validationErrorHandler(error);
-}
+
+  } catch (error: any) {
+    throw validationErrorHandler(error);
+  }
 }
 
 //-- Animal Feeding Plan Food Item

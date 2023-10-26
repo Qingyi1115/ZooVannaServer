@@ -5,7 +5,7 @@ import { findEmployeeByEmail } from "../services/employee";
 
 // -- Animal Basic Info
 export async function getAllAnimals(req: Request, res: Response) {
-  const {} = req.body;
+  const { } = req.body;
   try {
     const allAnimals = await AnimalService.getAllAnimals();
     return res.status(200).json(allAnimals.map((animal) => animal.toJSON()));
@@ -484,7 +484,7 @@ export async function checkIfAbnormalWeight(req: Request, res: Response) {
 
 //-- Animal Activity
 export async function getAllAnimalActivities(req: Request, res: Response) {
-  const {} = req.body;
+  const { } = req.body;
   try {
     const allAnimalActivities = await AnimalService.getAllAnimalActivities();
     return res.status(200).json(allAnimalActivities);
@@ -1121,7 +1121,7 @@ export async function getAnimalFeedingLogByFeedingPlanId(req: Request, res: Resp
 
     return res
       .status(200)
-      .json({ animalFeedingLogs: animalFeedingLogs.forEach(log=>log.toJSON()) });
+      .json({ animalFeedingLogs: animalFeedingLogs.forEach(log => log.toJSON()) });
   } catch (error: any) {
     res.status(400).json({ error: error.message });
   }
@@ -1339,7 +1339,7 @@ export async function getAnimalActivityLogsByAnimalActivityId(req: Request, res:
       Number(animalActivityId),
     );
 
-    return res.status(200).json({ animalActivityLogs:animalActivityLogs.map(log=>log.toJSON()) });
+    return res.status(200).json({ animalActivityLogs: animalActivityLogs.map(log => log.toJSON()) });
   } catch (error: any) {
     res.status(400).json({ error: error.message });
   }
@@ -1754,7 +1754,7 @@ export async function createFeedingPlanSessionDetail(
 ) {
   try {
     const {
-      feedingPlanSessionDetailId,
+      feedingPlanId,
       dayOftheWeek,
       eventTimingType,
       durationInMinutes,
@@ -1766,7 +1766,7 @@ export async function createFeedingPlanSessionDetail(
 
     if (
       [
-        feedingPlanSessionDetailId,
+        feedingPlanId,
         dayOftheWeek,
         eventTimingType,
         durationInMinutes,
@@ -1777,7 +1777,7 @@ export async function createFeedingPlanSessionDetail(
       ].includes(undefined)
     ) {
       console.log("Missing field(s): ", {
-        feedingPlanSessionDetailId,
+        feedingPlanId,
         dayOftheWeek,
         eventTimingType,
         durationInMinutes,
@@ -1789,7 +1789,7 @@ export async function createFeedingPlanSessionDetail(
 
     // have to pass in req for image uploading
     let feedingPlanSession = await AnimalService.createFeedingPlanSessionDetail(
-      Number(feedingPlanSessionDetailId),
+      Number(feedingPlanId),
       dayOftheWeek,
       eventTimingType,
       durationInMinutes,
@@ -1830,7 +1830,7 @@ export async function updateFeedingPlanSessionDetail(
         requiredNumberOfKeeper,
         items,
       ].includes(undefined) ||
-      isPublic && [publicEventStartTime, ].includes(undefined)
+      isPublic && [publicEventStartTime,].includes(undefined)
     ) {
       console.log("Missing field(s): ", {
         feedingPlanDetailId,
@@ -1839,7 +1839,7 @@ export async function updateFeedingPlanSessionDetail(
         durationInMinutes,
         requiredNumberOfKeeper,
         items,
-        isPublic : isPublic ? {publicEventStartTime} : isPublic,
+        isPublic: isPublic ? { publicEventStartTime } : isPublic,
       });
       return res.status(400).json({ error: "Missing information!" });
     }
