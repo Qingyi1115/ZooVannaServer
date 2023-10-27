@@ -1508,7 +1508,11 @@ export async function createAnimalFeedingLog(
   employeeId: number,
   dateTime: Date,
   durationInMinutes: number,
-  details: string,
+  amountOffered: string,
+  amountConsumed: string,
+  amountLeftovers: string,
+  presentationMethod: string,
+  extraRemarks: string,
   animalCodes: string[],
 ) {
   const keeper = await (await findEmployeeById(employeeId)).getKeeper();
@@ -1531,7 +1535,11 @@ export async function createAnimalFeedingLog(
     const newAnimalFeedingLog = await AnimalFeedingLog.create({
       dateTime: dateTime,
       durationInMinutes: durationInMinutes,
-      details: details,
+      amountOffered : amountOffered,
+      amountConsumed : amountConsumed,
+      amountLeftovers : amountLeftovers,
+      presentationMethod : presentationMethod,
+      extraRemarks : extraRemarks,
     });
 
     animals.forEach((animal) => {
@@ -1656,7 +1664,11 @@ export async function updateAnimalFeedingLog(
   animalFeedingLogId: number,
   dateTime: Date,
   durationInMinutes: number,
-  details: string,
+  amountOffered: string,
+  amountConsumed: string,
+  amountLeftovers: string,
+  presentationMethod: string,
+  extraRemarks: string,
   animalCodes: string[],
 ) {
   const animalFeedingLog = await getAnimalFeedingLogById(animalFeedingLogId);
@@ -1667,7 +1679,11 @@ export async function updateAnimalFeedingLog(
   }
   animalFeedingLog.dateTime = dateTime;
   animalFeedingLog.durationInMinutes = durationInMinutes;
-  animalFeedingLog.details = details;
+  animalFeedingLog.amountOffered = amountOffered;
+  animalFeedingLog.amountConsumed = amountConsumed;
+  animalFeedingLog.amountLeftovers = amountLeftovers;
+  animalFeedingLog.presentationMethod = presentationMethod;
+  animalFeedingLog.extraRemarks = extraRemarks;
 
   await animalFeedingLog.save();
   return animalFeedingLog;

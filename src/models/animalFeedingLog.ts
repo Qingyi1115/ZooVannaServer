@@ -24,7 +24,11 @@ class AnimalFeedingLog extends Model<
   declare animalFeedingLogId: CreationOptional<number>;
   declare dateTime: Date;
   declare durationInMinutes: number;
-  declare details: string;
+  declare amountOffered: string;
+  declare amountConsumed: string;
+  declare amountLeftovers: string;
+  declare presentationMethod: string;
+  declare extraRemarks: string;
 
   declare animals?: Animal[];
   declare keeper?: Keeper;
@@ -57,7 +61,23 @@ AnimalFeedingLog.init(
       type: DataTypes.INTEGER,
       allowNull: false,
     },
-    details: {
+    amountOffered: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    amountConsumed: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    amountLeftovers: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    presentationMethod: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    extraRemarks: {
       type: DataTypes.STRING,
       allowNull: false,
     },

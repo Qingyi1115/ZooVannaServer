@@ -74,6 +74,7 @@ import { AnimalFeedingLog } from "./animalFeedingLog";
 import { FeedingPlan } from "./feedingPlan";
 import { FeedingPlanSessionDetail } from "./feedingPlanSessionDetail";
 import { FeedingItem } from "./feedingItem";
+import { DAY_IN_MILLISECONDS } from "../helpers/staticValues";
 
 function addCascadeOptions(options: object) {
   return { ...options, onDelete: "CASCADE", onUpdate: "CASCADE" };
@@ -3152,6 +3153,17 @@ export const facilityAssetsSeed = async () => {
   } as any;
   let f6 = await Facility.create(facility6, { include: ["inHouse"] });
   let f6h: InHouse = await f6.getFacilityDetail();
+
+  for (const day of [19,18,17,16,15,14,13,12]){
+    f6h.addFacilityLog(await FacilityLog.create({
+      dateTime: new Date(Date.now() - day * DAY_IN_MILLISECONDS),
+      title: "Parking ma",
+      details: "found dog poop",
+      remarks: "sweep the floor",
+      staffName: "maint1",
+      facilityLogType: FacilityLogType.MAINTENANCE_LOG,
+    }))
+  }
 
   let facility7 = {
     facilityName: "Amphitheatre",
