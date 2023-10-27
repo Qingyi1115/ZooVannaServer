@@ -45,6 +45,14 @@ class FacilityLog extends Model<
       dateTime:this.dateTime?.getTime(),
     }
   }
+
+  public async toFullJSON(){
+    return {
+      ...this.toJSON(),
+      inHouse: (await this.getInHouse())?.toJSON(),
+      generalStaffs: (await this.getGeneralStaffs()).forEach(staff=>staff.toJSON()),
+    };
+  }
 }
 
 FacilityLog.init(

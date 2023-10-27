@@ -23,6 +23,7 @@ import {
 } from "./enumerated";
 import { EnrichmentItem } from "./enrichmentItem";
 import { ZooEvent } from "./zooEvent";
+import { AnimalActivityLog } from "./animalActivityLog";
 
 // type Time = {
 //   hours: number;
@@ -44,14 +45,13 @@ class AnimalActivity extends Model<
   declare dayOfMonth: number | null;
   declare eventTimingType: EventTimingType;
   declare durationInMinutes: number;
-  declare isPublic: Boolean;
-  declare publicEventStartTime: Date | null;
-  declare publicEventEndTime: Date | null;
+  declare requiredNumberOfKeeper:number;
 
   // declare declare  FK
   declare animals?: Animal[];
   declare enrichmentItems?: EnrichmentItem[];
   declare zooEvents?: ZooEvent[];
+  declare animalActivityLog?: AnimalActivityLog[];
 
   declare getAnimals: HasManyGetAssociationsMixin<Animal>;
   declare addAnimal: HasManyAddAssociationMixin<Animal, number>;
@@ -73,6 +73,11 @@ class AnimalActivity extends Model<
   declare addZooEvent: HasManyAddAssociationMixin<ZooEvent, number>;
   declare setZooEvents: HasManySetAssociationsMixin<ZooEvent, number>;
   declare removeZooEvent: HasManyRemoveAssociationMixin<ZooEvent, number>;
+
+  declare getAnimalActivityLogs: HasManyGetAssociationsMixin<AnimalActivityLog>;
+  declare addAnimalActivityLog: HasManyAddAssociationMixin<AnimalActivityLog, number>;
+  declare setAnimalActivityLogs: HasManySetAssociationsMixin<AnimalActivityLog, number>;
+  declare removeAnimalActivityLog: HasManyRemoveAssociationMixin<AnimalActivityLog, number>;
 
   public toJSON() {
     return {
@@ -142,17 +147,9 @@ AnimalActivity.init(
       type: DataTypes.INTEGER,
       allowNull: false,
     },
-    isPublic: {
-      type: DataTypes.BOOLEAN,
-      allowNull: false,
-    },
-    publicEventStartTime: {
-      type: DataTypes.DATE,
-      allowNull: true,
-    },
-    publicEventEndTime: {
-      type: DataTypes.DATE,
-      allowNull: true,
+    requiredNumberOfKeeper: {
+      type: DataTypes.INTEGER,
+      allowNull:false
     },
   },
   {

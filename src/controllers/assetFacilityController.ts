@@ -56,6 +56,9 @@ import {
   updateZone,
   deleteZoneById,
   completeRepairTicket,
+  createCustomerReport,
+  getAllCustomerReports,
+  updateCustomerReport,
 } from "../services/assetFacility";
 import { Facility } from "../models/facility";
 import { Sensor } from "../models/sensor";
@@ -68,6 +71,7 @@ import { InHouse } from "../models/inHouse";
 import { FacilityLog } from "../models/facilityLog";
 import { GeneralStaff } from "../models/generalStaff";
 import { MaintenanceLog } from "../models/maintenanceLog";
+import { CustomerReportLog } from "models/customerReportLog";
 
 export async function createNewZoneController(req: Request, res: Response) {
   try {
@@ -820,6 +824,105 @@ export async function getFacilityLogByIdController(
     );
 
     return res.status(200).json({ facilityLog: facilityLog.toJSON() });
+  } catch (error: any) {
+    console.log(error);
+    res.status(400).json({ error: error.message });
+  }
+}
+
+export async function createCustomerReportController(
+  req: Request,
+  res: Response,
+) {
+  try {
+    // const { email } = (req as any).locals.jwtPayload;
+    // const employee = await findEmployeeByEmail(email);
+
+    const { facilityId } = req.params;
+    let {
+      dateTime,
+      title,
+      remarks,
+      viewed,
+     } = req.body;
+
+    if (facilityId == ""  || [
+      dateTime,
+      title,
+      remarks,
+      viewed,
+    ].includes(undefined)) {
+      return res.status(400).json({ error: "Missing information!" });
+    }
+
+    let customerReportLog: CustomerReportLog = await createCustomerReport(
+      Number(facilityId),
+      dateTime,
+      title,
+      remarks,
+      viewed,
+    );
+
+    return res.status(200).json({ customerReportLog: customerReportLog.toJSON() });
+  } catch (error: any) {
+    console.log(error);
+    res.status(400).json({ error: error.message });
+  }
+}
+
+export async function getAllCustomerReportsController(
+  req: Request,
+  res: Response,
+) {
+  try {
+    const { email } = (req as any).locals.jwtPayload;
+    const employee = await findEmployeeByEmail(email);
+
+    // const { facilityLogId } = req.params;
+    // let { includes } = req.body;
+
+    let customerReportLogs: CustomerReportLog[] = await getAllCustomerReports();
+
+    return res.status(200).json({ customerReportLogs: customerReportLogs.map(log=>log.toJSON()) });
+  } catch (error: any) {
+    console.log(error);
+    res.status(400).json({ error: error.message });
+  }
+}
+
+export async function updateCustomerReportController(
+  req: Request,
+  res: Response,
+) {
+  try {
+    const { email } = (req as any).locals.jwtPayload;
+    // const employee = await findEmployeeByEmail(email);
+
+    const { facilityLogId } = req.params;
+    let { 
+      customerReportLogId,
+      customerReportLogIds,
+      viewed,
+     } = req.body;
+
+    if (viewed === undefined || (customerReportLogId === undefined && customerReportLogIds===undefined)) {
+      return res.status(400).json({ error: "Missing information!" });
+    }
+    if (customerReportLogId){
+      await updateCustomerReport(
+        Number(customerReportLogId),
+        viewed,
+      );
+    }else{
+      for (const customerReportLogId of customerReportLogIds){
+        await updateCustomerReport(
+          Number(customerReportLogId),
+          viewed,
+        );
+      }
+    }
+
+    return res.status(200).json({ result: "success" });
   } catch (error: any) {
     console.log(error);
     res.status(400).json({ error: error.message });

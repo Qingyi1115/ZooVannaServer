@@ -20,6 +20,7 @@ import { Employee } from "../models/employee";
 import { SensorReading } from "../models/sensorReading";
 import { Op } from "Sequelize";
 import { Zone } from "../models/zone";
+import { CustomerReportLog } from "../models/customerReportLog";
 
 export async function createNewZone(zoneName: string) {
   try {
@@ -352,15 +353,18 @@ export async function getFacilityLogs(
   facilityId: number,
 ): Promise<FacilityLog[]> {
   try {
-    const facility = await Facility.findOne({
-      where: { facilityId: facilityId },
-    });
+    const facility : Facility = await getFacilityById(facilityId);
     if (!facility) throw { message: "Unable to find facilityId: " + facility };
-    const thirdParty = await facility.getFacilityDetail();
+    const inHouse:InHouse = await facility.getFacilityDetail();
     if (facility.facilityDetail != "inHouse")
       throw { message: "Not an in-house facility!" };
 
-    return thirdParty.getFacilityLogs();
+    return inHouse.getFacilityLogs({
+      include:{
+        association:"generalStaffs",
+        include:["employee"]
+      }
+    });
   } catch (error: any) {
     throw validationErrorHandler(error);
   }
@@ -790,6 +794,92 @@ export async function getFacilityLogById(
     if (!facilityLog)
       throw { message: "Cannot find facility log id : " + facilityLogId };
     return facilityLog;
+  } catch (error: any) {
+    throw validationErrorHandler(error);
+  }
+}
+
+export async function createCustomerReport(
+  facilityId: number,
+  dateTime: Date,
+  title : string,
+  remarks: string,
+  viewed : boolean,
+): Promise<CustomerReportLog> {
+  try {
+    const facility = await getFacilityById(facilityId);
+
+    const customerReport = await CustomerReportLog.create({
+      dateTime: dateTime,
+      title : title,
+      remarks: remarks,
+      viewed : viewed,
+    })
+
+    const detail = await facility.getFacilityDetail();
+    if (facility.facilityDetail == "inHouse"){
+      await customerReport.setInHouse(detail);
+    }else{
+      await customerReport.setThirdParty(detail);
+    }
+
+    return customerReport;
+  } catch (error: any) {
+    throw validationErrorHandler(error);
+  }
+}
+
+export async function getAllCustomerReports(): Promise<CustomerReportLog[]> {
+  try {
+    return CustomerReportLog.findAll({
+      include:[{
+        association:"inHouse",
+        required:false,
+        include:[{
+          association:"facility",
+          required:true,
+        }]
+      },{
+        association:"thirdParty",
+        required:false,
+        include:[{
+          association:"facility",
+          required:true,
+        }]
+      },
+    ]
+    });
+  } catch (error: any) {
+    throw validationErrorHandler(error);
+  }
+}
+
+export async function getCustomerReportLogById(
+  customerReportLogId:number
+){
+  try{
+    const customerReportLog = await CustomerReportLog.findOne({
+      where:{
+        customerReportLogId:customerReportLogId
+      }
+    });
+    if (!customerReportLog) throw {message:"Cannot find Customer Report Log with Id: " + customerReportLog}
+    return customerReportLog;
+  } catch (error: any) {
+    throw validationErrorHandler(error);
+  }
+}
+
+export async function updateCustomerReport(
+  customerReportLogId:number,
+  viewed:boolean,
+): Promise<CustomerReportLog> {
+  try {
+    const customerReportLog = await getCustomerReportLogById(customerReportLogId);
+    customerReportLog.viewed = viewed;
+
+    return customerReportLog.save();
+
   } catch (error: any) {
     throw validationErrorHandler(error);
   }
