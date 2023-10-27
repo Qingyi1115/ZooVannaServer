@@ -1926,8 +1926,9 @@ export async function deleteFeedingPlanSessionDetailById(
     const animalWeight = await AnimalService.deleteFeedingPlanSessionDetailById(
       Number(feedingPlanDetailId),
     );
-    return res.status(200).json(animalWeight);
+    return res.status(200).json({result:"success"});
   } catch (error: any) {
+    console.log(error)
     res.status(400).json({ error: error.message });
   }
 }
