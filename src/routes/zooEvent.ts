@@ -6,6 +6,7 @@ import {
     autoAssignKeeperToZooEvent,
     deleteZooEvent, 
     getAllZooEvents, 
+    getKeepersForZooEvent, 
     getZooEventById, 
     removeKeeperfromZooEvent, 
     updateZooEventIncludeFuture, 
@@ -25,5 +26,6 @@ router.put("/assignZooEventKeeper", assignZooEventKeeper);
 router.put("/removeKeeperfromZooEvent", removeKeeperfromZooEvent);
 router.get("/autoAssignKeeperToZooEvent", autoAssignKeeperToZooEvent);
 router.delete("/deleteZooEvent/:zooEventId", deleteZooEvent);
+router.get("/getKeepersForZooEvent/:zooEventId", getKeepersForZooEvent);
 
 export default router;

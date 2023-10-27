@@ -301,3 +301,23 @@ export async function deleteZooEvent(req: Request, res: Response) {
     res.status(400).json({ error: error.message });
   }
 }
+
+export async function getKeepersForZooEvent(req: Request, res: Response) {
+  const { email } = (req as any).locals.jwtPayload;
+  const employee = await findEmployeeByEmail(email);
+
+  // Check authentication
+   const {zooEventId} = req.params;
+
+  try {
+    const [availiableKeepers, currentKeepers] = await ZooEvent.getKeepersForZooEvent(
+      Number(zooEventId)
+    );
+    return res.status(200).json({
+      availiableKeepers:availiableKeepers,
+      currentKeepers:currentKeepers
+    });
+  } catch (error: any) {
+    res.status(400).json({ error: error.message });
+  }
+}

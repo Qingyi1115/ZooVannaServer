@@ -881,6 +881,23 @@ export async function createAnimalObservationLog(req: Request, res: Response) {
   }
 }
 
+export async function getAnimalObservationLogsByAnimalActivityId(req: Request, res: Response) {
+  try {
+
+    const { animalActivityId } = req.params;
+    let animalObservationLogs =
+      await AnimalService.getAnimalObservationLogsByAnimalActivityId(Number(animalActivityId));
+
+    return res.status(200).json({
+      animalObservationLogs: animalObservationLogs.map((animalObservationLog) =>
+        animalObservationLog.toJSON(),
+      ),
+    });
+  } catch (error: any) {
+    res.status(400).json({ error: error.message });
+  }
+}
+
 export async function getAllAnimalObservationLogs(req: Request, res: Response) {
   try {
     // have to pass in req for image uploading

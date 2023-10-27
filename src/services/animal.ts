@@ -1190,6 +1190,36 @@ export async function createAnimalObservationLog(
   }
 }
 
+export async function getAnimalObservationLogsByAnimalActivityId(
+  animalActivityId:number
+) {
+  try{
+    return AnimalObservationLog.findAll({
+      include:[{
+        association:"keeper",
+        required:false,
+        include:[{
+          association:"employee",
+          required:false,
+        }]
+      },{
+        association:"animals",
+        required:true,
+        include:[{
+          association:"animalActivities",
+          required:true,
+          where :{
+            animalActivityId:animalActivityId
+          }
+        }]
+      }]
+    });
+} catch (error: any) {
+  console.log(error);
+  throw validationErrorHandler(error);
+}
+}
+
 export async function getAllAnimalObservationLogs() {
   return AnimalObservationLog.findAll();
 }

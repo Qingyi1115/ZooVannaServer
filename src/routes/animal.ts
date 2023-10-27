@@ -69,6 +69,7 @@ import {
   getFeedingItemAmtReco,
   getAnimalActivityLogsByAnimalActivityId,
   getAnimalFeedingLogByFeedingPlanId,
+  getAnimalObservationLogsByAnimalActivityId,
 } from "../controllers/animalController";
 
 const router = express.Router();
@@ -128,6 +129,7 @@ router.put("/removeItemFromActivity", removeItemFromActivity);
 // -- Animal Observation Logs
 router.post("/createAnimalObservationLog", createAnimalObservationLog);
 router.get("/getAllAnimalObservationLogs", getAllAnimalObservationLogs);
+router.get("/getAnimalObservationLogsByAnimalActivityId/:animalActivityId", getAnimalObservationLogsByAnimalActivityId)
 router.get(
   "/getAnimalObservationLogById/:animalObservationLogId",
   getAnimalObservationLogById,
