@@ -224,25 +224,25 @@ export async function getTotalCustomerOrder(
         },
       ],
     });
-    console.log("---------valid order items-----------");
-    console.log(orderItems);
+    // console.log("---------valid order items-----------");
+    // console.log(orderItems);
 
     if (groupBy.length === 0) {
       return orderItems.length;
     }
 
     const groupedData = groupData(orderItems, groupBy);
-    console.log("---------group data-----------");
-    console.log(groupedData);
+    // console.log("---------group data-----------");
+    // console.log(groupedData);
 
     const subgroupedData = groupByCriteria(orderItems, groupBy);
-    console.log("---------group and subgroup data-----------");
-    console.log(subgroupedData);
+    // console.log("---------group and subgroup data-----------");
+    // console.log(subgroupedData);
 
     // // Calculate the total order items for each group.
     const result = calculateSizes(subgroupedData, groupBy);
-    console.log("---------aggregate-----------");
-    console.log(result);
+    // console.log("---------aggregate-----------");
+    // console.log(result);
 
     return result;
   } catch (error) {
