@@ -1513,24 +1513,15 @@ export async function createAnimalFeedingLog(
   amountLeftovers: string,
   presentationMethod: string,
   extraRemarks: string,
-  animalCodes: string[],
+  feedingPlanId: number
 ) {
   const keeper = await (await findEmployeeById(employeeId)).getKeeper();
 
   if (!keeper)
     throw { message: "No keeper found with employee ID : " + employeeId };
 
-  const animalsPromise: Promise<Animal>[] = [];
-  animalCodes.forEach((code) => {
-    animalsPromise.push(getAnimalByAnimalCode(code));
-  });
+  const feedingPlan = await getFeedingPlanById(feedingPlanId);
 
-  const animals: Animal[] = [];
-  for (const prom of animalsPromise) {
-    const animal = await prom;
-    if (animal === undefined) throw { message: "Animal Code not found!" };
-    animals.push(animal);
-  }
   try {
     const newAnimalFeedingLog = await AnimalFeedingLog.create({
       dateTime: dateTime,
@@ -1542,9 +1533,7 @@ export async function createAnimalFeedingLog(
       extraRemarks : extraRemarks,
     });
 
-    animals.forEach((animal) => {
-      animal.addAnimalFeedingLog(newAnimalFeedingLog);
-    });
+    await newAnimalFeedingLog.setAnimals(await feedingPlan.getAnimals());
 
     await keeper.addAnimalFeedingLog(newAnimalFeedingLog);
 

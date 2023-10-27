@@ -1070,7 +1070,8 @@ export async function createAnimalFeedingLog(req: Request, res: Response) {
       amountConsumed,
       amountLeftovers,
       presentationMethod,
-      extraRemarks, animalCodes } = req.body;
+      feedingPlanId,
+      extraRemarks } = req.body;
 
     if (
       [dateTime, durationInMinutes, 
@@ -1078,7 +1079,8 @@ export async function createAnimalFeedingLog(req: Request, res: Response) {
         amountConsumed,
         amountLeftovers,
         presentationMethod,
-        extraRemarks,, animalCodes].includes(undefined)
+        feedingPlanId,
+        extraRemarks].includes(undefined)
     ) {
       console.log("Missing field(s): ", {
         dateTime,
@@ -1088,7 +1090,7 @@ export async function createAnimalFeedingLog(req: Request, res: Response) {
         amountLeftovers,
         presentationMethod,
         extraRemarks,
-        animalCodes,
+        feedingPlanId,
       });
       return res.status(400).json({ error: "Missing information!" });
     }
@@ -1103,7 +1105,7 @@ export async function createAnimalFeedingLog(req: Request, res: Response) {
       amountLeftovers,
       presentationMethod,
       extraRemarks,
-      animalCodes,
+      feedingPlanId,
     );
 
     return res.status(200).json({ animalObservationLog: animalObservationLog });
