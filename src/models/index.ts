@@ -346,6 +346,9 @@ export const createDatabase = async (options: any) => {
   AnimalActivity.hasMany(AnimalActivityLog,addCascadeOptions({}));
   AnimalActivityLog.belongsTo(AnimalActivity);
 
+  AnimalActivity.hasMany(AnimalObservationLog,addCascadeOptions({}));
+  AnimalObservationLog.belongsTo(AnimalActivity);
+
   Animal.belongsToMany(AnimalFeedingLog, {
     foreignKey: "animalId",
     through: "animal_feedingLog",

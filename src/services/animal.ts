@@ -1194,14 +1194,20 @@ export async function getAnimalObservationLogsByAnimalActivityId(
         }]
       },{
         association:"animals",
-        required:true,
+        required:false,
         include:[{
           association:"animalActivities",
-          required:true,
+          required:false,
           where :{
             animalActivityId:animalActivityId
           }
         }]
+      },{
+        association:"animalActivity",
+        required:true,
+        where:{
+          animalActivityId:animalActivityId
+        }
       }]
     });
 } catch (error: any) {
