@@ -190,6 +190,7 @@ export async function updateZooEventIncludeFuture(req: Request, res: Response) {
     );
     return res.status(200).json({zooEvent:newZooEvent.toJSON()});
   } catch (error: any) {
+    console.log("error",error)
     res.status(400).json({ error: error.message });
   }
 }
