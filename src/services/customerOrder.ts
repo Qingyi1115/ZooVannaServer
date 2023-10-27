@@ -1,5 +1,5 @@
 import { Request } from "express";
-import { Op } from "Sequelize";
+import { Op, Sequelize } from "Sequelize";
 import { validationErrorHandler } from "../helpers/errorHandler";
 import { CustomerOrder } from "../models/customerOrder";
 import { Customer } from "../models/customer";
@@ -87,6 +87,106 @@ export async function getCustomerOrderByBookingReference(
   throw { message: "Invalid Booking Reference!" };
 }
 
+// export async function getRevenueByMonth(startDate: Date, endDate: Date) {
+//   try {
+//     const revenueByMonth = await CustomerOrder.findAll({
+//       attributes: [
+//         [
+//           Sequelize.fn("DATE_FORMAT", Sequelize.col("entryDate"), "%Y-%m"),
+//           "month",
+//         ],
+//         [Sequelize.fn("SUM", Sequelize.col("totalAmount")), "totalRevenue"],
+//       ],
+//       where: {
+//         entryDate: {
+//           [Op.between]: [startDate, endDate],
+//         },
+//       },
+//       group: ["month"],
+//     });
+
+//     return revenueByMonth;
+//   } catch (error) {
+//     // Handle any errors here
+//     console.error(error);
+//     throw error;
+//   }
+// }
+// export async function getRevenueByDay(startDate: Date, endDate: Date) {
+//   try {
+//     const revenueByDay = await CustomerOrder.findAll({
+//       attributes: [
+//         [Sequelize.fn("DATE", Sequelize.col("entryDate")), "day"],
+//         [Sequelize.fn("SUM", Sequelize.col("totalAmount")), "totalRevenue"],
+//       ],
+//       where: {
+//         entryDate: {
+//           [Op.between]: [startDate, endDate],
+//         },
+//       },
+//       group: ["day"],
+//     });
+
+//     return revenueByDay;
+//   } catch (error) {
+//     // Handle any errors here
+//     console.error(error);
+//     throw error;
+//   }
+// }
+
+// export async function getNumberOfOrdersPerMonth(
+//   startDate: Date,
+//   endDate: Date,
+// ) {
+//   try {
+//     const orderCountsByMonth = await CustomerOrder.findAll({
+//       attributes: [
+//         [
+//           Sequelize.fn("DATE_FORMAT", Sequelize.col("entryDate"), "%Y-%m"),
+//           "month",
+//         ],
+//         [Sequelize.fn("COUNT", Sequelize.col("id")), "orderCount"],
+//       ],
+//       where: {
+//         entryDate: {
+//           [Op.between]: [startDate, endDate],
+//         },
+//       },
+//       group: ["month"],
+//     });
+
+//     return orderCountsByMonth;
+//   } catch (error) {
+//     // Handle any errors here
+//     console.error(error);
+//     throw error;
+//   }
+// }
+
+// export async function getNumberOfOrdersPerDay(startDate: Date, endDate: Date) {
+//   try {
+//     const orderCountsByDay = await CustomerOrder.findAll({
+//       attributes: [
+//         [Sequelize.fn("DATE", Sequelize.col("entryDate")), "day"],
+//         [Sequelize.fn("COUNT", Sequelize.col("id")), "orderCount"],
+//       ],
+//       where: {
+//         entryDate: {
+//           [Op.between]: [startDate, endDate],
+//         },
+//       },
+//       group: ["day"],
+//     });
+
+//     return orderCountsByDay;
+//   } catch (error) {
+//     // Handle any errors here
+//     console.error(error);
+//     throw error;
+//   }
+// }
+
 //for chart
 export async function getTotalCustomerOrder(
   startDate: Date,
@@ -94,18 +194,6 @@ export async function getTotalCustomerOrder(
   groupBy: string[],
 ) {
   try {
-    // console.log(startDate);
-    // console.log(endDate);
-    // console.log(groupBy);
-
-    //   try {
-    //     let customerOrder = await CustomerOrder.update(updatedCustomerOrder, {
-    //       where: { customerOrderId: customerOrderId },
-    //     });
-    //   } catch (error: any) {
-    //     throw validationErrorHandler(error);
-    //   }
-    // }
     const orderItems = await OrderItem.findAll({
       include: [
         {
@@ -123,7 +211,7 @@ export async function getTotalCustomerOrder(
         },
       ],
     });
-    console.log("---------order items-----------");
+    console.log("---------valid order items-----------");
     console.log(orderItems);
 
     if (groupBy.length === 0) {
@@ -131,16 +219,16 @@ export async function getTotalCustomerOrder(
     }
 
     const groupedData = groupData(orderItems, groupBy);
-    console.log("---------valid data-----------");
+    console.log("---------group data-----------");
     console.log(groupedData);
 
     const subgroupedData = groupByCriteria(orderItems, groupBy);
-    console.log("---------grouped data-----------");
+    console.log("---------group and subgroup data-----------");
     console.log(subgroupedData);
 
     // // Calculate the total order items for each group.
     const result = calculateSizes(subgroupedData, groupBy);
-    console.log("---------result-----------");
+    console.log("---------aggregate-----------");
     console.log(result);
 
     return result;
@@ -235,4 +323,70 @@ function getGroupValue(item: OrderItem, groupByOption: string) {
   // Add more cases as needed for other groupBy options (e.g., listing name)
 
   return "-1";
+}
+
+// Function to calculate the total amount for each listing ID and month
+export async function calculateTotalAmountByListingAndMonth(
+  startDate: Date,
+  endDate: Date,
+  groupBy: string[],
+) {
+  try {
+    const customerOrders = await CustomerOrder.findAll({
+      include: [
+        {
+          model: OrderItem,
+          required: true,
+          include: [
+            {
+              model: Listing,
+              required: true,
+            },
+          ],
+        },
+      ],
+      where: {
+        entryDate: {
+          [Op.between]: [startDate, endDate],
+        },
+      },
+    });
+
+    console.log("---------valid customer orders-----------");
+    console.log(customerOrders);
+
+    if (groupBy.length === 0) {
+      return calculateTotalAmount(customerOrders);
+    }
+
+    const groupedData = groupByCriteria(customerOrders, groupBy);
+    console.log("---------group and subgroup data-----------");
+    console.log(groupedData);
+
+    // Calculate the total amount for each group.
+    const result = calculateTotalAmount(groupedData);
+    console.log("---------aggregate-----------");
+    console.log(result);
+
+    return result;
+  } catch (error) {
+    throw { message: "Error grouping data" };
+  }
+}
+
+function calculateTotalAmount(data: any): number {
+  if (data.length === undefined) {
+    let totalAmount = 0;
+
+    for (const key in data) {
+      totalAmount += calculateTotalAmount(data[key]);
+    }
+
+    return totalAmount;
+  } else {
+    return data.reduce(
+      (total: number, item: any) => total + item.totalAmount,
+      0,
+    );
+  }
 }

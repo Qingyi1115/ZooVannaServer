@@ -8,6 +8,7 @@ import {
   getAllUpcomingCustomerOrderByCustomerController,
   getPastCustomerOrderByCustomerController,
   getTotalCustomerOrder,
+  calculateTotalAmountByListingAndMonth
 } from "../controllers/customerOrderController";
 
 const router = express.Router();
@@ -34,5 +35,6 @@ router.get(
   "/getPastCustomerOrderByCustomer",
   getPastCustomerOrderByCustomerController,
 );
+
 
 export default router;
