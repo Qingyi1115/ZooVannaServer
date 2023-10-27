@@ -1555,7 +1555,11 @@ export async function getAnimalFeedingLogById(animalFeedingLogId: number) {
     include: [
       {
         association: "animals",
-        required: false,
+        required: true,
+        include:[{
+          association:"species",
+          required:true
+        }]
       },
       {
         association: "keeper",
@@ -2110,7 +2114,9 @@ export async function deleteFeedingPlanSessionDetailById(
       }
     })
     for (const p of promises) await p;
-    return await feedingPlanSessionDetail.setFeedingPlan(undefined);
+    const feedingPlan = await feedingPlanSessionDetail.getFeedingPlan();
+    await feedingPlan.removeFeedingPlanSessionDetail(feedingPlanSessionDetail);
+    await feedingPlanSessionDetail.setFeedingPlan(undefined);
 
   } catch (error: any) {
     throw validationErrorHandler(error);
