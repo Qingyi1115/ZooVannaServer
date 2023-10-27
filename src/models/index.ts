@@ -343,7 +343,7 @@ export const createDatabase = async (options: any) => {
     as: "animals",
   });
 
-  AnimalActivity.hasMany(AnimalActivityLog,addCascadeOptions({}));
+  AnimalActivity.hasMany(AnimalActivityLog, addCascadeOptions({}));
   AnimalActivityLog.belongsTo(AnimalActivity);
 
   Animal.belongsToMany(AnimalFeedingLog, {
@@ -1629,6 +1629,48 @@ export const animalSeed = async () => {
     "img/animal/ANM00012.jpg",
   );
 
+  let elephant1Template = await AnimalService.createNewAnimal(
+    "SPE004",
+    false,
+    "Harvey",
+    AnimalSex.MALE,
+    new Date("2000-03-04"),
+    "Singapore",
+    IdentifierType.RFID_TAG,
+    "25467392",
+    AcquisitionMethod.INHOUSE_CAPTIVE_BRED,
+    new Date("2000-03-04"),
+    "N.A.",
+    "Small ears, bruise on knee",
+    "Active, friendly",
+    null,
+    null,
+    null,
+    "SICK,INJURED",
+    "img/animal/elephantHarvey.jpg",
+  );
+
+  let elephant2Template = await AnimalService.createNewAnimal(
+    "SPE004",
+    false,
+    "Dumbo",
+    AnimalSex.FEMALE,
+    new Date("2013-06-04"),
+    "Singapore",
+    IdentifierType.RFID_TAG,
+    "34567824",
+    AcquisitionMethod.INHOUSE_CAPTIVE_BRED,
+    new Date("2013-06-04"),
+    "N.A.",
+    "Big ears, bruise on back",
+    "Docile",
+    null,
+    null,
+    null,
+    "NORMAL",
+    "img/animal/elephantDumbo.jpg",
+  );
+
   // -- add lineage
   await AnimalService.addAnimalLineage("ANM00002", "ANM00001");
   await AnimalService.addAnimalLineage("ANM00002", "ANM00004");
@@ -1668,22 +1710,22 @@ export const animalSeed = async () => {
     ActivityType.ENRICHMENT,
     "Bamboo Bonanza",
     "Treat our pandas to a bamboo feast! We'll scatter bamboo leaves and shoots throughout their habitat to encourage natural foraging behavior.",
-    new Date("2023-10-13"),
-    new Date("2023-10-13"),
-    RecurringPattern.NON_RECURRING,
-    null,
-    null,
-    EventTimingType.AFTERNOON,
-    45,
-    1
+    new Date("2023-10-27"), // startDate
+    new Date("2023-10-27"), // endDate, same as startDate if NON_RECURRING
+    RecurringPattern.NON_RECURRING, // Recurring Pattern
+    null, // day of week, only not null when recurringPattern is WEEKLY
+    null, // day of month, only not null when recurringPattern is MONTHLY
+    EventTimingType.AFTERNOON, // event timing type
+    45, // duration in minutes
+    1 // required number of keepers
   );
 
   let animalActivity2 = await AnimalService.createAnimalActivity(
     ActivityType.TRAINING,
     "Target Training",
     "Use a target stick to teach pandas to touch a designated spot. This aids in directing their movement and helps with medical check-ups.",
-    new Date("2023-10-15"),
-    new Date("2023-10-15"),
+    new Date("2023-10-28"),
+    new Date("2023-10-28"),
     RecurringPattern.NON_RECURRING,
     null,
     null,
@@ -1694,8 +1736,8 @@ export const animalSeed = async () => {
 
   let animalActivity3 = await AnimalService.createAnimalActivity(
     ActivityType.ENRICHMENT,
-    "Enrichment Activity 01",
-    "Text...",
+    "Food Foraging",
+    "Hide food in puzzle feeders and under objects around the enclosure. Involved animals will have to manipulate devices, use their claws or other features to extract food, thus engages their foraging skills",
     new Date("2023-10-16"),
     new Date("2023-10-16"),
     RecurringPattern.NON_RECURRING,
@@ -1720,8 +1762,8 @@ export const animalSeed = async () => {
   );
   let animalActivity5 = await AnimalService.createAnimalActivity(
     ActivityType.TRAINING,
-    "Training Activity 01",
-    "Text...",
+    "Jumping For Food",
+    "Involved animals are trained to jump to reach for treats from trainers' hands.",
     new Date("2023-10-18"),
     new Date("2023-11-18"),
     RecurringPattern.WEEKLY,
@@ -1731,22 +1773,39 @@ export const animalSeed = async () => {
     60,
     1
   );
+  // let animalActivity6 = await AnimalService.createAnimalActivity(
+  //   ActivityType.TRAINING,
+  //   "Training Activity 02",
+  //   "Text...",
+  //   new Date("2023-10-18"),
+  //   new Date("2023-11-18"),
+  //   RecurringPattern.DAILY,
+  //   null,
+  //   null,
+  //   EventTimingType.EVENING,
+  //   60,
+  //   1
+  // );
+
   let animalActivity6 = await AnimalService.createAnimalActivity(
-    ActivityType.TRAINING,
-    "Training Activity 02",
-    "Text...",
+    ActivityType.OBSERVATION,
+    "Behaviour Observation",
+    "Keepers will observe the involved animals to monitor their health, learn more about their habits and dynamics, and ",
     new Date("2023-10-18"),
     new Date("2023-11-18"),
     RecurringPattern.DAILY,
     null,
     null,
-    EventTimingType.EVENING,
+    EventTimingType.AFTERNOON,
     60,
     1
   );
 
-  await AnimalService.assignAnimalsToActivity(1, ["ANM00001", "ANM00003"]);
+  // animalActivityId, animalCodes
+  await AnimalService.assignAnimalsToActivity(1, ["ANM00001", "ANM00003"]); // Bamboo Bonanza, Enrichment
   await AnimalService.assignItemToActivity(1, [1, 2]);
+  await AnimalService.assignAnimalsToActivity(2, ["ANM00013", "ANM00014"]); // Target Training, Training
+  await AnimalService.assignAnimalsToActivity(6, ["ANM00013", "ANM00014"]); // Observation
 
   // -- Animal Feeding Plan
   await AnimalService.createFeedingPlan(
@@ -2312,9 +2371,9 @@ export const facilityAssetsSeed = async () => {
   ]) {
     _day = new Date(
       _day.getTime() -
-        days * 1000 * 60 * 60 * 24 +
-        Math.random() * 1000 * 60 * 60 * 24 * 4 -
-        1000 * 60 * 60 * 24 * 2,
+      days * 1000 * 60 * 60 * 24 +
+      Math.random() * 1000 * 60 * 60 * 24 * 4 -
+      1000 * 60 * 60 * 24 * 2,
     );
     sensor.addMaintenanceLog(
       await MaintenanceLog.create({
