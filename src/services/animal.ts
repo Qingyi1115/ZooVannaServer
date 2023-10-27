@@ -1185,6 +1185,7 @@ export async function getAnimalObservationLogsByAnimalActivityId(
 ) {
   try{
     return AnimalObservationLog.findAll({
+      order:[["dateTime","DESC"]],
       include:[{
         association:"keeper",
         required:false,
@@ -1217,7 +1218,9 @@ export async function getAnimalObservationLogsByAnimalActivityId(
 }
 
 export async function getAllAnimalObservationLogs() {
-  return AnimalObservationLog.findAll();
+  return AnimalObservationLog.findAll({
+    order:[["dateTime","DESC"]]
+  });
 }
 
 export async function getAnimalObservationLogById(
@@ -1254,6 +1257,7 @@ export async function getAnimalObservationLogById(
 
 export async function getAnimalObservationLogsByAnimalCode(animalCode: string) {
   return AnimalObservationLog.findAll({
+    order:[["dateTime","DESC"]],
     include: [
       {
         association: "animals",
@@ -1284,7 +1288,9 @@ export async function getAnimalObservationLogsBySpeciesCode(
   const logSet = new Set();
   const logs: AnimalObservationLog[] = [];
   for (const animal of animals) {
-    for (const log of await animal.getAnimalObservationLogs()) {
+    for (const log of await animal.getAnimalObservationLogs({
+      order:[["dateTime","DESC"]],
+    })) {
       if (!logSet.has(log.animalObservationLogId)) {
         logSet.add(log.animalObservationLogId);
         logs.push(log);
