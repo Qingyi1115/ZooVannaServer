@@ -8,6 +8,10 @@ import {
   getAllUpcomingCustomerOrderByCustomerController,
   getPastCustomerOrderByCustomerController,
   getTotalCustomerOrder,
+  getRevenueByMonth,
+  getRevenueByDay,
+  getNumberOfOrdersPerMonth,
+  getNumberOfOrdersPerDay,
 } from "../controllers/customerOrderController";
 
 const router = express.Router();
@@ -23,7 +27,16 @@ router.post(
   "/getOrderByBookingReference/:bookingReference",
   getCustomerOrderByBookingReference,
 );
+
+//for chart
+//no. of tickets grouped by listing id &/ month
 router.post("/getTotalCustomerOrder", getTotalCustomerOrder);
+//revenue by month / day
+router.post("/getRevenueByMonth", getRevenueByMonth);
+router.post("/getRevenueByDay", getRevenueByDay);
+//num of customer orders by month / day
+router.post("/getNumberOfOrdersPerMonth", getNumberOfOrdersPerMonth);
+router.post("/getNumberOfOrdersPerDay", getNumberOfOrdersPerDay);
 
 router.get(
   "/getAllUpcomingCustomerOrderByCustomer",

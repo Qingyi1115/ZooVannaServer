@@ -12,12 +12,11 @@ import {
   HasManyRemoveAssociationMixin,
 } from "Sequelize";
 import { conn } from "../db";
-import { Country, OrderStatus } from "./enumerated";
+import { Country, OrderStatus, PaymentStatus } from "./enumerated";
 import { Promotion } from "./promotion";
 import { Payment } from "./payment";
 import { Customer } from "./customer";
 import { OrderItem } from "./orderItem";
-import { PaymentStatus } from "./enumerated";
 
 class CustomerOrder extends Model<
   InferAttributes<CustomerOrder>,

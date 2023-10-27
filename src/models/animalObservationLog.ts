@@ -15,6 +15,7 @@ import {
   import { Animal } from "./animal";
 import { Rating } from "./enumerated";
 import { Keeper } from "./keeper";
+import { AnimalActivity } from "./animalActivity";
   
   class AnimalObservationLog extends Model<
     InferAttributes<AnimalObservationLog>,
@@ -28,6 +29,7 @@ import { Keeper } from "./keeper";
 
     declare animals?: Animal[];
     declare keeper?: Keeper;
+    declare animalActivity?: AnimalActivity;
   
     declare getAnimals: BelongsToManyGetAssociationsMixin<Animal>;
     declare addAnimal: BelongsToManyAddAssociationMixin<Animal, number>;
@@ -36,6 +38,9 @@ import { Keeper } from "./keeper";
   
     declare getKeeper: BelongsToGetAssociationMixin<Keeper>;
     declare setKeeper: BelongsToSetAssociationMixin<Keeper, number>;
+
+    declare getAnimalActivity: BelongsToGetAssociationMixin<AnimalActivity>;
+    declare setAnimalActivity: BelongsToSetAssociationMixin<AnimalActivity, number>;
   }
   
   AnimalObservationLog.init(

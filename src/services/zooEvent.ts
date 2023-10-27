@@ -17,13 +17,13 @@ function loopCallbackDateIntervals(
   isMonthly: boolean
 ):Promise<any>[]{
   let promises: Promise<any>[] = [];
-  while (compareDates(startDate, endDate) < 0){
+  while (compareDates(startDate, endDate) <= 0){
     promises.push(callback(startDate));
     if (!isMonthly){
       startDate = new Date(startDate.getTime() + interval);
     } else{
-      let lastday = new Date(Date.UTC(startDate.getFullYear(), startDate.getMonth() + (interval > 0 ? 1 : -1), 0)).getDate();
-      startDate = new Date(Date.UTC(startDate.getFullYear(), startDate.getMonth() + (interval > 0 ? 1 : -1), Math.min(lastday, interval)));
+      let lastday = new Date(startDate.getFullYear(), startDate.getMonth() + (interval > 0 ? 2 : 0), 0).getDate();
+      startDate = new Date(startDate.getFullYear(), startDate.getMonth() + (interval > 0 ? 1 : -1), Math.min(lastday, interval));
     }
   }
   return promises;
@@ -111,7 +111,7 @@ export async function generateMonthlyZooEventForAnimalActivity(animalActivityId:
             animalActivity.requiredNumberOfKeeper
         );
       }, 
-      getNextDayOfWeek(startDate, dayOfWeekNumber),
+      animalActivity.recurringPattern == RecurringPattern.WEEKLY ? getNextDayOfWeek(startDate, dayOfWeekNumber) : startDate,
       lastDate,
       interval,
       false
@@ -133,7 +133,7 @@ export async function createAnimalActivityZooEvent(
   requiredNumberOfKeeper: number,
 ) {
   const animalActivity = await AnimalService.getAnimalActivityById(animalActivityId);
-  // const imageURL = (await (await animalActivity.getAnimals())[0].getSpecies()).imageUrl;
+  const imageURL = (await (await animalActivity.getAnimals())[0]?.getSpecies())?.imageUrl;
   try {
     const newZooEvent = await ZooEvent.create({
       eventName: animalActivity.title,
@@ -145,10 +145,12 @@ export async function createAnimalActivityZooEvent(
       eventDurationHrs: eventDurationHrs,
       eventTiming: eventTiming,
       eventEndDateTime: null,
-      requiredNumberOfKeeper: requiredNumberOfKeeper
+      requiredNumberOfKeeper: requiredNumberOfKeeper,
+      imageUrl : imageURL
       });
     
     newZooEvent.setAnimals(await animalActivity.getAnimals());
+    newZooEvent.setEnclosure(await (await animalActivity.getAnimals())[0]?.getEnclosure());
     
     await animalActivity.addZooEvent(newZooEvent);
     return animalActivity;
@@ -229,7 +231,7 @@ export async function createFeedingPlanSessionDetailZooEvent(
 ) {
   const feedingPlanSessionDetail = await AnimalService.getFeedingPlanSessionDetailById(feedingPlanSessionDetailId);
   const feedingPlan = (await feedingPlanSessionDetail.getFeedingPlan());
-  const imageUrl = (await (await feedingPlan.getAnimals())[1].getSpecies()).imageUrl;
+  const imageUrl = (await (await feedingPlan.getAnimals())[0]?.getSpecies())?.imageUrl;
   try {
     if (eventIsPublic){
       eventStartDateTime.setHours(parseInt(publicEventStartTime?.substring(0, 2)));
@@ -242,6 +244,7 @@ export async function createFeedingPlanSessionDetailZooEvent(
       eventTiming: eventTiming,
       eventDescription: eventDescription,
       eventIsPublic: eventIsPublic,
+      eventType: eventIsPublic? EventType.CUSTOMER_FEEDING : EventType.EMPLOYEE_FEEDING,
       eventNotificationDate : new Date(eventStartDateTime.getTime() - HOUR_IN_MILLISECONDS * ANIMAL_FEEDING_NOTIFICATION_HOURS),
       requiredNumberOfKeeper : requiredNumberOfKeeper,
       eventEndDateTime : eventIsPublic? new Date(eventStartDateTime.getTime() + eventDurationHrs * HOUR_IN_MILLISECONDS) : null,
@@ -249,6 +252,7 @@ export async function createFeedingPlanSessionDetailZooEvent(
     });
 
     newZooEvent.setAnimals(await feedingPlan.getAnimals());
+    newZooEvent.setEnclosure(await (await feedingPlan.getAnimals())[0]?.getEnclosure());
     
     await feedingPlanSessionDetail.addZooEvent(newZooEvent);
     return feedingPlanSessionDetail;
@@ -403,8 +407,8 @@ export async function updateZooEventIncludeFuture(
   eventDurationHrs : number,
   eventTiming : EventTimingType,
   // Public
-  eventNotificationDate : number,
-  eventEndDateTime : number,
+  eventNotificationDate : Date,
+  eventEndDateTime : Date,
 ) {
   const zooEvent : ZooEvent = await getZooEventById(zooEventId);
   
@@ -428,10 +432,12 @@ export async function updateZooEventIncludeFuture(
           ze.eventName = eventName;
           ze.eventDescription = eventDescription;
           ze.eventIsPublic = eventIsPublic;
-          ze.eventType = eventType;
+          ze.eventType = EventType.CUSTOMER_FEEDING;
           ze.eventDurationHrs = eventDurationHrs;
           ze.eventTiming = eventTiming;
           ze.requiredNumberOfKeeper = requiredNumberOfKeeper;
+          ze.eventNotificationDate = eventNotificationDate;
+          ze.eventEndDateTime = new Date(ze.eventStartDateTime.getTime() + eventDurationHrs * HOUR_IN_MILLISECONDS)
           iKeepMyPromises.push(ze.save());
         }
       })
@@ -453,7 +459,11 @@ export async function updateZooEventIncludeFuture(
       const dateObj = new Date(eventStartDateTime);
       const day = "_" + dateObj.getDay().toString();
       feedingPlanSessionDetail.dayOfWeek= dayOfWeekMap[day];
-      feedingPlanSessionDetail.publicEventStartTime = "" + dateObj.getHours() + ":" + dateObj.getMinutes();
+      let hrstr = dateObj.getHours().toString();
+      if (hrstr.length == 1) hrstr = "0" + hrstr
+      let minstr = dateObj.getHours().toString();
+      if (minstr.length == 1) minstr = "0" + minstr
+      feedingPlanSessionDetail.publicEventStartTime = "" + hrstr + ":" + minstr;
 
       iKeepMyPromises.push(feedingPlanSessionDetail.save());
     }else{

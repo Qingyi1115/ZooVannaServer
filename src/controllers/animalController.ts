@@ -839,7 +839,7 @@ export async function createAnimalObservationLog(req: Request, res: Response) {
     const { email } = (req as any).locals.jwtPayload;
     const employee = await findEmployeeByEmail(email);
     const {
-      animalCodes,
+      animalActivityId,
       dateTime,
       durationInMinutes,
       observationQuality,
@@ -848,7 +848,7 @@ export async function createAnimalObservationLog(req: Request, res: Response) {
 
     if (
       [
-        animalCodes,
+        animalActivityId,
         dateTime,
         durationInMinutes,
         observationQuality,
@@ -856,7 +856,7 @@ export async function createAnimalObservationLog(req: Request, res: Response) {
       ].includes(undefined)
     ) {
       console.log("Missing field(s): ", {
-        animalCodes,
+        animalActivityId,
         dateTime,
         durationInMinutes,
         observationQuality,
@@ -868,7 +868,7 @@ export async function createAnimalObservationLog(req: Request, res: Response) {
     // have to pass in req for image uploading
     let animalObservationLog = await AnimalService.createAnimalObservationLog(
       employee.employeeId,
-      animalCodes,
+      animalActivityId,
       new Date(dateTime),
       Number(durationInMinutes),
       observationQuality,
@@ -995,7 +995,6 @@ export async function updateAnimalObservationLog(req: Request, res: Response) {
   try {
     const { animalObservationLogId } = req.params;
     const {
-      animalCodes,
       dateTime,
       durationInMinutes,
       observationQuality,
@@ -1005,7 +1004,6 @@ export async function updateAnimalObservationLog(req: Request, res: Response) {
     if (
       [
         animalObservationLogId,
-        animalCodes,
         dateTime,
         durationInMinutes,
         observationQuality,
@@ -1014,7 +1012,6 @@ export async function updateAnimalObservationLog(req: Request, res: Response) {
     ) {
       console.log("Missing field(s): ", {
         animalObservationLogId,
-        animalCodes,
         dateTime,
         durationInMinutes,
         observationQuality,
@@ -1025,7 +1022,6 @@ export async function updateAnimalObservationLog(req: Request, res: Response) {
 
     let animalObservationLog = await AnimalService.updateAnimalObservationLog(
       Number(animalObservationLogId),
-      animalCodes,
       new Date(dateTime),
       Number(durationInMinutes),
       observationQuality,
@@ -1069,16 +1065,32 @@ export async function createAnimalFeedingLog(req: Request, res: Response) {
   try {
     const { email } = (req as any).locals.jwtPayload;
     const employee = await findEmployeeByEmail(email);
-    const { dateTime, durationInMinutes, details, animalCodes } = req.body;
+    const { dateTime, durationInMinutes, 
+      amountOffered,
+      amountConsumed,
+      amountLeftovers,
+      presentationMethod,
+      feedingPlanId,
+      extraRemarks } = req.body;
 
     if (
-      [dateTime, durationInMinutes, details, animalCodes].includes(undefined)
+      [dateTime, durationInMinutes, 
+        amountOffered,
+        amountConsumed,
+        amountLeftovers,
+        presentationMethod,
+        feedingPlanId,
+        extraRemarks].includes(undefined)
     ) {
       console.log("Missing field(s): ", {
         dateTime,
         durationInMinutes,
-        details,
-        animalCodes,
+        amountOffered,
+        amountConsumed,
+        amountLeftovers,
+        presentationMethod,
+        extraRemarks,
+        feedingPlanId,
       });
       return res.status(400).json({ error: "Missing information!" });
     }
@@ -1088,8 +1100,12 @@ export async function createAnimalFeedingLog(req: Request, res: Response) {
       employee.employeeId,
       new Date(dateTime),
       Number(durationInMinutes),
-      details,
-      animalCodes,
+      amountOffered,
+      amountConsumed,
+      amountLeftovers,
+      presentationMethod,
+      extraRemarks,
+      feedingPlanId,
     );
 
     return res.status(200).json({ animalObservationLog: animalObservationLog });
@@ -1135,10 +1151,10 @@ export async function getAnimalFeedingLogByFeedingPlanId(req: Request, res: Resp
     let animalFeedingLogs = await AnimalService.getAnimalFeedingLogByFeedingPlanId(
       Number(feedingPlanId),
     );
-
+      
     return res
       .status(200)
-      .json({ animalFeedingLogs: animalFeedingLogs.forEach(log => log.toJSON()) });
+      .json({ animalFeedingLogs: animalFeedingLogs.map(log => log.toJSON()) });
   } catch (error: any) {
     res.status(400).json({ error: error.message });
   }
@@ -1201,23 +1217,34 @@ export async function getAnimalFeedingLogsBySpeciesCode(
 export async function updateAnimalFeedingLog(req: Request, res: Response) {
   try {
     const { animalFeedingLogId } = req.params;
-    const { dateTime, durationInMinutes, details, animalCodes } = req.body;
+    const { dateTime, durationInMinutes, 
+      amountOffered,
+      amountConsumed,
+      amountLeftovers,
+      presentationMethod,
+      extraRemarks } = req.body;
 
     if (
       [
         animalFeedingLogId,
         dateTime,
         durationInMinutes,
-        details,
-        animalCodes,
+        amountOffered,
+        amountConsumed,
+        amountLeftovers,
+        presentationMethod,
+        extraRemarks,
       ].includes(undefined)
     ) {
       console.log("Missing field(s): ", {
         animalFeedingLogId,
         dateTime,
         durationInMinutes,
-        details,
-        animalCodes,
+        amountOffered,
+        amountConsumed,
+        amountLeftovers,
+        presentationMethod,
+        extraRemarks,
       });
       return res.status(400).json({ error: "Missing information!" });
     }
@@ -1226,8 +1253,11 @@ export async function updateAnimalFeedingLog(req: Request, res: Response) {
       Number(animalFeedingLogId),
       new Date(dateTime),
       Number(durationInMinutes),
-      details,
-      animalCodes,
+      amountOffered,
+      amountConsumed,
+      amountLeftovers,
+      presentationMethod,
+      extraRemarks
     );
 
     return res
@@ -1271,7 +1301,6 @@ export async function createAnimalActivityLog(req: Request, res: Response) {
       sessionRating,
       animalReaction,
       details,
-      animalCodes,
     } = req.body;
 
     if (
@@ -1283,7 +1312,6 @@ export async function createAnimalActivityLog(req: Request, res: Response) {
         sessionRating,
         animalReaction,
         details,
-        animalCodes,
       ].includes(undefined)
     ) {
       console.log("Missing field(s): ", {
@@ -1294,7 +1322,6 @@ export async function createAnimalActivityLog(req: Request, res: Response) {
         sessionRating,
         animalReaction,
         details,
-        animalCodes,
       });
       return res.status(400).json({ error: "Missing information!" });
     }
@@ -1309,7 +1336,6 @@ export async function createAnimalActivityLog(req: Request, res: Response) {
       sessionRating,
       animalReaction,
       details,
-      animalCodes,
     );
 
     return res
@@ -1897,11 +1923,12 @@ export async function deleteFeedingPlanSessionDetailById(
   }
 
   try {
-    const animalWeight = await AnimalService.deleteFeedingPlanSessionDetailById(
+    await AnimalService.deleteFeedingPlanSessionDetailById(
       Number(feedingPlanDetailId),
     );
-    return res.status(200).json(animalWeight);
+    return res.status(200).json({result:"success"});
   } catch (error: any) {
+    console.log(error)
     res.status(400).json({ error: error.message });
   }
 }
