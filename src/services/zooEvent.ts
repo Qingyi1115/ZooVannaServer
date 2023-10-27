@@ -244,6 +244,7 @@ export async function createFeedingPlanSessionDetailZooEvent(
       eventTiming: eventTiming,
       eventDescription: eventDescription,
       eventIsPublic: eventIsPublic,
+      eventType: eventIsPublic? EventType.CUSTOMER_FEEDING : EventType.EMPLOYEE_FEEDING,
       eventNotificationDate : new Date(eventStartDateTime.getTime() - HOUR_IN_MILLISECONDS * ANIMAL_FEEDING_NOTIFICATION_HOURS),
       requiredNumberOfKeeper : requiredNumberOfKeeper,
       eventEndDateTime : eventIsPublic? new Date(eventStartDateTime.getTime() + eventDurationHrs * HOUR_IN_MILLISECONDS) : null,
@@ -431,7 +432,7 @@ export async function updateZooEventIncludeFuture(
           ze.eventName = eventName;
           ze.eventDescription = eventDescription;
           ze.eventIsPublic = eventIsPublic;
-          ze.eventType = eventType;
+          ze.eventType = EventType.CUSTOMER_FEEDING;
           ze.eventDurationHrs = eventDurationHrs;
           ze.eventTiming = eventTiming;
           ze.requiredNumberOfKeeper = requiredNumberOfKeeper;
