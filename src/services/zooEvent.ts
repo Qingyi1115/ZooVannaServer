@@ -111,7 +111,7 @@ export async function generateMonthlyZooEventForAnimalActivity(animalActivityId:
             animalActivity.requiredNumberOfKeeper
         );
       }, 
-      getNextDayOfWeek(startDate, dayOfWeekNumber),
+      animalActivity.recurringPattern == RecurringPattern.WEEKLY ? getNextDayOfWeek(startDate, dayOfWeekNumber) : startDate,
       lastDate,
       interval,
       false
