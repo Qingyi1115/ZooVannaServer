@@ -1291,7 +1291,6 @@ export async function getAnimalObservationLogsBySpeciesCode(
 
 export async function updateAnimalObservationLog(
   animalObservationLogId: number,
-  animalActivityId:number,
   dateTime: Date,
   durationInMinutes: number,
   observationQuality: Rating,
@@ -1300,12 +1299,6 @@ export async function updateAnimalObservationLog(
   const animalObservationLog = await getAnimalObservationLogById(
     animalObservationLogId,
   );
-  
-  const animalActivity = await getAnimalActivityById(animalActivityId);
-
-  if (animalActivity.activityType != ActivityType.OBSERVATION) throw {message:"Not observation activity!"}
-
-  await animalObservationLog.setAnimals(await animalActivity.getAnimals());
 
   animalObservationLog.dateTime = dateTime;
   animalObservationLog.durationInMinutes = durationInMinutes;
