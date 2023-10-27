@@ -151,13 +151,16 @@ export async function getAllFacilityMaintenanceSuggestions(employee: Employee) {
       facilities = await getAllFacility(
           [{
             association:"inHouse",
+            required:true,
             include:{
               association : "facilityLogs",
               required:true,
               include:{
                 association:"generalStaffs",
+                required:true,
                 include:{
                   association: "employee",
+                  required:true,
                   where:{
                     employeeId: employee.employeeId
                   }
@@ -169,11 +172,13 @@ export async function getAllFacilityMaintenanceSuggestions(employee: Employee) {
         const maintenanceFacility = await getAllFacility(
             [{
               association:"inHouse",
+              required:true,
               include:{
                 association : "maintenanceStaffs",
                 required:true,
                 include:{
                   association: "employee",
+                  required:true,
                   where:{
                     employeeId: employee.employeeId
                   }
