@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import * as ZooEvent from "../services/zooEvent";
 import { findEmployeeByEmail } from "../services/employee";
+import { PlannerType } from "../models/enumerated";
 
 export async function getAllZooEvents(req: Request, res: Response) {
   const { email } = (req as any).locals.jwtPayload;
@@ -22,16 +23,32 @@ export async function getAllZooEvents(req: Request, res: Response) {
     return res.status(400).json({ error: "Missing information!" });
   }
 
-  const _includes: string[] = [];
+  const _includes: any[] = [];
   for (const role of [
     "planningStaff",
     "keepers",
     "enclosure",
-    "animal",
+    "animals",
     "inHouse",
     "animalActivity",
   ]) {
-    if (includes.includes(role)) _includes.push(role);
+    if (includes.includes(role)){
+      _includes.push({
+        association:role,
+        required:false
+      });
+    } 
+  }
+
+  if (includes.includes("feedingPlanSessionDetail")) {
+    _includes.push({
+      association: "feedingPlanSessionDetail",
+      required:false,
+      include:{
+        association:"feedingPlan",
+        required:false
+      }
+    });
   }
 
   try {
@@ -124,6 +141,7 @@ export async function updateZooEventIncludeFuture(req: Request, res: Response) {
     eventIsPublic,
     eventType,
     eventStartDateTime,
+    requiredNumberOfKeeper,
 
     eventDurationHrs,
     eventTiming,
@@ -139,10 +157,10 @@ export async function updateZooEventIncludeFuture(req: Request, res: Response) {
     eventDescription,
     eventIsPublic,
     eventType,
-    eventStartDateTime
-  ].includes(undefined) || zooEventId == ""
-  || !eventIsPublic? [eventDurationHrs, eventTiming].includes(undefined) 
-                  :[eventNotificationDate, eventEndDateTime].includes(undefined)) {
+    eventStartDateTime,
+    requiredNumberOfKeeper,
+    eventIsPublic,
+  ].includes(undefined) || zooEventId == "") {
     console.log("Missing field(s): ", {
       zooEventId, 
       eventName, 
@@ -162,17 +180,111 @@ export async function updateZooEventIncludeFuture(req: Request, res: Response) {
       eventIsPublic,
       eventType,
       eventStartDateTime,
+      requiredNumberOfKeeper,
   
       eventDurationHrs,
       eventTiming,
       
-      eventNotificationDate,
-      eventEndDateTime,
+      eventIsPublic? new Date(eventNotificationDate) : new Date(),
+      eventIsPublic ? new Date(eventEndDateTime) : new Date(),
     );
-    return res.status(200).json({zooEvent:newZooEvent});
+    return res.status(200).json({zooEvent:newZooEvent.toJSON()});
+  } catch (error: any) {
+    console.log("error",error)
+    res.status(400).json({ error: error.message });
+  }
+}
+
+export async function assignZooEventKeeper(req: Request, res: Response) {
+  const { email } = (req as any).locals.jwtPayload;
+  const employee = await findEmployeeByEmail(email);
+
+  const { 
+    zooEventIds, 
+    employeeIds,
+   } = req.body;
+
+
+  if ([
+    zooEventIds, 
+    employeeIds,
+  ].includes(undefined)) {
+
+    console.log("Missing field(s): ", {
+      zooEventIds, 
+      employeeIds,
+    });
+    return res.status(400).json({ error: "Missing information!" });
+  }
+
+  try {
+    await ZooEvent.assignZooEventKeeper(
+      zooEventIds.map((zooEventId:string) => Number(zooEventId)),
+      employeeIds.map((employeeId:string) => Number(employeeId)),
+    );
+    return res.status(200).json({result:"success"});
+  } catch (error: any) {
+    console.log("error",error)
+    res.status(400).json({ error: error.message });
+  }
+}
+
+export async function removeKeeperfromZooEvent(req: Request, res: Response) {
+  const { email } = (req as any).locals.jwtPayload;
+  const employee = await findEmployeeByEmail(email);
+
+  const { 
+    zooEventIds, 
+    employeeIds,
+   } = req.body;
+
+
+  if ([
+    zooEventIds, 
+    employeeIds,
+  ].includes(undefined)) {
+
+    console.log("Missing field(s): ", {
+      zooEventIds, 
+      employeeIds,
+    });
+    return res.status(400).json({ error: "Missing information!" });
+  }
+
+  try {
+    await ZooEvent.removeKeeperfromZooEvent(
+      zooEventIds.map((zooEventId:string) => Number(zooEventId)),
+      employeeIds.map((employeeId:string) => Number(employeeId)),
+    );
+    return res.status(200).json({result:"success"});
   } catch (error: any) {
     res.status(400).json({ error: error.message });
   }
+}
+
+export async function autoAssignKeeperToZooEvent(req: Request, res: Response){
+    try {
+      const { email } = (req as any).locals.jwtPayload;
+      const employee = await findEmployeeByEmail(email);
+  
+      if (!employee.superAdmin && (
+        !(
+          (await employee.getPlanningStaff())?.plannerType ==
+          PlannerType.OPERATIONS_MANAGER
+        ) &&
+        !(await employee.getGeneralStaff()))
+      )
+        return res
+          .status(403)
+          .json({ error: "Access Denied! Operation managers only!" });
+
+
+
+      return res.status(200).json({zooEvents : await ZooEvent.autoAssignKeeperToZooEvent()});
+  } catch (error: any) {
+    res.status(400).json({ error: error.message });
+  }
+
 }
 
 export async function deleteZooEvent(req: Request, res: Response) {
@@ -187,6 +299,26 @@ export async function deleteZooEvent(req: Request, res: Response) {
       Number(zooEventId)
     );
     return res.status(200).json({result:"success"});
+  } catch (error: any) {
+    res.status(400).json({ error: error.message });
+  }
+}
+
+export async function getKeepersForZooEvent(req: Request, res: Response) {
+  const { email } = (req as any).locals.jwtPayload;
+  const employee = await findEmployeeByEmail(email);
+
+  // Check authentication
+   const {zooEventId} = req.params;
+
+  try {
+    const [availiableKeepers, currentKeepers] = await ZooEvent.getKeepersForZooEvent(
+      Number(zooEventId)
+    );
+    return res.status(200).json({
+      availiableKeepers:availiableKeepers,
+      currentKeepers:currentKeepers
+    });
   } catch (error: any) {
     res.status(400).json({ error: error.message });
   }

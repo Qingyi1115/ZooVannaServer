@@ -19,7 +19,7 @@ import {
   updateSpecializationType,
   getAllGeneralStaffs,
 } from "../services/employee";
-import { PlannerType } from "../models/enumerated";
+import { GeneralStaffType, PlannerType } from "../models/enumerated";
 import { GeneralStaff } from "../models/generalStaff";
 
 export async function login(req: Request, res: Response) {
@@ -245,9 +245,19 @@ export async function getAllEmployeesController(req: Request, res: Response) {
     }
 
     const { includes = [] } = req.body;
-    const _includes: string[] = [];
-    for (const role of ["keeper", "generalStaff", "planningStaff"]) {
+    const _includes: any[] = [];
+    for (const role of ["generalStaff", "planningStaff"]) {
       if (includes.includes(role)) _includes.push(role);
+    }
+    if (includes.includes["keeper"]){
+      _includes.push({
+        association:"keeper",
+        required:false,
+        include:[{
+          association:"zooEvents",
+          required:false
+        }]
+      });
     }
 
     let result = await getAllEmployees(_includes);
@@ -269,7 +279,9 @@ export async function getAllGeneralStaffsController(
     if (
       !employee.isAccountManager &&
       (await employee.getPlanningStaff())?.plannerType !=
-        PlannerType.OPERATIONS_MANAGER
+        PlannerType.OPERATIONS_MANAGER &&
+      (await employee.getGeneralStaff())?.generalStaffType !=
+        GeneralStaffType.ZOO_MAINTENANCE
     ) {
       return res.status(403).json({ error: "Access Denied!" });
     }

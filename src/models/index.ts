@@ -343,6 +343,12 @@ export const createDatabase = async (options: any) => {
     as: "animals",
   });
 
+  AnimalActivity.hasMany(AnimalActivityLog,addCascadeOptions({}));
+  AnimalActivityLog.belongsTo(AnimalActivity);
+
+  AnimalActivity.hasMany(AnimalObservationLog,addCascadeOptions({}));
+  AnimalObservationLog.belongsTo(AnimalActivity);
+
   Animal.belongsToMany(AnimalFeedingLog, {
     foreignKey: "animalId",
     through: "animal_feedingLog",
@@ -456,14 +462,33 @@ export const createDatabase = async (options: any) => {
   Keeper.hasMany(AnimalFeedingLog, { foreignKey: "keeperId" });
   AnimalFeedingLog.belongsTo(Keeper, { foreignKey: "keeperId" });
 
+  Keeper.belongsToMany(Enclosure, {
+    foreignKey: "keeperId",
+    through: "keeper_enclosure",
+    as: "enclosures",
+  });
+  Enclosure.belongsToMany(Keeper, {
+    foreignKey: "enclosureId",
+    through: "keeper_enclosure",
+    as: "keepers",
+  });
+
   Enclosure.hasMany(ZooEvent, addCascadeOptions({ foreignKey: "enclosureId" }));
   ZooEvent.belongsTo(
     Enclosure,
     addCascadeOptions({ foreignKey: "enclosureId" }),
   );
 
-  Animal.hasMany(ZooEvent, addCascadeOptions({ foreignKey: "animalId" }));
-  ZooEvent.belongsTo(Animal, addCascadeOptions({ foreignKey: "animalId" }));
+  Animal.belongsToMany(ZooEvent, {
+    foreignKey: "animalId",
+    through: "animal_zooEvent",
+    as: "zooEvents",
+  });
+  ZooEvent.belongsToMany(Animal, {
+    foreignKey: "zooEventId",
+    through: "animal_zooEvent",
+    as: "animals",
+  });
 
   InHouse.hasMany(ZooEvent, addCascadeOptions({ foreignKey: "inHouseId" }));
   ZooEvent.belongsTo(InHouse, addCascadeOptions({ foreignKey: "inHouseId" }));
@@ -1653,9 +1678,7 @@ export const animalSeed = async () => {
     null,
     EventTimingType.AFTERNOON,
     45,
-    false,
-    null,
-    null,
+    1
   );
 
   let animalActivity2 = await AnimalService.createAnimalActivity(
@@ -1669,9 +1692,7 @@ export const animalSeed = async () => {
     null,
     EventTimingType.MORNING,
     60,
-    false,
-    null,
-    null,
+    1
   );
 
   let animalActivity3 = await AnimalService.createAnimalActivity(
@@ -1685,9 +1706,7 @@ export const animalSeed = async () => {
     null,
     EventTimingType.MORNING,
     60,
-    false,
-    null,
-    null,
+    1
   );
   let animalActivity4 = await AnimalService.createAnimalActivity(
     ActivityType.ENRICHMENT,
@@ -1700,9 +1719,7 @@ export const animalSeed = async () => {
     7,
     EventTimingType.MORNING,
     60,
-    false,
-    null,
-    null,
+    1
   );
   let animalActivity5 = await AnimalService.createAnimalActivity(
     ActivityType.TRAINING,
@@ -1715,9 +1732,7 @@ export const animalSeed = async () => {
     null,
     EventTimingType.AFTERNOON,
     60,
-    false,
-    null,
-    null,
+    1
   );
   let animalActivity6 = await AnimalService.createAnimalActivity(
     ActivityType.TRAINING,
@@ -1730,9 +1745,20 @@ export const animalSeed = async () => {
     null,
     EventTimingType.EVENING,
     60,
-    false,
+    1
+  );
+  let animalActivity7 = await AnimalService.createAnimalActivity(
+    ActivityType.OBSERVATION,
+    "Pang Pang fat panda observation",
+    "Watch how pang pang eat 10kg of feed per minute",
+    new Date("2023-10-18"),
+    new Date("2023-11-18"),
+    RecurringPattern.DAILY,
     null,
     null,
+    EventTimingType.EVENING,
+    60,
+    1
   );
 
   await AnimalService.assignAnimalsToActivity(1, ["ANM00001", "ANM00003"]);
@@ -1744,7 +1770,7 @@ export const animalSeed = async () => {
     ["ANM00001", "ANM00002", "ANM00003"],
     "Some description...",
     new Date("2023-10-13"),
-    new Date("2023-10-22"),
+    new Date("2024-01-22"),
     [],
   );
 
@@ -1753,7 +1779,7 @@ export const animalSeed = async () => {
     ["ANM00003", "ANM00004", "ANM00005", "ANM00006"],
     "Some description...",
     new Date("2023-10-13"),
-    new Date("2023-10-22"),
+    new Date("2024-01-22"),
     [],
   );
 
@@ -1762,37 +1788,59 @@ export const animalSeed = async () => {
     ["ANM00011"],
     "Some description...",
     new Date("2023-10-13"),
-    new Date("2023-10-22"),
+    new Date("2024-01-22"),
     [],
   );
 
   await AnimalService.createFeedingPlanSessionDetail(
     1,
-    "MONDAY",
-    "MORNING",
+    DayOfWeek.MONDAY,
+    EventTimingType.MORNING,
     120,
+    false,
+    null,
     [],
+    1
   );
   await AnimalService.createFeedingPlanSessionDetail(
     1,
-    "MONDAY",
-    "AFTERNOON",
+    DayOfWeek.MONDAY,
+    EventTimingType.AFTERNOON,
     120,
+    false,
+    null,
     [],
+    1
   );
   await AnimalService.createFeedingPlanSessionDetail(
     1,
-    "FRIDAY",
-    "EVENING",
+    DayOfWeek.FRIDAY,
+    EventTimingType.EVENING,
     120,
+    false,
+    null,
     [],
+    1
   );
   await AnimalService.createFeedingPlanSessionDetail(
     2,
-    "MONDAY",
-    "AFTERNOON",
+    DayOfWeek.MONDAY,
+    EventTimingType.AFTERNOON,
     120,
+    false,
+    null,
     [],
+    1
+  );
+  await AnimalService.createFeedingPlanSessionDetail(
+    2,
+    DayOfWeek.MONDAY,
+    EventTimingType.AFTERNOON,
+    120,
+    true,
+    "13:15",
+    [],
+    1
   );
 
   await AnimalService.createFeedingItem(1, "ANM00001", "FRUITS", 5, "KG");
@@ -1871,16 +1919,171 @@ export const enrichmentItemSeed = async () => {
 };
 
 export const facilityAssetsSeed = async () => {
-  let toiletTemplate = {
-    facilityName: "Toilet",
+  let facility3 = {
+    facilityName: "Info Centre",
     isSheltered: true,
     showOnMap: true,
+    xCoordinate: 103.78114318847656,
+    yCoordinate: 1.29179263114929,
+    inHouse: {
+      lastMaintained: new Date(),
+      isPaid: false,
+      maxAccommodationSize: 5,
+      hasAirCon: false,
+      facilityType: FacilityType.INFORMATION_CENTRE,
+    } as any,
+  } as any;
+  let f3 = await Facility.create(facility3, { include: ["inHouse"] });
+  let f3h: InHouse = await f3.getFacilityDetail();
+
+  let facility4 = {
+    facilityName: "Directory",
+    isSheltered: true,
+    showOnMap: true,
+    xCoordinate: 103.78115844726562,
+    yCoordinate: 1.29660260677338,
+    inHouse: {
+      lastMaintained: new Date(),
+      isPaid: false,
+      maxAccommodationSize: 5,
+      hasAirCon: false,
+      facilityType: FacilityType.ZOO_DIRECTORY,
+    } as any,
+  } as any;
+  let f4 = await Facility.create(facility4, { include: ["inHouse"] });
+  let f4h: InHouse = await f4.getFacilityDetail();
+
+  let facility5 = {
+    facilityName: "Shop",
+    isSheltered: true,
+    showOnMap: true,
+    xCoordinate: 103.78221130371094,
+    yCoordinate: 1.29178547859192,
+    inHouse: {
+      lastMaintained: new Date(),
+      isPaid: false,
+      maxAccommodationSize: 5,
+      hasAirCon: false,
+      facilityType: FacilityType.SHOP_SOUVENIR,
+    } as any,
+  } as any;
+  let f5 = await Facility.create(facility5, { include: ["inHouse"] });
+  let f5h: InHouse = await f5.getFacilityDetail();
+
+  let facility6 = {
+    facilityName: "Parking",
+    isSheltered: true,
+    showOnMap: true,
+    xCoordinate: 103.7817,
+    yCoordinate: 1.291,
     inHouse: {
       lastMaintained: new Date(),
       isPaid: false,
       maxAccommodationSize: 5,
       hasAirCon: false,
       facilityType: FacilityType.PARKING,
+    } as any,
+  } as any;
+  let f6 = await Facility.create(facility6, { include: ["inHouse"] });
+  let f6h: InHouse = await f6.getFacilityDetail();
+
+  let facility7 = {
+    facilityName: "Amphitheatre",
+    isSheltered: true,
+    showOnMap: true,
+    xCoordinate: 103.77511596679688,
+    yCoordinate: 1.2956326007843,
+    inHouse: {
+      lastMaintained: new Date(),
+      isPaid: false,
+      maxAccommodationSize: 5,
+      hasAirCon: false,
+      facilityType: FacilityType.AMPHITHEATRE,
+    } as any,
+  } as any;
+  let f7 = await Facility.create(facility7, { include: ["inHouse"] });
+  let f7h: InHouse = await f7.getFacilityDetail();
+
+  let facility8 = {
+    facilityName: "Playground",
+    isSheltered: true,
+    showOnMap: true,
+    xCoordinate: 103.7804946899414,
+    yCoordinate: 1.29745411872864,
+    inHouse: {
+      lastMaintained: new Date(),
+      isPaid: false,
+      maxAccommodationSize: 5,
+      hasAirCon: false,
+      facilityType: FacilityType.PLAYGROUND,
+    } as any,
+  } as any;
+  let f8 = await Facility.create(facility8, { include: ["inHouse"] });
+  let f8h: InHouse = await f8.getFacilityDetail();
+
+  let facility9 = {
+    facilityName: "Nursery",
+    isSheltered: true,
+    showOnMap: true,
+    xCoordinate: 103.7739486694336,
+    yCoordinate: 1.29762589931488,
+    inHouse: {
+      lastMaintained: new Date(),
+      isPaid: false,
+      maxAccommodationSize: 5,
+      hasAirCon: false,
+      facilityType: FacilityType.NURSERY,
+    } as any,
+  } as any;
+  let f9 = await Facility.create(facility9, { include: ["inHouse"] });
+  let f9h: InHouse = await f9.getFacilityDetail();
+
+  let facility10 = {
+    facilityName: "Gazebo",
+    isSheltered: true,
+    showOnMap: true,
+    xCoordinate: 103.7840576171875,
+    yCoordinate: 1.29575824737549,
+    inHouse: {
+      lastMaintained: new Date(),
+      isPaid: false,
+      maxAccommodationSize: 5,
+      hasAirCon: false,
+      facilityType: FacilityType.GAZEBO,
+    } as any,
+  } as any;
+  let f10 = await Facility.create(facility10, { include: ["inHouse"] });
+  let f10h: InHouse = await f10.getFacilityDetail();
+
+  let facility11 = {
+    facilityName: "Tiger Pool Cafe",
+    isSheltered: true,
+    showOnMap: true,
+    xCoordinate: 103.7768325805664,
+    yCoordinate: 1.2946457862854,
+    inHouse: {
+      lastMaintained: new Date(),
+      isPaid: false,
+      maxAccommodationSize: 5,
+      hasAirCon: false,
+      facilityType: FacilityType.RESTAURANT,
+    } as any,
+  } as any;
+  let f11 = await Facility.create(facility11, { include: ["inHouse"] });
+  let f11h: InHouse = await f11.getFacilityDetail();
+
+  let toiletTemplate = {
+    facilityName: "Toilet",
+    isSheltered: true,
+    showOnMap: true,
+    xCoordinate: 103.77333068847656,
+    yCoordinate: 1.2970198392868,
+    inHouse: {
+      lastMaintained: new Date(),
+      isPaid: false,
+      maxAccommodationSize: 5,
+      hasAirCon: false,
+      facilityType: FacilityType.RESTROOM,
     } as any,
   } as any;
   let toilet = await Facility.create(toiletTemplate, { include: ["inHouse"] });
@@ -1906,9 +2109,9 @@ export const facilityAssetsSeed = async () => {
 
   let facility1 = await Facility.create(
     {
-      facilityName: "facility1",
-      xCoordinate: 123,
-      yCoordinate: 654,
+      facilityName: "Tram Stop 1",
+      xCoordinate: 103.7780990600586,
+      yCoordinate: 1.29767763614655,
       isSheltered: true,
       showOnMap: true,
       hubProcessors: [
@@ -2001,8 +2204,10 @@ export const facilityAssetsSeed = async () => {
 
   let tram1 = await Facility.create(
     {
-      facilityName: "tram1",
+      facilityName: "Tram Stop 2",
       isSheltered: true,
+      xCoordinate: 5,
+      yCoordinate: 50,
 
       //@ts-ignore
       inHouse: {

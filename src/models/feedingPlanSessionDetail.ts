@@ -25,6 +25,9 @@ class FeedingPlanSessionDetail extends Model<
   declare dayOfWeek: DayOfWeek;
   declare eventTimingType: EventTimingType;
   declare durationInMinutes: number;
+  declare isPublic: boolean;
+  declare publicEventStartTime: string | null;
+  declare requiredNumberOfKeeper : number;
 
   //--FK
   declare feedingPlan?: FeedingPlan;
@@ -65,7 +68,22 @@ FeedingPlanSessionDetail.init(
     durationInMinutes:{
       type: DataTypes.INTEGER,
       allowNull: false,
-    }
+    },
+    isPublic:{
+      type: DataTypes.BOOLEAN,
+      allowNull: false,
+    },
+    publicEventStartTime:{
+      type: DataTypes.STRING(5),
+      allowNull: true,
+      validate:{
+        is: /[0-2]\d:[0-5]\d/
+      }
+    },
+    requiredNumberOfKeeper: {
+      type: DataTypes.INTEGER,
+      allowNull:false
+    },
   },
   {
     freezeTableName: true,

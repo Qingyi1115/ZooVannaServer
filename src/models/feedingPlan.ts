@@ -30,6 +30,7 @@ class FeedingPlan extends Model<
   declare feedingPlanDesc: string;
   declare startDate: Date;
   declare endDate: Date;
+  declare title:string;
 
   //--FK
   declare species?: Species;
@@ -97,6 +98,10 @@ FeedingPlan.init(
     },
     endDate: {
       type: DataTypes.DATE,
+      allowNull: false,
+    },
+    title: {
+      type: DataTypes.STRING,
       allowNull: false,
     },
   },

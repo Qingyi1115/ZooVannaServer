@@ -1,4 +1,10 @@
-import { FacilityLogType, GeneralStaffType, HubStatus, PlannerType, SensorType } from "../models/enumerated";
+import {
+  FacilityLogType,
+  GeneralStaffType,
+  HubStatus,
+  PlannerType,
+  SensorType,
+} from "../models/enumerated";
 import { validationErrorHandler } from "../helpers/errorHandler";
 import { Facility } from "../models/facility";
 import { Sensor } from "../models/sensor";
@@ -14,6 +20,7 @@ import { Employee } from "../models/employee";
 import { SensorReading } from "../models/sensorReading";
 import { Op } from "Sequelize";
 import { Zone } from "../models/zone";
+import { CustomerReportLog } from "../models/customerReportLog";
 
 export async function createNewZone(zoneName: string) {
   try {
@@ -122,7 +129,18 @@ export async function getAllFacilityMaintenanceSuggestions(employee: Employee) {
       (await employee.getPlanningStaff())?.plannerType ==
       PlannerType.OPERATIONS_MANAGER
     ) {
-      const allFacilities = await getAllFacility([], true);
+      const allFacilities = await getAllFacility(
+          [{
+            association:"inHouse",
+            include:{
+              association : "facilityLogs",
+              required:false,
+              include:{
+                association:"generalStaffs"
+              }
+            }
+          }]
+        , true);
       for (const facility of allFacilities) {
         const ih = await facility.getFacilityDetail();
         if (facility.facilityDetail == "inHouse") facilities.push(facility);
@@ -130,18 +148,54 @@ export async function getAllFacilityMaintenanceSuggestions(employee: Employee) {
     } else if (!(await employee.getGeneralStaff())) {
       throw { message: "No access!" };
     } else {
-      const allInHouses = await (
-        await employee.getGeneralStaff()
-      ).getMaintainedFacilities();
-      for (const inHouse of allInHouses) {
-        facilities.push(await inHouse.getFacility());
+      facilities = await getAllFacility(
+          [{
+            association:"inHouse",
+            include:{
+              association : "facilityLogs",
+              required:true,
+              include:{
+                association:"generalStaffs",
+                include:{
+                  association: "employee",
+                  where:{
+                    employeeId: employee.employeeId
+                  }
+                }
+              }
+            }
+          }]
+        , true);
+        const maintenanceFacility = await getAllFacility(
+            [{
+              association:"inHouse",
+              include:{
+                association : "maintenanceStaffs",
+                required:true,
+                include:{
+                  association: "employee",
+                  where:{
+                    employeeId: employee.employeeId
+                  }
+                }
+              }
+            }]
+          , true);
+        
+
+      for (const facilityNew of maintenanceFacility) {
+        if (!facilities.find(facility=> facility.facilityId == facilityNew.facilityId)) facilities.push(facilityNew);
       }
+
     }
 
     for (const facility of facilities) {
       let inHouse = await (facility as any).getFacilityDetail();
       let logs = (await inHouse.getFacilityLogs()) || [];
-      logs = logs.filter((log: FacilityLog) => log.facilityLogType == FacilityLogType.MAINTENANCE_LOG);
+      logs = logs.filter(
+        (log: FacilityLog) =>
+          log.facilityLogType == FacilityLogType.MAINTENANCE_LOG,
+      );
       logs = logs.map((log: FacilityLog) => log.dateTime);
       (facility as any).dataValues["predictedMaintenanceDate"] =
         predictNextDate(logs);
@@ -343,21 +397,24 @@ export async function getFacilityLogs(
   facilityId: number,
 ): Promise<FacilityLog[]> {
   try {
-    const facility = await Facility.findOne({
-      where: { facilityId: facilityId },
-    });
+    const facility : Facility = await getFacilityById(facilityId);
     if (!facility) throw { message: "Unable to find facilityId: " + facility };
-    const thirdParty = await facility.getFacilityDetail();
+    const inHouse : InHouse = await facility.getFacilityDetail();
     if (facility.facilityDetail != "inHouse")
       throw { message: "Not an in-house facility!" };
 
-    return thirdParty.getFacilityLogs();
+    return inHouse.getFacilityLogs(
+      {
+        include:{
+          association:"generalStaffs",
+          include:["employee"]
+        }
+      }
+    );
   } catch (error: any) {
     throw validationErrorHandler(error);
   }
 }
-
-
 
 export async function createFacilityLog(
   facilityId: number,
@@ -366,7 +423,7 @@ export async function createFacilityLog(
   remarks: string,
   staffName: string,
   facilityLogType: FacilityLogType,
-  employeeIds: number[]
+  employeeIds: number[],
 ): Promise<FacilityLog> {
   try {
     const facility = await Facility.findOne({
@@ -383,15 +440,15 @@ export async function createFacilityLog(
       details: details,
       remarks: remarks,
       staffName: staffName,
-      facilityLogType: facilityLogType
-    })
+      facilityLogType: facilityLogType,
+    });
     thirdParty.addFacilityLog(facilityLog);
 
     if (facilityLogType == FacilityLogType.ACTIVE_REPAIR_TICKET) {
-      if (employeeIds.length < 1) throw { message: "Employee ids empty!" }
+      if (employeeIds.length < 1) throw { message: "Employee ids empty!" };
       for (const id of employeeIds) {
         const emp = await findEmployeeById(id);
-        await facilityLog.addGeneralStaff((await emp.getGeneralStaff()));
+        await facilityLog.addGeneralStaff(await emp.getGeneralStaff());
       }
     }
 
@@ -583,7 +640,10 @@ export async function getFacilityMaintenanceSuggestions(
       throw { message: "InHouse not found, facility Id: " + facilityId };
 
     let logs = (await inHouse.getFacilityLogs()) || [];
-    logs = logs.filter((log: FacilityLog) => log.facilityLogType == FacilityLogType.MAINTENANCE_LOG);
+    logs = logs.filter(
+      (log: FacilityLog) =>
+        log.facilityLogType == FacilityLogType.MAINTENANCE_LOG,
+    );
     let dateLogs = logs.map((log: FacilityLog) => log.dateTime);
 
     return {
@@ -754,8 +814,8 @@ export async function createFacilityMaintenanceLog(
       details: details,
       remarks: remarks,
       staffName: staffName,
-      facilityLogType: FacilityLogType.MAINTENANCE_LOG
-    })
+      facilityLogType: FacilityLogType.MAINTENANCE_LOG,
+    });
     inHouse.addFacilityLog(newLog);
     inHouse.lastMaintained = date;
     await inHouse.save();
@@ -768,18 +828,104 @@ export async function createFacilityMaintenanceLog(
 
 export async function getFacilityLogById(
   facilityLogId: number,
-  includes: string[] = []
+  includes: string[] = [],
 ): Promise<FacilityLog> {
   try {
     const facilityLog = await FacilityLog.findOne({
       where: {
-        facilityLogId: facilityLogId
+        facilityLogId: facilityLogId,
       },
-      include: includes
+      include: includes,
     });
     if (!facilityLog)
       throw { message: "Cannot find facility log id : " + facilityLogId };
     return facilityLog;
+  } catch (error: any) {
+    throw validationErrorHandler(error);
+  }
+}
+
+export async function createCustomerReport(
+  facilityId: number,
+  dateTime: Date,
+  title : string,
+  remarks: string,
+  viewed : boolean,
+): Promise<CustomerReportLog> {
+  try {
+    const facility = await getFacilityById(facilityId);
+
+    const customerReport = await CustomerReportLog.create({
+      dateTime: dateTime,
+      title : title,
+      remarks: remarks,
+      viewed : viewed,
+    })
+
+    const detail = await facility.getFacilityDetail();
+    if (facility.facilityDetail == "inHouse"){
+      await customerReport.setInHouse(detail);
+    }else{
+      await customerReport.setThirdParty(detail);
+    }
+
+    return customerReport;
+  } catch (error: any) {
+    throw validationErrorHandler(error);
+  }
+}
+
+export async function getAllCustomerReports(): Promise<CustomerReportLog[]> {
+  try {
+    return CustomerReportLog.findAll({
+      include:[{
+        association:"inHouse",
+        required:false,
+        include:[{
+          association:"facility",
+          required:true,
+        }]
+      },{
+        association:"thirdParty",
+        required:false,
+        include:[{
+          association:"facility",
+          required:true,
+        }]
+      },
+    ]
+    });
+  } catch (error: any) {
+    throw validationErrorHandler(error);
+  }
+}
+
+export async function getCustomerReportLogById(
+  customerReportLogId:number
+){
+  try{
+    const customerReportLog = await CustomerReportLog.findOne({
+      where:{
+        customerReportLogId:customerReportLogId
+      }
+    });
+    if (!customerReportLog) throw {message:"Cannot find Customer Report Log with Id: " + customerReportLog}
+    return customerReportLog;
+  } catch (error: any) {
+    throw validationErrorHandler(error);
+  }
+}
+
+export async function updateCustomerReport(
+  customerReportLogId:number,
+  viewed:boolean,
+): Promise<CustomerReportLog> {
+  try {
+    const customerReportLog = await getCustomerReportLogById(customerReportLogId);
+    customerReportLog.viewed = viewed;
+
+    return customerReportLog.save();
+
   } catch (error: any) {
     throw validationErrorHandler(error);
   }
@@ -826,13 +972,13 @@ export async function deleteFacilityLogById(facilityLogId: number) {
   }
 }
 
-export async function completeRepairTicket(
-  facilityLogId: number,
-) {
+export async function completeRepairTicket(facilityLogId: number) {
   try {
     const facilityLog = await getFacilityLogById(facilityLogId);
-    if (!facilityLog) throw { message: "Cannot find facility log id : " + facilityLogId }
-    if (facilityLog.facilityLogType != FacilityLogType.ACTIVE_REPAIR_TICKET) throw { message: "Not an active repair ticket!" }
+    if (!facilityLog)
+      throw { message: "Cannot find facility log id : " + facilityLogId };
+    if (facilityLog.facilityLogType != FacilityLogType.ACTIVE_REPAIR_TICKET)
+      throw { message: "Not an active repair ticket!" };
 
     await facilityLog.setGeneralStaffs([]);
     facilityLog.facilityLogType = FacilityLogType.COMPLETED_REPAIR_TICKET;

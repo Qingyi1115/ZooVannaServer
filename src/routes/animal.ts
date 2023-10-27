@@ -67,8 +67,9 @@ import {
   updateFeedingItem,
   deleteFeedingItemById,
   getFeedingItemAmtReco,
-  makeAnimalActivityPublic,
-  makeAnimalActivityPrivate,
+  getAnimalActivityLogsByAnimalActivityId,
+  getAnimalFeedingLogByFeedingPlanId,
+  getAnimalObservationLogsByAnimalActivityId,
 } from "../controllers/animalController";
 
 const router = express.Router();
@@ -113,11 +114,11 @@ router.get(
 );
 router.post("/createAnimalActivity", createAnimalActivity);
 router.put("/updateAnimalActivity", updateAnimalActivity);
-router.put("/makeAnimalActivityPublic", makeAnimalActivityPublic);
-router.get(
-  "/makeAnimalActivityPrivate/:animalActivityId",
-  makeAnimalActivityPrivate,
-);
+// router.put("/makeAnimalActivityPublic", makeAnimalActivityPublic);
+// router.get(
+//   "/makeAnimalActivityPrivate/:animalActivityId",
+//   makeAnimalActivityPrivate,
+// );
 router.delete("/deleteAnimalActivity/:animalActivityId", deleteAnimalActivity);
 
 router.put("/assignAnimalsToActivity", assignAnimalsToActivity);
@@ -128,6 +129,7 @@ router.put("/removeItemFromActivity", removeItemFromActivity);
 // -- Animal Observation Logs
 router.post("/createAnimalObservationLog", createAnimalObservationLog);
 router.get("/getAllAnimalObservationLogs", getAllAnimalObservationLogs);
+router.get("/getAnimalObservationLogsByAnimalActivityId/:animalActivityId", getAnimalObservationLogsByAnimalActivityId);
 router.get(
   "/getAnimalObservationLogById/:animalObservationLogId",
   getAnimalObservationLogById,
@@ -156,6 +158,10 @@ router.get(
   getAnimalActivityLogById,
 );
 router.get(
+  "/getAnimalActivityLogsByAnimalActivityId/:animalActivityId",
+  getAnimalActivityLogsByAnimalActivityId,
+);
+router.get(
   "/getAnimalActivityLogsByAnimalCode/:animalCode",
   getAnimalActivityLogsByAnimalCode,
 );
@@ -177,6 +183,10 @@ router.post("/createAnimalFeedingLog", createAnimalFeedingLog);
 router.get(
   "/getAnimalFeedingLogById/:animalFeedingLogId",
   getAnimalFeedingLogById,
+);
+router.get(
+  "/getAnimalFeedingLogByFeedingPlanId/:feedingPlanId",
+  getAnimalFeedingLogByFeedingPlanId,
 );
 router.get(
   "/getAnimalFeedingLogsByAnimalCode/:animalCode",

@@ -2,6 +2,7 @@ from functools import reduce
 from Json import newAnimalActivityLogDetails, newAnimalActivityDetails, DAY_IN_MILLISECONDS
 from Annotations import UseAPI, getApi, login_as_marry, login_as_junior_keeper
 from time import time
+import json
 
 from datetime import datetime
 def debug_map(arr):
@@ -140,28 +141,11 @@ def updateZooEventIncludeFuture(mockData, useAPI: UseAPI):
     )
     response_json = res.json()
     assert "zooEvents" in response_json, "No zooEvents! " + ("" if "error" not in response_json else response_json["error"])
-    print(str(list(map(
-        lambda a:a["eventName"] + str(datetime.fromtimestamp(a["eventStartDateTime"]/1000)),
-        mockData["zooEventTestings"]
-    ))))
     assert len(list(filter(
         lambda ze: ze["eventName"]  == mockData["zooEventTestings"][-2]["eventName"], 
         response_json["zooEvents"]
-    ))) == 2, "Number of zoo events Updated should be 2!" + \
-    str(list(map(
-        lambda a:a["eventName"]+ str(datetime.fromtimestamp(a["eventStartDateTime"]/1000)),
-        filter(
-            lambda a:a["eventName"] in ["I now do not like fishes", "future name is unique number ALSDAKSDKAW"],
-            response_json["zooEvents"]
-        )
-    ))) + \
-    str(len(list(filter(
-        lambda ze: ze["eventName"]  == mockData["zooEventTestings"][-2]["eventName"], 
-        response_json["zooEvents"]
-    ))))
+    ))) == 2, "Number of zoo events Updated should be 2!"
 
-
-    
 @login_as_marry
 def deleteZooEvent(mockData, useAPI: UseAPI):
     res = useAPI.delete("/api/zooEvent/deleteZooEvent/{}".format(mockData["zooEventTestings"][-2]["zooEventId"]))
@@ -172,6 +156,12 @@ def deleteZooEvent(mockData, useAPI: UseAPI):
     res = useAPI.get("/api/zooEvent/getZooEventById/{}".format(mockData["zooEventTestings"][-2]["zooEventId"]))
     response_json = res.json()
     assert("error" in response_json)
+
+@login_as_marry
+def autoAssignKeeperToZooEvent(useAPI: UseAPI):
+    res = useAPI.get("/api/zooEvent/autoAssignKeeperToZooEvent")
+    response_json = res.json()
+    assert "error" not in response_json, "Not success!" + json.dumps(response_json)
     
 
 ZOO_EVENTS_API_TESTS = [
@@ -181,6 +171,8 @@ ZOO_EVENTS_API_TESTS = [
     (updateZooEventSingle, newAnimalActivityDetails),
     (updateZooEventIncludeFuture, newAnimalActivityDetails),
     (deleteZooEvent, newAnimalActivityDetails),
+    (deleteAnimalActivity, newAnimalActivityDetails),
+    (autoAssignKeeperToZooEvent,),
 ]
 
 # Animal Activity Log API 

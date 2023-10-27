@@ -42,9 +42,9 @@ class Animal extends Model<
   declare animalCode: string;
   declare isGroup: boolean;
   declare houseName: string;
-  declare sex: AnimalSex;
-  declare dateOfBirth: Date;
-  declare placeOfBirth: string;
+  declare sex: AnimalSex | null;
+  declare dateOfBirth: Date | null;
+  declare placeOfBirth: string | null;
   // declare rfidTagNum: string;
   declare identifierType: IdentifierType;
   declare identifierValue: string;
@@ -54,9 +54,9 @@ class Animal extends Model<
   // declare currentWeight: number;
   declare physicalDefiningCharacteristics: string;
   declare behavioralDefiningCharacteristics: string;
-  declare dateOfDeath: Date;
-  declare locationOfDeath: string;
-  declare causeOfDeath: string;
+  declare dateOfDeath: Date | null;
+  declare locationOfDeath: string | null;
+  declare causeOfDeath: string | null;
   declare animalStatus: string;
   declare imageUrl: string;
 
@@ -158,10 +158,10 @@ class Animal extends Model<
   declare getEnclosure: BelongsToGetAssociationMixin<Enclosure>;
   declare setEnclosure: BelongsToSetAssociationMixin<Enclosure, number>;
 
-  declare getZooEvents: HasManyGetAssociationsMixin<ZooEvent>;
-  declare addZooEvent: HasManyAddAssociationMixin<ZooEvent, number>;
-  declare setZooEvents: HasManySetAssociationsMixin<ZooEvent, number>;
-  declare removeZooEvent: HasManyRemoveAssociationMixin<ZooEvent, number>;
+  declare getZooEvents: BelongsToManyGetAssociationsMixin<ZooEvent>;
+  declare addZooEvent: BelongsToManyAddAssociationMixin<ZooEvent, number>;
+  declare setZooEvents: BelongsToManySetAssociationsMixin<ZooEvent, number>;
+  declare removeZooEvent: BelongsToManyRemoveAssociationMixin<ZooEvent, number>;
 
   declare getFeedingPlans: HasManyGetAssociationsMixin<FeedingPlan>;
   declare addFeedingPlan: HasManyAddAssociationMixin<FeedingPlan, number>;

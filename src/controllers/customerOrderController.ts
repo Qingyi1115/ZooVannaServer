@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import * as CustomerOrderService from "../services/customerOrder";
 import { handleFileUpload } from "../helpers/multerProcessFile";
 import { cpuUsage } from "process";
+import { CustomerOrder } from "../models/customerOrder";
 
 export async function getAllCustomerOrders(req: Request, res: Response) {
   const { includes = "" } = req.body;
@@ -95,7 +96,9 @@ export async function getAllUpcomingCustomerOrderByCustomerController(
     const { email } = (req as any).locals.jwtPayload;
     const results =
       await CustomerOrderService.getAllUpcomingCustomerOrderByCustomer(email);
-    return res.status(200).json({ result: results.map((x) => x.toJSON()) });
+    return res
+      .status(200)
+      .json({ result: results.map((x: CustomerOrder) => x.toJSON()) });
   } catch (error: any) {
     res.status(400).json({ error: error.message });
   }
@@ -109,7 +112,9 @@ export async function getPastCustomerOrderByCustomerController(
     const { email } = (req as any).locals.jwtPayload;
     const results =
       await CustomerOrderService.getPastCustomerOrderByCustomer(email);
-    return res.status(200).json({ result: results.map((x) => x.toJSON()) });
+    return res
+      .status(200)
+      .json({ result: results.map((x: CustomerOrder) => x.toJSON()) });
   } catch (error: any) {
     res.status(400).json({ error: error.message });
   }

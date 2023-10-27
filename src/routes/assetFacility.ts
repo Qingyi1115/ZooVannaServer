@@ -67,6 +67,9 @@ import {
   deleteZoneController,
   completeRepairTicketController,
   getAllFacilityCustomer,
+  createCustomerReportController,
+  getAllCustomerReportsController,
+  updateCustomerReportController,
 } from "../controllers/assetFacilityController";
 
 const router = express.Router();
@@ -75,6 +78,8 @@ const router = express.Router();
 router.put("/initializeHub", initializeHubController);
 router.post("/pushSensorReadings/:processorName", pushSensorReadingsController);
 router.post("/getAllFacilityCustomer", getAllFacilityCustomer);
+// Customer Report
+router.post("/createCustomerReportLog/:facilityId", createCustomerReportController);
 
 router.use(authMiddleware);
 
@@ -122,6 +127,9 @@ router.delete(
   "/removeOperationStaffFromFacility/:facilityId",
   removeOperationStaffFromFacilityController,
 );
+
+router.get("/getAllCustomerReportLogs", getAllCustomerReportsController);
+router.put("/updateCustomerReportLogs", updateCustomerReportController);
 
 //Facility Logs
 router.post("/createFacilityLog/:facilityId", createFacilityLogController);
