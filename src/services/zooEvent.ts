@@ -436,6 +436,7 @@ export async function updateZooEventIncludeFuture(
           ze.eventTiming = eventTiming;
           ze.requiredNumberOfKeeper = requiredNumberOfKeeper;
           ze.eventNotificationDate = eventNotificationDate;
+          ze.eventEndDateTime = new Date(ze.eventStartDateTime.getTime() + eventDurationHrs * HOUR_IN_MILLISECONDS)
           iKeepMyPromises.push(ze.save());
         }
       })
@@ -457,7 +458,11 @@ export async function updateZooEventIncludeFuture(
       const dateObj = new Date(eventStartDateTime);
       const day = "_" + dateObj.getDay().toString();
       feedingPlanSessionDetail.dayOfWeek= dayOfWeekMap[day];
-      feedingPlanSessionDetail.publicEventStartTime = "" + dateObj.getHours() + ":" + dateObj.getMinutes();
+      let hrstr = dateObj.getHours().toString();
+      if (hrstr.length == 1) hrstr = "0" + hrstr
+      let minstr = dateObj.getHours().toString();
+      if (minstr.length == 1) minstr = "0" + minstr
+      feedingPlanSessionDetail.publicEventStartTime = "" + hrstr + ":" + minstr;
 
       iKeepMyPromises.push(feedingPlanSessionDetail.save());
     }else{

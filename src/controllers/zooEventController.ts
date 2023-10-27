@@ -185,10 +185,10 @@ export async function updateZooEventIncludeFuture(req: Request, res: Response) {
       eventDurationHrs,
       eventTiming,
       
-      eventIsPublic? new Date(eventNotificationDate) : new Date,
+      eventIsPublic? new Date(eventNotificationDate) : new Date(),
       eventIsPublic ? new Date(eventEndDateTime) : new Date(),
     );
-    return res.status(200).json({zooEvent:newZooEvent});
+    return res.status(200).json({zooEvent:newZooEvent.toJSON()});
   } catch (error: any) {
     res.status(400).json({ error: error.message });
   }
