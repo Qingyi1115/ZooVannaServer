@@ -630,7 +630,6 @@ export async function assignMaintenanceStaffToFacilityController(
     if ([facilityId, employeeIds].includes(undefined)) {
       return res.status(400).json({ error: "Missing information!" });
     }
-    (employeeIds as string[]).forEach((id) => Number(id));
 
     let inHouse: InHouse = await assignMaintenanceStaffToFacilityById(
       Number(facilityId),
@@ -668,7 +667,6 @@ export async function removeMaintenanceStaffFromFacilityController(
     if ([facilityId, employeeIds].includes(undefined)) {
       return res.status(400).json({ error: "Missing information!" });
     }
-    (employeeIds as string[]).forEach((id) => Number(id));
 
     let inHouse: InHouse = await removeMaintenanceStaffFromFacilityById(
       Number(facilityId),
@@ -707,7 +705,6 @@ export async function assignOperationStaffToFacilityController(
     if ([facilityId, employeeIds].includes(undefined)) {
       return res.status(400).json({ error: "Missing information!" });
     }
-    (employeeIds as string[]).forEach((id) => Number(id));
 
     let inHouse: InHouse = await assignOperationStaffToFacilityById(
       Number(facilityId),
@@ -745,7 +742,6 @@ export async function removeOperationStaffFromFacilityController(
     if ([facilityId, employeeIds].includes(undefined)) {
       return res.status(400).json({ error: "Missing information!" });
     }
-    (employeeIds as string[]).forEach((id) => Number(id));
 
     let inHouse: InHouse = await removeOperationStaffFromFacilityById(
       Number(facilityId),
@@ -1113,7 +1109,7 @@ export async function completeRepairTicketController(
     }
 
     if (
-      (await employee.getPlanningStaff()).plannerType !=
+      (await employee.getPlanningStaff())?.plannerType !=
         PlannerType.OPERATIONS_MANAGER &&
       !employee.superAdmin &&
       !employees.find((emp) => emp.employeeId == employee.employeeId)

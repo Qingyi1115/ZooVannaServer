@@ -50,7 +50,7 @@ class FacilityLog extends Model<
     return {
       ...this.toJSON(),
       inHouse: (await this.getInHouse())?.toJSON(),
-      generalStaffs: (await this.getGeneralStaffs()).forEach(staff=>staff.toJSON()),
+      generalStaffs: (await this.getGeneralStaffs()).map(staff=>staff.toJSON()),
     };
   }
 }
