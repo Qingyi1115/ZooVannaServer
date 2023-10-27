@@ -1534,7 +1534,7 @@ export async function createAnimalFeedingLog(
     });
 
     await newAnimalFeedingLog.setAnimals(await feedingPlan.getAnimals());
-
+    await newAnimalFeedingLog.setFeedingPlan(feedingPlan);
     await keeper.addAnimalFeedingLog(newAnimalFeedingLog);
 
     return newAnimalFeedingLog;
