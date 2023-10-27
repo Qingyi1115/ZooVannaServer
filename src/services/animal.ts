@@ -1291,7 +1291,7 @@ export async function getAnimalObservationLogsBySpeciesCode(
 
 export async function updateAnimalObservationLog(
   animalObservationLogId: number,
-  animalCodes: string,
+  animalActivityId:number,
   dateTime: Date,
   durationInMinutes: number,
   observationQuality: Rating,
@@ -1300,11 +1300,10 @@ export async function updateAnimalObservationLog(
   const animalObservationLog = await getAnimalObservationLogById(
     animalObservationLogId,
   );
-  await animalObservationLog.setAnimals([]);
-  for (const code of animalCodes) {
-    const animal = await getAnimalByAnimalCode(code);
-    animalObservationLog.addAnimal(animal);
-  }
+  
+  const animalActivity = await getAnimalActivityById(animalActivityId);
+  await animalObservationLog.setAnimals(await animalActivity.getAnimals());
+
   animalObservationLog.dateTime = dateTime;
   animalObservationLog.durationInMinutes = durationInMinutes;
   animalObservationLog.observationQuality = observationQuality;

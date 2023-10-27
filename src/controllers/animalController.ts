@@ -995,7 +995,7 @@ export async function updateAnimalObservationLog(req: Request, res: Response) {
   try {
     const { animalObservationLogId } = req.params;
     const {
-      animalCodes,
+      animalActivityId,
       dateTime,
       durationInMinutes,
       observationQuality,
@@ -1005,7 +1005,7 @@ export async function updateAnimalObservationLog(req: Request, res: Response) {
     if (
       [
         animalObservationLogId,
-        animalCodes,
+        animalActivityId,
         dateTime,
         durationInMinutes,
         observationQuality,
@@ -1014,7 +1014,7 @@ export async function updateAnimalObservationLog(req: Request, res: Response) {
     ) {
       console.log("Missing field(s): ", {
         animalObservationLogId,
-        animalCodes,
+        animalActivityId,
         dateTime,
         durationInMinutes,
         observationQuality,
@@ -1025,7 +1025,7 @@ export async function updateAnimalObservationLog(req: Request, res: Response) {
 
     let animalObservationLog = await AnimalService.updateAnimalObservationLog(
       Number(animalObservationLogId),
-      animalCodes,
+      animalActivityId,
       new Date(dateTime),
       Number(durationInMinutes),
       observationQuality,
