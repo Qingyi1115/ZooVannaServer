@@ -1170,7 +1170,7 @@ export async function createAnimalObservationLog(
     });
 
     await animalObservationLog.setAnimals(await animalObservationAvtivity.getAnimals());
-
+    await animalObservationLog.setAnimalActivity(animalObservationAvtivity);
     await keeper.addAnimalObservationLog(animalObservationLog);
 
     return animalObservationLog;
