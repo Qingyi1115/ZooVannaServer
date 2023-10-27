@@ -1657,15 +1657,11 @@ export async function updateAnimalFeedingLog(
   amountConsumed: string,
   amountLeftovers: string,
   presentationMethod: string,
-  extraRemarks: string,
-  animalCodes: string[],
+  extraRemarks: string
 ) {
   const animalFeedingLog = await getAnimalFeedingLogById(animalFeedingLogId);
   await animalFeedingLog.setAnimals([]);
-  for (const code of animalCodes) {
-    const animal = await getAnimalByAnimalCode(code);
-    animalFeedingLog.addAnimal(animal);
-  }
+  
   animalFeedingLog.dateTime = dateTime;
   animalFeedingLog.durationInMinutes = durationInMinutes;
   animalFeedingLog.amountOffered = amountOffered;
