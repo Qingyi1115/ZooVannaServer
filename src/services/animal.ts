@@ -1302,6 +1302,9 @@ export async function updateAnimalObservationLog(
   );
   
   const animalActivity = await getAnimalActivityById(animalActivityId);
+
+  if (animalActivity.activityType != ActivityType.OBSERVATION) throw {message:"Not observation activity!"}
+
   await animalObservationLog.setAnimals(await animalActivity.getAnimals());
 
   animalObservationLog.dateTime = dateTime;
