@@ -1151,10 +1151,10 @@ export async function getAnimalFeedingLogByFeedingPlanId(req: Request, res: Resp
     let animalFeedingLogs = await AnimalService.getAnimalFeedingLogByFeedingPlanId(
       Number(feedingPlanId),
     );
-
+      
     return res
       .status(200)
-      .json({ animalFeedingLogs: animalFeedingLogs.forEach(log => log.toJSON()) });
+      .json({ animalFeedingLogs: animalFeedingLogs.map(log => log.toJSON()) });
   } catch (error: any) {
     res.status(400).json({ error: error.message });
   }
