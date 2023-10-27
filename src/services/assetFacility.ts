@@ -129,7 +129,18 @@ export async function getAllFacilityMaintenanceSuggestions(employee: Employee) {
       (await employee.getPlanningStaff())?.plannerType ==
       PlannerType.OPERATIONS_MANAGER
     ) {
-      const allFacilities = await getAllFacility([], true);
+      const allFacilities = await getAllFacility(
+          [{
+            association:"inHouse",
+            include:{
+              association : "facilityLogs",
+              required:false,
+              include:{
+                association:"generalStaffs"
+              }
+            }
+          }]
+        , true);
       for (const facility of allFacilities) {
         const ih = await facility.getFacilityDetail();
         if (facility.facilityDetail == "inHouse") facilities.push(facility);
@@ -137,12 +148,45 @@ export async function getAllFacilityMaintenanceSuggestions(employee: Employee) {
     } else if (!(await employee.getGeneralStaff())) {
       throw { message: "No access!" };
     } else {
-      const allInHouses = await (
-        await employee.getGeneralStaff()
-      ).getMaintainedFacilities();
-      for (const inHouse of allInHouses) {
-        facilities.push(await inHouse.getFacility());
+      facilities = await getAllFacility(
+          [{
+            association:"inHouse",
+            include:{
+              association : "facilityLogs",
+              required:true,
+              include:{
+                association:"generalStaffs",
+                include:{
+                  association: "employee",
+                  where:{
+                    employeeId: employee.employeeId
+                  }
+                }
+              }
+            }
+          }]
+        , true);
+        const maintenanceFacility = await getAllFacility(
+            [{
+              association:"inHouse",
+              include:{
+                association : "maintenanceStaffs",
+                required:true,
+                include:{
+                  association: "employee",
+                  where:{
+                    employeeId: employee.employeeId
+                  }
+                }
+              }
+            }]
+          , true);
+        
+
+      for (const facilityNew of maintenanceFacility) {
+        if (!facilities.find(facility=> facility.facilityId == facilityNew.facilityId)) facilities.push(facilityNew);
       }
+
     }
 
     for (const facility of facilities) {
@@ -355,16 +399,18 @@ export async function getFacilityLogs(
   try {
     const facility : Facility = await getFacilityById(facilityId);
     if (!facility) throw { message: "Unable to find facilityId: " + facility };
-    const inHouse:InHouse = await facility.getFacilityDetail();
+    const inHouse : InHouse = await facility.getFacilityDetail();
     if (facility.facilityDetail != "inHouse")
       throw { message: "Not an in-house facility!" };
 
-    return inHouse.getFacilityLogs({
-      include:{
-        association:"generalStaffs",
-        include:["employee"]
+    return inHouse.getFacilityLogs(
+      {
+        include:{
+          association:"generalStaffs",
+          include:["employee"]
+        }
       }
-    });
+    );
   } catch (error: any) {
     throw validationErrorHandler(error);
   }

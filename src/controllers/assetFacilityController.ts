@@ -770,7 +770,6 @@ export async function getFacilityLogsController(req: Request, res: Response) {
     }
 
     let facilityLogs: FacilityLog[] = await getFacilityLogs(Number(facilityId));
-
     return res
       .status(200)
       .json({ facilityLogs: facilityLogs?.map((log) => log.toJSON()) });
