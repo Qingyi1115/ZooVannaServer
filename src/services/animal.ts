@@ -1147,7 +1147,7 @@ export async function removeItemFromActivity(
 
 export async function createAnimalObservationLog(
   employeeId: number,
-  animalCodes: string[],
+  animalActivityId: number,
   dateTime: Date,
   durationInMinutes: number,
   observationQuality: Rating,
@@ -1155,20 +1155,12 @@ export async function createAnimalObservationLog(
 ) {
   const keeper = await (await findEmployeeById(employeeId)).getKeeper();
 
-  if (!keeper)
-    throw { message: "No keeper found with employee ID : " + employeeId };
+  if (!keeper) throw { message: "No keeper found with employee ID : " + employeeId };
 
-  const animalsPromise: Promise<Animal>[] = [];
-  animalCodes.forEach((code) => {
-    animalsPromise.push(getAnimalByAnimalCode(code));
-  });
+  const animalObservationAvtivity = await getAnimalActivityById(animalActivityId);
 
-  const animals: Animal[] = [];
-  for (const prom of animalsPromise) {
-    const animal = await prom;
-    if (animal === undefined) throw { message: "Animal Code not found!" };
-    animals.push(animal);
-  }
+  if (animalObservationAvtivity.activityType != ActivityType.OBSERVATION) throw {message : "Not a observation log!"}
+  
   try {
     const animalObservationLog = await AnimalObservationLog.create({
       dateTime: dateTime,
@@ -1177,10 +1169,8 @@ export async function createAnimalObservationLog(
       details: details,
     });
 
-    animals.forEach((animal) => {
-      animal.addAnimalObservationLog(animalObservationLog);
-    });
-
+    await animalObservationLog.setAnimals(await animalObservationAvtivity.getAnimals());
+    await animalObservationLog.setAnimalActivity(animalObservationAvtivity);
     await keeper.addAnimalObservationLog(animalObservationLog);
 
     return animalObservationLog;
@@ -1301,7 +1291,6 @@ export async function getAnimalObservationLogsBySpeciesCode(
 
 export async function updateAnimalObservationLog(
   animalObservationLogId: number,
-  animalCodes: string,
   dateTime: Date,
   durationInMinutes: number,
   observationQuality: Rating,
@@ -1310,11 +1299,7 @@ export async function updateAnimalObservationLog(
   const animalObservationLog = await getAnimalObservationLogById(
     animalObservationLogId,
   );
-  await animalObservationLog.setAnimals([]);
-  for (const code of animalCodes) {
-    const animal = await getAnimalByAnimalCode(code);
-    animalObservationLog.addAnimal(animal);
-  }
+
   animalObservationLog.dateTime = dateTime;
   animalObservationLog.durationInMinutes = durationInMinutes;
   animalObservationLog.observationQuality = observationQuality;
@@ -1342,25 +1327,12 @@ export async function createAnimalActivityLog(
   sessionRating: Rating,
   animalReaction: Reaction,
   details: string,
-  animalCodes: string[],
 ) {
   const keeper = await (await findEmployeeById(employeeId)).getKeeper();
   const animalActivity = await getAnimalActivityById(animalActivityId);
 
-  if (!keeper)
-    throw { message: "No keeper found with employee ID : " + employeeId };
+  if (!keeper) throw { message: "No keeper found with employee ID : " + employeeId };
 
-  const animalsPromise: Promise<Animal>[] = [];
-  animalCodes.forEach((code) => {
-    animalsPromise.push(getAnimalByAnimalCode(code));
-  });
-
-  const animals: Animal[] = [];
-  for (const prom of animalsPromise) {
-    const animal = await prom;
-    if (animal === undefined) throw { message: "Animal Code not found!" };
-    animals.push(animal);
-  }
   try {
     const newAnimalActivityLog = await AnimalActivityLog.create({
       activityType: activityType,
@@ -1370,11 +1342,8 @@ export async function createAnimalActivityLog(
       animalReaction: animalReaction,
       details: details,
     });
-
-    animals.forEach((animal) => {
-      animal.addAnimalActivityLog(newAnimalActivityLog);
-    });
-
+    
+    await newAnimalActivityLog.setAnimals(await animalActivity.getAnimals());
     await keeper.addAnimalActivityLog(newAnimalActivityLog);
     await animalActivity.addAnimalActivityLog(newAnimalActivityLog);
 
