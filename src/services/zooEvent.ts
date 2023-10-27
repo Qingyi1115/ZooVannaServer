@@ -17,13 +17,13 @@ function loopCallbackDateIntervals(
   isMonthly: boolean
 ):Promise<any>[]{
   let promises: Promise<any>[] = [];
-  while (compareDates(startDate, endDate) < 0){
+  while (compareDates(startDate, endDate) <= 0){
     promises.push(callback(startDate));
     if (!isMonthly){
       startDate = new Date(startDate.getTime() + interval);
     } else{
-      let lastday = new Date(Date.UTC(startDate.getFullYear(), startDate.getMonth() + (interval > 0 ? 1 : -1), 0)).getDate();
-      startDate = new Date(Date.UTC(startDate.getFullYear(), startDate.getMonth() + (interval > 0 ? 1 : -1), Math.min(lastday, interval)));
+      let lastday = new Date(startDate.getFullYear(), startDate.getMonth() + (interval > 0 ? 2 : 0), 0).getDate();
+      startDate = new Date(startDate.getFullYear(), startDate.getMonth() + (interval > 0 ? 1 : -1), Math.min(lastday, interval));
     }
   }
   return promises;
