@@ -142,3 +142,91 @@ export async function getTotalCustomerOrder(req: Request, res: Response) {
     res.status(400).json({ error: error.message });
   }
 }
+
+export async function getRevenueByDay(req: Request, res: Response) {
+  const { startDate, endDate } = req.body;
+
+  if (!startDate || !endDate) {
+    console.log("Missing field(s): ", {
+      startDate,
+      endDate,
+    });
+    return res.status(400).json({ error: "Missing required fields!" });
+  }
+
+  try {
+    const result = await CustomerOrderService.getRevenueByDay(
+      startDate,
+      endDate,
+    ); // Replace with the actual function
+    return res.status(200).json(result);
+  } catch (error: any) {
+    res.status(400).json({ error: error.message });
+  }
+}
+
+export async function getRevenueByMonth(req: Request, res: Response) {
+  const { startDate, endDate } = req.body;
+
+  if (!startDate || !endDate) {
+    console.log("Missing field(s): ", {
+      startDate,
+      endDate,
+    });
+    return res.status(400).json({ error: "Missing required fields!" });
+  }
+
+  try {
+    const result = await CustomerOrderService.getTotalRevenueByMonth(
+      startDate,
+      endDate,
+    ); // Replace with the actual function
+    return res.status(200).json(result);
+  } catch (error: any) {
+    res.status(400).json({ error: error.message });
+  }
+}
+
+export async function getNumberOfOrdersPerMonth(req: Request, res: Response) {
+  const { startDate, endDate } = req.body;
+
+  if (!startDate || !endDate) {
+    console.log("Missing field(s): ", {
+      startDate,
+      endDate,
+    });
+    return res.status(400).json({ error: "Missing required fields!" });
+  }
+
+  try {
+    const result = await CustomerOrderService.getNumberOfOrdersPerMonth(
+      startDate,
+      endDate,
+    ); // Replace with the actual function
+    return res.status(200).json(result);
+  } catch (error: any) {
+    res.status(400).json({ error: error.message });
+  }
+}
+
+export async function getNumberOfOrdersPerDay(req: Request, res: Response) {
+  const { startDate, endDate } = req.body;
+
+  if (!startDate || !endDate) {
+    console.log("Missing field(s): ", {
+      startDate,
+      endDate,
+    });
+    return res.status(400).json({ error: "Missing required fields!" });
+  }
+
+  try {
+    const result = await CustomerOrderService.getNumberOfOrdersPerDay(
+      startDate,
+      endDate,
+    ); // Replace with the actual function
+    return res.status(200).json(result);
+  } catch (error: any) {
+    res.status(400).json({ error: error.message });
+  }
+}
