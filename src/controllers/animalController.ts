@@ -1923,7 +1923,7 @@ export async function deleteFeedingPlanSessionDetailById(
   }
 
   try {
-    const animalWeight = await AnimalService.deleteFeedingPlanSessionDetailById(
+    await AnimalService.deleteFeedingPlanSessionDetailById(
       Number(feedingPlanDetailId),
     );
     return res.status(200).json({result:"success"});

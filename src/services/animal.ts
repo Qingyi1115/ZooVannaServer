@@ -1555,10 +1555,10 @@ export async function getAnimalFeedingLogById(animalFeedingLogId: number) {
     include: [
       {
         association: "animals",
-        required: true,
+        required: false,
         include:[{
           association:"species",
-          required:true
+          required:false
         }]
       },
       {
