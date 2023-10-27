@@ -1159,8 +1159,8 @@ export async function createAnimalObservationLog(
 
   const animalObservationAvtivity = await getAnimalActivityById(animalActivityId);
 
-  if (animalObservationAvtivity.activityType != ActivityType.OBSERVATION) throw {message : "Not a observation log!"}
-  
+  if (animalObservationAvtivity.activityType != ActivityType.OBSERVATION) throw { message: "Not a observation log!" }
+
   try {
     const animalObservationLog = await AnimalObservationLog.create({
       dateTime: dateTime,
@@ -1181,45 +1181,45 @@ export async function createAnimalObservationLog(
 }
 
 export async function getAnimalObservationLogsByAnimalActivityId(
-  animalActivityId:number
+  animalActivityId: number
 ) {
-  try{
+  try {
     return AnimalObservationLog.findAll({
-      order:[["dateTime","DESC"]],
-      include:[{
-        association:"keeper",
-        required:false,
-        include:[{
-          association:"employee",
-          required:false,
+      order: [["dateTime", "DESC"]],
+      include: [{
+        association: "keeper",
+        required: false,
+        include: [{
+          association: "employee",
+          required: false,
         }]
-      },{
-        association:"animals",
-        required:false,
-        include:[{
-          association:"animalActivities",
-          required:false,
-          where :{
-            animalActivityId:animalActivityId
+      }, {
+        association: "animals",
+        required: false,
+        include: [{
+          association: "animalActivities",
+          required: false,
+          where: {
+            animalActivityId: animalActivityId
           }
         }]
-      },{
-        association:"animalActivity",
-        required:true,
-        where:{
-          animalActivityId:animalActivityId
+      }, {
+        association: "animalActivity",
+        required: true,
+        where: {
+          animalActivityId: animalActivityId
         }
       }]
     });
-} catch (error: any) {
-  console.log(error);
-  throw validationErrorHandler(error);
-}
+  } catch (error: any) {
+    console.log(error);
+    throw validationErrorHandler(error);
+  }
 }
 
 export async function getAllAnimalObservationLogs() {
   return AnimalObservationLog.findAll({
-    order:[["dateTime","DESC"]]
+    order: [["dateTime", "DESC"]]
   });
 }
 
@@ -1233,7 +1233,11 @@ export async function getAnimalObservationLogById(
     include: [
       {
         association: "animals",
-        required: false,
+        required: true,
+        include: [{
+          association: "species",
+          required: true
+        }]
       },
       {
         association: "keeper",
@@ -1257,7 +1261,7 @@ export async function getAnimalObservationLogById(
 
 export async function getAnimalObservationLogsByAnimalCode(animalCode: string) {
   return AnimalObservationLog.findAll({
-    order:[["dateTime","DESC"]],
+    order: [["dateTime", "DESC"]],
     include: [
       {
         association: "animals",
@@ -1289,7 +1293,7 @@ export async function getAnimalObservationLogsBySpeciesCode(
   const logs: AnimalObservationLog[] = [];
   for (const animal of animals) {
     for (const log of await animal.getAnimalObservationLogs({
-      order:[["dateTime","DESC"]],
+      order: [["dateTime", "DESC"]],
     })) {
       if (!logSet.has(log.animalObservationLogId)) {
         logSet.add(log.animalObservationLogId);
@@ -1354,7 +1358,7 @@ export async function createAnimalActivityLog(
       animalReaction: animalReaction,
       details: details,
     });
-    
+
     await newAnimalActivityLog.setAnimals(await animalActivity.getAnimals());
     await keeper.addAnimalActivityLog(newAnimalActivityLog);
     await animalActivity.addAnimalActivityLog(newAnimalActivityLog);
@@ -1378,7 +1382,11 @@ export async function getAnimalActivityLogById(animalActivityLogId: number) {
     include: [
       {
         association: "animals",
-        required: false,
+        required: true,
+        include: [{
+          association: "species",
+          required: true
+        }]
       },
       {
         association: "keeper",
@@ -1526,11 +1534,11 @@ export async function createAnimalFeedingLog(
     const newAnimalFeedingLog = await AnimalFeedingLog.create({
       dateTime: dateTime,
       durationInMinutes: durationInMinutes,
-      amountOffered : amountOffered,
-      amountConsumed : amountConsumed,
-      amountLeftovers : amountLeftovers,
-      presentationMethod : presentationMethod,
-      extraRemarks : extraRemarks,
+      amountOffered: amountOffered,
+      amountConsumed: amountConsumed,
+      amountLeftovers: amountLeftovers,
+      presentationMethod: presentationMethod,
+      extraRemarks: extraRemarks,
     });
 
     await newAnimalFeedingLog.setAnimals(await feedingPlan.getAnimals());
@@ -1555,10 +1563,10 @@ export async function getAnimalFeedingLogById(animalFeedingLogId: number) {
     include: [
       {
         association: "animals",
-        required: false,
-        include:[{
-          association:"species",
-          required:false
+        required: true,
+        include: [{
+          association: "species",
+          required: true
         }]
       },
       {
@@ -1665,7 +1673,7 @@ export async function updateAnimalFeedingLog(
 ) {
   const animalFeedingLog = await getAnimalFeedingLogById(animalFeedingLogId);
   await animalFeedingLog.setAnimals([]);
-  
+
   animalFeedingLog.dateTime = dateTime;
   animalFeedingLog.durationInMinutes = durationInMinutes;
   animalFeedingLog.amountOffered = amountOffered;
