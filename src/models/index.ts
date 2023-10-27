@@ -346,6 +346,9 @@ export const createDatabase = async (options: any) => {
   AnimalActivity.hasMany(AnimalActivityLog, addCascadeOptions({}));
   AnimalActivityLog.belongsTo(AnimalActivity);
 
+  AnimalActivity.hasMany(AnimalObservationLog,addCascadeOptions({}));
+  AnimalObservationLog.belongsTo(AnimalActivity);
+
   Animal.belongsToMany(AnimalFeedingLog, {
     foreignKey: "animalId",
     through: "animal_feedingLog",
@@ -1797,6 +1800,19 @@ export const animalSeed = async () => {
     null,
     null,
     EventTimingType.AFTERNOON,
+    60,
+    1
+  );
+  let animalActivity7 = await AnimalService.createAnimalActivity(
+    ActivityType.OBSERVATION,
+    "Pang Pang fat panda observation",
+    "Watch how pang pang eat 10kg of feed per minute",
+    new Date("2023-10-18"),
+    new Date("2023-11-18"),
+    RecurringPattern.DAILY,
+    null,
+    null,
+    EventTimingType.EVENING,
     60,
     1
   );
