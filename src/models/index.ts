@@ -1747,6 +1747,19 @@ export const animalSeed = async () => {
     60,
     1
   );
+  let animalActivity7 = await AnimalService.createAnimalActivity(
+    ActivityType.OBSERVATION,
+    "Pang Pang fat panda observation",
+    "Watch how pang pang eat 10kg of feed per minute",
+    new Date("2023-10-18"),
+    new Date("2023-11-18"),
+    RecurringPattern.DAILY,
+    null,
+    null,
+    EventTimingType.EVENING,
+    60,
+    1
+  );
 
   await AnimalService.assignAnimalsToActivity(1, ["ANM00001", "ANM00003"]);
   await AnimalService.assignItemToActivity(1, [1, 2]);
