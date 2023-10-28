@@ -8,6 +8,18 @@ import { compareDates, getNextDayOfMonth, getNextDayOfWeek } from "../helpers/ot
 import { Op } from "Sequelize";
 import { Employee } from "../models/employee";
 import { Keeper } from "../models/keeper";
+import cron from "node-cron";
+
+cron.schedule('0 0 0 1 1 *', async () => {
+  for (const animalAct of await AnimalService.getAllAnimalActivities()){
+    generateMonthlyZooEventForAnimalActivity(animalAct.animalActivityId);
+  }
+
+  for (const feedingplansessiondetail of await AnimalService.getAllFeedingPlanSessionDetails()){
+    generateMonthlyZooEventForFeedingPlanSession(feedingplansessiondetail.feedingPlanSessionDetailId);
+  }
+});
+
 
 function loopCallbackDateIntervals(
   callback: Function,
@@ -64,14 +76,17 @@ export async function generateMonthlyZooEventForAnimalActivity(animalActivityId:
   let iKeepMyPromises : Promise<any>[] = [];
 
   if (animalActivity.recurringPattern == RecurringPattern.NON_RECURRING){
-    return createAnimalActivityZooEvent(
-      animalActivity.animalActivityId,
-      animalActivity.startDate,
-      animalActivity.durationInMinutes,
-      animalActivity.eventTimingType,
-      animalActivity.details,
-      animalActivity.requiredNumberOfKeeper
-    );
+    if (zooEvents.length == 0){
+      createAnimalActivityZooEvent(
+        animalActivity.animalActivityId,
+        animalActivity.startDate,
+        animalActivity.durationInMinutes,
+        animalActivity.eventTimingType,
+        animalActivity.details,
+        animalActivity.requiredNumberOfKeeper
+      );
+    }
+    return;
   } else if (animalActivity.recurringPattern == RecurringPattern.MONTHLY){
     if (!animalActivity.dayOfMonth) throw {error : "animalActivity day of month missing!"}
     iKeepMyPromises = loopCallbackDateIntervals(
