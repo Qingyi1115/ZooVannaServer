@@ -1233,10 +1233,10 @@ export async function getAnimalObservationLogById(
     include: [
       {
         association: "animals",
-        required: true,
+        required: false,
         include: [{
           association: "species",
-          required: true
+          required: false
         }]
       },
       {
@@ -1382,10 +1382,10 @@ export async function getAnimalActivityLogById(animalActivityLogId: number) {
     include: [
       {
         association: "animals",
-        required: true,
+        required: false,
         include: [{
           association: "species",
-          required: true
+          required: false
         }]
       },
       {
@@ -1563,10 +1563,10 @@ export async function getAnimalFeedingLogById(animalFeedingLogId: number) {
     include: [
       {
         association: "animals",
-        required: true,
+        required: false,
         include: [{
           association: "species",
-          required: true
+          required: false
         }]
       },
       {
@@ -1916,11 +1916,11 @@ export async function updateFeedingPlan(
         );
       }
       for (const p of promises) await p;
-    }else{
-      for(const feedingPlanSession of await planEntry.getFeedingPlanSessionDetails()){
-        for (const ze of await feedingPlanSession.getZooEvents()){
-          if (compareDates(ze.eventStartDateTime, new Date())>= 0){
-            ze.eventDescription =planEntry.feedingPlanDesc;
+    } else {
+      for (const feedingPlanSession of await planEntry.getFeedingPlanSessionDetails()) {
+        for (const ze of await feedingPlanSession.getZooEvents()) {
+          if (compareDates(ze.eventStartDateTime, new Date()) >= 0) {
+            ze.eventDescription = planEntry.feedingPlanDesc;
             promises.push(ze.save());
           }
         }
