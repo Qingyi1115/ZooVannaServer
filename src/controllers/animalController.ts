@@ -1447,7 +1447,7 @@ export async function updateAnimalActivityLog(req: Request, res: Response) {
       sessionRating,
       animalReaction,
       details,
-      animalCodes,
+      // animalCodes,
     } = req.body;
 
     if (
@@ -1459,7 +1459,7 @@ export async function updateAnimalActivityLog(req: Request, res: Response) {
         sessionRating,
         animalReaction,
         details,
-        animalCodes,
+        // animalCodes,
       ].includes(undefined)
     ) {
       console.log("Missing field(s): ", {
@@ -1470,7 +1470,7 @@ export async function updateAnimalActivityLog(req: Request, res: Response) {
         sessionRating,
         animalReaction,
         details,
-        animalCodes,
+        // animalCodes,
       });
       return res.status(400).json({ error: "Missing information!" });
     }
@@ -1483,7 +1483,7 @@ export async function updateAnimalActivityLog(req: Request, res: Response) {
       sessionRating,
       animalReaction,
       details,
-      animalCodes,
+      // animalCodes,
     );
 
     return res

@@ -4,11 +4,22 @@ import { findEmployeeByEmail } from "../services/employee";
 import { PlannerType } from "../models/enumerated";
 
 export async function getAllZooEvents(req: Request, res: Response) {
-  const { email } = (req as any).locals.jwtPayload;
-  const employee = await findEmployeeByEmail(email);
+  try {
 
   // Check authentication
+  const { email } = (req as any).locals.jwtPayload;
+  const employee = await findEmployeeByEmail(email);
+  // const planningStaff = await employee.getPlanningStaff();
 
+  // if (
+  //   !employee.superAdmin &&
+  //   !planningStaff &&
+  //   !(await employee.getKeeper())
+  // )
+  //   return res
+  //     .status(403)
+  //     .json({ error: "Access Denied! Operation managers only!" });
+    
   const { startDate, endDate, includes = [] } = req.body;
   if (
     [
@@ -51,14 +62,23 @@ export async function getAllZooEvents(req: Request, res: Response) {
     });
   }
 
-  try {
+  const keeper = await employee.getKeeper();
+  if (employee.superAdmin && await employee.getPlanningStaff()){
     const zooEvents = await ZooEvent.getAllZooEvents(
       new Date(startDate),
       new Date(endDate),
       _includes
     );
     return res.status(200).json({zooEvents:zooEvents.map(ze=>ze.toJSON())});
+  }else if (keeper){
+    const zooEvents = await keeper.getZooEvents({
+      include:_includes
+    });
+    return res.status(200).json({zooEvents:zooEvents.map(ze=>ze.toJSON())});
+  }
+
   } catch (error: any) {
+    console.log(error);
     res.status(400).json({ error: error.message });
   }
 }

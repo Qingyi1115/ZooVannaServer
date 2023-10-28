@@ -1488,14 +1488,16 @@ export async function updateAnimalActivityLog(
   sessionRating: Rating,
   animalReaction: Reaction,
   details: string,
-  animalCodes: string[],
+  // animalCodes: string[],
 ) {
   const animalActivityLog = await getAnimalActivityLogById(animalActivityLogId);
-  await animalActivityLog.setAnimals([]);
-  for (const code of animalCodes) {
-    const animal = await getAnimalByAnimalCode(code);
-    animalActivityLog.addAnimal(animal);
-  }
+
+  // await animalActivityLog.setAnimals([]);
+  // for (const code of animalCodes) {
+  //   const animal = await getAnimalByAnimalCode(code);
+  //   animalActivityLog.addAnimal(animal);
+  // }
+
   animalActivityLog.activityType = activityType;
   animalActivityLog.dateTime = dateTime;
   animalActivityLog.durationInMinutes = durationInMinutes;
