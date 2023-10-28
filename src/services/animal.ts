@@ -1899,8 +1899,8 @@ export async function updateFeedingPlan(
     }
     planEntry.setAnimals(animals);
 
+    const promises = [];
     if (dateChange) {
-      const promises = [];
       for (const feedingPlanSession of await planEntry.getFeedingPlanSessionDetails()) {
         promises.push(
           updateFeedingPlanSessionDetail(
@@ -1916,6 +1916,15 @@ export async function updateFeedingPlan(
         );
       }
       for (const p of promises) await p;
+    }else{
+      for(const feedingPlanSession of await planEntry.getFeedingPlanSessionDetails()){
+        for (const ze of await feedingPlanSession.getZooEvents()){
+          if (compareDates(ze.eventStartDateTime, new Date())>= 0){
+            ze.eventDescription =planEntry.feedingPlanDesc;
+            promises.push(ze.save());
+          }
+        }
+      }
     }
 
     return planEntry;
