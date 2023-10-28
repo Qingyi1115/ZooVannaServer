@@ -63,21 +63,19 @@ export async function getAllZooEvents(req: Request, res: Response) {
   }
 
   const keeper = await employee.getKeeper();
-  if (keeper){
-    const zooEvents = await keeper.getZooEvents();
+  if (employee.superAdmin && await employee.getPlanningStaff()){
+    const zooEvents = await ZooEvent.getAllZooEvents(
+      new Date(startDate),
+      new Date(endDate),
+      _includes
+    );
     return res.status(200).json({zooEvents:zooEvents.map(ze=>ze.toJSON())});
-  
-  }//else if (employee.superAdmin && await employee.getPlanningStaff()){
-  const zooEvents = await ZooEvent.getAllZooEvents(
-    new Date(startDate),
-    new Date(endDate),
-    _includes
-  );
-  return res.status(200).json({zooEvents:zooEvents.map(ze=>ze.toJSON())});
-  // }else{
-  // }
-
-
+  }else if (keeper){
+    const zooEvents = await keeper.getZooEvents({
+      include:_includes
+    });
+    return res.status(200).json({zooEvents:zooEvents.map(ze=>ze.toJSON())});
+  }
 
   } catch (error: any) {
     console.log(error);
