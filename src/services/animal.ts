@@ -1674,7 +1674,6 @@ export async function updateAnimalFeedingLog(
   extraRemarks: string
 ) {
   const animalFeedingLog = await getAnimalFeedingLogById(animalFeedingLogId);
-  await animalFeedingLog.setAnimals([]);
 
   animalFeedingLog.dateTime = dateTime;
   animalFeedingLog.durationInMinutes = durationInMinutes;
