@@ -20,7 +20,6 @@ cron.schedule('0 0 0 1 1 *', async () => {
   }
 });
 
-
 function loopCallbackDateIntervals(
   callback: Function,
   startDate:Date,
@@ -77,16 +76,15 @@ export async function generateMonthlyZooEventForAnimalActivity(animalActivityId:
 
   if (animalActivity.recurringPattern == RecurringPattern.NON_RECURRING){
     if (zooEvents.length == 0){
-      createAnimalActivityZooEvent(
+      iKeepMyPromises.push(createAnimalActivityZooEvent(
         animalActivity.animalActivityId,
         animalActivity.startDate,
         animalActivity.durationInMinutes,
         animalActivity.eventTimingType,
         animalActivity.details,
         animalActivity.requiredNumberOfKeeper
-      );
+      ));
     }
-    return;
   } else if (animalActivity.recurringPattern == RecurringPattern.MONTHLY){
     if (!animalActivity.dayOfMonth) throw {error : "animalActivity day of month missing!"}
     iKeepMyPromises = loopCallbackDateIntervals(
