@@ -402,6 +402,36 @@ export async function createCustomerOrderForGuest(
   }
 }
 
+export async function createCustomerOrderForSeeding(
+  listings: Listing[],
+  custOrder: CustomerOrder,
+) {
+  try {
+    for (const listing of listings) {
+      let queriedListing = await Listing.findOne({
+        where: { listingId: listing.listingId },
+      });
+
+      if (queriedListing !== null && queriedListing !== undefined) {
+        let newOrderItem = await OrderItem.create({
+          isRedeemed: false,
+          verificationCode: uuidv4(),
+          timeRedeemed: null,
+        });
+
+        queriedListing.addOrderItem(newOrderItem);
+        newOrderItem.setListing(queriedListing);
+        custOrder.addOrderItem(newOrderItem);
+        newOrderItem.setCustomerOrder(custOrder);
+      }
+    }
+  } catch (error: any) {
+    console.log("yes");
+    console.log(error);
+    throw error;
+  }
+}
+
 export async function createCustomerOrderForCustomer(
   customerId: number,
   listings: any,
