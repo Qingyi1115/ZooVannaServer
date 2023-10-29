@@ -59,6 +59,7 @@ import {
   createCustomerReport,
   getAllCustomerReports,
   updateCustomerReport,
+  updateFacilityImage,
 } from "../services/assetFacility";
 import { Facility } from "../models/facility";
 import { Sensor } from "../models/sensor";
@@ -533,6 +534,43 @@ export async function updateFacilityController(req: Request, res: Response) {
     );
 
     return res.status(200).json({ facility: newFacility.toJSON() });
+  } catch (error: any) {
+    res.status(400).json({ error: error.message });
+  }
+}
+
+export async function updateFacilityImageController(req: Request, res: Response) {
+  try {
+    const { email } = (req as any).locals.jwtPayload;
+    const employee = await findEmployeeByEmail(email);
+
+    if (
+      !employee.superAdmin &&
+      !(
+        (await employee.getPlanningStaff())?.plannerType ==
+        PlannerType.OPERATIONS_MANAGER
+      )
+    ) {
+      return res
+        .status(403)
+        .json({ error: "Access Denied! Operation managers only!" });
+    }
+
+    const { facilityId } = req.params;
+
+    if (facilityId === undefined || facilityId == "") throw {message:"Missing information!"}
+
+    const imageUrl = await handleFileUpload(
+      req,
+      process.env.IMG_URL_ROOT! + "facility", //"D:/capstoneUploads/animalFeed",
+    );
+
+    await updateFacilityImage(
+      Number(facilityId),
+      imageUrl,
+    );
+
+    return res.status(200).json({ result: "success" });
   } catch (error: any) {
     res.status(400).json({ error: error.message });
   }

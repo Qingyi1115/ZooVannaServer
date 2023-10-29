@@ -70,6 +70,7 @@ import {
   createCustomerReportController,
   getAllCustomerReportsController,
   updateCustomerReportController,
+  updateFacilityImageController,
 } from "../controllers/assetFacilityController";
 
 const router = express.Router();
@@ -105,6 +106,7 @@ router.get(
   getFacilityMaintenancePredictionValuesController,
 );
 router.put("/updateFacility/:facilityId", updateFacilityController);
+router.put("/updateFacilityImage/:facilityId", updateFacilityImageController);
 router.delete("/deleteFacility/:facilityId", deleteFacilityController);
 router.get(
   "/getAssignedMaintenanceStaffOfFacility/:facilityId",
