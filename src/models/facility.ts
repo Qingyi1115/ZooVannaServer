@@ -31,6 +31,7 @@ class Facility extends Model<
   declare yCoordinate: number;
   declare isSheltered: boolean;
   declare showOnMap: boolean;
+  declare imageUrl: string;
 
   declare facilityDetail?: string;
 
@@ -131,6 +132,10 @@ Facility.init(
     showOnMap: {
       type: DataTypes.BOOLEAN,
       defaultValue: false,
+    },
+    imageUrl: {
+      type: DataTypes.STRING,
+      allowNull: true,
     },
   },
   {

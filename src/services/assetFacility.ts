@@ -246,6 +246,20 @@ export async function updateFacilityByFacilityId(
   }
 }
 
+export async function updateFacilityImage(
+  facilityId: number,
+  imageUrl: string,
+) {
+  try {
+    let facility = (await getFacilityById(Number(facilityId)));
+
+    facility.imageUrl = imageUrl;
+    return facility.save();
+    
+  } catch (error: any) {
+    throw validationErrorHandler(error);
+  }
+}
 export async function assignMaintenanceStaffToFacilityById(
   facilityId: number,
   employeeIds: number[],
