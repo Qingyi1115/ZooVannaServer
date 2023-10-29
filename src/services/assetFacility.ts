@@ -680,6 +680,13 @@ export async function getAllSensorMaintenanceSuggestions(employee: Employee) {
     ) {
       sensors = await getAllSensors([
         {
+          association: "generalStaff",
+          required: false,
+          include:[{
+            association : "employee"
+          }]
+        },
+        {
           association: "sensorReadings",
           required: false,
         },
