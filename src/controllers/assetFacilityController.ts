@@ -186,6 +186,11 @@ export async function createFacilityController(req: Request, res: Response) {
         .json({ error: "Access Denied! Operation managers only!" });
     }
 
+    const imageUrl = await handleFileUpload(
+      req,
+      process.env.IMG_URL_ROOT! + "facility", //"D:/capstoneUploads/animalFeed",
+    );
+
     const { facilityName, isSheltered, facilityDetail, facilityDetailJson } =
       req.body;
     console.log({
@@ -207,11 +212,6 @@ export async function createFacilityController(req: Request, res: Response) {
       });
       return res.status(400).json({ error: "Missing information!" });
     }
-
-    const imageUrl = await handleFileUpload(
-      req,
-      process.env.IMG_URL_ROOT! + "facility", //"D:/capstoneUploads/animalFeed",
-    );
 
     let facility = await createNewFacility(
       facilityName,
