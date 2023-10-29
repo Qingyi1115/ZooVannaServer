@@ -23,12 +23,18 @@ export const authMiddleware = (
   try {
     let jwtPayload = jwt.verify(token, SECRET_KEY);
 
-    findEmployeeByEmail((jwtPayload as any)["email"]).catch(e=>{console.log(e)}).then(employee=>{
-      if (!!employee?.dateOfResignation) return res.status(401).json({ error: "Request is not authorized! Staff resigned!" });
-      (req as any).locals = { jwtPayload: jwtPayload };
-      next();
-    });
-
+    findEmployeeByEmail((jwtPayload as any)["email"])
+      .catch((e) => {
+        console.log(e);
+      })
+      .then((employee) => {
+        if (!!employee?.dateOfResignation)
+          return res
+            .status(401)
+            .json({ error: "Request is not authorized! Staff resigned!" });
+        (req as any).locals = { jwtPayload: jwtPayload };
+        next();
+      });
   } catch (error) {
     console.log(error);
     res.status(401).json({ error: "Request is not authorized" });

@@ -1045,12 +1045,14 @@ export const employeeSeed = async () => {
   });
 
   let bookingRef = uuidv4().substring(0, 8).toUpperCase();
+  let temp = new Date(new Date().setMonth(new Date().getMonth()));
+  temp.setHours(0, 0, 0);
 
   let order1 = await CustomerOrder.create({
     bookingReference: bookingRef,
     totalAmount: 295,
     orderStatus: OrderStatus.ACTIVE,
-    entryDate: new Date(new Date().setMonth(new Date().getMonth())),
+    entryDate: temp,
     customerFirstName: "Admin",
     customerLastName: "Seeding",
     customerContactNo: "12345678",
@@ -1077,12 +1079,13 @@ export const employeeSeed = async () => {
   await createCustomerOrderForSeeding(listings1, order1);
 
   let bookingRef2 = uuidv4().substring(0, 8).toUpperCase();
+  temp.setMonth(temp.getMonth() - 2);
 
   let order2 = await CustomerOrder.create({
     bookingReference: bookingRef2,
     totalAmount: 345,
     orderStatus: OrderStatus.ACTIVE,
-    entryDate: new Date(new Date().setMonth(new Date().getMonth() - 2)),
+    entryDate: temp,
     customerFirstName: "Admin",
     customerLastName: "Seeding",
     customerContactNo: "12345678",
@@ -1112,12 +1115,13 @@ export const employeeSeed = async () => {
   await createCustomerOrderForSeeding(listings2, order2);
 
   let bookingRef3 = uuidv4().substring(0, 8).toUpperCase();
+  temp.setMonth(temp.getMonth() - 3);
 
   let order3 = await CustomerOrder.create({
     bookingReference: bookingRef3,
     totalAmount: 165,
     orderStatus: OrderStatus.ACTIVE,
-    entryDate: new Date(new Date().setMonth(new Date().getMonth() - 3)),
+    entryDate: temp,
     customerFirstName: "Admin",
     customerLastName: "Seeding",
     customerContactNo: "12345678",
@@ -1140,12 +1144,13 @@ export const employeeSeed = async () => {
   await createCustomerOrderForSeeding(listings3, order3);
 
   let bookingRef4 = uuidv4().substring(0, 8).toUpperCase();
+  temp.setMonth(temp.getMonth() - 1);
 
   let order4 = await CustomerOrder.create({
     bookingReference: bookingRef4,
     totalAmount: 195,
     orderStatus: OrderStatus.ACTIVE,
-    entryDate: new Date(new Date().setMonth(new Date().getMonth() - 1)),
+    entryDate: temp,
     customerFirstName: "Admin",
     customerLastName: "Seeding",
     customerContactNo: "12345678",
@@ -1168,12 +1173,13 @@ export const employeeSeed = async () => {
   await createCustomerOrderForSeeding(listings4, order4);
 
   let bookingRef5 = uuidv4().substring(0, 8).toUpperCase();
+  temp.setMonth(temp.getMonth() + 1);
 
   let order5 = await CustomerOrder.create({
     bookingReference: bookingRef5,
     totalAmount: 175,
     orderStatus: OrderStatus.ACTIVE,
-    entryDate: new Date(new Date().setMonth(new Date().getMonth() + 1)),
+    entryDate: temp,
     customerFirstName: "Admin",
     customerLastName: "Seeding",
     customerContactNo: "12345678",
