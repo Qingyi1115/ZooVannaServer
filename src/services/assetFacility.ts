@@ -83,7 +83,7 @@ export async function createNewFacility(
   isSheltered: boolean,
   facilityDetail: string,
   facilityDetailJson: any,
-  imageUrl:string
+  imageUrl: string
 ) {
   let newFacility = {
     facilityName: facilityName,
@@ -132,32 +132,32 @@ export async function getAllFacilityMaintenanceSuggestions(employee: Employee) {
       PlannerType.OPERATIONS_MANAGER
     ) {
       const allFacilities = await getAllFacility(
-          [{
-            association:"inHouse",
-            include:[{
-              association : "facilityLogs",
-              required:false,
-              include:{
-                association:"generalStaffs",
-                required:false,
-                include:{
-                  association:"employee"
-                }
-              },
-            },{
-              association:"operationStaffs",
-              required:false,
-              include:{
-                association:"employee"
+        [{
+          association: "inHouse",
+          include: [{
+            association: "facilityLogs",
+            required: false,
+            include: {
+              association: "generalStaffs",
+              required: false,
+              include: {
+                association: "employee"
               }
-            },{
-              association:"maintenanceStaffs",
-              required:false,
-              include:{
-                association:"employee"
-              }
-            }]
+            },
+          }, {
+            association: "operationStaffs",
+            required: false,
+            include: {
+              association: "employee"
+            }
+          }, {
+            association: "maintenanceStaffs",
+            required: false,
+            include: {
+              association: "employee"
+            }
           }]
+        }]
         , true);
       for (const facility of allFacilities) {
         const ih = await facility.getFacilityDetail();
@@ -167,37 +167,37 @@ export async function getAllFacilityMaintenanceSuggestions(employee: Employee) {
       throw { message: "No access!" };
     } else {
       facilities = await getAllFacility(
-          [{
-            association:"inHouse",
-            required:true,
-            include:[{
-              association : "facilityLogs",
-              required:true,
-              include:{
-                association:"generalStaffs",
-                required:true,
-                include:{
-                  association: "employee",
-                  required:true,
-                  where:{
-                    employeeId: employee.employeeId
-                  }
+        [{
+          association: "inHouse",
+          required: true,
+          include: [{
+            association: "facilityLogs",
+            required: true,
+            include: {
+              association: "generalStaffs",
+              required: true,
+              include: {
+                association: "employee",
+                required: true,
+                where: {
+                  employeeId: employee.employeeId
                 }
               }
-            },{
-              association:"operationStaffs",
-              required:false,
-              include:{
-                association:"employee"
-              }
-            },{
-              association:"maintenanceStaffs",
-              required:false,
-              include:{
-                association:"employee"
-              }
-            }]
+            }
+          }, {
+            association: "operationStaffs",
+            required: false,
+            include: {
+              association: "employee"
+            }
+          }, {
+            association: "maintenanceStaffs",
+            required: false,
+            include: {
+              association: "employee"
+            }
           }]
+        }]
         , true);
       const maintenanceFacility = await getAllFacility(
         [{
@@ -660,7 +660,7 @@ export async function getAllSensorMaintenanceSuggestions(employee: Employee) {
     ) {
       sensors = await getAllSensors([
         {
-          association: "sensorReading",
+          association: "sensorReadings",
           required: false,
         },
         {
