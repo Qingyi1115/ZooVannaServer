@@ -1042,7 +1042,7 @@ export async function updateFacilityLogController(req: Request, res: Response) {
     }
 
     if (
-      (await employee.getPlanningStaff()).plannerType !=
+      (await employee.getPlanningStaff())?.plannerType !=
         PlannerType.OPERATIONS_MANAGER &&
       !employee.superAdmin &&
       facilityLogFound.staffName != employee.employeeName &&
@@ -1071,10 +1071,10 @@ export async function deleteFacilityLogController(req: Request, res: Response) {
     const { facilityLogId } = req.params;
 
     if (
-      (await employee.getPlanningStaff()).plannerType !=
+      (await employee.getPlanningStaff())?.plannerType !=
         PlannerType.OPERATIONS_MANAGER &&
       !employee.superAdmin &&
-      (await getFacilityLogById(Number(facilityLogId))).staffName !=
+      (await getFacilityLogById(Number(facilityLogId)))?.staffName !=
         employee.employeeName
     )
       throw { message: "Only creator of the log can delete!" };
@@ -1087,6 +1087,7 @@ export async function deleteFacilityLogController(req: Request, res: Response) {
 
     return res.status(200).json({ result: "success" });
   } catch (error: any) {
+    console.log(error);
     res.status(400).json({ error: error.message });
   }
 }

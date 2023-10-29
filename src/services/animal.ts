@@ -1103,10 +1103,27 @@ export async function assignAnimalsToActivity(
   animalActivityId: number,
   animalCodes: string[],
 ) {
-  let animalActivity = await getAnimalActivityById(animalActivityId);
+  try{
+    let animalActivity = await getAnimalActivityById(animalActivityId);
 
-  for (let animalCode of animalCodes) {
-    animalActivity.addAnimal(await getAnimalByAnimalCode(animalCode));
+    const animals = [];
+    const promises = [];
+
+
+    for (let animalCode of animalCodes) {
+      animals.push(await getAnimalByAnimalCode(animalCode));
+    }
+    promises.push(animalActivity.setAnimals(animals));
+      
+    for (const ze of await animalActivity.getZooEvents()){
+      if (compareDates(ze.eventStartDateTime, new Date()) >=0 ){
+        promises.push(ze.setAnimals(animals));
+      }
+    }
+    for (const p of promises) await p;
+    return;
+  } catch (error: any) {
+    throw validationErrorHandler(error);
   }
 }
 
@@ -1114,9 +1131,20 @@ export async function removeAnimalFromActivity(
   animalActivityId: number,
   animalCode: string,
 ) {
-  let animalActivity = await getAnimalActivityById(animalActivityId);
+  try{
+    let animalActivity = await getAnimalActivityById(animalActivityId);
+    const animal = await getAnimalByAnimalCode(animalCode);
+    await animalActivity.removeAnimal(animal);
 
-  animalActivity.removeAnimal(await getAnimalByAnimalCode(animalCode));
+    for (const ze of await animalActivity.getZooEvents()){
+      if (compareDates(ze.eventStartDateTime, new Date()) >=0 ){
+        await ze.removeAnimal(animal);
+      }
+    }
+
+  } catch (error: any) {
+    throw validationErrorHandler(error);
+  }
 }
 
 export async function assignItemToActivity(
