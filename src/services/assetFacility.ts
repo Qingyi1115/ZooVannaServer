@@ -134,13 +134,29 @@ export async function getAllFacilityMaintenanceSuggestions(employee: Employee) {
       const allFacilities = await getAllFacility(
           [{
             association:"inHouse",
-            include:{
+            include:[{
               association : "facilityLogs",
               required:false,
               include:{
-                association:"generalStaffs"
+                association:"generalStaffs",
+                required:false,
+                include:{
+                  association:"employee"
+                }
+              },
+            },{
+              association:"operationStaffs",
+              required:false,
+              include:{
+                association:"employee"
               }
-            }
+            },{
+              association:"maintenanceStaffs",
+              required:false,
+              include:{
+                association:"employee"
+              }
+            }]
           }]
         , true);
       for (const facility of allFacilities) {
@@ -154,7 +170,7 @@ export async function getAllFacilityMaintenanceSuggestions(employee: Employee) {
           [{
             association:"inHouse",
             required:true,
-            include:{
+            include:[{
               association : "facilityLogs",
               required:true,
               include:{
@@ -168,7 +184,19 @@ export async function getAllFacilityMaintenanceSuggestions(employee: Employee) {
                   }
                 }
               }
-            }
+            },{
+              association:"operationStaffs",
+              required:false,
+              include:{
+                association:"employee"
+              }
+            },{
+              association:"maintenanceStaffs",
+              required:false,
+              include:{
+                association:"employee"
+              }
+            }]
           }]
         , true);
         const maintenanceFacility = await getAllFacility(

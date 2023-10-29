@@ -822,7 +822,7 @@ export async function autoAssignKeeperToZooEvent(
       });
 
       for (let zooEvent of zooEvents){
-        while (zooEvent.requiredNumberOfKeeper > (await zooEvent.getKeepers()).length){
+        while (zooEvent.requiredNumberOfKeeper > (await zooEvent.getKeepers())?.length || 0){
           await greedyAssign(zooEvent, zooEvents, keepers);
         }
       }
