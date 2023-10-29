@@ -66,14 +66,20 @@ class Facility extends Model<
   declare setEnclosure: HasOneSetAssociationMixin<Enclosure, number>;
 
   public async getFacilityDetail() {
-    if (!this.facilityDetail) {
+    if (true) {
       let inHouse = await this.getInHouse({
         include:[{
           association:"maintenanceStaffs",
-          required:false
+          required:false,
+          include:[{
+            association:"employee",
+          }]
         },{
           association:"operationStaffs",
-          required:false
+          required:false,
+          include:[{
+            association:"employee",
+          }]
         },{
           association:"facilityLogs",
           required:false
@@ -88,6 +94,21 @@ class Facility extends Model<
       }
       let thirdParty = await this.getThirdParty({
         include:[{
+          association:"maintenanceStaffs",
+          required:false,
+          include:[{
+            association:"employee",
+          }]
+        },{
+          association:"operationStaffs",
+          required:false,
+          include:[{
+            association:"employee",
+          }]
+        },{
+          association:"facilityLogs",
+          required:false
+        },{
           association:"customerReportLogs",
           required:false
         }]

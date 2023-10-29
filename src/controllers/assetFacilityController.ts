@@ -279,7 +279,7 @@ export async function getAllFacilityController(req: Request, res: Response) {
     if (inHouse)
       facilities.push(await (await inHouse.getFacility()).toFullJson());
 
-    return res.status(200).json({ facilities: facilities });
+    return res.status(200).json({ facilities: facilities.map(facility=>facility.toFullJson())});
   } catch (error: any) {
     console.log(error);
     res.status(400).json({ error: error.message });
