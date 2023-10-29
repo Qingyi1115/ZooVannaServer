@@ -219,7 +219,7 @@ export async function createFacilityController(req: Request, res: Response) {
       undefined,
       isSheltered,
       facilityDetail,
-      facilityDetailJson,
+      JSON.parse(facilityDetailJson),
       imageUrl
     );
 
