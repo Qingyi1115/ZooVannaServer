@@ -207,6 +207,11 @@ export async function createFacilityController(req: Request, res: Response) {
       return res.status(400).json({ error: "Missing information!" });
     }
 
+    const imageUrl = await handleFileUpload(
+      req,
+      process.env.IMG_URL_ROOT! + "facility", //"D:/capstoneUploads/animalFeed",
+    );
+
     let facility = await createNewFacility(
       facilityName,
       undefined,
@@ -214,6 +219,7 @@ export async function createFacilityController(req: Request, res: Response) {
       isSheltered,
       facilityDetail,
       facilityDetailJson,
+      imageUrl
     );
 
     return res.status(200).json({ facility: facility.toJSON() });

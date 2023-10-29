@@ -83,12 +83,14 @@ export async function createNewFacility(
   isSheltered: boolean,
   facilityDetail: string,
   facilityDetailJson: any,
+  imageUrl:string
 ) {
   let newFacility = {
     facilityName: facilityName,
     xCoordinate: xCoordinate,
     yCoordinate: yCoordinate,
     isSheltered: isSheltered,
+    imageUrl: imageUrl
   } as any;
   newFacility[facilityDetail] = facilityDetailJson;
 
