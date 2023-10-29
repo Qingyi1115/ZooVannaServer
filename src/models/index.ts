@@ -13,6 +13,7 @@ import { CustomerOrder } from "./customerOrder";
 import { CustomerReportLog } from "./customerReportLog";
 import { Employee } from "./employee";
 import { Enclosure } from "./enclosure";
+import { v4 as uuidv4 } from "uuid";
 import { EnrichmentItem } from "./enrichmentItem";
 import {
   AcquisitionMethod,
@@ -42,6 +43,8 @@ import {
   DayOfWeek,
   RecurringPattern,
   FacilityLogType,
+  PaymentStatus,
+  OrderStatus,
 } from "./enumerated";
 import { ZooEvent } from "./zooEvent";
 import { Facility } from "./facility";
@@ -75,9 +78,25 @@ import { FeedingPlan } from "./feedingPlan";
 import { FeedingPlanSessionDetail } from "./feedingPlanSessionDetail";
 import { FeedingItem } from "./feedingItem";
 import { DAY_IN_MILLISECONDS } from "../helpers/staticValues";
+import {
+  createCustomerOrderForGuest,
+  createCustomerOrderForSeeding,
+} from "../services/customer";
 
 function addCascadeOptions(options: object) {
   return { ...options, onDelete: "CASCADE", onUpdate: "CASCADE" };
+}
+
+interface CustomerOrderTemplate {
+  bookingReference: string;
+  totalAmount: number;
+  orderStatus: OrderStatus;
+  entryDate: Date;
+  customerFirstName: string;
+  customerLastName: string;
+  customerContactNo: string;
+  customerEmail: string;
+  paymentStatus: PaymentStatus;
 }
 
 export const createDatabase = async (options: any) => {
@@ -596,7 +615,7 @@ export const promotionSeed = async () => {
       "Enjoy 30% off admission tickets and come join us in our 30th birthday celebration! \n\n Terms and conditions: \nValid for minimum purchase of S$100 \n Valid for purchase date from 1 October 2023 to 31 October 2023",
     publishDate: new Date("2023-09-15"),
     startDate: new Date("2023-10-01"),
-    endDate: new Date("2023-10-31"),
+    endDate: new Date("2024-10-31"),
     percentage: 30,
     minimumSpending: 100,
     promotionCode: "HAPPY30BIRTHDAY",
@@ -610,7 +629,7 @@ export const promotionSeed = async () => {
       "Enjoy 10% off admission tickets to commemorate International Hippo Day! \n\n Terms and conditions: \nValid for minimum purchase of S$200 \n Valid for purchase date from 6 October 2023 to 11 October 2023",
     publishDate: new Date("2023-10-01"),
     startDate: new Date("2023-10-06"),
-    endDate: new Date("2023-10-11"),
+    endDate: new Date("2024-10-11"),
     percentage: 10,
     minimumSpending: 200,
     promotionCode: "HIPPODAY",
@@ -624,7 +643,7 @@ export const promotionSeed = async () => {
       "Seize your final chance to make memories with our beloved La La! Enjoy 20% off admission tickets. \n\n Terms and conditions: \nValid for minimum purchase of S$150 \n Valid for purchase date from 8 October 2023 to 22 October 2023",
     publishDate: new Date("2023-10-01"),
     startDate: new Date("2023-10-07"),
-    endDate: new Date("2023-10-21"),
+    endDate: new Date("2024-10-21"),
     percentage: 20,
     minimumSpending: 120,
     promotionCode: "BYELALA",
@@ -637,8 +656,8 @@ export const promotionSeed = async () => {
     description:
       "Tired of WFH? Enjoy 20% off admission tickets to celebrate the end of circuit breaker. \n\n Terms and conditions: \nValid for minimum purchase of S$100 \n Valid for purchase date from 20 July 2021 to 20 August 2023",
     publishDate: new Date("2023-07-07"),
-    startDate: new Date("2023-07-20"),
-    endDate: new Date("2023-08-20"),
+    startDate: new Date("202-07-20"),
+    endDate: new Date("2024-08-20"),
     percentage: 20,
     minimumSpending: 200,
     promotionCode: "BYECOVID",
@@ -976,6 +995,7 @@ export const employeeSeed = async () => {
       },
     },
   );
+
   let listing1 = await Listing.create({
     name: "Adult",
     description: "Listing for local adult",
@@ -1023,6 +1043,158 @@ export const employeeSeed = async () => {
     listingType: ListingType.FOREIGNER,
     listingStatus: ListingStatus.ACTIVE,
   });
+
+  let bookingRef = uuidv4().substring(0, 8).toUpperCase();
+
+  let order1 = await CustomerOrder.create({
+    bookingReference: bookingRef,
+    totalAmount: 295,
+    orderStatus: OrderStatus.ACTIVE,
+    entryDate: new Date(new Date().setMonth(new Date().getMonth())),
+    customerFirstName: "Admin",
+    customerLastName: "Seeding",
+    customerContactNo: "12345678",
+    customerEmail: "zoovannaserver@gmail.com",
+    paymentStatus: PaymentStatus.COMPLETED,
+    pdfUrl: "",
+  });
+
+  let listings1: Listing[] = [
+    listing1,
+    listing1,
+    listing2,
+    listing3,
+    listing3,
+    listing4,
+    listing5,
+    listing5,
+    listing5,
+    listing5,
+    listing6,
+    listing6,
+  ];
+
+  await createCustomerOrderForSeeding(listings1, order1);
+
+  let bookingRef2 = uuidv4().substring(0, 8).toUpperCase();
+
+  let order2 = await CustomerOrder.create({
+    bookingReference: bookingRef2,
+    totalAmount: 345,
+    orderStatus: OrderStatus.ACTIVE,
+    entryDate: new Date(new Date().setMonth(new Date().getMonth() - 2)),
+    customerFirstName: "Admin",
+    customerLastName: "Seeding",
+    customerContactNo: "12345678",
+    customerEmail: "zoovannaserver@gmail.com",
+    paymentStatus: PaymentStatus.COMPLETED,
+    pdfUrl: "",
+  });
+
+  let listings2: Listing[] = [
+    listing1,
+    listing2,
+    listing2,
+    listing3,
+    listing3,
+    listing3,
+    listing4,
+    listing5,
+    listing5,
+    listing5,
+    listing5,
+    listing6,
+    listing6,
+    listing6,
+    listing6,
+  ];
+
+  await createCustomerOrderForSeeding(listings2, order2);
+
+  let bookingRef3 = uuidv4().substring(0, 8).toUpperCase();
+
+  let order3 = await CustomerOrder.create({
+    bookingReference: bookingRef3,
+    totalAmount: 165,
+    orderStatus: OrderStatus.ACTIVE,
+    entryDate: new Date(new Date().setMonth(new Date().getMonth() - 3)),
+    customerFirstName: "Admin",
+    customerLastName: "Seeding",
+    customerContactNo: "12345678",
+    customerEmail: "zoovannaserver@gmail.com",
+    paymentStatus: PaymentStatus.COMPLETED,
+    pdfUrl: "",
+  });
+
+  let listings3: Listing[] = [
+    listing1,
+    listing2,
+    listing3,
+    listing3,
+    listing4,
+    listing5,
+    listing6,
+    listing6,
+  ];
+
+  await createCustomerOrderForSeeding(listings3, order3);
+
+  let bookingRef4 = uuidv4().substring(0, 8).toUpperCase();
+
+  let order4 = await CustomerOrder.create({
+    bookingReference: bookingRef4,
+    totalAmount: 195,
+    orderStatus: OrderStatus.ACTIVE,
+    entryDate: new Date(new Date().setMonth(new Date().getMonth() - 1)),
+    customerFirstName: "Admin",
+    customerLastName: "Seeding",
+    customerContactNo: "12345678",
+    customerEmail: "zoovannaserver@gmail.com",
+    paymentStatus: PaymentStatus.COMPLETED,
+    pdfUrl: "",
+  });
+
+  let listings4: Listing[] = [
+    listing1,
+    listing2,
+    listing2,
+    listing2,
+    listing3,
+    listing4,
+    listing5,
+    listing6,
+  ];
+
+  await createCustomerOrderForSeeding(listings4, order4);
+
+  let bookingRef5 = uuidv4().substring(0, 8).toUpperCase();
+
+  let order5 = await CustomerOrder.create({
+    bookingReference: bookingRef5,
+    totalAmount: 175,
+    orderStatus: OrderStatus.ACTIVE,
+    entryDate: new Date(new Date().setMonth(new Date().getMonth() + 1)),
+    customerFirstName: "Admin",
+    customerLastName: "Seeding",
+    customerContactNo: "12345678",
+    customerEmail: "zoovannaserver@gmail.com",
+    paymentStatus: PaymentStatus.COMPLETED,
+    pdfUrl: "",
+  });
+
+  let listings5: Listing[] = [
+    listing1,
+    listing2,
+    listing2,
+    listing3,
+    listing4,
+    listing4,
+    listing5,
+    listing6,
+    listing6,
+  ];
+
+  await createCustomerOrderForSeeding(listings5, order5);
 };
 
 export const speciesSeed = async () => {
@@ -1777,7 +1949,7 @@ export const animalSeed = async () => {
     null, // day of month, only not null when recurringPattern is MONTHLY
     EventTimingType.AFTERNOON, // event timing type
     45, // duration in minutes
-    1 // required number of keepers
+    1, // required number of keepers
   );
 
   let animalActivity2 = await AnimalService.createAnimalActivity(
@@ -1791,7 +1963,7 @@ export const animalSeed = async () => {
     null,
     EventTimingType.MORNING,
     60,
-    1
+    1,
   );
 
   let animalActivity3 = await AnimalService.createAnimalActivity(
@@ -1805,7 +1977,7 @@ export const animalSeed = async () => {
     null,
     EventTimingType.MORNING,
     60,
-    1
+    1,
   );
   let animalActivity4 = await AnimalService.createAnimalActivity(
     ActivityType.ENRICHMENT,
@@ -1818,7 +1990,7 @@ export const animalSeed = async () => {
     7,
     EventTimingType.MORNING,
     60,
-    1
+    1,
   );
   let animalActivity5 = await AnimalService.createAnimalActivity(
     ActivityType.TRAINING,
@@ -1831,7 +2003,7 @@ export const animalSeed = async () => {
     null,
     EventTimingType.AFTERNOON,
     60,
-    1
+    1,
   );
   // let animalActivity6 = await AnimalService.createAnimalActivity(
   //   ActivityType.TRAINING,
@@ -1858,7 +2030,7 @@ export const animalSeed = async () => {
     null,
     EventTimingType.AFTERNOON,
     60,
-    1
+    1,
   );
   let animalActivity7 = await AnimalService.createAnimalActivity(
     ActivityType.OBSERVATION,
@@ -1871,7 +2043,7 @@ export const animalSeed = async () => {
     null,
     EventTimingType.EVENING,
     60,
-    1
+    1,
   );
 
   // animalActivityId, animalCodes
@@ -1889,1055 +2061,1055 @@ export const animalSeed = async () => {
     new Date("2023-10-27"),
     [
       {
-        "dayOfTheWeek": DayOfWeek.MONDAY,
-        "eventTimingType": EventTimingType.MORNING,
-        "feedingItems": [
+        dayOfTheWeek: DayOfWeek.MONDAY,
+        eventTimingType: EventTimingType.MORNING,
+        feedingItems: [
           {
-            "foodCategory": "BROWSE",
-            "amount": 9,
-            "unit": "KG",
-            "animalCode": "ANM00001"
+            foodCategory: "BROWSE",
+            amount: 9,
+            unit: "KG",
+            animalCode: "ANM00001",
           },
           {
-            "foodCategory": "BROWSE",
-            "amount": 7,
-            "unit": "KG",
-            "animalCode": "ANM00002"
+            foodCategory: "BROWSE",
+            amount: 7,
+            unit: "KG",
+            animalCode: "ANM00002",
           },
           {
-            "foodCategory": "BROWSE",
-            "amount": 11,
-            "unit": "KG",
-            "animalCode": "ANM00003"
+            foodCategory: "BROWSE",
+            amount: 11,
+            unit: "KG",
+            animalCode: "ANM00003",
           },
           {
-            "foodCategory": "BROWSE",
-            "amount": 9,
-            "unit": "KG",
-            "animalCode": "ANM00004"
-          }
+            foodCategory: "BROWSE",
+            amount: 9,
+            unit: "KG",
+            animalCode: "ANM00004",
+          },
         ],
-        "durationInMinutes": 80,
-        "isPublic": false,
-        "publicEventStartTime": null,
-        "requiredNumberOfKeeper": 2
+        durationInMinutes: 80,
+        isPublic: false,
+        publicEventStartTime: null,
+        requiredNumberOfKeeper: 2,
       },
       {
-        "dayOfTheWeek": DayOfWeek.TUESDAY,
-        "eventTimingType": EventTimingType.MORNING,
-        "feedingItems": [
+        dayOfTheWeek: DayOfWeek.TUESDAY,
+        eventTimingType: EventTimingType.MORNING,
+        feedingItems: [
           {
-            "foodCategory": "BROWSE",
-            "amount": 9,
-            "unit": "KG",
-            "animalCode": "ANM00001"
+            foodCategory: "BROWSE",
+            amount: 9,
+            unit: "KG",
+            animalCode: "ANM00001",
           },
           {
-            "foodCategory": "BROWSE",
-            "amount": 7,
-            "unit": "KG",
-            "animalCode": "ANM00002"
+            foodCategory: "BROWSE",
+            amount: 7,
+            unit: "KG",
+            animalCode: "ANM00002",
           },
           {
-            "foodCategory": "BROWSE",
-            "amount": 11,
-            "unit": "KG",
-            "animalCode": "ANM00003"
+            foodCategory: "BROWSE",
+            amount: 11,
+            unit: "KG",
+            animalCode: "ANM00003",
           },
           {
-            "foodCategory": "BROWSE",
-            "amount": 9,
-            "unit": "KG",
-            "animalCode": "ANM00004"
-          }
+            foodCategory: "BROWSE",
+            amount: 9,
+            unit: "KG",
+            animalCode: "ANM00004",
+          },
         ],
-        "durationInMinutes": 80,
-        "isPublic": false,
-        "publicEventStartTime": null,
-        "requiredNumberOfKeeper": 2
+        durationInMinutes: 80,
+        isPublic: false,
+        publicEventStartTime: null,
+        requiredNumberOfKeeper: 2,
       },
       {
-        "dayOfTheWeek": DayOfWeek.WEDNESDAY,
-        "eventTimingType": EventTimingType.MORNING,
-        "feedingItems": [
+        dayOfTheWeek: DayOfWeek.WEDNESDAY,
+        eventTimingType: EventTimingType.MORNING,
+        feedingItems: [
           {
-            "foodCategory": "BROWSE",
-            "amount": 9,
-            "unit": "KG",
-            "animalCode": "ANM00001"
+            foodCategory: "BROWSE",
+            amount: 9,
+            unit: "KG",
+            animalCode: "ANM00001",
           },
           {
-            "foodCategory": "BROWSE",
-            "amount": 7,
-            "unit": "KG",
-            "animalCode": "ANM00002"
+            foodCategory: "BROWSE",
+            amount: 7,
+            unit: "KG",
+            animalCode: "ANM00002",
           },
           {
-            "foodCategory": "BROWSE",
-            "amount": 11,
-            "unit": "KG",
-            "animalCode": "ANM00003"
+            foodCategory: "BROWSE",
+            amount: 11,
+            unit: "KG",
+            animalCode: "ANM00003",
           },
           {
-            "foodCategory": "BROWSE",
-            "amount": 9,
-            "unit": "KG",
-            "animalCode": "ANM00004"
-          }
+            foodCategory: "BROWSE",
+            amount: 9,
+            unit: "KG",
+            animalCode: "ANM00004",
+          },
         ],
-        "durationInMinutes": 80,
-        "isPublic": false,
-        "publicEventStartTime": null,
-        "requiredNumberOfKeeper": 2
+        durationInMinutes: 80,
+        isPublic: false,
+        publicEventStartTime: null,
+        requiredNumberOfKeeper: 2,
       },
       {
-        "dayOfTheWeek": DayOfWeek.THURSDAY,
-        "eventTimingType": EventTimingType.MORNING,
-        "feedingItems": [
+        dayOfTheWeek: DayOfWeek.THURSDAY,
+        eventTimingType: EventTimingType.MORNING,
+        feedingItems: [
           {
-            "foodCategory": "BROWSE",
-            "amount": 9,
-            "unit": "KG",
-            "animalCode": "ANM00001"
+            foodCategory: "BROWSE",
+            amount: 9,
+            unit: "KG",
+            animalCode: "ANM00001",
           },
           {
-            "foodCategory": "BROWSE",
-            "amount": 7,
-            "unit": "KG",
-            "animalCode": "ANM00002"
+            foodCategory: "BROWSE",
+            amount: 7,
+            unit: "KG",
+            animalCode: "ANM00002",
           },
           {
-            "foodCategory": "BROWSE",
-            "amount": 11,
-            "unit": "KG",
-            "animalCode": "ANM00003"
+            foodCategory: "BROWSE",
+            amount: 11,
+            unit: "KG",
+            animalCode: "ANM00003",
           },
           {
-            "foodCategory": "BROWSE",
-            "amount": 9,
-            "unit": "KG",
-            "animalCode": "ANM00004"
-          }
+            foodCategory: "BROWSE",
+            amount: 9,
+            unit: "KG",
+            animalCode: "ANM00004",
+          },
         ],
-        "durationInMinutes": 80,
-        "isPublic": false,
-        "publicEventStartTime": null,
-        "requiredNumberOfKeeper": 2
+        durationInMinutes: 80,
+        isPublic: false,
+        publicEventStartTime: null,
+        requiredNumberOfKeeper: 2,
       },
       {
-        "dayOfTheWeek": DayOfWeek.FRIDAY,
-        "eventTimingType": EventTimingType.MORNING,
-        "feedingItems": [
+        dayOfTheWeek: DayOfWeek.FRIDAY,
+        eventTimingType: EventTimingType.MORNING,
+        feedingItems: [
           {
-            "foodCategory": "BROWSE",
-            "amount": 9,
-            "unit": "KG",
-            "animalCode": "ANM00001"
+            foodCategory: "BROWSE",
+            amount: 9,
+            unit: "KG",
+            animalCode: "ANM00001",
           },
           {
-            "foodCategory": "BROWSE",
-            "amount": 7,
-            "unit": "KG",
-            "animalCode": "ANM00002"
+            foodCategory: "BROWSE",
+            amount: 7,
+            unit: "KG",
+            animalCode: "ANM00002",
           },
           {
-            "foodCategory": "BROWSE",
-            "amount": 11,
-            "unit": "KG",
-            "animalCode": "ANM00003"
+            foodCategory: "BROWSE",
+            amount: 11,
+            unit: "KG",
+            animalCode: "ANM00003",
           },
           {
-            "foodCategory": "BROWSE",
-            "amount": 9,
-            "unit": "KG",
-            "animalCode": "ANM00004"
-          }
+            foodCategory: "BROWSE",
+            amount: 9,
+            unit: "KG",
+            animalCode: "ANM00004",
+          },
         ],
-        "durationInMinutes": 80,
-        "isPublic": false,
-        "publicEventStartTime": null,
-        "requiredNumberOfKeeper": 2
+        durationInMinutes: 80,
+        isPublic: false,
+        publicEventStartTime: null,
+        requiredNumberOfKeeper: 2,
       },
       {
-        "dayOfTheWeek": DayOfWeek.SATURDAY,
-        "eventTimingType": EventTimingType.MORNING,
-        "feedingItems": [
+        dayOfTheWeek: DayOfWeek.SATURDAY,
+        eventTimingType: EventTimingType.MORNING,
+        feedingItems: [
           {
-            "foodCategory": "BROWSE",
-            "amount": 9,
-            "unit": "KG",
-            "animalCode": "ANM00001"
+            foodCategory: "BROWSE",
+            amount: 9,
+            unit: "KG",
+            animalCode: "ANM00001",
           },
           {
-            "foodCategory": "BROWSE",
-            "amount": 7,
-            "unit": "KG",
-            "animalCode": "ANM00002"
+            foodCategory: "BROWSE",
+            amount: 7,
+            unit: "KG",
+            animalCode: "ANM00002",
           },
           {
-            "foodCategory": "BROWSE",
-            "amount": 11,
-            "unit": "KG",
-            "animalCode": "ANM00003"
+            foodCategory: "BROWSE",
+            amount: 11,
+            unit: "KG",
+            animalCode: "ANM00003",
           },
           {
-            "foodCategory": "BROWSE",
-            "amount": 9,
-            "unit": "KG",
-            "animalCode": "ANM00004"
-          }
+            foodCategory: "BROWSE",
+            amount: 9,
+            unit: "KG",
+            animalCode: "ANM00004",
+          },
         ],
-        "durationInMinutes": 80,
-        "isPublic": false,
-        "publicEventStartTime": null,
-        "requiredNumberOfKeeper": 2
+        durationInMinutes: 80,
+        isPublic: false,
+        publicEventStartTime: null,
+        requiredNumberOfKeeper: 2,
       },
       {
-        "dayOfTheWeek": DayOfWeek.SUNDAY,
-        "eventTimingType": EventTimingType.MORNING,
-        "feedingItems": [
+        dayOfTheWeek: DayOfWeek.SUNDAY,
+        eventTimingType: EventTimingType.MORNING,
+        feedingItems: [
           {
-            "foodCategory": "BROWSE",
-            "amount": 9,
-            "unit": "KG",
-            "animalCode": "ANM00001"
+            foodCategory: "BROWSE",
+            amount: 9,
+            unit: "KG",
+            animalCode: "ANM00001",
           },
           {
-            "foodCategory": "BROWSE",
-            "amount": 7,
-            "unit": "KG",
-            "animalCode": "ANM00002"
+            foodCategory: "BROWSE",
+            amount: 7,
+            unit: "KG",
+            animalCode: "ANM00002",
           },
           {
-            "foodCategory": "BROWSE",
-            "amount": 11,
-            "unit": "KG",
-            "animalCode": "ANM00003"
+            foodCategory: "BROWSE",
+            amount: 11,
+            unit: "KG",
+            animalCode: "ANM00003",
           },
           {
-            "foodCategory": "BROWSE",
-            "amount": 9,
-            "unit": "KG",
-            "animalCode": "ANM00004"
-          }
+            foodCategory: "BROWSE",
+            amount: 9,
+            unit: "KG",
+            animalCode: "ANM00004",
+          },
         ],
-        "durationInMinutes": 80,
-        "isPublic": false,
-        "publicEventStartTime": null,
-        "requiredNumberOfKeeper": 2
+        durationInMinutes: 80,
+        isPublic: false,
+        publicEventStartTime: null,
+        requiredNumberOfKeeper: 2,
       },
       {
-        "dayOfTheWeek": DayOfWeek.MONDAY,
-        "eventTimingType": EventTimingType.EVENING,
-        "feedingItems": [
+        dayOfTheWeek: DayOfWeek.MONDAY,
+        eventTimingType: EventTimingType.EVENING,
+        feedingItems: [
           {
-            "foodCategory": "BROWSE",
-            "amount": 8,
-            "unit": "KG",
-            "animalCode": "ANM00001"
+            foodCategory: "BROWSE",
+            amount: 8,
+            unit: "KG",
+            animalCode: "ANM00001",
           },
           {
-            "foodCategory": "BROWSE",
-            "amount": 10,
-            "unit": "KG",
-            "animalCode": "ANM00002"
+            foodCategory: "BROWSE",
+            amount: 10,
+            unit: "KG",
+            animalCode: "ANM00002",
           },
           {
-            "foodCategory": "BROWSE",
-            "amount": 11,
-            "unit": "KG",
-            "animalCode": "ANM00003"
+            foodCategory: "BROWSE",
+            amount: 11,
+            unit: "KG",
+            animalCode: "ANM00003",
           },
           {
-            "foodCategory": "BROWSE",
-            "amount": 8,
-            "unit": "KG",
-            "animalCode": "ANM00004"
-          }
+            foodCategory: "BROWSE",
+            amount: 8,
+            unit: "KG",
+            animalCode: "ANM00004",
+          },
         ],
-        "durationInMinutes": 120,
-        "isPublic": false,
-        "publicEventStartTime": null,
-        "requiredNumberOfKeeper": 1
+        durationInMinutes: 120,
+        isPublic: false,
+        publicEventStartTime: null,
+        requiredNumberOfKeeper: 1,
       },
       {
-        "dayOfTheWeek": DayOfWeek.TUESDAY,
-        "eventTimingType": EventTimingType.EVENING,
-        "feedingItems": [
+        dayOfTheWeek: DayOfWeek.TUESDAY,
+        eventTimingType: EventTimingType.EVENING,
+        feedingItems: [
           {
-            "foodCategory": "BROWSE",
-            "amount": 8,
-            "unit": "KG",
-            "animalCode": "ANM00001"
+            foodCategory: "BROWSE",
+            amount: 8,
+            unit: "KG",
+            animalCode: "ANM00001",
           },
           {
-            "foodCategory": "BROWSE",
-            "amount": 10,
-            "unit": "KG",
-            "animalCode": "ANM00002"
+            foodCategory: "BROWSE",
+            amount: 10,
+            unit: "KG",
+            animalCode: "ANM00002",
           },
           {
-            "foodCategory": "BROWSE",
-            "amount": 11,
-            "unit": "KG",
-            "animalCode": "ANM00003"
+            foodCategory: "BROWSE",
+            amount: 11,
+            unit: "KG",
+            animalCode: "ANM00003",
           },
           {
-            "foodCategory": "BROWSE",
-            "amount": 8,
-            "unit": "KG",
-            "animalCode": "ANM00004"
-          }
+            foodCategory: "BROWSE",
+            amount: 8,
+            unit: "KG",
+            animalCode: "ANM00004",
+          },
         ],
-        "durationInMinutes": 120,
-        "isPublic": false,
-        "publicEventStartTime": null,
-        "requiredNumberOfKeeper": 1
+        durationInMinutes: 120,
+        isPublic: false,
+        publicEventStartTime: null,
+        requiredNumberOfKeeper: 1,
       },
       {
-        "dayOfTheWeek": DayOfWeek.WEDNESDAY,
-        "eventTimingType": EventTimingType.EVENING,
-        "feedingItems": [
+        dayOfTheWeek: DayOfWeek.WEDNESDAY,
+        eventTimingType: EventTimingType.EVENING,
+        feedingItems: [
           {
-            "foodCategory": "BROWSE",
-            "amount": 8,
-            "unit": "KG",
-            "animalCode": "ANM00001"
+            foodCategory: "BROWSE",
+            amount: 8,
+            unit: "KG",
+            animalCode: "ANM00001",
           },
           {
-            "foodCategory": "BROWSE",
-            "amount": 10,
-            "unit": "KG",
-            "animalCode": "ANM00002"
+            foodCategory: "BROWSE",
+            amount: 10,
+            unit: "KG",
+            animalCode: "ANM00002",
           },
           {
-            "foodCategory": "BROWSE",
-            "amount": 11,
-            "unit": "KG",
-            "animalCode": "ANM00003"
+            foodCategory: "BROWSE",
+            amount: 11,
+            unit: "KG",
+            animalCode: "ANM00003",
           },
           {
-            "foodCategory": "BROWSE",
-            "amount": 8,
-            "unit": "KG",
-            "animalCode": "ANM00004"
-          }
+            foodCategory: "BROWSE",
+            amount: 8,
+            unit: "KG",
+            animalCode: "ANM00004",
+          },
         ],
-        "durationInMinutes": 120,
-        "isPublic": false,
-        "publicEventStartTime": null,
-        "requiredNumberOfKeeper": 1
+        durationInMinutes: 120,
+        isPublic: false,
+        publicEventStartTime: null,
+        requiredNumberOfKeeper: 1,
       },
       {
-        "dayOfTheWeek": DayOfWeek.THURSDAY,
-        "eventTimingType": EventTimingType.EVENING,
-        "feedingItems": [
+        dayOfTheWeek: DayOfWeek.THURSDAY,
+        eventTimingType: EventTimingType.EVENING,
+        feedingItems: [
           {
-            "foodCategory": "BROWSE",
-            "amount": 8,
-            "unit": "KG",
-            "animalCode": "ANM00001"
+            foodCategory: "BROWSE",
+            amount: 8,
+            unit: "KG",
+            animalCode: "ANM00001",
           },
           {
-            "foodCategory": "BROWSE",
-            "amount": 10,
-            "unit": "KG",
-            "animalCode": "ANM00002"
+            foodCategory: "BROWSE",
+            amount: 10,
+            unit: "KG",
+            animalCode: "ANM00002",
           },
           {
-            "foodCategory": "BROWSE",
-            "amount": 11,
-            "unit": "KG",
-            "animalCode": "ANM00003"
+            foodCategory: "BROWSE",
+            amount: 11,
+            unit: "KG",
+            animalCode: "ANM00003",
           },
           {
-            "foodCategory": "BROWSE",
-            "amount": 8,
-            "unit": "KG",
-            "animalCode": "ANM00004"
-          }
+            foodCategory: "BROWSE",
+            amount: 8,
+            unit: "KG",
+            animalCode: "ANM00004",
+          },
         ],
-        "durationInMinutes": 120,
-        "isPublic": false,
-        "publicEventStartTime": null,
-        "requiredNumberOfKeeper": 1
+        durationInMinutes: 120,
+        isPublic: false,
+        publicEventStartTime: null,
+        requiredNumberOfKeeper: 1,
       },
       {
-        "dayOfTheWeek": DayOfWeek.FRIDAY,
-        "eventTimingType": EventTimingType.EVENING,
-        "feedingItems": [
+        dayOfTheWeek: DayOfWeek.FRIDAY,
+        eventTimingType: EventTimingType.EVENING,
+        feedingItems: [
           {
-            "foodCategory": "BROWSE",
-            "amount": 8,
-            "unit": "KG",
-            "animalCode": "ANM00001"
+            foodCategory: "BROWSE",
+            amount: 8,
+            unit: "KG",
+            animalCode: "ANM00001",
           },
           {
-            "foodCategory": "BROWSE",
-            "amount": 10,
-            "unit": "KG",
-            "animalCode": "ANM00002"
+            foodCategory: "BROWSE",
+            amount: 10,
+            unit: "KG",
+            animalCode: "ANM00002",
           },
           {
-            "foodCategory": "BROWSE",
-            "amount": 11,
-            "unit": "KG",
-            "animalCode": "ANM00003"
+            foodCategory: "BROWSE",
+            amount: 11,
+            unit: "KG",
+            animalCode: "ANM00003",
           },
           {
-            "foodCategory": "BROWSE",
-            "amount": 8,
-            "unit": "KG",
-            "animalCode": "ANM00004"
-          }
+            foodCategory: "BROWSE",
+            amount: 8,
+            unit: "KG",
+            animalCode: "ANM00004",
+          },
         ],
-        "durationInMinutes": 120,
-        "isPublic": false,
-        "publicEventStartTime": null,
-        "requiredNumberOfKeeper": 1
+        durationInMinutes: 120,
+        isPublic: false,
+        publicEventStartTime: null,
+        requiredNumberOfKeeper: 1,
       },
       {
-        "dayOfTheWeek": DayOfWeek.SATURDAY,
-        "eventTimingType": EventTimingType.EVENING,
-        "feedingItems": [
+        dayOfTheWeek: DayOfWeek.SATURDAY,
+        eventTimingType: EventTimingType.EVENING,
+        feedingItems: [
           {
-            "foodCategory": "BROWSE",
-            "amount": 8,
-            "unit": "KG",
-            "animalCode": "ANM00001"
+            foodCategory: "BROWSE",
+            amount: 8,
+            unit: "KG",
+            animalCode: "ANM00001",
           },
           {
-            "foodCategory": "BROWSE",
-            "amount": 10,
-            "unit": "KG",
-            "animalCode": "ANM00002"
+            foodCategory: "BROWSE",
+            amount: 10,
+            unit: "KG",
+            animalCode: "ANM00002",
           },
           {
-            "foodCategory": "BROWSE",
-            "amount": 11,
-            "unit": "KG",
-            "animalCode": "ANM00003"
+            foodCategory: "BROWSE",
+            amount: 11,
+            unit: "KG",
+            animalCode: "ANM00003",
           },
           {
-            "foodCategory": "BROWSE",
-            "amount": 8,
-            "unit": "KG",
-            "animalCode": "ANM00004"
-          }
+            foodCategory: "BROWSE",
+            amount: 8,
+            unit: "KG",
+            animalCode: "ANM00004",
+          },
         ],
-        "durationInMinutes": 120,
-        "isPublic": false,
-        "publicEventStartTime": null,
-        "requiredNumberOfKeeper": 1
+        durationInMinutes: 120,
+        isPublic: false,
+        publicEventStartTime: null,
+        requiredNumberOfKeeper: 1,
       },
       {
-        "dayOfTheWeek": DayOfWeek.SUNDAY,
-        "eventTimingType": EventTimingType.EVENING,
-        "feedingItems": [
+        dayOfTheWeek: DayOfWeek.SUNDAY,
+        eventTimingType: EventTimingType.EVENING,
+        feedingItems: [
           {
-            "foodCategory": "BROWSE",
-            "amount": 8,
-            "unit": "KG",
-            "animalCode": "ANM00001"
+            foodCategory: "BROWSE",
+            amount: 8,
+            unit: "KG",
+            animalCode: "ANM00001",
           },
           {
-            "foodCategory": "BROWSE",
-            "amount": 10,
-            "unit": "KG",
-            "animalCode": "ANM00002"
+            foodCategory: "BROWSE",
+            amount: 10,
+            unit: "KG",
+            animalCode: "ANM00002",
           },
           {
-            "foodCategory": "BROWSE",
-            "amount": 11,
-            "unit": "KG",
-            "animalCode": "ANM00003"
+            foodCategory: "BROWSE",
+            amount: 11,
+            unit: "KG",
+            animalCode: "ANM00003",
           },
           {
-            "foodCategory": "BROWSE",
-            "amount": 8,
-            "unit": "KG",
-            "animalCode": "ANM00004"
-          }
+            foodCategory: "BROWSE",
+            amount: 8,
+            unit: "KG",
+            animalCode: "ANM00004",
+          },
         ],
-        "durationInMinutes": 120,
-        "isPublic": false,
-        "publicEventStartTime": null,
-        "requiredNumberOfKeeper": 1
+        durationInMinutes: 120,
+        isPublic: false,
+        publicEventStartTime: null,
+        requiredNumberOfKeeper: 1,
       },
       {
-        "dayOfTheWeek": DayOfWeek.MONDAY,
-        "eventTimingType": EventTimingType.AFTERNOON,
-        "feedingItems": [
+        dayOfTheWeek: DayOfWeek.MONDAY,
+        eventTimingType: EventTimingType.AFTERNOON,
+        feedingItems: [
           {
-            "foodCategory": "BROWSE",
-            "amount": 8,
-            "unit": "KG",
-            "animalCode": "ANM00001"
+            foodCategory: "BROWSE",
+            amount: 8,
+            unit: "KG",
+            animalCode: "ANM00001",
           },
           {
-            "foodCategory": "BROWSE",
-            "amount": 10,
-            "unit": "KG",
-            "animalCode": "ANM00002"
+            foodCategory: "BROWSE",
+            amount: 10,
+            unit: "KG",
+            animalCode: "ANM00002",
           },
           {
-            "foodCategory": "BROWSE",
-            "amount": 11,
-            "unit": "KG",
-            "animalCode": "ANM00003"
+            foodCategory: "BROWSE",
+            amount: 11,
+            unit: "KG",
+            animalCode: "ANM00003",
           },
           {
-            "foodCategory": "BROWSE",
-            "amount": 8,
-            "unit": "KG",
-            "animalCode": "ANM00004"
+            foodCategory: "BROWSE",
+            amount: 8,
+            unit: "KG",
+            animalCode: "ANM00004",
           },
           {
-            "foodCategory": "VEGETABLES",
-            "amount": 4.53333,
-            "unit": "KG",
-            "animalCode": "ANM00001"
+            foodCategory: "VEGETABLES",
+            amount: 4.53333,
+            unit: "KG",
+            animalCode: "ANM00001",
           },
           {
-            "foodCategory": "VEGETABLES",
-            "amount": 3.46667,
-            "unit": "KG",
-            "animalCode": "ANM00002"
+            foodCategory: "VEGETABLES",
+            amount: 3.46667,
+            unit: "KG",
+            animalCode: "ANM00002",
           },
           {
-            "foodCategory": "VEGETABLES",
-            "amount": 5.06667,
-            "unit": "KG",
-            "animalCode": "ANM00003"
+            foodCategory: "VEGETABLES",
+            amount: 5.06667,
+            unit: "KG",
+            animalCode: "ANM00003",
           },
           {
-            "foodCategory": "VEGETABLES",
-            "amount": 5.742859999999999,
-            "unit": "KG",
-            "animalCode": "ANM00004"
+            foodCategory: "VEGETABLES",
+            amount: 5.742859999999999,
+            unit: "KG",
+            animalCode: "ANM00004",
           },
           {
-            "foodCategory": "FRUITS",
-            "amount": 0.34,
-            "unit": "KG",
-            "animalCode": "ANM00001"
+            foodCategory: "FRUITS",
+            amount: 0.34,
+            unit: "KG",
+            animalCode: "ANM00001",
           },
           {
-            "foodCategory": "FRUITS",
-            "amount": 0.26,
-            "unit": "KG",
-            "animalCode": "ANM00002"
+            foodCategory: "FRUITS",
+            amount: 0.26,
+            unit: "KG",
+            animalCode: "ANM00002",
           },
           {
-            "foodCategory": "FRUITS",
-            "amount": 0.38,
-            "unit": "KG",
-            "animalCode": "ANM00003"
+            foodCategory: "FRUITS",
+            amount: 0.38,
+            unit: "KG",
+            animalCode: "ANM00003",
           },
           {
-            "foodCategory": "FRUITS",
-            "amount": 0.28714,
-            "unit": "KG",
-            "animalCode": "ANM00004"
-          }
+            foodCategory: "FRUITS",
+            amount: 0.28714,
+            unit: "KG",
+            animalCode: "ANM00004",
+          },
         ],
-        "durationInMinutes": 120,
-        "isPublic": false,
-        "publicEventStartTime": null,
-        "requiredNumberOfKeeper": 1
+        durationInMinutes: 120,
+        isPublic: false,
+        publicEventStartTime: null,
+        requiredNumberOfKeeper: 1,
       },
       {
-        "dayOfTheWeek": DayOfWeek.TUESDAY,
-        "eventTimingType": EventTimingType.AFTERNOON,
-        "feedingItems": [
+        dayOfTheWeek: DayOfWeek.TUESDAY,
+        eventTimingType: EventTimingType.AFTERNOON,
+        feedingItems: [
           {
-            "foodCategory": "BROWSE",
-            "amount": 8,
-            "unit": "KG",
-            "animalCode": "ANM00001"
+            foodCategory: "BROWSE",
+            amount: 8,
+            unit: "KG",
+            animalCode: "ANM00001",
           },
           {
-            "foodCategory": "BROWSE",
-            "amount": 10,
-            "unit": "KG",
-            "animalCode": "ANM00002"
+            foodCategory: "BROWSE",
+            amount: 10,
+            unit: "KG",
+            animalCode: "ANM00002",
           },
           {
-            "foodCategory": "BROWSE",
-            "amount": 11,
-            "unit": "KG",
-            "animalCode": "ANM00003"
+            foodCategory: "BROWSE",
+            amount: 11,
+            unit: "KG",
+            animalCode: "ANM00003",
           },
           {
-            "foodCategory": "BROWSE",
-            "amount": 8,
-            "unit": "KG",
-            "animalCode": "ANM00004"
+            foodCategory: "BROWSE",
+            amount: 8,
+            unit: "KG",
+            animalCode: "ANM00004",
           },
           {
-            "foodCategory": "VEGETABLES",
-            "amount": 4.53333,
-            "unit": "KG",
-            "animalCode": "ANM00001"
+            foodCategory: "VEGETABLES",
+            amount: 4.53333,
+            unit: "KG",
+            animalCode: "ANM00001",
           },
           {
-            "foodCategory": "VEGETABLES",
-            "amount": 3.46667,
-            "unit": "KG",
-            "animalCode": "ANM00002"
+            foodCategory: "VEGETABLES",
+            amount: 3.46667,
+            unit: "KG",
+            animalCode: "ANM00002",
           },
           {
-            "foodCategory": "VEGETABLES",
-            "amount": 5.06667,
-            "unit": "KG",
-            "animalCode": "ANM00003"
+            foodCategory: "VEGETABLES",
+            amount: 5.06667,
+            unit: "KG",
+            animalCode: "ANM00003",
           },
           {
-            "foodCategory": "VEGETABLES",
-            "amount": 5.742859999999999,
-            "unit": "KG",
-            "animalCode": "ANM00004"
+            foodCategory: "VEGETABLES",
+            amount: 5.742859999999999,
+            unit: "KG",
+            animalCode: "ANM00004",
           },
           {
-            "foodCategory": "FRUITS",
-            "amount": 0.34,
-            "unit": "KG",
-            "animalCode": "ANM00001"
+            foodCategory: "FRUITS",
+            amount: 0.34,
+            unit: "KG",
+            animalCode: "ANM00001",
           },
           {
-            "foodCategory": "FRUITS",
-            "amount": 0.26,
-            "unit": "KG",
-            "animalCode": "ANM00002"
+            foodCategory: "FRUITS",
+            amount: 0.26,
+            unit: "KG",
+            animalCode: "ANM00002",
           },
           {
-            "foodCategory": "FRUITS",
-            "amount": 0.38,
-            "unit": "KG",
-            "animalCode": "ANM00003"
+            foodCategory: "FRUITS",
+            amount: 0.38,
+            unit: "KG",
+            animalCode: "ANM00003",
           },
           {
-            "foodCategory": "FRUITS",
-            "amount": 0.28714,
-            "unit": "KG",
-            "animalCode": "ANM00004"
-          }
+            foodCategory: "FRUITS",
+            amount: 0.28714,
+            unit: "KG",
+            animalCode: "ANM00004",
+          },
         ],
-        "durationInMinutes": 120,
-        "isPublic": false,
-        "publicEventStartTime": null,
-        "requiredNumberOfKeeper": 1
+        durationInMinutes: 120,
+        isPublic: false,
+        publicEventStartTime: null,
+        requiredNumberOfKeeper: 1,
       },
       {
-        "dayOfTheWeek": DayOfWeek.WEDNESDAY,
-        "eventTimingType": EventTimingType.AFTERNOON,
-        "feedingItems": [
+        dayOfTheWeek: DayOfWeek.WEDNESDAY,
+        eventTimingType: EventTimingType.AFTERNOON,
+        feedingItems: [
           {
-            "foodCategory": "BROWSE",
-            "amount": 8,
-            "unit": "KG",
-            "animalCode": "ANM00001"
+            foodCategory: "BROWSE",
+            amount: 8,
+            unit: "KG",
+            animalCode: "ANM00001",
           },
           {
-            "foodCategory": "BROWSE",
-            "amount": 10,
-            "unit": "KG",
-            "animalCode": "ANM00002"
+            foodCategory: "BROWSE",
+            amount: 10,
+            unit: "KG",
+            animalCode: "ANM00002",
           },
           {
-            "foodCategory": "BROWSE",
-            "amount": 11,
-            "unit": "KG",
-            "animalCode": "ANM00003"
+            foodCategory: "BROWSE",
+            amount: 11,
+            unit: "KG",
+            animalCode: "ANM00003",
           },
           {
-            "foodCategory": "BROWSE",
-            "amount": 8,
-            "unit": "KG",
-            "animalCode": "ANM00004"
+            foodCategory: "BROWSE",
+            amount: 8,
+            unit: "KG",
+            animalCode: "ANM00004",
           },
           {
-            "foodCategory": "VEGETABLES",
-            "amount": 4.53333,
-            "unit": "KG",
-            "animalCode": "ANM00001"
+            foodCategory: "VEGETABLES",
+            amount: 4.53333,
+            unit: "KG",
+            animalCode: "ANM00001",
           },
           {
-            "foodCategory": "VEGETABLES",
-            "amount": 3.46667,
-            "unit": "KG",
-            "animalCode": "ANM00002"
+            foodCategory: "VEGETABLES",
+            amount: 3.46667,
+            unit: "KG",
+            animalCode: "ANM00002",
           },
           {
-            "foodCategory": "VEGETABLES",
-            "amount": 5.06667,
-            "unit": "KG",
-            "animalCode": "ANM00003"
+            foodCategory: "VEGETABLES",
+            amount: 5.06667,
+            unit: "KG",
+            animalCode: "ANM00003",
           },
           {
-            "foodCategory": "VEGETABLES",
-            "amount": 5.742859999999999,
-            "unit": "KG",
-            "animalCode": "ANM00004"
+            foodCategory: "VEGETABLES",
+            amount: 5.742859999999999,
+            unit: "KG",
+            animalCode: "ANM00004",
           },
           {
-            "foodCategory": "FRUITS",
-            "amount": 0.34,
-            "unit": "KG",
-            "animalCode": "ANM00001"
+            foodCategory: "FRUITS",
+            amount: 0.34,
+            unit: "KG",
+            animalCode: "ANM00001",
           },
           {
-            "foodCategory": "FRUITS",
-            "amount": 0.26,
-            "unit": "KG",
-            "animalCode": "ANM00002"
+            foodCategory: "FRUITS",
+            amount: 0.26,
+            unit: "KG",
+            animalCode: "ANM00002",
           },
           {
-            "foodCategory": "FRUITS",
-            "amount": 0.38,
-            "unit": "KG",
-            "animalCode": "ANM00003"
+            foodCategory: "FRUITS",
+            amount: 0.38,
+            unit: "KG",
+            animalCode: "ANM00003",
           },
           {
-            "foodCategory": "FRUITS",
-            "amount": 0.28714,
-            "unit": "KG",
-            "animalCode": "ANM00004"
-          }
+            foodCategory: "FRUITS",
+            amount: 0.28714,
+            unit: "KG",
+            animalCode: "ANM00004",
+          },
         ],
-        "durationInMinutes": 120,
-        "isPublic": false,
-        "publicEventStartTime": null,
-        "requiredNumberOfKeeper": 1
+        durationInMinutes: 120,
+        isPublic: false,
+        publicEventStartTime: null,
+        requiredNumberOfKeeper: 1,
       },
       {
-        "dayOfTheWeek": DayOfWeek.THURSDAY,
-        "eventTimingType": EventTimingType.AFTERNOON,
-        "feedingItems": [
+        dayOfTheWeek: DayOfWeek.THURSDAY,
+        eventTimingType: EventTimingType.AFTERNOON,
+        feedingItems: [
           {
-            "foodCategory": "BROWSE",
-            "amount": 8,
-            "unit": "KG",
-            "animalCode": "ANM00001"
+            foodCategory: "BROWSE",
+            amount: 8,
+            unit: "KG",
+            animalCode: "ANM00001",
           },
           {
-            "foodCategory": "BROWSE",
-            "amount": 10,
-            "unit": "KG",
-            "animalCode": "ANM00002"
+            foodCategory: "BROWSE",
+            amount: 10,
+            unit: "KG",
+            animalCode: "ANM00002",
           },
           {
-            "foodCategory": "BROWSE",
-            "amount": 11,
-            "unit": "KG",
-            "animalCode": "ANM00003"
+            foodCategory: "BROWSE",
+            amount: 11,
+            unit: "KG",
+            animalCode: "ANM00003",
           },
           {
-            "foodCategory": "BROWSE",
-            "amount": 8,
-            "unit": "KG",
-            "animalCode": "ANM00004"
+            foodCategory: "BROWSE",
+            amount: 8,
+            unit: "KG",
+            animalCode: "ANM00004",
           },
           {
-            "foodCategory": "VEGETABLES",
-            "amount": 4.53333,
-            "unit": "KG",
-            "animalCode": "ANM00001"
+            foodCategory: "VEGETABLES",
+            amount: 4.53333,
+            unit: "KG",
+            animalCode: "ANM00001",
           },
           {
-            "foodCategory": "VEGETABLES",
-            "amount": 3.46667,
-            "unit": "KG",
-            "animalCode": "ANM00002"
+            foodCategory: "VEGETABLES",
+            amount: 3.46667,
+            unit: "KG",
+            animalCode: "ANM00002",
           },
           {
-            "foodCategory": "VEGETABLES",
-            "amount": 5.06667,
-            "unit": "KG",
-            "animalCode": "ANM00003"
+            foodCategory: "VEGETABLES",
+            amount: 5.06667,
+            unit: "KG",
+            animalCode: "ANM00003",
           },
           {
-            "foodCategory": "VEGETABLES",
-            "amount": 5.742859999999999,
-            "unit": "KG",
-            "animalCode": "ANM00004"
+            foodCategory: "VEGETABLES",
+            amount: 5.742859999999999,
+            unit: "KG",
+            animalCode: "ANM00004",
           },
           {
-            "foodCategory": "FRUITS",
-            "amount": 0.34,
-            "unit": "KG",
-            "animalCode": "ANM00001"
+            foodCategory: "FRUITS",
+            amount: 0.34,
+            unit: "KG",
+            animalCode: "ANM00001",
           },
           {
-            "foodCategory": "FRUITS",
-            "amount": 0.26,
-            "unit": "KG",
-            "animalCode": "ANM00002"
+            foodCategory: "FRUITS",
+            amount: 0.26,
+            unit: "KG",
+            animalCode: "ANM00002",
           },
           {
-            "foodCategory": "FRUITS",
-            "amount": 0.38,
-            "unit": "KG",
-            "animalCode": "ANM00003"
+            foodCategory: "FRUITS",
+            amount: 0.38,
+            unit: "KG",
+            animalCode: "ANM00003",
           },
           {
-            "foodCategory": "FRUITS",
-            "amount": 0.28714,
-            "unit": "KG",
-            "animalCode": "ANM00004"
-          }
+            foodCategory: "FRUITS",
+            amount: 0.28714,
+            unit: "KG",
+            animalCode: "ANM00004",
+          },
         ],
-        "durationInMinutes": 120,
-        "isPublic": false,
-        "publicEventStartTime": null,
-        "requiredNumberOfKeeper": 1
+        durationInMinutes: 120,
+        isPublic: false,
+        publicEventStartTime: null,
+        requiredNumberOfKeeper: 1,
       },
       {
-        "dayOfTheWeek": DayOfWeek.FRIDAY,
-        "eventTimingType": EventTimingType.AFTERNOON,
-        "feedingItems": [
+        dayOfTheWeek: DayOfWeek.FRIDAY,
+        eventTimingType: EventTimingType.AFTERNOON,
+        feedingItems: [
           {
-            "foodCategory": "BROWSE",
-            "amount": 8,
-            "unit": "KG",
-            "animalCode": "ANM00001"
+            foodCategory: "BROWSE",
+            amount: 8,
+            unit: "KG",
+            animalCode: "ANM00001",
           },
           {
-            "foodCategory": "BROWSE",
-            "amount": 10,
-            "unit": "KG",
-            "animalCode": "ANM00002"
+            foodCategory: "BROWSE",
+            amount: 10,
+            unit: "KG",
+            animalCode: "ANM00002",
           },
           {
-            "foodCategory": "BROWSE",
-            "amount": 11,
-            "unit": "KG",
-            "animalCode": "ANM00003"
+            foodCategory: "BROWSE",
+            amount: 11,
+            unit: "KG",
+            animalCode: "ANM00003",
           },
           {
-            "foodCategory": "BROWSE",
-            "amount": 8,
-            "unit": "KG",
-            "animalCode": "ANM00004"
+            foodCategory: "BROWSE",
+            amount: 8,
+            unit: "KG",
+            animalCode: "ANM00004",
           },
           {
-            "foodCategory": "VEGETABLES",
-            "amount": 4.53333,
-            "unit": "KG",
-            "animalCode": "ANM00001"
+            foodCategory: "VEGETABLES",
+            amount: 4.53333,
+            unit: "KG",
+            animalCode: "ANM00001",
           },
           {
-            "foodCategory": "VEGETABLES",
-            "amount": 3.46667,
-            "unit": "KG",
-            "animalCode": "ANM00002"
+            foodCategory: "VEGETABLES",
+            amount: 3.46667,
+            unit: "KG",
+            animalCode: "ANM00002",
           },
           {
-            "foodCategory": "VEGETABLES",
-            "amount": 5.06667,
-            "unit": "KG",
-            "animalCode": "ANM00003"
+            foodCategory: "VEGETABLES",
+            amount: 5.06667,
+            unit: "KG",
+            animalCode: "ANM00003",
           },
           {
-            "foodCategory": "VEGETABLES",
-            "amount": 5.742859999999999,
-            "unit": "KG",
-            "animalCode": "ANM00004"
+            foodCategory: "VEGETABLES",
+            amount: 5.742859999999999,
+            unit: "KG",
+            animalCode: "ANM00004",
           },
           {
-            "foodCategory": "FRUITS",
-            "amount": 0.34,
-            "unit": "KG",
-            "animalCode": "ANM00001"
+            foodCategory: "FRUITS",
+            amount: 0.34,
+            unit: "KG",
+            animalCode: "ANM00001",
           },
           {
-            "foodCategory": "FRUITS",
-            "amount": 0.26,
-            "unit": "KG",
-            "animalCode": "ANM00002"
+            foodCategory: "FRUITS",
+            amount: 0.26,
+            unit: "KG",
+            animalCode: "ANM00002",
           },
           {
-            "foodCategory": "FRUITS",
-            "amount": 0.38,
-            "unit": "KG",
-            "animalCode": "ANM00003"
+            foodCategory: "FRUITS",
+            amount: 0.38,
+            unit: "KG",
+            animalCode: "ANM00003",
           },
           {
-            "foodCategory": "FRUITS",
-            "amount": 0.28714,
-            "unit": "KG",
-            "animalCode": "ANM00004"
-          }
+            foodCategory: "FRUITS",
+            amount: 0.28714,
+            unit: "KG",
+            animalCode: "ANM00004",
+          },
         ],
-        "durationInMinutes": 120,
-        "isPublic": false,
-        "publicEventStartTime": null,
-        "requiredNumberOfKeeper": 1
+        durationInMinutes: 120,
+        isPublic: false,
+        publicEventStartTime: null,
+        requiredNumberOfKeeper: 1,
       },
       {
-        "dayOfTheWeek": DayOfWeek.SATURDAY,
-        "eventTimingType": EventTimingType.AFTERNOON,
-        "feedingItems": [
+        dayOfTheWeek: DayOfWeek.SATURDAY,
+        eventTimingType: EventTimingType.AFTERNOON,
+        feedingItems: [
           {
-            "foodCategory": "BROWSE",
-            "amount": 8,
-            "unit": "KG",
-            "animalCode": "ANM00001"
+            foodCategory: "BROWSE",
+            amount: 8,
+            unit: "KG",
+            animalCode: "ANM00001",
           },
           {
-            "foodCategory": "BROWSE",
-            "amount": 10,
-            "unit": "KG",
-            "animalCode": "ANM00002"
+            foodCategory: "BROWSE",
+            amount: 10,
+            unit: "KG",
+            animalCode: "ANM00002",
           },
           {
-            "foodCategory": "BROWSE",
-            "amount": 11,
-            "unit": "KG",
-            "animalCode": "ANM00003"
+            foodCategory: "BROWSE",
+            amount: 11,
+            unit: "KG",
+            animalCode: "ANM00003",
           },
           {
-            "foodCategory": "BROWSE",
-            "amount": 8,
-            "unit": "KG",
-            "animalCode": "ANM00004"
+            foodCategory: "BROWSE",
+            amount: 8,
+            unit: "KG",
+            animalCode: "ANM00004",
           },
           {
-            "foodCategory": "VEGETABLES",
-            "amount": 4.53333,
-            "unit": "KG",
-            "animalCode": "ANM00001"
+            foodCategory: "VEGETABLES",
+            amount: 4.53333,
+            unit: "KG",
+            animalCode: "ANM00001",
           },
           {
-            "foodCategory": "VEGETABLES",
-            "amount": 3.46667,
-            "unit": "KG",
-            "animalCode": "ANM00002"
+            foodCategory: "VEGETABLES",
+            amount: 3.46667,
+            unit: "KG",
+            animalCode: "ANM00002",
           },
           {
-            "foodCategory": "VEGETABLES",
-            "amount": 5.06667,
-            "unit": "KG",
-            "animalCode": "ANM00003"
+            foodCategory: "VEGETABLES",
+            amount: 5.06667,
+            unit: "KG",
+            animalCode: "ANM00003",
           },
           {
-            "foodCategory": "VEGETABLES",
-            "amount": 5.742859999999999,
-            "unit": "KG",
-            "animalCode": "ANM00004"
+            foodCategory: "VEGETABLES",
+            amount: 5.742859999999999,
+            unit: "KG",
+            animalCode: "ANM00004",
           },
           {
-            "foodCategory": "FRUITS",
-            "amount": 0.34,
-            "unit": "KG",
-            "animalCode": "ANM00001"
+            foodCategory: "FRUITS",
+            amount: 0.34,
+            unit: "KG",
+            animalCode: "ANM00001",
           },
           {
-            "foodCategory": "FRUITS",
-            "amount": 0.26,
-            "unit": "KG",
-            "animalCode": "ANM00002"
+            foodCategory: "FRUITS",
+            amount: 0.26,
+            unit: "KG",
+            animalCode: "ANM00002",
           },
           {
-            "foodCategory": "FRUITS",
-            "amount": 0.38,
-            "unit": "KG",
-            "animalCode": "ANM00003"
+            foodCategory: "FRUITS",
+            amount: 0.38,
+            unit: "KG",
+            animalCode: "ANM00003",
           },
           {
-            "foodCategory": "FRUITS",
-            "amount": 0.28714,
-            "unit": "KG",
-            "animalCode": "ANM00004"
-          }
+            foodCategory: "FRUITS",
+            amount: 0.28714,
+            unit: "KG",
+            animalCode: "ANM00004",
+          },
         ],
-        "durationInMinutes": 120,
-        "isPublic": false,
-        "publicEventStartTime": null,
-        "requiredNumberOfKeeper": 1
+        durationInMinutes: 120,
+        isPublic: false,
+        publicEventStartTime: null,
+        requiredNumberOfKeeper: 1,
       },
       {
-        "dayOfTheWeek": DayOfWeek.SUNDAY,
-        "eventTimingType": EventTimingType.AFTERNOON,
-        "feedingItems": [
+        dayOfTheWeek: DayOfWeek.SUNDAY,
+        eventTimingType: EventTimingType.AFTERNOON,
+        feedingItems: [
           {
-            "foodCategory": "BROWSE",
-            "amount": 8,
-            "unit": "KG",
-            "animalCode": "ANM00001"
+            foodCategory: "BROWSE",
+            amount: 8,
+            unit: "KG",
+            animalCode: "ANM00001",
           },
           {
-            "foodCategory": "BROWSE",
-            "amount": 10,
-            "unit": "KG",
-            "animalCode": "ANM00002"
+            foodCategory: "BROWSE",
+            amount: 10,
+            unit: "KG",
+            animalCode: "ANM00002",
           },
           {
-            "foodCategory": "BROWSE",
-            "amount": 11,
-            "unit": "KG",
-            "animalCode": "ANM00003"
+            foodCategory: "BROWSE",
+            amount: 11,
+            unit: "KG",
+            animalCode: "ANM00003",
           },
           {
-            "foodCategory": "BROWSE",
-            "amount": 8,
-            "unit": "KG",
-            "animalCode": "ANM00004"
+            foodCategory: "BROWSE",
+            amount: 8,
+            unit: "KG",
+            animalCode: "ANM00004",
           },
           {
-            "foodCategory": "VEGETABLES",
-            "amount": 4.53333,
-            "unit": "KG",
-            "animalCode": "ANM00001"
+            foodCategory: "VEGETABLES",
+            amount: 4.53333,
+            unit: "KG",
+            animalCode: "ANM00001",
           },
           {
-            "foodCategory": "VEGETABLES",
-            "amount": 3.46667,
-            "unit": "KG",
-            "animalCode": "ANM00002"
+            foodCategory: "VEGETABLES",
+            amount: 3.46667,
+            unit: "KG",
+            animalCode: "ANM00002",
           },
           {
-            "foodCategory": "VEGETABLES",
-            "amount": 5.06667,
-            "unit": "KG",
-            "animalCode": "ANM00003"
+            foodCategory: "VEGETABLES",
+            amount: 5.06667,
+            unit: "KG",
+            animalCode: "ANM00003",
           },
           {
-            "foodCategory": "VEGETABLES",
-            "amount": 5.742859999999999,
-            "unit": "KG",
-            "animalCode": "ANM00004"
+            foodCategory: "VEGETABLES",
+            amount: 5.742859999999999,
+            unit: "KG",
+            animalCode: "ANM00004",
           },
           {
-            "foodCategory": "FRUITS",
-            "amount": 0.34,
-            "unit": "KG",
-            "animalCode": "ANM00001"
+            foodCategory: "FRUITS",
+            amount: 0.34,
+            unit: "KG",
+            animalCode: "ANM00001",
           },
           {
-            "foodCategory": "FRUITS",
-            "amount": 0.26,
-            "unit": "KG",
-            "animalCode": "ANM00002"
+            foodCategory: "FRUITS",
+            amount: 0.26,
+            unit: "KG",
+            animalCode: "ANM00002",
           },
           {
-            "foodCategory": "FRUITS",
-            "amount": 0.38,
-            "unit": "KG",
-            "animalCode": "ANM00003"
+            foodCategory: "FRUITS",
+            amount: 0.38,
+            unit: "KG",
+            animalCode: "ANM00003",
           },
           {
-            "foodCategory": "FRUITS",
-            "amount": 0.28714,
-            "unit": "KG",
-            "animalCode": "ANM00004"
-          }
+            foodCategory: "FRUITS",
+            amount: 0.28714,
+            unit: "KG",
+            animalCode: "ANM00004",
+          },
         ],
-        "durationInMinutes": 120,
-        "isPublic": false,
-        "publicEventStartTime": null,
-        "requiredNumberOfKeeper": 1
-      }
+        durationInMinutes: 120,
+        isPublic: false,
+        publicEventStartTime: null,
+        requiredNumberOfKeeper: 1,
+      },
     ],
   );
 
@@ -2967,7 +3139,7 @@ export const animalSeed = async () => {
     false,
     null,
     [],
-    1
+    1,
   );
   await AnimalService.createFeedingPlanSessionDetail(
     1,
@@ -2977,7 +3149,7 @@ export const animalSeed = async () => {
     false,
     null,
     [],
-    1
+    1,
   );
   await AnimalService.createFeedingPlanSessionDetail(
     1,
@@ -2987,7 +3159,7 @@ export const animalSeed = async () => {
     false,
     null,
     [],
-    1
+    1,
   );
   await AnimalService.createFeedingPlanSessionDetail(
     2,
@@ -2997,7 +3169,7 @@ export const animalSeed = async () => {
     false,
     null,
     [],
-    1
+    1,
   );
   await AnimalService.createFeedingPlanSessionDetail(
     2,
@@ -3007,7 +3179,7 @@ export const animalSeed = async () => {
     true,
     "13:15",
     [],
-    1
+    1,
   );
 
   await AnimalService.createFeedingItem(1, "ANM00001", "FRUITS", 5, "KG");
@@ -3155,14 +3327,16 @@ export const facilityAssetsSeed = async () => {
   let f6h: InHouse = await f6.getFacilityDetail();
 
   for (const day of [19, 18, 17, 16, 15, 14, 13, 12]) {
-    f6h.addFacilityLog(await FacilityLog.create({
-      dateTime: new Date(Date.now() - day * DAY_IN_MILLISECONDS),
-      title: "Parking ma",
-      details: "found dog poop",
-      remarks: "sweep the floor",
-      staffName: "maint1",
-      facilityLogType: FacilityLogType.MAINTENANCE_LOG,
-    }))
+    f6h.addFacilityLog(
+      await FacilityLog.create({
+        dateTime: new Date(Date.now() - day * DAY_IN_MILLISECONDS),
+        title: "Parking ma",
+        details: "found dog poop",
+        remarks: "sweep the floor",
+        staffName: "maint1",
+        facilityLogType: FacilityLogType.MAINTENANCE_LOG,
+      }),
+    );
   }
 
   let facility7 = {
@@ -3506,9 +3680,9 @@ export const facilityAssetsSeed = async () => {
   ]) {
     _day = new Date(
       _day.getTime() -
-      days * 1000 * 60 * 60 * 24 +
-      Math.random() * 1000 * 60 * 60 * 24 * 4 -
-      1000 * 60 * 60 * 24 * 2,
+        days * 1000 * 60 * 60 * 24 +
+        Math.random() * 1000 * 60 * 60 * 24 * 4 -
+        1000 * 60 * 60 * 24 * 2,
     );
     sensor.addMaintenanceLog(
       await MaintenanceLog.create({
