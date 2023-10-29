@@ -67,12 +67,31 @@ class Facility extends Model<
 
   public async getFacilityDetail() {
     if (!this.facilityDetail) {
-      let inHouse = await this.getInHouse();
+      let inHouse = await this.getInHouse({
+        include:[{
+          association:"maintenanceStaffs",
+          required:false
+        },{
+          association:"operationStaffs",
+          required:false
+        },{
+          association:"facilityLogs",
+          required:false
+        },{
+          association:"customerReportLogs",
+          required:false
+        }]
+      });
       if (inHouse) {
         this.facilityDetail = "inHouse";
         return inHouse;
       }
-      let thirdParty = await this.getThirdParty();
+      let thirdParty = await this.getThirdParty({
+        include:[{
+          association:"customerReportLogs",
+          required:false
+        }]
+      });
       if (thirdParty) {
         this.facilityDetail = "thirdParty";
         return thirdParty;

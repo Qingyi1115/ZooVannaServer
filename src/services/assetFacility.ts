@@ -636,15 +636,35 @@ export async function getEarliestReadingBySensorId(sensorId: number) {
   }
 }
 
-export async function getSensor(sensorId: number, includes: string[]) {
+export async function getSensor(sensorId: number) {
   try {
-    const sensor = await Sensor.findOne({
+    const sensor = await Sensor.findAll({
       where: { sensorId: sensorId },
-      include: includes,
+      include: [
+        {
+          association: "sensorReadings",
+          required: false,
+        },
+        {
+          association: "maintenanceLogs",
+          required: false,
+        },
+        {
+          association: "generalStaff",
+          required: false,
+        },
+        {
+          association: "hubProcessor",
+          required: true,
+          include: [{
+            association: "facility",
+            required: true,
+          }]
+        }],
     });
-    if (!sensor) throw { message: "Unable to find sensorId: " + sensorId };
+    if (!(sensor.length == 1)) throw { message: "Unable to find sensorId: " + sensorId };
 
-    return sensor;
+    return sensor[0];
   } catch (error: any) {
     throw validationErrorHandler(error);
   }
@@ -721,7 +741,7 @@ export async function getSensorMaintenanceSuggestions(
   predictionLength: number,
 ) {
   try {
-    let sensor: Sensor = await getSensor(sensorId, ["sensorReadings"]);
+    let sensor: Sensor = await getSensor(sensorId);
 
     let logs = (await sensor.getMaintenanceLogs()) || [];
     let dateLogs = logs.map((log: MaintenanceLog) => log.dateTime);

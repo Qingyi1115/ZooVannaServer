@@ -1354,23 +1354,13 @@ export async function getSensorController(req: Request, res: Response) {
         .json({ error: "Access Denied! Operation managers only!" });
 
     const { sensorId } = req.params;
-    const { includes = [] } = req.body;
+    const { includes } = req.body;
 
     if (sensorId === undefined) {
       return res.status(400).json({ error: "Missing information!" });
     }
 
-    const _includes: string[] = [];
-    for (const role of [
-      "hubProcessor",
-      "sensorReadings",
-      "maintenanceLogs",
-      "generalStaff",
-    ]) {
-      if (includes.includes(role)) _includes.push(role);
-    }
-
-    let sensor: Sensor = await getSensor(Number(sensorId), includes);
+    let sensor: Sensor = await getSensor(Number(sensorId));
 
     return res.status(200).json({ sensor: sensor.toJSON() });
   } catch (error: any) {
@@ -1401,7 +1391,7 @@ export async function getSensorReadingController(req: Request, res: Response) {
       new Date(startDate),
       new Date(endDate),
     );
-    let sensor = await getSensor(Number(sensorId), []);
+    let sensor = await getSensor(Number(sensorId));
 
     let earliestDate = await getEarliestReadingBySensorId(Number(sensorId));
 
