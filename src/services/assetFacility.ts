@@ -199,27 +199,27 @@ export async function getAllFacilityMaintenanceSuggestions(employee: Employee) {
             }]
           }]
         , true);
-        const maintenanceFacility = await getAllFacility(
-            [{
-              association:"inHouse",
-              required:true,
-              include:{
-                association : "maintenanceStaffs",
-                required:true,
-                include:{
-                  association: "employee",
-                  required:true,
-                  where:{
-                    employeeId: employee.employeeId
-                  }
-                }
+      const maintenanceFacility = await getAllFacility(
+        [{
+          association: "inHouse",
+          required: true,
+          include: {
+            association: "maintenanceStaffs",
+            required: true,
+            include: {
+              association: "employee",
+              required: true,
+              where: {
+                employeeId: employee.employeeId
               }
-            }]
-          , true);
-        
+            }
+          }
+        }]
+        , true);
+
 
       for (const facilityNew of maintenanceFacility) {
-        if (!facilities.find(facility=> facility.facilityId == facilityNew.facilityId)) facilities.push(facilityNew);
+        if (!facilities.find(facility => facility.facilityId == facilityNew.facilityId)) facilities.push(facilityNew);
       }
 
     }
@@ -285,7 +285,7 @@ export async function updateFacilityImage(
 
     facility.imageUrl = imageUrl;
     return facility.save();
-    
+
   } catch (error: any) {
     throw validationErrorHandler(error);
   }
@@ -446,17 +446,17 @@ export async function getFacilityLogs(
   facilityId: number,
 ): Promise<FacilityLog[]> {
   try {
-    const facility : Facility = await getFacilityById(facilityId);
+    const facility: Facility = await getFacilityById(facilityId);
     if (!facility) throw { message: "Unable to find facilityId: " + facility };
-    const inHouse : InHouse = await facility.getFacilityDetail();
+    const inHouse: InHouse = await facility.getFacilityDetail();
     if (facility.facilityDetail != "inHouse")
       throw { message: "Not an in-house facility!" };
 
     return inHouse.getFacilityLogs(
       {
-        include:{
-          association:"generalStaffs",
-          include:["employee"]
+        include: {
+          association: "generalStaffs",
+          include: ["employee"]
         }
       }
     );
@@ -576,7 +576,7 @@ export async function getAllHubs(
 }
 
 export async function getAllSensors(
-  includes: string[] = [],
+  includes: any[] = [],
 ): Promise<Sensor[]> {
   try {
     return Sensor.findAll({ include: includes });
@@ -658,7 +658,19 @@ export async function getAllSensorMaintenanceSuggestions(employee: Employee) {
       (await employee.getPlanningStaff())?.plannerType ==
       PlannerType.OPERATIONS_MANAGER
     ) {
-      sensors = await getAllSensors(["sensorReadings"]);
+      sensors = await getAllSensors([
+        {
+          association: "sensorReading",
+          required: false,
+        },
+        {
+          association: "hubProcessor",
+          required: true,
+          include: [{
+            association: "facility",
+            required: true,
+          }]
+        }]);
     } else if (!(await employee.getGeneralStaff())) {
       throw { message: "No access!" };
     } else {
@@ -897,24 +909,24 @@ export async function getFacilityLogById(
 export async function createCustomerReport(
   facilityId: number,
   dateTime: Date,
-  title : string,
+  title: string,
   remarks: string,
-  viewed : boolean,
+  viewed: boolean,
 ): Promise<CustomerReportLog> {
   try {
     const facility = await getFacilityById(facilityId);
 
     const customerReport = await CustomerReportLog.create({
       dateTime: dateTime,
-      title : title,
+      title: title,
       remarks: remarks,
-      viewed : viewed,
+      viewed: viewed,
     })
 
     const detail = await facility.getFacilityDetail();
-    if (facility.facilityDetail == "inHouse"){
+    if (facility.facilityDetail == "inHouse") {
       await customerReport.setInHouse(detail);
-    }else{
+    } else {
       await customerReport.setThirdParty(detail);
     }
 
@@ -927,22 +939,22 @@ export async function createCustomerReport(
 export async function getAllCustomerReports(): Promise<CustomerReportLog[]> {
   try {
     return CustomerReportLog.findAll({
-      include:[{
-        association:"inHouse",
-        required:false,
-        include:[{
-          association:"facility",
-          required:true,
+      include: [{
+        association: "inHouse",
+        required: false,
+        include: [{
+          association: "facility",
+          required: true,
         }]
-      },{
-        association:"thirdParty",
-        required:false,
-        include:[{
-          association:"facility",
-          required:true,
+      }, {
+        association: "thirdParty",
+        required: false,
+        include: [{
+          association: "facility",
+          required: true,
         }]
       },
-    ]
+      ]
     });
   } catch (error: any) {
     throw validationErrorHandler(error);
@@ -950,15 +962,15 @@ export async function getAllCustomerReports(): Promise<CustomerReportLog[]> {
 }
 
 export async function getCustomerReportLogById(
-  customerReportLogId:number
-){
-  try{
+  customerReportLogId: number
+) {
+  try {
     const customerReportLog = await CustomerReportLog.findOne({
-      where:{
-        customerReportLogId:customerReportLogId
+      where: {
+        customerReportLogId: customerReportLogId
       }
     });
-    if (!customerReportLog) throw {message:"Cannot find Customer Report Log with Id: " + customerReportLog}
+    if (!customerReportLog) throw { message: "Cannot find Customer Report Log with Id: " + customerReportLog }
     return customerReportLog;
   } catch (error: any) {
     throw validationErrorHandler(error);
@@ -966,8 +978,8 @@ export async function getCustomerReportLogById(
 }
 
 export async function updateCustomerReport(
-  customerReportLogId:number,
-  viewed:boolean,
+  customerReportLogId: number,
+  viewed: boolean,
 ): Promise<CustomerReportLog> {
   try {
     const customerReportLog = await getCustomerReportLogById(customerReportLogId);
