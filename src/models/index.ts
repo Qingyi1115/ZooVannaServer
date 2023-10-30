@@ -1044,10 +1044,10 @@ export const employeeSeed = async () => {
     listingStatus: ListingStatus.ACTIVE,
   });
 
-  let bookingRef = uuidv4().substring(0, 8).toUpperCase();
   let temp = new Date(new Date().setMonth(new Date().getMonth()));
   temp.setHours(0, 0, 0);
 
+  let bookingRef = uuidv4().substring(0, 8).toUpperCase();
   let order1 = await CustomerOrder.create({
     bookingReference: bookingRef,
     totalAmount: 295,
@@ -1079,13 +1079,15 @@ export const employeeSeed = async () => {
   await createCustomerOrderForSeeding(listings1, order1);
 
   let bookingRef2 = uuidv4().substring(0, 8).toUpperCase();
-  temp.setMonth(temp.getMonth() - 2);
+  let temp2 = new Date(new Date().setMonth(new Date().getMonth()));
+  temp2.setHours(0, 0, 0);
+  temp2.setMonth(temp.getMonth() - 2);
 
   let order2 = await CustomerOrder.create({
     bookingReference: bookingRef2,
     totalAmount: 345,
     orderStatus: OrderStatus.ACTIVE,
-    entryDate: temp,
+    entryDate: temp2,
     customerFirstName: "Admin",
     customerLastName: "Seeding",
     customerContactNo: "12345678",
@@ -1115,13 +1117,15 @@ export const employeeSeed = async () => {
   await createCustomerOrderForSeeding(listings2, order2);
 
   let bookingRef3 = uuidv4().substring(0, 8).toUpperCase();
-  temp.setMonth(temp.getMonth() - 3);
+  let temp3 = new Date(new Date().setMonth(new Date().getMonth()));
+  temp3.setHours(0, 0, 0);
+  temp3.setMonth(temp.getMonth() - 3);
 
   let order3 = await CustomerOrder.create({
     bookingReference: bookingRef3,
     totalAmount: 165,
     orderStatus: OrderStatus.ACTIVE,
-    entryDate: temp,
+    entryDate: temp3,
     customerFirstName: "Admin",
     customerLastName: "Seeding",
     customerContactNo: "12345678",
@@ -1144,7 +1148,9 @@ export const employeeSeed = async () => {
   await createCustomerOrderForSeeding(listings3, order3);
 
   let bookingRef4 = uuidv4().substring(0, 8).toUpperCase();
-  temp.setMonth(temp.getMonth() - 1);
+  let temp4 = new Date(new Date().setMonth(new Date().getMonth()));
+  temp4.setHours(0, 0, 0);
+  temp4.setMonth(temp.getMonth() - 1);
 
   let order4 = await CustomerOrder.create({
     bookingReference: bookingRef4,
@@ -1173,7 +1179,9 @@ export const employeeSeed = async () => {
   await createCustomerOrderForSeeding(listings4, order4);
 
   let bookingRef5 = uuidv4().substring(0, 8).toUpperCase();
-  temp.setMonth(temp.getMonth() + 1);
+  let temp5 = new Date(new Date().setMonth(new Date().getMonth()));
+  temp5.setHours(0, 0, 0);
+  temp5.setMonth(temp.getMonth() + 1);
 
   let order5 = await CustomerOrder.create({
     bookingReference: bookingRef5,
@@ -1201,6 +1209,105 @@ export const employeeSeed = async () => {
   ];
 
   await createCustomerOrderForSeeding(listings5, order5);
+
+  let bookingRef6 = uuidv4().substring(0, 8).toUpperCase();
+  let temp6 = new Date(); // Create a new Date object with the current date and time
+  temp6.setMonth(9); // Set the month to October (0-based, so October is 9)
+  temp6.setDate(31); // Set the day to 31
+  temp6.setHours(0, 0, 0, 0);
+
+  let order6 = await CustomerOrder.create({
+    bookingReference: bookingRef6,
+    totalAmount: 175,
+    orderStatus: OrderStatus.ACTIVE,
+    entryDate: temp,
+    customerFirstName: "Admin",
+    customerLastName: "Seeding",
+    customerContactNo: "12345678",
+    customerEmail: "zoovannaserver@gmail.com",
+    paymentStatus: PaymentStatus.COMPLETED,
+    pdfUrl: "",
+  });
+
+  let listings6: Listing[] = [
+    listing1,
+    listing2,
+    listing2,
+    listing3,
+    listing4,
+    listing4,
+    listing5,
+    listing6,
+    listing6,
+  ];
+
+  await createCustomerOrderForSeeding(listings6, order6);
+
+  let bookingRef7 = uuidv4().substring(0, 8).toUpperCase();
+  let temp7 = new Date(); // Create a new Date object with the current date and time
+  temp6.setMonth(10); // Set the month to October (0-based, so October is 9)
+  temp6.setDate(3); // Set the day to 31
+  temp6.setHours(0, 0, 0, 0);
+
+  let order7 = await CustomerOrder.create({
+    bookingReference: bookingRef7,
+    totalAmount: 175,
+    orderStatus: OrderStatus.ACTIVE,
+    entryDate: temp,
+    customerFirstName: "Admin",
+    customerLastName: "Seeding",
+    customerContactNo: "12345678",
+    customerEmail: "zoovannaserver@gmail.com",
+    paymentStatus: PaymentStatus.COMPLETED,
+    pdfUrl: "",
+  });
+
+  let listings7: Listing[] = [
+    listing1,
+    listing2,
+    listing2,
+    listing3,
+    listing4,
+    listing4,
+    listing5,
+    listing6,
+    listing6,
+  ];
+
+  await createCustomerOrderForSeeding(listings7, order7);
+
+  let bookingRef8 = uuidv4().substring(0, 8).toUpperCase();
+  let temp8 = new Date(); // Create a new Date object with the current date and time
+  temp6.setMonth(10); // Set the month to October (0-based, so October is 9)
+  temp6.setDate(4); // Set the day to 31
+  temp6.setHours(0, 0, 0, 0);
+
+  let order8 = await CustomerOrder.create({
+    bookingReference: bookingRef7,
+    totalAmount: 175,
+    orderStatus: OrderStatus.ACTIVE,
+    entryDate: temp,
+    customerFirstName: "Admin",
+    customerLastName: "Seeding",
+    customerContactNo: "12345678",
+    customerEmail: "zoovannaserver@gmail.com",
+    paymentStatus: PaymentStatus.COMPLETED,
+    pdfUrl: "",
+  });
+
+  let listings8: Listing[] = [
+    listing1,
+    listing2,
+    listing2,
+    listing3,
+    listing4,
+    listing4,
+    listing5,
+    listing6,
+    listing6,
+  ];
+
+  await createCustomerOrderForSeeding(listings8, order8);
 };
 
 export const speciesSeed = async () => {
