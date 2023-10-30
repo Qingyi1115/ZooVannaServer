@@ -186,6 +186,11 @@ export async function createFacilityController(req: Request, res: Response) {
         .json({ error: "Access Denied! Operation managers only!" });
     }
 
+    const imageUrl = await handleFileUpload(
+      req,
+      process.env.IMG_URL_ROOT! + "facility", //"D:/capstoneUploads/animalFeed",
+    );
+
     const { facilityName, isSheltered, facilityDetail, facilityDetailJson } =
       req.body;
     console.log({
@@ -214,7 +219,8 @@ export async function createFacilityController(req: Request, res: Response) {
       undefined,
       isSheltered,
       facilityDetail,
-      facilityDetailJson,
+      JSON.parse(facilityDetailJson),
+      imageUrl
     );
 
     return res.status(200).json({ facility: facility.toJSON() });
@@ -273,7 +279,7 @@ export async function getAllFacilityController(req: Request, res: Response) {
     if (inHouse)
       facilities.push(await (await inHouse.getFacility()).toFullJson());
 
-    return res.status(200).json({ facilities: facilities });
+    return res.status(200).json({ facilities: facilities.map(facility=>facility.toFullJson())});
   } catch (error: any) {
     console.log(error);
     res.status(400).json({ error: error.message });
@@ -1348,23 +1354,13 @@ export async function getSensorController(req: Request, res: Response) {
         .json({ error: "Access Denied! Operation managers only!" });
 
     const { sensorId } = req.params;
-    const { includes = [] } = req.body;
+    const { includes } = req.body;
 
     if (sensorId === undefined) {
       return res.status(400).json({ error: "Missing information!" });
     }
 
-    const _includes: string[] = [];
-    for (const role of [
-      "hubProcessor",
-      "sensorReadings",
-      "maintenanceLogs",
-      "generalStaff",
-    ]) {
-      if (includes.includes(role)) _includes.push(role);
-    }
-
-    let sensor: Sensor = await getSensor(Number(sensorId), includes);
+    let sensor: Sensor = await getSensor(Number(sensorId));
 
     return res.status(200).json({ sensor: sensor.toJSON() });
   } catch (error: any) {
@@ -1395,7 +1391,7 @@ export async function getSensorReadingController(req: Request, res: Response) {
       new Date(startDate),
       new Date(endDate),
     );
-    let sensor = await getSensor(Number(sensorId), []);
+    let sensor = await getSensor(Number(sensorId));
 
     let earliestDate = await getEarliestReadingBySensorId(Number(sensorId));
 

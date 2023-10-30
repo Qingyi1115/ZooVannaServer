@@ -66,13 +66,53 @@ class Facility extends Model<
   declare setEnclosure: HasOneSetAssociationMixin<Enclosure, number>;
 
   public async getFacilityDetail() {
-    if (!this.facilityDetail) {
-      let inHouse = await this.getInHouse();
+    if (true) {
+      let inHouse = await this.getInHouse({
+        include:[{
+          association:"maintenanceStaffs",
+          required:false,
+          include:[{
+            association:"employee",
+          }]
+        },{
+          association:"operationStaffs",
+          required:false,
+          include:[{
+            association:"employee",
+          }]
+        },{
+          association:"facilityLogs",
+          required:false
+        },{
+          association:"customerReportLogs",
+          required:false
+        }]
+      });
       if (inHouse) {
         this.facilityDetail = "inHouse";
         return inHouse;
       }
-      let thirdParty = await this.getThirdParty();
+      let thirdParty = await this.getThirdParty({
+        include:[{
+          association:"maintenanceStaffs",
+          required:false,
+          include:[{
+            association:"employee",
+          }]
+        },{
+          association:"operationStaffs",
+          required:false,
+          include:[{
+            association:"employee",
+          }]
+        },{
+          association:"facilityLogs",
+          required:false
+        },{
+          association:"customerReportLogs",
+          required:false
+        }]
+      });
       if (thirdParty) {
         this.facilityDetail = "thirdParty";
         return thirdParty;

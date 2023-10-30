@@ -83,12 +83,14 @@ export async function createNewFacility(
   isSheltered: boolean,
   facilityDetail: string,
   facilityDetailJson: any,
+  imageUrl: string
 ) {
   let newFacility = {
     facilityName: facilityName,
     xCoordinate: xCoordinate,
     yCoordinate: yCoordinate,
     isSheltered: isSheltered,
+    imageUrl: imageUrl
   } as any;
   newFacility[facilityDetail] = facilityDetailJson;
 
@@ -130,16 +132,32 @@ export async function getAllFacilityMaintenanceSuggestions(employee: Employee) {
       PlannerType.OPERATIONS_MANAGER
     ) {
       const allFacilities = await getAllFacility(
-          [{
-            association:"inHouse",
-            include:{
-              association : "facilityLogs",
-              required:false,
-              include:{
-                association:"generalStaffs"
+        [{
+          association: "inHouse",
+          include: [{
+            association: "facilityLogs",
+            required: false,
+            include: {
+              association: "generalStaffs",
+              required: false,
+              include: {
+                association: "employee"
               }
+            },
+          }, {
+            association: "operationStaffs",
+            required: false,
+            include: {
+              association: "employee"
+            }
+          }, {
+            association: "maintenanceStaffs",
+            required: false,
+            include: {
+              association: "employee"
             }
           }]
+        }]
         , true);
       for (const facility of allFacilities) {
         const ih = await facility.getFacilityDetail();
@@ -149,47 +167,59 @@ export async function getAllFacilityMaintenanceSuggestions(employee: Employee) {
       throw { message: "No access!" };
     } else {
       facilities = await getAllFacility(
-          [{
-            association:"inHouse",
-            required:true,
-            include:{
-              association : "facilityLogs",
-              required:true,
-              include:{
-                association:"generalStaffs",
-                required:true,
-                include:{
-                  association: "employee",
-                  required:true,
-                  where:{
-                    employeeId: employee.employeeId
-                  }
+        [{
+          association: "inHouse",
+          required: true,
+          include: [{
+            association: "facilityLogs",
+            required: true,
+            include: {
+              association: "generalStaffs",
+              required: true,
+              include: {
+                association: "employee",
+                required: true,
+                where: {
+                  employeeId: employee.employeeId
                 }
               }
             }
+          }, {
+            association: "operationStaffs",
+            required: false,
+            include: {
+              association: "employee"
+            }
+          }, {
+            association: "maintenanceStaffs",
+            required: false,
+            include: {
+              association: "employee"
+            }
           }]
+        }]
         , true);
-        const maintenanceFacility = await getAllFacility(
-            [{
-              association:"inHouse",
-              required:true,
-              include:{
-                association : "maintenanceStaffs",
-                required:true,
-                include:{
-                  association: "employee",
-                  required:true,
-                  where:{
-                    employeeId: employee.employeeId
-                  }
-                }
+      const maintenanceFacility = await getAllFacility(
+        [{
+          association: "inHouse",
+          required: true,
+          include: {
+            association: "maintenanceStaffs",
+            required: true,
+            include: {
+              association: "employee",
+              required: true,
+              where: {
+                employeeId: employee.employeeId
               }
-            }]
-          , true);
-        
+            }
+          }
+        }]
+        , true);
+
 
       for (const facilityNew of maintenanceFacility) {
-        if (!facilities.find(facility=> facility.facilityId == facilityNew.facilityId)) facilities.push(facilityNew);
+        if (!facilities.find(facility => facility.facilityId == facilityNew.facilityId)) facilities.push(facilityNew);
       }
 
     }
@@ -255,7 +285,7 @@ export async function updateFacilityImage(
 
     facility.imageUrl = imageUrl;
     return facility.save();
-    
+
   } catch (error: any) {
     throw validationErrorHandler(error);
   }
@@ -416,17 +446,17 @@ export async function getFacilityLogs(
   facilityId: number,
 ): Promise<FacilityLog[]> {
   try {
-    const facility : Facility = await getFacilityById(facilityId);
+    const facility: Facility = await getFacilityById(facilityId);
     if (!facility) throw { message: "Unable to find facilityId: " + facility };
-    const inHouse : InHouse = await facility.getFacilityDetail();
+    const inHouse: InHouse = await facility.getFacilityDetail();
     if (facility.facilityDetail != "inHouse")
       throw { message: "Not an in-house facility!" };
 
     return inHouse.getFacilityLogs(
       {
-        include:{
-          association:"generalStaffs",
-          include:["employee"]
+        include: {
+          association: "generalStaffs",
+          include: ["employee"]
         }
       }
     );
@@ -546,7 +576,7 @@ export async function getAllHubs(
 }
 
 export async function getAllSensors(
-  includes: string[] = [],
+  includes: any[] = [],
 ): Promise<Sensor[]> {
   try {
     return Sensor.findAll({ include: includes });
@@ -606,15 +636,35 @@ export async function getEarliestReadingBySensorId(sensorId: number) {
   }
 }
 
-export async function getSensor(sensorId: number, includes: string[]) {
+export async function getSensor(sensorId: number) {
   try {
-    const sensor = await Sensor.findOne({
+    const sensor = await Sensor.findAll({
       where: { sensorId: sensorId },
-      include: includes,
+      include: [
+        {
+          association: "sensorReadings",
+          required: false,
+        },
+        {
+          association: "maintenanceLogs",
+          required: false,
+        },
+        {
+          association: "generalStaff",
+          required: false,
+        },
+        {
+          association: "hubProcessor",
+          required: true,
+          include: [{
+            association: "facility",
+            required: true,
+          }]
+        }],
     });
-    if (!sensor) throw { message: "Unable to find sensorId: " + sensorId };
+    if (!(sensor.length == 1)) throw { message: "Unable to find sensorId: " + sensorId };
 
-    return sensor;
+    return sensor[0];
   } catch (error: any) {
     throw validationErrorHandler(error);
   }
@@ -628,7 +678,26 @@ export async function getAllSensorMaintenanceSuggestions(employee: Employee) {
       (await employee.getPlanningStaff())?.plannerType ==
       PlannerType.OPERATIONS_MANAGER
     ) {
-      sensors = await getAllSensors(["sensorReadings"]);
+      sensors = await getAllSensors([
+        {
+          association: "generalStaff",
+          required: false,
+          include:[{
+            association : "employee"
+          }]
+        },
+        {
+          association: "sensorReadings",
+          required: false,
+        },
+        {
+          association: "hubProcessor",
+          required: true,
+          include: [{
+            association: "facility",
+            required: true,
+          }]
+        }]);
     } else if (!(await employee.getGeneralStaff())) {
       throw { message: "No access!" };
     } else {
@@ -679,7 +748,7 @@ export async function getSensorMaintenanceSuggestions(
   predictionLength: number,
 ) {
   try {
-    let sensor: Sensor = await getSensor(sensorId, ["sensorReadings"]);
+    let sensor: Sensor = await getSensor(sensorId);
 
     let logs = (await sensor.getMaintenanceLogs()) || [];
     let dateLogs = logs.map((log: MaintenanceLog) => log.dateTime);
@@ -867,24 +936,24 @@ export async function getFacilityLogById(
 export async function createCustomerReport(
   facilityId: number,
   dateTime: Date,
-  title : string,
+  title: string,
   remarks: string,
-  viewed : boolean,
+  viewed: boolean,
 ): Promise<CustomerReportLog> {
   try {
     const facility = await getFacilityById(facilityId);
 
     const customerReport = await CustomerReportLog.create({
       dateTime: dateTime,
-      title : title,
+      title: title,
       remarks: remarks,
-      viewed : viewed,
+      viewed: viewed,
     })
 
     const detail = await facility.getFacilityDetail();
-    if (facility.facilityDetail == "inHouse"){
+    if (facility.facilityDetail == "inHouse") {
       await customerReport.setInHouse(detail);
-    }else{
+    } else {
       await customerReport.setThirdParty(detail);
     }
 
@@ -897,22 +966,22 @@ export async function createCustomerReport(
 export async function getAllCustomerReports(): Promise<CustomerReportLog[]> {
   try {
     return CustomerReportLog.findAll({
-      include:[{
-        association:"inHouse",
-        required:false,
-        include:[{
-          association:"facility",
-          required:true,
+      include: [{
+        association: "inHouse",
+        required: false,
+        include: [{
+          association: "facility",
+          required: true,
         }]
-      },{
-        association:"thirdParty",
-        required:false,
-        include:[{
-          association:"facility",
-          required:true,
+      }, {
+        association: "thirdParty",
+        required: false,
+        include: [{
+          association: "facility",
+          required: true,
         }]
       },
-    ]
+      ]
     });
   } catch (error: any) {
     throw validationErrorHandler(error);
@@ -920,15 +989,15 @@ export async function getAllCustomerReports(): Promise<CustomerReportLog[]> {
 }
 
 export async function getCustomerReportLogById(
-  customerReportLogId:number
-){
-  try{
+  customerReportLogId: number
+) {
+  try {
     const customerReportLog = await CustomerReportLog.findOne({
-      where:{
-        customerReportLogId:customerReportLogId
+      where: {
+        customerReportLogId: customerReportLogId
       }
     });
-    if (!customerReportLog) throw {message:"Cannot find Customer Report Log with Id: " + customerReportLog}
+    if (!customerReportLog) throw { message: "Cannot find Customer Report Log with Id: " + customerReportLog }
     return customerReportLog;
   } catch (error: any) {
     throw validationErrorHandler(error);
@@ -936,8 +1005,8 @@ export async function getCustomerReportLogById(
 }
 
 export async function updateCustomerReport(
-  customerReportLogId:number,
-  viewed:boolean,
+  customerReportLogId: number,
+  viewed: boolean,
 ): Promise<CustomerReportLog> {
   try {
     const customerReportLog = await getCustomerReportLogById(customerReportLogId);

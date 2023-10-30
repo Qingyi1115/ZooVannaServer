@@ -8,8 +8,6 @@ import {
   HasManySetAssociationsMixin,
   HasManyAddAssociationMixin,
   HasManyRemoveAssociationMixin,
-  BelongsToGetAssociationMixin,
-  BelongsToSetAssociationMixin,
 } from "Sequelize";
 import { conn } from "../db";
 import { ListingStatus, ListingType } from "./enumerated";
