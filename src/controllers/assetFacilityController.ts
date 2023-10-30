@@ -261,9 +261,13 @@ export async function getAllFacilityController(req: Request, res: Response) {
         _includes,
         includes.includes("facilityDetail"),
       )) {
-        facilities.push(await facility.toFullJson());
+        facilities.push(await facility);
       }
-      return res.status(200).json({ facilities: facilities });
+
+      const result = [];
+      for (const f of facilities) result.push(await f.toFullJson())
+
+      return res.status(200).json({ facilities: result});
     }
 
     let facilities: Facility[] = [];
@@ -271,15 +275,20 @@ export async function getAllFacilityController(req: Request, res: Response) {
     for (const inHouse of await (
       await employee.getGeneralStaff()
     ).getMaintainedFacilities()) {
-      facilities.push(await (await inHouse.getFacility()).toFullJson());
+      facilities.push(await (await inHouse.getFacility()));
     }
     const inHouse = await (
       await employee.getGeneralStaff()
     ).getOperatedFacility();
-    if (inHouse)
-      facilities.push(await (await inHouse.getFacility()).toFullJson());
+    if (inHouse){
+      facilities.push(await (await inHouse.getFacility()));
 
-    return res.status(200).json({ facilities: facilities.map(facility=>facility.toFullJson())});
+    }
+
+    const result = [];
+    for (const f of facilities) result.push(await f.toFullJson())
+
+    return res.status(200).json({ facilities: result});
   } catch (error: any) {
     console.log(error);
     res.status(400).json({ error: error.message });
@@ -1579,7 +1588,7 @@ export async function createSensorMaintenanceLogController(
     //   await generalStaff?.save();
     // }
 
-    return res.status(200).json({ sensor: sensor.toFullJSON() });
+    return res.status(200).json({ sensor: await sensor.toFullJSON() });
   } catch (error: any) {
     console.log(error);
     res.status(400).json({ error: error.message });
