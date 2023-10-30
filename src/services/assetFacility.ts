@@ -701,7 +701,28 @@ export async function getAllSensorMaintenanceSuggestions(employee: Employee) {
     } else if (!(await employee.getGeneralStaff())) {
       throw { message: "No access!" };
     } else {
-      sensors = await (await employee.getGeneralStaff()).getSensors();
+      sensors = await (await employee.getGeneralStaff()).getSensors({
+        include:[
+          {
+            association: "generalStaff",
+            required: false,
+            include:[{
+              association : "employee"
+            }]
+          },
+          {
+            association: "sensorReadings",
+            required: false,
+          },
+          {
+            association: "hubProcessor",
+            required: true,
+            include: [{
+              association: "facility",
+              required: true,
+            }]
+          }]
+      });
     }
 
     for (const sensor of sensors) {
