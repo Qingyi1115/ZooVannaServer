@@ -1044,10 +1044,10 @@ export const employeeSeed = async () => {
     listingStatus: ListingStatus.ACTIVE,
   });
 
+  let bookingRef = uuidv4().substring(0, 8).toUpperCase();
   let temp = new Date(new Date().setMonth(new Date().getMonth()));
   temp.setHours(0, 0, 0);
 
-  let bookingRef = uuidv4().substring(0, 8).toUpperCase();
   let order1 = await CustomerOrder.create({
     bookingReference: bookingRef,
     totalAmount: 295,
@@ -1079,15 +1079,13 @@ export const employeeSeed = async () => {
   await createCustomerOrderForSeeding(listings1, order1);
 
   let bookingRef2 = uuidv4().substring(0, 8).toUpperCase();
-  let temp2 = new Date(new Date().setMonth(new Date().getMonth()));
-  temp2.setHours(0, 0, 0);
-  temp2.setMonth(temp.getMonth() - 2);
+  temp.setMonth(temp.getMonth() - 2);
 
   let order2 = await CustomerOrder.create({
     bookingReference: bookingRef2,
     totalAmount: 345,
     orderStatus: OrderStatus.ACTIVE,
-    entryDate: temp2,
+    entryDate: temp,
     customerFirstName: "Admin",
     customerLastName: "Seeding",
     customerContactNo: "12345678",
@@ -1117,15 +1115,13 @@ export const employeeSeed = async () => {
   await createCustomerOrderForSeeding(listings2, order2);
 
   let bookingRef3 = uuidv4().substring(0, 8).toUpperCase();
-  let temp3 = new Date(new Date().setMonth(new Date().getMonth()));
-  temp3.setHours(0, 0, 0);
-  temp3.setMonth(temp.getMonth() - 3);
+  temp.setMonth(temp.getMonth() - 3);
 
   let order3 = await CustomerOrder.create({
     bookingReference: bookingRef3,
     totalAmount: 165,
     orderStatus: OrderStatus.ACTIVE,
-    entryDate: temp3,
+    entryDate: temp,
     customerFirstName: "Admin",
     customerLastName: "Seeding",
     customerContactNo: "12345678",
@@ -1148,9 +1144,7 @@ export const employeeSeed = async () => {
   await createCustomerOrderForSeeding(listings3, order3);
 
   let bookingRef4 = uuidv4().substring(0, 8).toUpperCase();
-  let temp4 = new Date(new Date().setMonth(new Date().getMonth()));
-  temp4.setHours(0, 0, 0);
-  temp4.setMonth(temp.getMonth() - 1);
+  temp.setMonth(temp.getMonth() - 1);
 
   let order4 = await CustomerOrder.create({
     bookingReference: bookingRef4,
@@ -1179,9 +1173,7 @@ export const employeeSeed = async () => {
   await createCustomerOrderForSeeding(listings4, order4);
 
   let bookingRef5 = uuidv4().substring(0, 8).toUpperCase();
-  let temp5 = new Date(new Date().setMonth(new Date().getMonth()));
-  temp5.setHours(0, 0, 0);
-  temp5.setMonth(temp.getMonth() + 1);
+  temp.setMonth(temp.getMonth() + 1);
 
   let order5 = await CustomerOrder.create({
     bookingReference: bookingRef5,
@@ -1209,8 +1201,6 @@ export const employeeSeed = async () => {
   ];
 
   await createCustomerOrderForSeeding(listings5, order5);
-
-
 };
 
 export const speciesSeed = async () => {
@@ -3696,9 +3686,9 @@ export const facilityAssetsSeed = async () => {
   ]) {
     _day = new Date(
       _day.getTime() -
-      days * 1000 * 60 * 60 * 24 +
-      Math.random() * 1000 * 60 * 60 * 24 * 4 -
-      1000 * 60 * 60 * 24 * 2,
+        days * 1000 * 60 * 60 * 24 +
+        Math.random() * 1000 * 60 * 60 * 24 * 4 -
+        1000 * 60 * 60 * 24 * 2,
     );
     sensor.addMaintenanceLog(
       await MaintenanceLog.create({
