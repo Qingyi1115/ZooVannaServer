@@ -1283,7 +1283,7 @@ export const employeeSeed = async () => {
   temp6.setHours(0, 0, 0, 0);
 
   let order8 = await CustomerOrder.create({
-    bookingReference: bookingRef7,
+    bookingReference: bookingRef8,
     totalAmount: 175,
     orderStatus: OrderStatus.ACTIVE,
     entryDate: temp,
