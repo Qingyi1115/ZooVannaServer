@@ -40,7 +40,7 @@ export async function getDateOrderCount() {
       const dateItemCounts: any = {};
 
       results.forEach((result: any) => {
-        const orderDate = result.entryDate.toLocaleDateString();
+        const orderDate = result.entryDate.getTime();
         const itemCount = result.count;
         dateItemCounts[orderDate] = itemCount;
       });
