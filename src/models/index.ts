@@ -3137,62 +3137,62 @@ export const animalSeed = async () => {
     [],
   );
 
-  await AnimalService.createFeedingPlanSessionDetail(
-    1,
-    DayOfWeek.MONDAY,
-    EventTimingType.MORNING,
-    120,
-    false,
-    null,
-    [],
-    1,
-  );
-  await AnimalService.createFeedingPlanSessionDetail(
-    1,
-    DayOfWeek.MONDAY,
-    EventTimingType.AFTERNOON,
-    120,
-    false,
-    null,
-    [],
-    1,
-  );
-  await AnimalService.createFeedingPlanSessionDetail(
-    1,
-    DayOfWeek.FRIDAY,
-    EventTimingType.EVENING,
-    120,
-    false,
-    null,
-    [],
-    1,
-  );
-  await AnimalService.createFeedingPlanSessionDetail(
-    2,
-    DayOfWeek.MONDAY,
-    EventTimingType.AFTERNOON,
-    120,
-    false,
-    null,
-    [],
-    1,
-  );
-  await AnimalService.createFeedingPlanSessionDetail(
-    2,
-    DayOfWeek.MONDAY,
-    EventTimingType.AFTERNOON,
-    120,
-    true,
-    "13:15",
-    [],
-    1,
-  );
+  // await AnimalService.createFeedingPlanSessionDetail(
+  //   1,
+  //   DayOfWeek.MONDAY,
+  //   EventTimingType.MORNING,
+  //   120,
+  //   false,
+  //   null,
+  //   [],
+  //   1,
+  // );
+  // await AnimalService.createFeedingPlanSessionDetail(
+  //   1,
+  //   DayOfWeek.MONDAY,
+  //   EventTimingType.AFTERNOON,
+  //   120,
+  //   false,
+  //   null,
+  //   [],
+  //   1,
+  // );
+  // await AnimalService.createFeedingPlanSessionDetail(
+  //   1,
+  //   DayOfWeek.FRIDAY,
+  //   EventTimingType.EVENING,
+  //   120,
+  //   false,
+  //   null,
+  //   [],
+  //   1,
+  // );
+  // await AnimalService.createFeedingPlanSessionDetail(
+  //   2,
+  //   DayOfWeek.MONDAY,
+  //   EventTimingType.AFTERNOON,
+  //   120,
+  //   false,
+  //   null,
+  //   [],
+  //   1,
+  // );
+  // await AnimalService.createFeedingPlanSessionDetail(
+  //   2,
+  //   DayOfWeek.MONDAY,
+  //   EventTimingType.AFTERNOON,
+  //   120,
+  //   true,
+  //   "13:15",
+  //   [],
+  //   1,
+  // );
 
-  await AnimalService.createFeedingItem(1, "ANM00001", "FRUITS", 5, "KG");
-  await AnimalService.createFeedingItem(1, "ANM00001", "HAY", 20, "KG");
-  await AnimalService.createFeedingItem(1, "ANM00002", "FRUITS", 10, "KG");
-  await AnimalService.createFeedingItem(2, "ANM00001", "HAY", 2000, "KG");
-  await AnimalService.createFeedingItem(2, "ANM00003", "FRUITS", 5, "KG");
+  // await AnimalService.createFeedingItem(1, "ANM00001", "FRUITS", 5, "KG");
+  // await AnimalService.createFeedingItem(1, "ANM00001", "HAY", 20, "KG");
+  // await AnimalService.createFeedingItem(1, "ANM00002", "FRUITS", 10, "KG");
+  // await AnimalService.createFeedingItem(2, "ANM00001", "HAY", 2000, "KG");
+  // await AnimalService.createFeedingItem(2, "ANM00003", "FRUITS", 5, "KG");
 };
 
 export const animalFeedSeed = async () => {
@@ -3686,9 +3686,9 @@ export const facilityAssetsSeed = async () => {
   ]) {
     _day = new Date(
       _day.getTime() -
-        days * 1000 * 60 * 60 * 24 +
-        Math.random() * 1000 * 60 * 60 * 24 * 4 -
-        1000 * 60 * 60 * 24 * 2,
+      days * 1000 * 60 * 60 * 24 +
+      Math.random() * 1000 * 60 * 60 * 24 * 4 -
+      1000 * 60 * 60 * 24 * 2,
     );
     sensor.addMaintenanceLog(
       await MaintenanceLog.create({
