@@ -1,6 +1,6 @@
 from functools import wraps
 import requests
-from Json import marry_account, junior_keeper
+from JsonData import marry_account, junior_keeper
 
 env = dict(map(lambda x:(x.strip().split("=")[0].strip(), x.strip().split("=")[1].strip()), map(lambda x:x.split("#")[0] if "=" in x.split("#")[0] else "None=None", open("./.env", "r").read().strip().split("\n"))))
 

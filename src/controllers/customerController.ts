@@ -111,7 +111,6 @@ export const login = async (req: Request, res: Response) => {
 export async function getCustomerByEmail(req: Request, res: Response) {
   try {
     const { email } = (req as any).locals.jwtPayload;
-    console.log("here");
     if (email) {
       const customer = await CustomerService.findCustomerByEmail(email);
       if (!customer)
@@ -353,7 +352,6 @@ export async function createCustomerOrderForCustomerController(
       customerOrder,
     );
 
-    console.log(result);
     return res.status(200).json({ result: result });
   } catch (error: any) {
     return res.status(400).json({ error: error.message });
@@ -371,7 +369,6 @@ export async function createCustomerOrderForGuestController(
       listings,
       customerOrder,
     );
-    console.log(result);
     return res.status(200).json({ result: result });
   } catch (error: any) {
     return res.status(400).json({ error: error.message });
@@ -416,7 +413,6 @@ export async function completePaymentForGuestController(
   }
 
   const { payment } = req.body;
-  console.log(payment);
   try {
     const result = await CustomerService.completePaymentForGuest(
       Number(customerOrderId),
@@ -429,11 +425,8 @@ export async function completePaymentForGuestController(
 }
 
 export async function purchaseTicketController(req: Request, res: Response) {
-  console.log("here");
   const { customerId } = req.params;
-  console.log(customerId);
   if (!customerId) {
-    console.log("missing customer id");
     return res.status(400).json({ error: "Missing customer ID!" });
   }
   const { listings, customerOrder, payment } = req.body;
