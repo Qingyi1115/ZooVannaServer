@@ -1081,6 +1081,70 @@ export async function deleteFacilityLogById(facilityLogId: number) {
   }
 }
 
+export async function getCustomerReportLog(customerReportLogId: number) {
+  try {
+    const customerReportLog = await CustomerReportLog.findOne({
+      where: {
+        customerReportLogId: customerReportLogId,
+      },
+    });
+    if (!customerReportLog)
+      throw { message: "Cannot find customer report log id : " + customerReportLogId };
+
+    return customerReportLog;
+  } catch (error: any) {
+    throw validationErrorHandler(error);
+  }
+}
+
+export async function getAllCustomerReportLogs() {
+  try {
+    return CustomerReportLog.findAll({
+      include:[{
+        association:"inHouse",
+        required:false
+      },{
+        association:"thirdParty",
+        required:false
+      }]
+    });
+  } catch (error: any) {
+    throw validationErrorHandler(error);
+  }
+}
+
+export async function markCustomerReportLogsViewed(customerReportLogIds: number[]) {
+  try {
+    const customerReportLogs = await CustomerReportLog.findAll({
+      where: {
+        customerReportLogId: {[Op.or]: customerReportLogIds},
+      },
+    });
+    
+    const p = [];
+
+    for (const CRL of customerReportLogs){
+      CRL.viewed = true;
+      p.push(CRL.save());
+    }
+
+    for (const pr of p) await pr;
+
+  } catch (error: any) {
+    throw validationErrorHandler(error);
+  }
+}
+
+export async function deleteCustomerReportLog(customerReportLogId: number) {
+  try {
+    const customerReportLog = await getCustomerReportLogById(customerReportLogId);
+
+    return await customerReportLog.destroy();
+  } catch (error: any) {
+    throw validationErrorHandler(error);
+  }
+}
+
 export async function completeRepairTicket(facilityLogId: number) {
   try {
     const facilityLog = await getFacilityLogById(facilityLogId);

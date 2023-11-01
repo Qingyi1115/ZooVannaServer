@@ -71,6 +71,10 @@ import {
   getAllCustomerReportsController,
   updateCustomerReportController,
   updateFacilityImageController,
+  getCustomerReportLogController,
+  getAllCustomerReportLogsController,
+  markCustomerReportLogsViewedController,
+  deleteCustomerReportLogController,
 } from "../controllers/assetFacilityController";
 
 const router = express.Router();
@@ -79,6 +83,7 @@ const router = express.Router();
 router.put("/initializeHub", initializeHubController);
 router.post("/pushSensorReadings/:processorName", pushSensorReadingsController);
 router.post("/getAllFacilityCustomer", getAllFacilityCustomer);
+
 // Customer Report
 router.post("/createCustomerReportLog/:facilityId", createCustomerReportController);
 
@@ -147,6 +152,12 @@ router.get(
   completeRepairTicketController,
 );
 router.delete("/deleteFacilityLog/:facilityLogId", deleteFacilityLogController);
+
+// Customer Report
+router.get("/getCustomerReportLog/:customerReportLogId", getCustomerReportLogController);
+router.get("/getAllCustomerReportLogs", getAllCustomerReportLogsController);
+router.put("/markCustomerReportLogsViewed", markCustomerReportLogsViewedController);
+router.delete("/deleteCustomerReportLog/:customerReportLogId", deleteCustomerReportLogController);
 
 //Animal Feed
 router.post("/createNewAnimalFeed", createNewAnimalFeedController);

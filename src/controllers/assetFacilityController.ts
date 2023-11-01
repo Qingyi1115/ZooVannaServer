@@ -60,6 +60,11 @@ import {
   getAllCustomerReports,
   updateCustomerReport,
   updateFacilityImage,
+  getCustomerReportLog,
+  getAllCustomerReportLogs,
+  getCustomerReportLogById,
+  markCustomerReportLogsViewed,
+  deleteCustomerReportLog,
 } from "../services/assetFacility";
 import { Facility } from "../models/facility";
 import { Sensor } from "../models/sensor";
@@ -1137,6 +1142,120 @@ export async function deleteFacilityLogController(req: Request, res: Response) {
     }
 
     await deleteFacilityLogById(Number(facilityLogId));
+
+    return res.status(200).json({ result: "success" });
+  } catch (error: any) {
+    console.log(error);
+    res.status(400).json({ error: error.message });
+  }
+}
+
+export async function getCustomerReportLogController(req: Request, res: Response) {
+  try {
+    // const { email } = (req as any).locals.jwtPayload;
+    // const employee = await findEmployeeByEmail(email);
+
+    const { customerReportLogId } = req.params;
+
+    // if (
+    //   (await employee.getPlanningStaff())?.plannerType !=
+    //     PlannerType.OPERATIONS_MANAGER &&
+    //   !employee.superAdmin &&
+    //   (await getFacilityLogById(Number(facilityLogId)))?.staffName !=
+    //     employee.employeeName
+    // )
+    //   throw { message: "Only creator of the log can delete!" };
+
+    if ([customerReportLogId].includes("")) {
+      return res.status(400).json({ error: "Missing information!" });
+    }
+
+    const customerReportLog = await getCustomerReportLog(Number(customerReportLogId));
+
+    return res.status(200).json({ customerReportLog: customerReportLog.toJSON() });
+  } catch (error: any) {
+    console.log(error);
+    res.status(400).json({ error: error.message });
+  }
+}
+
+export async function getAllCustomerReportLogsController(req: Request, res: Response) {
+  try {
+    // const { email } = (req as any).locals.jwtPayload;
+    // const employee = await findEmployeeByEmail(email);
+
+
+    // if (
+    //   (await employee.getPlanningStaff())?.plannerType !=
+    //     PlannerType.OPERATIONS_MANAGER &&
+    //   !employee.superAdmin &&
+    //   (await getFacilityLogById(Number(facilityLogId)))?.staffName !=
+    //     employee.employeeName
+    // )
+    //   throw { message: "Only creator of the log can delete!" };
+
+
+    const allCustomerReportLog = await getAllCustomerReportLogs();
+
+    return res.status(200).json({ CustomerReportLogs: allCustomerReportLog.map((log:CustomerReportLog)=>log.toJSON()) });
+  } catch (error: any) {
+    console.log(error);
+    res.status(400).json({ error: error.message });
+  }
+}
+
+export async function markCustomerReportLogsViewedController(req: Request, res: Response) {
+  try {
+    const { email } = (req as any).locals.jwtPayload;
+    const employee = await findEmployeeByEmail(email);
+
+    const { customerReportLogIds } = req.body;
+
+    // if (
+    //   (await employee.getPlanningStaff())?.plannerType !=
+    //     PlannerType.OPERATIONS_MANAGER &&
+    //   !employee.superAdmin &&
+    //   (await getCustomerReportLogById(Number(customerReportLogId)))?.staffName !=
+    //     employee.employeeName
+    // )
+    //   throw { message: "Only creator of the log can delete!" };
+
+    if ([customerReportLogIds].includes("")) {
+      return res.status(400).json({ error: "Missing information!" });
+    }
+
+    const customerReportLog = await markCustomerReportLogsViewed(
+      customerReportLogIds,
+      );
+
+    return res.status(200).json({ result:"success" });
+  } catch (error: any) {
+    console.log(error);
+    res.status(400).json({ error: error.message });
+  }
+}
+
+export async function deleteCustomerReportLogController(req: Request, res: Response) {
+  try {
+    const { email } = (req as any).locals.jwtPayload;
+    const employee = await findEmployeeByEmail(email);
+
+    const { customerReportLogId } = req.params;
+
+    // if (
+    //   (await employee.getPlanningStaff())?.plannerType !=
+    //     PlannerType.OPERATIONS_MANAGER &&
+    //   !employee.superAdmin &&
+    //   (await getFacilityLogById(Number(facilityLogId)))?.staffName !=
+    //     employee.employeeName
+    // )
+    //   throw { message: "Only creator of the log can delete!" };
+
+    if ([customerReportLogId].includes("")) {
+      return res.status(400).json({ error: "Missing information!" });
+    }
+
+    await deleteCustomerReportLog(Number(customerReportLogId));
 
     return res.status(200).json({ result: "success" });
   } catch (error: any) {
