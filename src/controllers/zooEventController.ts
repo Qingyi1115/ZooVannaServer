@@ -392,7 +392,7 @@ export async function createEmployeeAbsence(req: Request, res: Response) {
     eventStartDateTimes.push(dateLoop);
     dateLoop =new Date(dateLoop.getTime() + DAY_IN_MILLISECONDS);
   }
-
+  console.log("eventStartDateTimes",eventStartDateTimes)
   try {
     const zooEvents = await ZooEvent.createEmployeeAbsence(
       Number(employeeId),

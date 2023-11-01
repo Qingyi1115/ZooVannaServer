@@ -1103,10 +1103,16 @@ export async function getAllNonViewedCustomerReportLogs() {
       where:{viewed:false},
       include:[{
         association:"inHouse",
-        required:false
+        required:false,
+        include:[{
+          association:"facility",
+        }]
       },{
         association:"thirdParty",
-        required:false
+        required:false,
+        include:[{
+          association:"facility",
+        }]
       }]
     });
   } catch (error: any) {
