@@ -15,6 +15,7 @@ import { Employee } from "./employee";
 import { Enclosure } from "./enclosure";
 import { v4 as uuidv4 } from "uuid";
 import { EnrichmentItem } from "./enrichmentItem";
+import * as AssetFacility from "../services/assetFacility";
 import {
   AcquisitionMethod,
   AnimalFeedCategory,
@@ -3278,6 +3279,14 @@ export const facilityAssetsSeed = async () => {
   let f3 = await Facility.create(facility3, { include: ["inHouse"] });
   let f3h: InHouse = await f3.getFacilityDetail();
 
+  await AssetFacility.createCustomerReport(
+    f3.facilityId,
+    new Date(),
+    "Button broken",
+    "Pressed button and not working",
+    false,
+  );
+  
   let facility4 = {
     facilityName: "Directory",
     isSheltered: true,
@@ -3294,6 +3303,22 @@ export const facilityAssetsSeed = async () => {
   } as any;
   let f4 = await Facility.create(facility4, { include: ["inHouse"] });
   let f4h: InHouse = await f4.getFacilityDetail();
+
+  await AssetFacility.createCustomerReport(
+    f4.facilityId,
+    new Date(),
+    "Directory broken",
+    "Pressed Directory and not working",
+    false,
+  );
+
+  await AssetFacility.createCustomerReport(
+    f4.facilityId,
+    new Date(),
+    "Directory is awesome",
+    "Pressed Directory and working",
+    true,
+  );
 
   let facility5 = {
     facilityName: "Shop",

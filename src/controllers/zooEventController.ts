@@ -360,24 +360,29 @@ export async function createEmployeeAbsence(req: Request, res: Response) {
 
   // Check authentication
   const { employeeId } = req.params;
-  const { eventName, eventDescription, eventStartDateTimes } = req.body;
+  const { eventName, eventDescription, eventStartDate, eventEndDate } = req.body;
 
   if (
     [
       employeeId,
       eventName,
       eventDescription,
-      eventStartDateTimes
+      eventStartDate,
+      eventEndDate
     ].includes(undefined)
   ) {
     console.log("Missing field(s): ", {
       employeeId,
       eventName,
       eventDescription,
-      eventStartDateTimes
+      eventStartDate,
+      eventEndDate
     });
     return res.status(400).json({ error: "Missing information!" });
   }
+
+  const eventStartDateTimes:number[] = [];
+
 
   try {
     const zooEvents = await ZooEvent.createEmployeeAbsence(
