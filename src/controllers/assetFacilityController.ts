@@ -61,7 +61,7 @@ import {
   updateCustomerReport,
   updateFacilityImage,
   getCustomerReportLog,
-  getAllCustomerReportLogs,
+  getAllNonViewedCustomerReportLogs,
   getCustomerReportLogById,
   markCustomerReportLogsViewed,
   deleteCustomerReportLog,
@@ -1178,7 +1178,7 @@ export async function getCustomerReportLogController(req: Request, res: Response
   }
 }
 
-export async function getAllCustomerReportLogsController(req: Request, res: Response) {
+export async function getAllNonViewedCustomerReportLogsController(req: Request, res: Response) {
   try {
     const { email } = (req as any).locals.jwtPayload;
     const employee = await findEmployeeByEmail(email);
@@ -1193,7 +1193,7 @@ export async function getAllCustomerReportLogsController(req: Request, res: Resp
       throw { message: "Access denied!" };
 
 
-    const allCustomerReportLog = await getAllCustomerReportLogs();
+    const allCustomerReportLog = await getAllNonViewedCustomerReportLogs();
 
     return res.status(200).json({ customerReportLogs: allCustomerReportLog.map((log:CustomerReportLog)=>log.toJSON()) });
   } catch (error: any) {

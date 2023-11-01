@@ -2,6 +2,8 @@ import { Request, Response } from "express";
 import * as ZooEvent from "../services/zooEvent";
 import { findEmployeeByEmail } from "../services/employee";
 import { PlannerType } from "../models/enumerated";
+import { compareDates } from "../helpers/others";
+import { DAY_IN_MILLISECONDS } from "../helpers/staticValues";
 
 export async function getAllZooEvents(req: Request, res: Response) {
   try {
@@ -381,15 +383,22 @@ export async function createEmployeeAbsence(req: Request, res: Response) {
     return res.status(400).json({ error: "Missing information!" });
   }
 
-  const eventStartDateTimes:number[] = [];
-
+  const eventStartDateTimes:Date[] = [];
+  const sDT = new Date(eventStartDate);
+  let eDT = new Date(eventEndDate);
+  eDT = new Date(eDT.getFullYear(), eDT.getMonth(), eDT.getDate(), 0, 0, 0, 0);
+  let dateLoop = new Date(sDT.getFullYear(), sDT.getMonth(), sDT.getDate(), 0, 0, 0, 0);
+  while (compareDates(eDT, dateLoop)>= 0){
+    eventStartDateTimes.push(dateLoop);
+    dateLoop =new Date(dateLoop.getTime() + DAY_IN_MILLISECONDS);
+  }
 
   try {
     const zooEvents = await ZooEvent.createEmployeeAbsence(
       Number(employeeId),
       eventName,
       eventDescription,
-      eventStartDateTimes.map((startDT:number) => new Date(startDT))
+      eventStartDateTimes
     );
     return res.status(200).json({zooEvents : zooEvents.map(ze=>ze.toJSON())});
   } catch (error: any) {

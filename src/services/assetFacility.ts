@@ -1097,9 +1097,10 @@ export async function getCustomerReportLog(customerReportLogId: number) {
   }
 }
 
-export async function getAllCustomerReportLogs() {
+export async function getAllNonViewedCustomerReportLogs() {
   try {
     return CustomerReportLog.findAll({
+      where:{viewed:false},
       include:[{
         association:"inHouse",
         required:false
@@ -1115,29 +1116,20 @@ export async function getAllCustomerReportLogs() {
 
 export async function getAllCustomerReportLogsByFacilityId(facilityId:number) {
   try {
-    return CustomerReportLog.findAll({
+    const facility = await getFacilityById(facilityId);
+
+    const fDetail:InHouse = await facility.getFacilityDetail();
+
+    return fDetail.getCustomerReportLogs({
       include:[{
         association:"inHouse",
         required:false,
-        include:[{
-          association:"facility",
-          required:false,
-          where:{
-            facilityId:facilityId
-          }
-        }]
       },{
         association:"thirdParty",
         required:false,
-        include:[{
-          association:"facility",
-          required:false,
-          where:{
-            facilityId:facilityId
-          }
-        }]
       }]
-    });
+  });
+    
   } catch (error: any) {
     throw validationErrorHandler(error);
   }

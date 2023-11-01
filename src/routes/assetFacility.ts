@@ -72,7 +72,7 @@ import {
   updateCustomerReportController,
   updateFacilityImageController,
   getCustomerReportLogController,
-  getAllCustomerReportLogsController,
+  getAllNonViewedCustomerReportLogsController,
   markCustomerReportLogsViewedController,
   deleteCustomerReportLogController,
   getAllCustomerReportLogsByFacilityIdController,
@@ -156,7 +156,7 @@ router.delete("/deleteFacilityLog/:facilityLogId", deleteFacilityLogController);
 
 // Customer Report
 router.get("/getCustomerReportLog/:customerReportLogId", getCustomerReportLogController);
-router.get("/getAllCustomerReportLogs", getAllCustomerReportLogsController);
+router.get("/getAllNonViewedCustomerReportLogs", getAllNonViewedCustomerReportLogsController);
 router.get("/getAllCustomerReportLogsByFacilityId/:facilityId", getAllCustomerReportLogsByFacilityIdController);
 router.put("/markCustomerReportLogsViewed", markCustomerReportLogsViewedController);
 router.delete("/deleteCustomerReportLog/:customerReportLogId", deleteCustomerReportLogController);
