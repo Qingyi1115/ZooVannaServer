@@ -1192,10 +1192,20 @@ export async function getAllNonViewedCustomerReportLogsController(req: Request, 
     )
       throw { message: "Access denied!" };
 
+    if (employee.superAdmin || (await employee.getPlanningStaff()).plannerType == PlannerType.OPERATIONS_MANAGER){
+      const allCustomerReportLog = await getAllNonViewedCustomerReportLogs();
+      return res.status(200).json({ customerReportLogs: allCustomerReportLog.map((log:CustomerReportLog)=>log.toJSON()) });
+    }
 
-    const allCustomerReportLog = await getAllNonViewedCustomerReportLogs();
+    const allCustomerReportLog = [];
+    for (const inHouse of (await (await employee.getGeneralStaff()).getMaintainedFacilities())){
+      for(const log of (await inHouse.getCustomerReportLogs())){
+        allCustomerReportLog.push(log);
+      } 
+    }
 
     return res.status(200).json({ customerReportLogs: allCustomerReportLog.map((log:CustomerReportLog)=>log.toJSON()) });
+
   } catch (error: any) {
     console.log(error);
     res.status(400).json({ error: error.message });
