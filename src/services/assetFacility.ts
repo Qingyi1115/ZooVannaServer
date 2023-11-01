@@ -1113,6 +1113,36 @@ export async function getAllCustomerReportLogs() {
   }
 }
 
+export async function getAllCustomerReportLogsByFacilityId(facilityId:number) {
+  try {
+    return CustomerReportLog.findAll({
+      include:[{
+        association:"inHouse",
+        required:false,
+        include:[{
+          association:"facility",
+          required:false,
+          where:{
+            facilityId:facilityId
+          }
+        }]
+      },{
+        association:"thirdParty",
+        required:false,
+        include:[{
+          association:"facility",
+          required:false,
+          where:{
+            facilityId:facilityId
+          }
+        }]
+      }]
+    });
+  } catch (error: any) {
+    throw validationErrorHandler(error);
+  }
+}
+
 export async function markCustomerReportLogsViewed(customerReportLogIds: number[]) {
   try {
     const customerReportLogs = await CustomerReportLog.findAll({

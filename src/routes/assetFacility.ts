@@ -75,6 +75,7 @@ import {
   getAllCustomerReportLogsController,
   markCustomerReportLogsViewedController,
   deleteCustomerReportLogController,
+  getAllCustomerReportLogsByFacilityIdController,
 } from "../controllers/assetFacilityController";
 
 const router = express.Router();
@@ -156,6 +157,7 @@ router.delete("/deleteFacilityLog/:facilityLogId", deleteFacilityLogController);
 // Customer Report
 router.get("/getCustomerReportLog/:customerReportLogId", getCustomerReportLogController);
 router.get("/getAllCustomerReportLogs", getAllCustomerReportLogsController);
+router.get("/getAllCustomerReportLogsByFacilityId/:facilityId", getAllCustomerReportLogsByFacilityIdController);
 router.put("/markCustomerReportLogsViewed", markCustomerReportLogsViewedController);
 router.delete("/deleteCustomerReportLog/:customerReportLogId", deleteCustomerReportLogController);
 

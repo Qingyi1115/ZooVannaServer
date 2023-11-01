@@ -65,6 +65,7 @@ import {
   getCustomerReportLogById,
   markCustomerReportLogsViewed,
   deleteCustomerReportLog,
+  getAllCustomerReportLogsByFacilityId,
 } from "../services/assetFacility";
 import { Facility } from "../models/facility";
 import { Sensor } from "../models/sensor";
@@ -1152,19 +1153,17 @@ export async function deleteFacilityLogController(req: Request, res: Response) {
 
 export async function getCustomerReportLogController(req: Request, res: Response) {
   try {
-    // const { email } = (req as any).locals.jwtPayload;
-    // const employee = await findEmployeeByEmail(email);
+    const { email } = (req as any).locals.jwtPayload;
+    const employee = await findEmployeeByEmail(email);
 
     const { customerReportLogId } = req.params;
 
-    // if (
-    //   (await employee.getPlanningStaff())?.plannerType !=
-    //     PlannerType.OPERATIONS_MANAGER &&
-    //   !employee.superAdmin &&
-    //   (await getFacilityLogById(Number(facilityLogId)))?.staffName !=
-    //     employee.employeeName
-    // )
-    //   throw { message: "Only creator of the log can delete!" };
+    if (
+      (await employee.getPlanningStaff())?.plannerType !=
+        PlannerType.OPERATIONS_MANAGER &&
+      !employee.superAdmin
+    )
+      throw { message: "Access denied!" };
 
     if ([customerReportLogId].includes("")) {
       return res.status(400).json({ error: "Missing information!" });
@@ -1181,23 +1180,51 @@ export async function getCustomerReportLogController(req: Request, res: Response
 
 export async function getAllCustomerReportLogsController(req: Request, res: Response) {
   try {
-    // const { email } = (req as any).locals.jwtPayload;
-    // const employee = await findEmployeeByEmail(email);
+    const { email } = (req as any).locals.jwtPayload;
+    const employee = await findEmployeeByEmail(email);
 
+    const { customerReportLogId } = req.params;
 
-    // if (
-    //   (await employee.getPlanningStaff())?.plannerType !=
-    //     PlannerType.OPERATIONS_MANAGER &&
-    //   !employee.superAdmin &&
-    //   (await getFacilityLogById(Number(facilityLogId)))?.staffName !=
-    //     employee.employeeName
-    // )
-    //   throw { message: "Only creator of the log can delete!" };
+    if (
+      (await employee.getPlanningStaff())?.plannerType !=
+        PlannerType.OPERATIONS_MANAGER &&
+      !employee.superAdmin
+    )
+      throw { message: "Access denied!" };
 
 
     const allCustomerReportLog = await getAllCustomerReportLogs();
 
-    return res.status(200).json({ CustomerReportLogs: allCustomerReportLog.map((log:CustomerReportLog)=>log.toJSON()) });
+    return res.status(200).json({ customerReportLogs: allCustomerReportLog.map((log:CustomerReportLog)=>log.toJSON()) });
+  } catch (error: any) {
+    console.log(error);
+    res.status(400).json({ error: error.message });
+  }
+}
+
+export async function getAllCustomerReportLogsByFacilityIdController(req: Request, res: Response) {
+  try {
+
+    const { email } = (req as any).locals.jwtPayload;
+    const employee = await findEmployeeByEmail(email);
+
+    const {facilityId} = req.params;
+
+    if (
+      (await employee.getPlanningStaff())?.plannerType !=
+        PlannerType.OPERATIONS_MANAGER &&
+      !employee.superAdmin
+    )
+      throw { message: "Access denied!" };
+
+    if ([facilityId].includes("")) {
+      console.log("facilityId missing", facilityId);
+      return res.status(400).json({ error: "Missing information!" });
+    }
+
+    const allCustomerReportLog = await getAllCustomerReportLogsByFacilityId(Number(facilityId));
+
+    return res.status(200).json({ customerReportLogs: allCustomerReportLog.map((log:CustomerReportLog)=>log.toJSON()) });
   } catch (error: any) {
     console.log(error);
     res.status(400).json({ error: error.message });
@@ -1211,14 +1238,12 @@ export async function markCustomerReportLogsViewedController(req: Request, res: 
 
     const { customerReportLogIds } = req.body;
 
-    // if (
-    //   (await employee.getPlanningStaff())?.plannerType !=
-    //     PlannerType.OPERATIONS_MANAGER &&
-    //   !employee.superAdmin &&
-    //   (await getCustomerReportLogById(Number(customerReportLogId)))?.staffName !=
-    //     employee.employeeName
-    // )
-    //   throw { message: "Only creator of the log can delete!" };
+    if (
+      (await employee.getPlanningStaff())?.plannerType !=
+        PlannerType.OPERATIONS_MANAGER &&
+      !employee.superAdmin
+    )
+      throw { message: "Access denied!" };
 
     if ([customerReportLogIds].includes("")) {
       return res.status(400).json({ error: "Missing information!" });
@@ -1242,14 +1267,12 @@ export async function deleteCustomerReportLogController(req: Request, res: Respo
 
     const { customerReportLogId } = req.params;
 
-    // if (
-    //   (await employee.getPlanningStaff())?.plannerType !=
-    //     PlannerType.OPERATIONS_MANAGER &&
-    //   !employee.superAdmin &&
-    //   (await getFacilityLogById(Number(facilityLogId)))?.staffName !=
-    //     employee.employeeName
-    // )
-    //   throw { message: "Only creator of the log can delete!" };
+    if (
+      (await employee.getPlanningStaff())?.plannerType !=
+        PlannerType.OPERATIONS_MANAGER &&
+      !employee.superAdmin
+    )
+      throw { message: "Access denied!" };
 
     if ([customerReportLogId].includes("")) {
       return res.status(400).json({ error: "Missing information!" });
