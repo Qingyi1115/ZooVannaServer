@@ -17,6 +17,7 @@ import { PlanningStaff } from "./planningStaff";
 import { GeneralStaff } from "./generalStaff";
 import { hash } from "../helpers/security";
 import { AnimalActivity } from "./animalActivity";
+import { ZooEvent } from "./zooEvent";
 
 function uppercaseFirst(str: string) {
   return `${str[0].toUpperCase()}${str.substr(1)}`;
@@ -50,6 +51,7 @@ class Employee extends Model<
   declare keeper?: Keeper | null;
   declare planningStaff?: PlanningStaff | null;
   declare generalStaff?: GeneralStaff | null;
+  declare zooEvents?: ZooEvent[];
 
   declare getKeeper: HasOneGetAssociationMixin<Keeper>;
   declare setKeeper: HasOneSetAssociationMixin<Keeper, number>;
@@ -68,6 +70,17 @@ class Employee extends Model<
   >;
   declare removeAnimalActivity: HasManyRemoveAssociationMixin<
     AnimalActivity,
+    number
+  >;
+
+  declare getZooEvents: HasManyGetAssociationsMixin<ZooEvent>;
+  declare addZooEvent: HasManyAddAssociationMixin<ZooEvent, number>;
+  declare setZooEvents: HasManySetAssociationsMixin<
+  ZooEvent,
+    number
+  >;
+  declare removeZooEvent: HasManyRemoveAssociationMixin<
+  ZooEvent,
     number
   >;
 

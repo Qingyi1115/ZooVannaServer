@@ -4,7 +4,9 @@ import { authMiddleware } from "../middlewares/authMiddleware";
 import { 
     assignZooEventKeeper,
     autoAssignKeeperToZooEvent,
+    createEmployeeAbsence,
     deleteZooEvent, 
+    getAllEmployeeAbsence, 
     getAllZooEvents, 
     getKeepersForZooEvent, 
     getZooEventById, 
@@ -27,5 +29,9 @@ router.put("/removeKeeperfromZooEvent", removeKeeperfromZooEvent);
 router.get("/autoAssignKeeperToZooEvent", autoAssignKeeperToZooEvent);
 router.delete("/deleteZooEvent/:zooEventId", deleteZooEvent);
 router.get("/getKeepersForZooEvent/:zooEventId", getKeepersForZooEvent);
+
+// Employee Absence
+router.put("/createEmployeeAbsence/:employeeId", createEmployeeAbsence);
+router.get("/getAllEmployeeAbsence", getAllEmployeeAbsence);
 
 export default router;

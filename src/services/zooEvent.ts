@@ -824,7 +824,7 @@ export async function autoAssignKeeperToZooEvent(
       where: {
         eventStartDateTime: {
           [Op.between]: [new Date(), new Date(Date.now() + DAY_IN_MILLISECONDS * 90)]
-        }
+        },
       },
       order: [['eventStartDateTime', 'DESC']],
       include: [
@@ -879,4 +879,64 @@ export async function autoAssignKeeperToZooEvent(
   } catch (error: any) {
     throw validationErrorHandler(error);
   }
+}
+
+export async function createEmployeeAbsence(
+  employeeId: number,
+  eventName: string,
+  eventDescription:string,
+  eventStartDateTimes : Date[]
+){
+  try{
+    const employee = await EmployeeService.findEmployeeById(employeeId);
+
+    const promises = [];
+
+    for (const esdt of eventStartDateTimes){
+
+      promises.push(ZooEvent.create({
+        eventName: eventName,
+        eventDescription:eventDescription,
+        eventIsPublic: false,
+        eventType: EventType.EMPLOYEE_ABSENCE,
+        eventStartDateTime: esdt,
+        eventNotificationDate : esdt,
+        requiredNumberOfKeeper: 0,
+        eventDurationHrs: 24 * DAY_IN_MILLISECONDS,
+        eventTiming : null,
+        eventEndDateTime : esdt
+      }));
+    }
+
+    const zooEvents = [];
+
+    for (const p of promises){
+      const zooEvent = await p;
+      await zooEvent.setEmployee(employee);
+      zooEvents.push(zooEvent);
+    }
+
+    return zooEvents;
+  } catch (error: any) {
+    throw validationErrorHandler(error);
+  }
+
+}
+
+export async function getAllEmployeeAbsence(){
+  try{
+    return ZooEvent.findAll({
+      where:{
+        eventType: EventType.EMPLOYEE_ABSENCE
+      },
+      include:[{
+        association:"keepers",
+        required: true
+      }
+    ]
+    });
+  } catch (error: any) {
+    throw validationErrorHandler(error);
+  }
+
 }

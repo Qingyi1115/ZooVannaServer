@@ -353,3 +353,57 @@ export async function getKeepersForZooEvent(req: Request, res: Response) {
     res.status(400).json({ error: error.message });
   }
 }
+
+export async function createEmployeeAbsence(req: Request, res: Response) {
+  const { email } = (req as any).locals.jwtPayload;
+  const employee = await findEmployeeByEmail(email);
+
+  // Check authentication
+  const { employeeId } = req.params;
+  const { eventName, eventDescription, eventStartDateTimes } = req.body;
+
+  if (
+    [
+      employeeId,
+      eventName,
+      eventDescription,
+      eventStartDateTimes
+    ].includes(undefined)
+  ) {
+    console.log("Missing field(s): ", {
+      employeeId,
+      eventName,
+      eventDescription,
+      eventStartDateTimes
+    });
+    return res.status(400).json({ error: "Missing information!" });
+  }
+
+  try {
+    const zooEvents = await ZooEvent.createEmployeeAbsence(
+      Number(employeeId),
+      eventName,
+      eventDescription,
+      eventStartDateTimes.map((startDT:number) => new Date(startDT))
+    );
+    return res.status(200).json({zooEvents : zooEvents.map(ze=>ze.toJSON())});
+  } catch (error: any) {
+    res.status(400).json({ error: error.message });
+  }
+}
+
+export async function getAllEmployeeAbsence(req: Request, res: Response) {
+  const { email } = (req as any).locals.jwtPayload;
+  const employee = await findEmployeeByEmail(email);
+
+  // Check authentication
+
+  try {
+    const zooEvents = await ZooEvent.getAllEmployeeAbsence();
+    return res.status(200).json({zooEvents : zooEvents.map(ze=>ze.toJSON())});
+  } catch (error: any) {
+    res.status(400).json({ error: error.message });
+  }
+}
+
+

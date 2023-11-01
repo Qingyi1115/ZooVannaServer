@@ -122,6 +122,15 @@ export const createDatabase = async (options: any) => {
     addCascadeOptions({ foreignKey: "employeeId" }),
   );
 
+  Employee.hasMany(
+    ZooEvent,
+    addCascadeOptions({ foreignKey: "employeeId" }),
+  );
+  ZooEvent.belongsTo(
+    Employee,
+    addCascadeOptions({ foreignKey: "employeeId" }),
+  );
+
   AnimalActivity.hasMany(
     ZooEvent,
     addCascadeOptions({ foreignKey: "animalActivityId" }),
