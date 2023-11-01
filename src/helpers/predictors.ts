@@ -32,12 +32,9 @@ export function predictCycleLength(dates:Date[], predictionLength:number){
             compareDates(dateSorted[i-1], dateSorted[i]) / DAY_IN_MILLISECONDS
         )
     }
-    console.log("dateSorted", dateSorted)
 
     if (dateSorted.length>7){
-        console.log("Holt winters used")
         let results : number[] = (getAugumentedDataset(intervals, predictionLength)as any) ["augumentedDataset"];
-        console.log("results",results)
         results.reverse()
         results = results.map(no => Math.max(no, 0))
         
@@ -63,7 +60,6 @@ export function predictCycleLength(dates:Date[], predictionLength:number){
             newCycleLength: results.slice(0, predictionLength),
         };
     }else{
-        console.log("average used")
         let average = 0
         for (const i in intervals){
             average = average + (i as any)/intervals.length

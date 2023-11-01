@@ -729,8 +729,6 @@ export const employeeSeed = async () => {
       },
     },
   );
-  console.log(marry.toJSON());
-  console.log("marry's actuall secret hash: ", marry.employeePasswordHash);
 
   let marryKeeper = await Keeper.create({
     keeperType: KeeperType.SENIOR_KEEPER,
@@ -738,18 +736,8 @@ export const employeeSeed = async () => {
     isDisabled: false,
   });
 
-  console.log(marryKeeper.toJSON());
-
   await marryKeeper.setEmployee(marry);
   await marry.setKeeper(marryKeeper);
-
-  console.log("\nmarry", marry.toJSON());
-  console.log("\nmarry's keeper", (await marry.getKeeper()).toJSON());
-  console.log("\nmarryKeeper", marryKeeper.toJSON());
-  console.log(
-    "\nmarryKeeper's employee",
-    (await marryKeeper.getEmployee()).toJSON(),
-  );
 
   const minions = await Employee.bulkCreate(
     [
@@ -797,10 +785,10 @@ export const employeeSeed = async () => {
     },
   );
 
-  console.log("-------------EMPLOYEES--------------------");
-  (await Employee.findAll()).forEach((a) => console.log(a.toJSON()));
-  console.log("-------------KEEPERS--------------------");
-  (await Keeper.findAll()).forEach((a) => console.log(a.toJSON()));
+  // console.log("-------------EMPLOYEES--------------------");
+  // (await Employee.findAll()).forEach((a) => console.log(a.toJSON()));
+  // console.log("-------------KEEPERS--------------------");
+  // (await Keeper.findAll()).forEach((a) => console.log(a.toJSON()));
 
   const johnKeeper = await minions[0].getKeeper();
   const bobKeeper = await minions[1].getKeeper();
@@ -808,7 +796,7 @@ export const employeeSeed = async () => {
   const senior = await Keeper.findOne({
     where: { keeperType: KeeperType.SENIOR_KEEPER },
   });
-  console.log("senior", senior?.get());
+  // console.log("senior", senior?.get());
 
   // console.log("-------------KEEPERS--------------------");
   // (await Keeper.findAll({include:{ all: true }})).forEach(a => console.log(JSON.stringify(a, null, 4)));
@@ -839,8 +827,8 @@ export const employeeSeed = async () => {
       },
     },
   );
-  console.log(planner1.toJSON());
-  console.log((await planner1.getPlanningStaff()).toJSON());
+  // console.log(planner1.toJSON());
+  // console.log((await planner1.getPlanningStaff()).toJSON());
 
   await Employee.create(
     {
@@ -966,10 +954,10 @@ export const employeeSeed = async () => {
       },
     },
   );
-  console.log((await manager.getGeneralStaff()).toJSON());
+  // console.log((await manager.getGeneralStaff()).toJSON());
   manager.employeeName = "manager_new_name";
   await manager.save();
-  console.log(manager.toJSON());
+  // console.log(manager.toJSON());
 
   let manager3 = await Employee.create(
     {
@@ -1235,7 +1223,7 @@ export const speciesSeed = async () => {
     // foodRemark: "Food remark...",
   } as any;
   let panda = await Species.create(pandaTemplate);
-  console.log(panda.toJSON());
+  // console.log(panda.toJSON());
 
   let pandaEnclosure = await SpeciesService.createEnclosureNeeds(
     "SPE001",
@@ -1262,7 +1250,7 @@ export const speciesSeed = async () => {
     0,
     0,
   );
-  console.log(pandaEnclosure.toJSON());
+  // console.log(pandaEnclosure.toJSON());
 
   let pandaPhy1 = await SpeciesService.createPhysiologicalReferenceNorms(
     "SPE001",
@@ -1278,7 +1266,7 @@ export const speciesSeed = async () => {
     1,
     AnimalGrowthStage.INFANT,
   );
-  console.log(pandaPhy1.toJSON());
+  // console.log(pandaPhy1.toJSON());
 
   let pandaPhy2 = await SpeciesService.createPhysiologicalReferenceNorms(
     "SPE001",
@@ -1380,7 +1368,7 @@ export const speciesSeed = async () => {
     PresentationLocation.IN_CONTAINER,
     AnimalGrowthStage.ADULT,
   );
-  console.log(pandaDietNeed1.toJSON());
+  // console.log(pandaDietNeed1.toJSON());
 
   let pandaDietNeed2 = await SpeciesService.createDietNeed(
     "SPE001",
@@ -1394,7 +1382,7 @@ export const speciesSeed = async () => {
     PresentationLocation.IN_CONTAINER,
     AnimalGrowthStage.ELDER,
   );
-  console.log(pandaDietNeed2.toJSON());
+  // console.log(pandaDietNeed2.toJSON());
 
   let pandaDietNeed3 = await SpeciesService.createDietNeed(
     "SPE001",
@@ -1408,7 +1396,7 @@ export const speciesSeed = async () => {
     PresentationLocation.IN_CONTAINER,
     AnimalGrowthStage.ADULT,
   );
-  console.log(pandaDietNeed3.toJSON());
+  // console.log(pandaDietNeed3.toJSON());
 
   let pandaDietNeed4 = await SpeciesService.createDietNeed(
     "SPE001",
@@ -1422,7 +1410,7 @@ export const speciesSeed = async () => {
     PresentationLocation.IN_CONTAINER,
     AnimalGrowthStage.ELDER,
   );
-  console.log(pandaDietNeed4.toJSON());
+  // console.log(pandaDietNeed4.toJSON());
 
   let pandaDietNeed5 = await SpeciesService.createDietNeed(
     "SPE001",
@@ -3137,62 +3125,62 @@ export const animalSeed = async () => {
     [],
   );
 
-  await AnimalService.createFeedingPlanSessionDetail(
-    1,
-    DayOfWeek.MONDAY,
-    EventTimingType.MORNING,
-    120,
-    false,
-    null,
-    [],
-    1,
-  );
-  await AnimalService.createFeedingPlanSessionDetail(
-    1,
-    DayOfWeek.MONDAY,
-    EventTimingType.AFTERNOON,
-    120,
-    false,
-    null,
-    [],
-    1,
-  );
-  await AnimalService.createFeedingPlanSessionDetail(
-    1,
-    DayOfWeek.FRIDAY,
-    EventTimingType.EVENING,
-    120,
-    false,
-    null,
-    [],
-    1,
-  );
-  await AnimalService.createFeedingPlanSessionDetail(
-    2,
-    DayOfWeek.MONDAY,
-    EventTimingType.AFTERNOON,
-    120,
-    false,
-    null,
-    [],
-    1,
-  );
-  await AnimalService.createFeedingPlanSessionDetail(
-    2,
-    DayOfWeek.MONDAY,
-    EventTimingType.AFTERNOON,
-    120,
-    true,
-    "13:15",
-    [],
-    1,
-  );
+  // await AnimalService.createFeedingPlanSessionDetail(
+  //   1,
+  //   DayOfWeek.MONDAY,
+  //   EventTimingType.MORNING,
+  //   120,
+  //   false,
+  //   null,
+  //   [],
+  //   1,
+  // );
+  // await AnimalService.createFeedingPlanSessionDetail(
+  //   1,
+  //   DayOfWeek.MONDAY,
+  //   EventTimingType.AFTERNOON,
+  //   120,
+  //   false,
+  //   null,
+  //   [],
+  //   1,
+  // );
+  // await AnimalService.createFeedingPlanSessionDetail(
+  //   1,
+  //   DayOfWeek.FRIDAY,
+  //   EventTimingType.EVENING,
+  //   120,
+  //   false,
+  //   null,
+  //   [],
+  //   1,
+  // );
+  // await AnimalService.createFeedingPlanSessionDetail(
+  //   2,
+  //   DayOfWeek.MONDAY,
+  //   EventTimingType.AFTERNOON,
+  //   120,
+  //   false,
+  //   null,
+  //   [],
+  //   1,
+  // );
+  // await AnimalService.createFeedingPlanSessionDetail(
+  //   2,
+  //   DayOfWeek.MONDAY,
+  //   EventTimingType.AFTERNOON,
+  //   120,
+  //   true,
+  //   "13:15",
+  //   [],
+  //   1,
+  // );
 
-  await AnimalService.createFeedingItem(1, "ANM00001", "FRUITS", 5, "KG");
-  await AnimalService.createFeedingItem(1, "ANM00001", "HAY", 20, "KG");
-  await AnimalService.createFeedingItem(1, "ANM00002", "FRUITS", 10, "KG");
-  await AnimalService.createFeedingItem(2, "ANM00001", "HAY", 2000, "KG");
-  await AnimalService.createFeedingItem(2, "ANM00003", "FRUITS", 5, "KG");
+  // await AnimalService.createFeedingItem(1, "ANM00001", "FRUITS", 5, "KG");
+  // await AnimalService.createFeedingItem(1, "ANM00001", "HAY", 20, "KG");
+  // await AnimalService.createFeedingItem(1, "ANM00002", "FRUITS", 10, "KG");
+  // await AnimalService.createFeedingItem(2, "ANM00001", "HAY", 2000, "KG");
+  // await AnimalService.createFeedingItem(2, "ANM00003", "FRUITS", 5, "KG");
 };
 
 export const animalFeedSeed = async () => {

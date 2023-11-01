@@ -31,17 +31,18 @@ junior_keeper = {
     "isAccountManager": False,
 }
 
+import string, random
 new_user_dat = {
-    "employeeName":"manager3", 
+    "employeeName":''.join(random.choice(string.ascii_lowercase) for i in range(20)), 
     "employeeAddress":"Singapore Kent Ridge LT14",
-    "employeeEmail":"manager3@gmail.com",
-    "employeePhoneNumber": "0001",
+    "employeeEmail":''.join(random.choice(string.ascii_lowercase) for i in range(20))+"@gmail.com",
+    "employeePhoneNumber": str(round(random.random() * 999999999)),
     "employeeEducation":"Math Major",
     "employeeBirthDate" : time.time() * 1000,
-    "isAccountManager":True,
+    "isAccountManager":False,
     "role":"generalStaff",
     "roleJson": {
-        "generalStaffType":"OPERATE"
+        "generalStaffType":"ZOO_OPERATIONS"
     }
   }
 
@@ -54,7 +55,8 @@ newAnimalActivityDetails = {
     "recurringPattern" : "WEEKLY",
     "dayOfWeek" : "THURSDAY",
     "eventTimingType":"AFTERNOON",
-    "durationInMinutes" : 60
+    "durationInMinutes" : 60,
+    "requiredNumberOfKeeper" : 1
 }
 
 newAnimalActivityLogDetails = {

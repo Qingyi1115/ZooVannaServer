@@ -101,8 +101,7 @@ GeneralStaff.init(
     },
     isDisabled: {
       type: DataTypes.BOOLEAN,
-      allowNull: false,
-      defaultValue: true,
+      defaultValue: false,
     },
   },
   {

@@ -756,15 +756,15 @@ function convertEventTimingTypeToDate(date: Date, eventTimingType: EventTimingTy
   }
 }
 
-async function greedyAssign(zooEvent: ZooEvent, zooEvents: ZooEvent[], keepers: Keeper[]) {
-  console.log("greedyAssign", keepers)
+async function greedyAssign(zooEvent: ZooEvent, zooEvents:ZooEvent[], keepers:Keeper[]){
+  // console.log("greedyAssign",keepers)
   for (const ze of zooEvents) await ze.reload();
   await zooEvent.reload();
   for (const kp of keepers) await kp.reload();
-  const [zooEventStart, zooEventEnd] = zooEvent.eventIsPublic ?
-    [zooEvent.eventStartDateTime, zooEvent.eventEndDateTime] :
-    convertEventTimingTypeToDate(zooEvent.eventStartDateTime, zooEvent.eventTiming as EventTimingType);
-  console.log("zooEventStart, zooEventEnd", zooEventStart, zooEventEnd);
+  const [zooEventStart, zooEventEnd] = zooEvent.eventIsPublic ? 
+        [zooEvent.eventStartDateTime, zooEvent.eventEndDateTime] : 
+        convertEventTimingTypeToDate(zooEvent.eventStartDateTime, zooEvent.eventTiming as EventTimingType);
+  // console.log("zooEventStart, zooEventEnd", zooEventStart, zooEventEnd);
 
 
   const eventClashed = zooEvents.filter(ze => {
@@ -773,7 +773,7 @@ async function greedyAssign(zooEvent: ZooEvent, zooEvents: ZooEvent[], keepers: 
     return compareDates(zeStart, zooEventEnd as Date) < 0
       && compareDates(zeEnd as Date, zooEventStart) > 0;
   });
-  console.log("eventClashed", eventClashed);
+  // console.log("eventClashed", eventClashed);
 
 
   const availableKeeper = keepers.filter(keeper => {
@@ -782,7 +782,7 @@ async function greedyAssign(zooEvent: ZooEvent, zooEvents: ZooEvent[], keepers: 
       && !(keeper.zooEvents?.find(keeperze => eventClashed.find(zeclashed => zeclashed.zooEventId == keeperze.zooEventId)));
 
   });
-  console.log("availableKeeper", availableKeeper);
+  // console.log("availableKeeper", availableKeeper);
 
   const sortedKeeper = availableKeeper.map(keeper => {
     // sum opportunity cos per keeper
@@ -800,16 +800,16 @@ async function greedyAssign(zooEvent: ZooEvent, zooEvents: ZooEvent[], keepers: 
             && !(keeper.zooEvents?.find(keeperze => eventClashed.find(zeclashed => zeclashed.zooEventId == keeperze.zooEventId)));
         }).length
 
-        return zeClashed.requiredNumberOfKeeper / noOfKeepers;
-      }).reduce((costA, costB) => {
-        return costA + costB;
-      }),
-      keeper: keeper
+            return zeClashed.requiredNumberOfKeeper / noOfKeepers;
+          }).reduce((costA, costB)=>{
+            return costA + costB;
+          }),
+          keeper:keeper
+      }
     }
-  }
-  ).sort((a, b) => a.totalCost - b.totalCost);
-
-  console.log("sortedKeeper", sortedKeeper);
+  ).sort((a,b)=>a.totalCost - b.totalCost);
+  
+  // console.log("sortedKeeper", sortedKeeper);
 
   await zooEvent.addKeeper(sortedKeeper[0].keeper);
 }

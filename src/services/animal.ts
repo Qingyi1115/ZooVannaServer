@@ -570,16 +570,12 @@ function isAncestor(animal: any, targetId: number): boolean {
 // Helper function to check if two animals have the same parents
 function haveSameParentsCheck(animal1: any, animal2: any): boolean {
   if (animal1.parents.length === 0 || animal2.parents.length === 0) {
-    console.log("here--1");
     return false;
   }
 
-  console.log("here--2");
   const parentIds1 = animal1.parents.map((parent: any) => parent.animalId);
   const parentIds2 = animal2.parents.map((parent: any) => parent.animalId);
 
-  console.log("here--parentIds1: " + parentIds1);
-  console.log("here--parentIds2: " + parentIds2);
   return parentIds1.every((animalId: any) => parentIds2.includes(animalId));
 }
 
@@ -594,8 +590,6 @@ export async function addAnimalWeight(
     weightInKg: weightInKg,
     dateOfMeasure: dateOfMeasure,
   } as any;
-
-  console.log(newWeight);
 
   try {
     let newWeightEntry = await AnimalWeight.create(newWeight);

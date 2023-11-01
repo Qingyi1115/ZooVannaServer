@@ -1,4 +1,4 @@
-from Json import newRepairTicketDetails
+from JsonData import newRepairTicketDetails
 from Annotations import UseAPI, getApi, login_as_marry, login_as_junior_keeper
 from time import time
 import json

@@ -37,7 +37,6 @@ export async function getAllZooEvents(req: Request, res: Response) {
   const _includes: any[] = [];
   for (const role of [
     "planningStaff",
-    "keepers",
     "enclosure",
     "animals",
     "inHouse",
@@ -57,6 +56,17 @@ export async function getAllZooEvents(req: Request, res: Response) {
       required:false,
       include:{
         association:"feedingPlan",
+        required:false
+      }
+    });
+  }
+
+  if (includes.includes("keepers")) {
+    _includes.push({
+      association: "keepers",
+      required:false,
+      include:{
+        association:"employee",
         required:false
       }
     });
@@ -139,7 +149,6 @@ export async function updateZooEventSingle(req: Request, res: Response) {
     if (attribute in zooEventDetails) field[attribute] = new Date(zooEventDetails[attribute]);
   }
   if ("eventDurationHrs" in zooEventDetails) field["eventDurationHrs"] = Number(zooEventDetails["eventDurationHrs"]);
-
   try {
     const zooEvent = await ZooEvent.updateZooEventById(
       Number(zooEventId),
@@ -147,6 +156,7 @@ export async function updateZooEventSingle(req: Request, res: Response) {
     );
     return res.status(200).json({zooEvent:zooEvent.toJSON()});
   } catch (error: any) {
+    console.log("error",error)
     res.status(400).json({ error: error.message });
   }
 }
