@@ -1183,8 +1183,6 @@ export async function getAllNonViewedCustomerReportLogsController(req: Request, 
     const { email } = (req as any).locals.jwtPayload;
     const employee = await findEmployeeByEmail(email);
 
-    const { customerReportLogId } = req.params;
-
     if (
       (await employee.getPlanningStaff())?.plannerType !=
         PlannerType.OPERATIONS_MANAGER &&
