@@ -1244,7 +1244,7 @@ export async function markCustomerReportLogsViewedController(req: Request, res: 
     const { email } = (req as any).locals.jwtPayload;
     const employee = await findEmployeeByEmail(email);
 
-    const { customerReportLogIds } = req.body;
+    const { customerReportLogIds, viewed } = req.body;
 
     if (
       (await employee.getPlanningStaff())?.plannerType !=
@@ -1259,6 +1259,7 @@ export async function markCustomerReportLogsViewedController(req: Request, res: 
 
     const customerReportLog = await markCustomerReportLogsViewed(
       customerReportLogIds,
+      viewed
       );
 
     return res.status(200).json({ result:"success" });

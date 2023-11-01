@@ -1141,7 +1141,7 @@ export async function getAllCustomerReportLogsByFacilityId(facilityId:number) {
   }
 }
 
-export async function markCustomerReportLogsViewed(customerReportLogIds: number[]) {
+export async function markCustomerReportLogsViewed(customerReportLogIds: number[], viewed:boolean) {
   try {
     const customerReportLogs = await CustomerReportLog.findAll({
       where: {
@@ -1152,7 +1152,7 @@ export async function markCustomerReportLogsViewed(customerReportLogIds: number[
     const p = [];
 
     for (const CRL of customerReportLogs){
-      CRL.viewed = true;
+      CRL.viewed = viewed;
       p.push(CRL.save());
     }
 
