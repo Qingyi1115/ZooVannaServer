@@ -606,6 +606,7 @@ export const seedDatabase = async () => {
   await facilityAssetsSeed();
   await speciesSeed();
   await animalSeed();
+  await enclosureSeed();
   await promotionSeed();
   await customerSeed();
 };
@@ -1604,6 +1605,30 @@ export const speciesSeed = async () => {
     "SPE003",
   );
   console.log(compatibility3.toJSON());
+};
+
+export const enclosureSeed = async () => {
+  let enclosure1Template = {
+    facilityId: 1,
+    name: "Panda Enclosure 01",
+    remark: "NA",
+    length: 200,
+    width: 400,
+    height: 20,
+    enclosureStatus: "CONSTRUCTING",
+  } as any;
+  await Enclosure.create(enclosure1Template);
+
+  let enclosure2Template = {
+    facilityId: 2,
+    name: "Panda Enclosure 02",
+    remark: "NA",
+    length: 300,
+    width: 500,
+    height: 25,
+    enclosureStatus: "ACTIVE",
+  } as any;
+  await Enclosure.create(enclosure2Template);
 };
 
 export const animalSeed = async () => {
