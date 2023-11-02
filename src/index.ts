@@ -22,6 +22,7 @@ import listingRoutes from "./routes/listing";
 import listingCustomerRoutes from "./routes/listingCustomer";
 import zooEventRoutes from "./routes/zooEvent";
 import orderItemRoutes from "./routes/orderItem";
+import enclosureRoutes from "./routes/enclosure";
 import { seedDatabase, createDatabase } from "./models/index";
 import { conn } from "./db";
 
@@ -147,3 +148,4 @@ app.use("/api/listing", listingRoutes);
 app.use("/api/listingCustomer", listingCustomerRoutes);
 app.use("/api/zooEvent", zooEventRoutes);
 app.use("/api/orderItem", orderItemRoutes);
+app.use("/api/enclosure", enclosureRoutes);

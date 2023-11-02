@@ -414,14 +414,16 @@ export const createDatabase = async (options: any) => {
 
   // ------------ End of Animal Relation --------------
 
-  TerrainDistribution.hasMany(
-    Enclosure,
-    addCascadeOptions({ foreignKey: "terrainDistributionId" }),
-  );
-  Enclosure.belongsTo(
-    TerrainDistribution,
-    addCascadeOptions({ foreignKey: "terrainDistributionId" }),
-  );
+  // ------------ Enclosure --------------
+
+  // TerrainDistribution.hasMany(
+  //   Enclosure,
+  //   addCascadeOptions({ foreignKey: "terrainDistributionId" }),
+  // );
+  // Enclosure.belongsTo(
+  //   TerrainDistribution,
+  //   addCascadeOptions({ foreignKey: "terrainDistributionId" }),
+  // );
 
   Enclosure.hasMany(Animal, addCascadeOptions({ foreignKey: "enclosureId" }));
   Animal.belongsTo(Enclosure, addCascadeOptions({ foreignKey: "enclosureId" }));
