@@ -23,15 +23,15 @@ class TerrainDistribution extends Model<
   declare snowPercent: number;
   declare soilPercent: number;
 
-  declare enclosure?: Enclosure;
+  // declare enclosure?: Enclosure;
 
-  declare getEnclosure: HasManyGetAssociationsMixin<Enclosure>;
-  declare setEnclosure: HasManySetAssociationsMixin<Enclosure, number>;
-  
+  // declare getEnclosure: HasManyGetAssociationsMixin<Enclosure>;
+  // declare setEnclosure: HasManySetAssociationsMixin<Enclosure, number>;
+
   public toJSON() {
     return {
       ...this.get(),
-    }
+    };
   }
 }
 

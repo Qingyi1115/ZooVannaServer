@@ -32,21 +32,31 @@ class Enclosure extends Model<
 > {
   declare enclosureId: CreationOptional<number>;
   declare name: string;
+  declare remark: string | null;
   declare length: number;
   declare width: number;
   declare height: number;
-  declare landArea: number;
-  declare waterArea: number;
-  declare plantationCoveragePercent: number;
-  declare standoffBarrierDist: number;
-  declare safetyFeatures: string;
-  declare acceptableTempMin: number;
-  declare acceptableTempMax: number;
-  declare acceptableHumidityMin: number;
-  declare acceptableHumidityMax: number;
   declare enclosureStatus: EnclosureStatus;
 
-  declare terrainDistribution?: TerrainDistribution;
+  // Terrain Distribution
+  declare longGrassPercent: number | null;
+  declare shortGrassPercent: number | null;
+  declare rockPercent: number | null;
+  declare sandPercent: number | null;
+  declare snowPercent: number | null;
+  declare soilPercent: number | null;
+
+  // Virtual
+  declare landArea?: number | null;
+  declare waterArea?: number | null;
+  declare plantationCoveragePercent?: number | null;
+  declare acceptableTempMin?: number | null;
+  declare acceptableTempMax?: number | null;
+  declare acceptableHumidityMin?: number | null;
+  declare acceptableHumidityMax?: number | null;
+
+  // FK
+  // declare terrainDistribution?: TerrainDistribution;
   declare animals?: Animal[];
   declare barrierType?: BarrierType;
   declare plantation?: Plantation;
@@ -54,11 +64,11 @@ class Enclosure extends Model<
   declare facility?: Facility;
   declare Keeper?: Keeper[];
 
-  declare getTerrainDistribution: BelongsToManyGetAssociationsMixin<TerrainDistribution>;
-  declare setTerrainDistribution: BelongsToSetAssociationMixin<
-    TerrainDistribution,
-    number
-  >;
+  // declare getTerrainDistribution: BelongsToManyGetAssociationsMixin<TerrainDistribution>;
+  // declare setTerrainDistribution: BelongsToSetAssociationMixin<
+  //   TerrainDistribution,
+  //   number
+  // >;
 
   declare getAnimals: HasManyGetAssociationsMixin<Animal>;
   declare addAnimal: HasManyAddAssociationMixin<Animal, number>;
@@ -80,11 +90,11 @@ class Enclosure extends Model<
   declare addKeeper: BelongsToManyAddAssociationMixin<Keeper, number>;
   declare setKeepers: BelongsToManySetAssociationsMixin<Keeper, number>;
   declare removeKeeper: BelongsToManyRemoveAssociationMixin<Keeper, number>;
-  
+
   public toJSON() {
     return {
-      ...this.get()
-    }
+      ...this.get(),
+    };
   }
 }
 
@@ -99,6 +109,10 @@ Enclosure.init(
       type: DataTypes.STRING,
       allowNull: false,
     },
+    remark: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
     length: {
       type: DataTypes.DOUBLE,
       allowNull: false,
@@ -111,46 +125,85 @@ Enclosure.init(
       type: DataTypes.DOUBLE,
       allowNull: false,
     },
-    landArea: {
-      type: DataTypes.DOUBLE,
+    enclosureStatus: {
+      type: DataTypes.ENUM,
+      values: Object.values(EnclosureStatus),
       allowNull: false,
+    },
+    longGrassPercent: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+    },
+    shortGrassPercent: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+    },
+    rockPercent: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+    },
+    sandPercent: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+    },
+    snowPercent: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+    },
+    soilPercent: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+    },
+
+    landArea: {
+      type: DataTypes.VIRTUAL,
+      get() {
+        return null;
+      },
     },
     waterArea: {
-      type: DataTypes.DOUBLE,
-      allowNull: false,
+      type: DataTypes.VIRTUAL,
+      get() {
+        return null;
+      },
     },
     plantationCoveragePercent: {
-      type: DataTypes.DOUBLE,
-      allowNull: false,
+      type: DataTypes.VIRTUAL,
+      get() {
+        return null;
+      },
     },
-    standoffBarrierDist: {
-      type: DataTypes.DOUBLE,
-      allowNull: false,
-    },
-    safetyFeatures: {
-      type: DataTypes.STRING,
-      allowNull: false,
-    },
+    // standoffBarrierDist: {
+    //   type: DataTypes.DOUBLE,
+    //   allowNull: false,
+    // },
+    // safetyFeatures: {
+    //   type: DataTypes.STRING,
+    //   allowNull: false,
+    // },
     acceptableTempMin: {
-      type: DataTypes.DOUBLE,
-      allowNull: false,
+      type: DataTypes.VIRTUAL,
+      get() {
+        return null;
+      },
     },
     acceptableTempMax: {
-      type: DataTypes.DOUBLE,
-      allowNull: false,
+      type: DataTypes.VIRTUAL,
+      get() {
+        return null;
+      },
     },
     acceptableHumidityMin: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
+      type: DataTypes.VIRTUAL,
+      get() {
+        return null;
+      },
     },
     acceptableHumidityMax: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-    },
-    enclosureStatus: {
-        type:   DataTypes.ENUM,
-        values: Object.values(EnclosureStatus),
-        allowNull: false
+      type: DataTypes.VIRTUAL,
+      get() {
+        return null;
+      },
     },
   },
   {
