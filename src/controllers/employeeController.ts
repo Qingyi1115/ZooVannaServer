@@ -164,15 +164,15 @@ export const createEmployeeController = async (req: Request, res: Response) => {
       return res.status(400).json({ error: "Missing information!" });
     }
 
-    let generatedOneTimePassword,
-      newEmployee = await createNewEmployee(
+    let [generatedOneTimePassword,
+      newEmployee] = await createNewEmployee(
         employeeName,
         employeeAddress,
         employeeEmail,
         employeePhoneNumber,
         employeeEducation,
         isAccountManager,
-        employeeBirthDate,
+        new Date(employeeBirthDate),
         role,
         roleJson,
       );
@@ -396,7 +396,6 @@ export async function resetForgottenPasswordController(
 ) {
   try {
     const { token, password } = req.body;
-    console.log("here");
 
     if ([token, password].includes(undefined)) {
       console.log("Missing field(s): ", {
@@ -405,8 +404,6 @@ export async function resetForgottenPasswordController(
       });
       return res.status(400).json({ error: "Missing information!" });
     }
-
-    console.log("is here");
 
     let result = await setPassword(token, password);
     return res.status(200).json({ result: result });
@@ -428,15 +425,13 @@ export async function enableRoleController(req: Request, res: Response) {
 
     const { employeeId } = req.params;
     const result = req.body;
-    console.log(result);
-    console.log(employeeId);
 
     const ress = await enableRole(
       Number(employeeId),
       result.role,
       result.roleJson,
     );
-    console.log(ress + "hereeee");
+
     return res
       .status(200)
       .json({ message: `The ${result.role} role has been enabled` });
@@ -458,7 +453,6 @@ export async function disableRoleController(req: Request, res: Response) {
 
     const { employeeId } = req.params;
     const roleJson = req.body;
-    console.log(roleJson, roleJson.role);
 
     await disableRole(Number(employeeId), roleJson.role);
     return res
@@ -469,7 +463,7 @@ export async function disableRoleController(req: Request, res: Response) {
   }
 }
 
-export const updateRoleTypeController = async (req: Request, res: Response) => {
+export async function updateRoleTypeController(req: Request, res: Response){
   try {
     const { email } = (req as any).locals.jwtPayload;
     const employee = await findEmployeeByEmail(email);
@@ -482,7 +476,6 @@ export const updateRoleTypeController = async (req: Request, res: Response) => {
 
     const { employeeId } = req.params;
     const result = req.body;
-    console.log(result.role, result.roleType);
 
     await updateRoleType(Number(employeeId), result.role, result.roleType);
     return res
@@ -493,10 +486,10 @@ export const updateRoleTypeController = async (req: Request, res: Response) => {
   }
 };
 
-export const updateSpecializationTypeController = async (
+export async function updateSpecializationTypeController(
   req: Request,
   res: Response,
-) => {
+){
   try {
     const { email } = (req as any).locals.jwtPayload;
     const employee = await findEmployeeByEmail(email);
@@ -509,7 +502,6 @@ export const updateSpecializationTypeController = async (
 
     const { employeeId } = req.params;
     const result = req.body;
-    console.log(result.role, result.specializationType);
 
     await updateSpecializationType(
       Number(employeeId),

@@ -1,5 +1,5 @@
 from functools import reduce
-from Json import newAnimalActivityLogDetails, newAnimalActivityDetails, DAY_IN_MILLISECONDS
+from JsonData import newAnimalActivityLogDetails, newAnimalActivityDetails, DAY_IN_MILLISECONDS
 from Annotations import UseAPI, getApi, login_as_marry, login_as_junior_keeper
 from time import time
 import json

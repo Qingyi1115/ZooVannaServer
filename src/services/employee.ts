@@ -103,8 +103,6 @@ export async function resetPassword(
     where: { employeeId: employeeId },
   });
 
-  console.log("it is here");
-  console.log(result);
   if (result) {
     if (result.dateOfResignation == null) {
       const token = uuidv4();

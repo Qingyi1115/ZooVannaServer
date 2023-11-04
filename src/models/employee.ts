@@ -96,8 +96,6 @@ class Employee extends Model<
 
   public updatePassword(password: string) {
     this.employeePasswordHash = hash(password + this.employeeSalt);
-    console.log(password);
-    console.log(this.employeeEmail);
     this.save();
     return this;
   }

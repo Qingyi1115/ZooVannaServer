@@ -26,7 +26,10 @@ import { findEmployeeById } from "./employee";
 import { AnimalObservationLog } from "../models/animalObservationLog";
 import { AnimalActivity } from "../models/animalActivity";
 import * as ZooEventService from "./zooEvent";
-import { DAY_IN_MILLISECONDS, MINUTES_IN_MILLISECONDS } from "../helpers/staticValues";
+import {
+  DAY_IN_MILLISECONDS,
+  MINUTES_IN_MILLISECONDS,
+} from "../helpers/staticValues";
 import {
   compareDates,
   getNextDayOfMonth,
@@ -570,16 +573,12 @@ function isAncestor(animal: any, targetId: number): boolean {
 // Helper function to check if two animals have the same parents
 function haveSameParentsCheck(animal1: any, animal2: any): boolean {
   if (animal1.parents.length === 0 || animal2.parents.length === 0) {
-    console.log("here--1");
     return false;
   }
 
-  console.log("here--2");
   const parentIds1 = animal1.parents.map((parent: any) => parent.animalId);
   const parentIds2 = animal2.parents.map((parent: any) => parent.animalId);
 
-  console.log("here--parentIds1: " + parentIds1);
-  console.log("here--parentIds2: " + parentIds2);
   return parentIds1.every((animalId: any) => parentIds2.includes(animalId));
 }
 
@@ -594,8 +593,6 @@ export async function addAnimalWeight(
     weightInKg: weightInKg,
     dateOfMeasure: dateOfMeasure,
   } as any;
-
-  console.log(newWeight);
 
   try {
     let newWeightEntry = await AnimalWeight.create(newWeight);
@@ -797,7 +794,7 @@ export async function getAnimalActivityById(animalActivityId: number) {
 }
 
 export async function getAnimalActivityByAnimalCode(animalCode: string) {
-  let animalActivities = await Animal.findAll({
+  let animalActivities = await Animal.findOne({
     where: { animalCode: animalCode },
     include: {
       model: AnimalActivity,
@@ -824,7 +821,7 @@ export async function createAnimalActivity(
   dayOfMonth: number | null,
   eventTimingType: EventTimingType,
   durationInMinutes: number,
-  requiredNumberOfKeeper: number
+  requiredNumberOfKeeper: number,
 ): Promise<AnimalActivity> {
   let newActivity = {
     activityType: activityType,
@@ -837,7 +834,7 @@ export async function createAnimalActivity(
     dayOfMonth: dayOfMonth,
     eventTimingType: eventTimingType,
     durationInMinutes: durationInMinutes,
-    requiredNumberOfKeeper: requiredNumberOfKeeper
+    requiredNumberOfKeeper: requiredNumberOfKeeper,
   };
   try {
     let newActivityEntry = await AnimalActivity.create(newActivity);
@@ -849,7 +846,7 @@ export async function createAnimalActivity(
         durationInMinutes,
         eventTimingType,
         details,
-        requiredNumberOfKeeper
+        requiredNumberOfKeeper,
       );
     } else {
       return ZooEventService.generateMonthlyZooEventForAnimalActivity(
@@ -889,7 +886,7 @@ export async function updateAnimalActivity(
   dayOfMonth: number | null,
   eventTimingType: EventTimingType,
   durationInMinutes: number,
-  requiredNumberOfKeeper: number
+  requiredNumberOfKeeper: number,
 ) {
   try {
     let animalActivity = await AnimalActivity.findOne({
@@ -951,7 +948,7 @@ export async function updateAnimalActivity(
           durationInMinutes,
           eventTimingType,
           details,
-          requiredNumberOfKeeper
+          requiredNumberOfKeeper,
         );
       } else {
         return ZooEventService.generateMonthlyZooEventForAnimalActivity(
@@ -1030,7 +1027,7 @@ export async function updateAnimalActivity(
                 durationInMinutes,
                 eventTimingType,
                 details,
-                requiredNumberOfKeeper
+                requiredNumberOfKeeper,
               ),
             );
             earliestDate = new Date(earliestDate.getTime() - interval);
@@ -1052,7 +1049,7 @@ export async function updateAnimalActivity(
                 durationInMinutes,
                 eventTimingType,
                 details,
-                requiredNumberOfKeeper
+                requiredNumberOfKeeper,
               ),
             );
             earliestDate = new Date(
@@ -1103,20 +1100,19 @@ export async function assignAnimalsToActivity(
   animalActivityId: number,
   animalCodes: string[],
 ) {
-  try{
+  try {
     let animalActivity = await getAnimalActivityById(animalActivityId);
 
     const animals = [];
     const promises = [];
 
-
     for (let animalCode of animalCodes) {
       animals.push(await getAnimalByAnimalCode(animalCode));
     }
     promises.push(animalActivity.setAnimals(animals));
-      
-    for (const ze of await animalActivity.getZooEvents()){
-      if (compareDates(ze.eventStartDateTime, new Date()) >=0 ){
+
+    for (const ze of await animalActivity.getZooEvents()) {
+      if (compareDates(ze.eventStartDateTime, new Date()) >= 0) {
         promises.push(ze.setAnimals(animals));
       }
     }
@@ -1131,17 +1127,16 @@ export async function removeAnimalFromActivity(
   animalActivityId: number,
   animalCode: string,
 ) {
-  try{
+  try {
     let animalActivity = await getAnimalActivityById(animalActivityId);
     const animal = await getAnimalByAnimalCode(animalCode);
     await animalActivity.removeAnimal(animal);
 
-    for (const ze of await animalActivity.getZooEvents()){
-      if (compareDates(ze.eventStartDateTime, new Date()) >=0 ){
+    for (const ze of await animalActivity.getZooEvents()) {
+      if (compareDates(ze.eventStartDateTime, new Date()) >= 0) {
         await ze.removeAnimal(animal);
       }
     }
-
   } catch (error: any) {
     throw validationErrorHandler(error);
   }
@@ -1183,11 +1178,14 @@ export async function createAnimalObservationLog(
 ) {
   const keeper = await (await findEmployeeById(employeeId)).getKeeper();
 
-  if (!keeper) throw { message: "No keeper found with employee ID : " + employeeId };
+  if (!keeper)
+    throw { message: "No keeper found with employee ID : " + employeeId };
 
-  const animalObservationAvtivity = await getAnimalActivityById(animalActivityId);
+  const animalObservationAvtivity =
+    await getAnimalActivityById(animalActivityId);
 
-  if (animalObservationAvtivity.activityType != ActivityType.OBSERVATION) throw { message: "Not a observation log!" }
+  if (animalObservationAvtivity.activityType != ActivityType.OBSERVATION)
+    throw { message: "Not a observation log!" };
 
   try {
     const animalObservationLog = await AnimalObservationLog.create({
@@ -1197,7 +1195,9 @@ export async function createAnimalObservationLog(
       details: details,
     });
 
-    await animalObservationLog.setAnimals(await animalObservationAvtivity.getAnimals());
+    await animalObservationLog.setAnimals(
+      await animalObservationAvtivity.getAnimals(),
+    );
     await animalObservationLog.setAnimalActivity(animalObservationAvtivity);
     await keeper.addAnimalObservationLog(animalObservationLog);
 
@@ -1209,35 +1209,43 @@ export async function createAnimalObservationLog(
 }
 
 export async function getAnimalObservationLogsByAnimalActivityId(
-  animalActivityId: number
+  animalActivityId: number,
 ) {
   try {
     return AnimalObservationLog.findAll({
       order: [["dateTime", "DESC"]],
-      include: [{
-        association: "keeper",
-        required: false,
-        include: [{
-          association: "employee",
+      include: [
+        {
+          association: "keeper",
           required: false,
-        }]
-      }, {
-        association: "animals",
-        required: false,
-        include: [{
-          association: "animalActivities",
+          include: [
+            {
+              association: "employee",
+              required: false,
+            },
+          ],
+        },
+        {
+          association: "animals",
           required: false,
+          include: [
+            {
+              association: "animalActivities",
+              required: false,
+              where: {
+                animalActivityId: animalActivityId,
+              },
+            },
+          ],
+        },
+        {
+          association: "animalActivity",
+          required: true,
           where: {
-            animalActivityId: animalActivityId
-          }
-        }]
-      }, {
-        association: "animalActivity",
-        required: true,
-        where: {
-          animalActivityId: animalActivityId
-        }
-      }]
+            animalActivityId: animalActivityId,
+          },
+        },
+      ],
     });
   } catch (error: any) {
     console.log(error);
@@ -1247,7 +1255,7 @@ export async function getAnimalObservationLogsByAnimalActivityId(
 
 export async function getAllAnimalObservationLogs() {
   return AnimalObservationLog.findAll({
-    order: [["dateTime", "DESC"]]
+    order: [["dateTime", "DESC"]],
   });
 }
 
@@ -1262,10 +1270,12 @@ export async function getAnimalObservationLogById(
       {
         association: "animals",
         required: false,
-        include: [{
-          association: "species",
-          required: false
-        }]
+        include: [
+          {
+            association: "species",
+            required: false,
+          },
+        ],
       },
       {
         association: "keeper",
@@ -1375,7 +1385,8 @@ export async function createAnimalActivityLog(
   const keeper = await (await findEmployeeById(employeeId)).getKeeper();
   const animalActivity = await getAnimalActivityById(animalActivityId);
 
-  if (!keeper) throw { message: "No keeper found with employee ID : " + employeeId };
+  if (!keeper)
+    throw { message: "No keeper found with employee ID : " + employeeId };
 
   try {
     const newAnimalActivityLog = await AnimalActivityLog.create({
@@ -1411,10 +1422,12 @@ export async function getAnimalActivityLogById(animalActivityLogId: number) {
       {
         association: "animals",
         required: false,
-        include: [{
-          association: "species",
-          required: false
-        }]
+        include: [
+          {
+            association: "species",
+            required: false,
+          },
+        ],
       },
       {
         association: "keeper",
@@ -1435,19 +1448,22 @@ export async function getAnimalActivityLogById(animalActivityLogId: number) {
   return animalActivityLog;
 }
 
-export async function getAnimalActivityLogsByAnimalActivityId(animalActivityId: number) {
+export async function getAnimalActivityLogsByAnimalActivityId(
+  animalActivityId: number,
+) {
   try {
     return await AnimalActivityLog.findAll({
       include: [
         {
           association: "animals",
           required: false,
-        }, {
+        },
+        {
           association: "animalActivity",
           required: true,
           where: {
-            animalActivityId: animalActivityId
-          }
+            animalActivityId: animalActivityId,
+          },
         },
         {
           association: "keeper",
@@ -1551,7 +1567,7 @@ export async function createAnimalFeedingLog(
   amountLeftovers: string,
   presentationMethod: string,
   extraRemarks: string,
-  feedingPlanId: number
+  feedingPlanId: number,
 ) {
   const keeper = await (await findEmployeeById(employeeId)).getKeeper();
 
@@ -1594,10 +1610,12 @@ export async function getAnimalFeedingLogById(animalFeedingLogId: number) {
       {
         association: "animals",
         required: false,
-        include: [{
-          association: "species",
-          required: false
-        }]
+        include: [
+          {
+            association: "species",
+            required: false,
+          },
+        ],
       },
       {
         association: "keeper",
@@ -1618,7 +1636,9 @@ export async function getAnimalFeedingLogById(animalFeedingLogId: number) {
   return animalFeedingLog;
 }
 
-export async function getAnimalFeedingLogByFeedingPlanId(feedingPlanId: number) {
+export async function getAnimalFeedingLogByFeedingPlanId(
+  feedingPlanId: number,
+) {
   try {
     return AnimalFeedingLog.findAll({
       include: [
@@ -1635,16 +1655,16 @@ export async function getAnimalFeedingLogByFeedingPlanId(feedingPlanId: number) 
               required: false,
             },
           ],
-        }, {
+        },
+        {
           association: "feedingPlan",
           required: true,
           where: {
-            feedingPlanId: feedingPlanId
-          }
-        }
+            feedingPlanId: feedingPlanId,
+          },
+        },
       ],
     });
-
   } catch (error: any) {
     throw validationErrorHandler(error);
   }
@@ -1699,7 +1719,7 @@ export async function updateAnimalFeedingLog(
   amountConsumed: string,
   amountLeftovers: string,
   presentationMethod: string,
-  extraRemarks: string
+  extraRemarks: string,
 ) {
   const animalFeedingLog = await getAnimalFeedingLogById(animalFeedingLogId);
 
@@ -1860,9 +1880,7 @@ export async function createFeedingPlan(
   endDate: Date,
   sessions: TempFeedingPlanSessionDetail[],
 ) {
-
   try {
-
     let animals: Animal[] = [];
 
     for (let i = 0; i < animalCodes.length; i++) {
@@ -1873,7 +1891,7 @@ export async function createFeedingPlan(
       feedingPlanDesc: feedingPlanDesc,
       startDate: startDate,
       endDate: endDate,
-      title: "Feeding plan for " + (await animals[0].getSpecies()).commonName
+      title: "Feeding plan for " + (await animals[0].getSpecies()).commonName,
     };
 
     let newPlanEntry = await FeedingPlan.create(newPlan);
@@ -1891,7 +1909,7 @@ export async function createFeedingPlan(
         i.isPublic,
         i.publicEventStartTime,
         i.feedingItems,
-        i.requiredNumberOfKeeper
+        i.requiredNumberOfKeeper,
       );
     }
 
@@ -1908,12 +1926,13 @@ export async function updateFeedingPlan(
   feedingPlanDesc: string,
   startDate: Date,
   endDate: Date,
-  title: string
+  title: string,
 ) {
   try {
     let planEntry = await getFeedingPlanById(feedingPlanId);
-    const dateChange = (compareDates(planEntry.startDate, startDate) != 0)
-      || (compareDates(planEntry.endDate, endDate) != 0);
+    const dateChange =
+      compareDates(planEntry.startDate, startDate) != 0 ||
+      compareDates(planEntry.endDate, endDate) != 0;
 
     planEntry.feedingPlanDesc = feedingPlanDesc;
     planEntry.startDate = startDate;
@@ -1940,7 +1959,7 @@ export async function updateFeedingPlan(
             null,
             feedingPlanSession.isPublic,
             feedingPlanSession.publicEventStartTime,
-            feedingPlanSession.requiredNumberOfKeeper
+            feedingPlanSession.requiredNumberOfKeeper,
           ),
         );
       }
@@ -2051,7 +2070,7 @@ export async function createFeedingPlanSessionDetail(
   isPublic: boolean,
   publicEventStartTime: string | null,
   items: TempFeedingItem[],
-  requiredNumberOfKeeper: number
+  requiredNumberOfKeeper: number,
 ) {
   let newSession = {
     dayOfWeek: dayOfWeek,
@@ -2059,7 +2078,7 @@ export async function createFeedingPlanSessionDetail(
     durationInMinutes: durationInMinutes,
     isPublic: isPublic,
     publicEventStartTime: publicEventStartTime,
-    requiredNumberOfKeeper: requiredNumberOfKeeper
+    requiredNumberOfKeeper: requiredNumberOfKeeper,
   };
 
   try {
@@ -2067,9 +2086,7 @@ export async function createFeedingPlanSessionDetail(
 
     let newSessionEntry = await FeedingPlanSessionDetail.create(newSession);
 
-    await newSessionEntry.setFeedingPlan(
-      feedingplan,
-    );
+    await newSessionEntry.setFeedingPlan(feedingplan);
 
     for (const i of items) {
       await createFeedingItem(
@@ -2098,7 +2115,7 @@ export async function updateFeedingPlanSessionDetail(
   items: TempFeedingItem[] | null,
   isPublic: boolean,
   publicEventStartTime: string | null,
-  requiredNumberOfKeeper: number
+  requiredNumberOfKeeper: number,
 ) {
   const feedingPlanSessionDetail = await getFeedingPlanSessionDetailById(
     feedingPlanSessionDetailId,
@@ -2153,17 +2170,18 @@ export async function deleteFeedingPlanSessionDetailById(
 ) {
   try {
     const promises: Promise<any>[] = [];
-    let feedingPlanSessionDetail = await getFeedingPlanSessionDetailById(feedingPlanSessionDetailId);
-    (await feedingPlanSessionDetail.getZooEvents()).forEach(ze => {
+    let feedingPlanSessionDetail = await getFeedingPlanSessionDetailById(
+      feedingPlanSessionDetailId,
+    );
+    (await feedingPlanSessionDetail.getZooEvents()).forEach((ze) => {
       if (compareDates(ze.eventStartDateTime, new Date()) > 0) {
         promises.push(ze.destroy());
       }
-    })
+    });
     for (const p of promises) await p;
     const feedingPlan = await feedingPlanSessionDetail.getFeedingPlan();
     await feedingPlan.removeFeedingPlanSessionDetail(feedingPlanSessionDetail);
     await feedingPlanSessionDetail.setFeedingPlan(undefined);
-
   } catch (error: any) {
     throw validationErrorHandler(error);
   }

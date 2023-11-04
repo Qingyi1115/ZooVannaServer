@@ -66,11 +66,11 @@ router.put(
 //Update Employee Role Details
 //Update Keeper Role --> Assign more enclosures or delete the enclosures --> for future use if needed
 router.put(
-  "getEmployee/:employeeId/addEnclosure/:enclosureId",
+  "/getEmployee/:employeeId/addEnclosure",
   addEnclosureToKeeperController,
 );
 router.put(
-  "getEmployee/:employeeId/removeEnclosure/:enclosureId",
+  "/getEmployee/:employeeId/removeEnclosure",
   removeEnclosureFromKeeperController,
 );
 
