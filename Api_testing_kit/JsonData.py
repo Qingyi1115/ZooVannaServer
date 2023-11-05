@@ -78,7 +78,7 @@ newAnimalActivityLogDetails = {
         "dateTime": time.time() * 1000 - DAY_IN_MILLISECONDS * 2,
         "durationInMinutes": 60,
         "sessionRating": "EXCELLENT",
-        "animalReaction": "PLAYFU;L",
+        "animalReaction": "PLAYFUL",
         "details": "Blah ... my testing value",
         "animalCodes" : ["ANM00001", "ANM00002"]
 }
@@ -171,4 +171,19 @@ new_diet_need = {
     "presentationMethod": "PUZZLE",
     "presentationLocation": "IN_CONTAINER",
     "growthStage": "UNKNOWN",
+}
+
+new_promotion = {
+  "title": "string",
+  "description": "string",
+  "publishDate": (time.time() * 1000),
+  "startDate": (time.time() * 1000),
+  "endDate": ((time.time() + 9000) * 1000),
+  "percentage": 123,
+  "minimumSpending": 123,
+  "promotionCode": "string",
+  "maxRedeemNum": 123,
+  "currentRedeemNum": 123,
+  "imageUrl": "string",
+    
 }

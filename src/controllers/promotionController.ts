@@ -5,7 +5,7 @@ import { cpuUsage } from "process";
 
 export async function createPromotion(req: Request, res: Response) {
   try {
-    console.log("in create promotion controller");
+    console.log(req);
     const imageUrl = await handleFileUpload(
       req,
       process.env.IMG_URL_ROOT! + "promotion", //"D:/capstoneUploads/promotion",
