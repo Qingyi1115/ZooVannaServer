@@ -267,7 +267,7 @@ def removeEnclosureFromKeeper_fail(mock_data, useAPI: UseAPI):
     response_json = res.json()    
     assert "error" in response_json, response_json
 
-USERS_API_TESTS = [
+EMPLOYEE_API_TESTS = [
     (createEmployee_should_fail, new_user_dat),
     (createEmployee_should_succeed, new_user_dat),
     (getEmployee_fail, new_user_dat),
