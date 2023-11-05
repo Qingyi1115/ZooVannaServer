@@ -73,6 +73,7 @@ newAnimalActivityDetails = {
 }
 
 newAnimalActivityLogDetails = {
+        "animalActivityId": 1,
         "activityType": "ENRICHMENT",
         "dateTime": time.time() * 1000 - DAY_IN_MILLISECONDS * 2,
         "durationInMinutes": 60,
@@ -119,4 +120,55 @@ new_payment = {
   "paymentType": "PAYNOW",
   "transactionId": "d1d2-12ds-123wd1sd",
   "description": "anything works",
+}
+
+new_species = {
+    "commonName": "NUS Stu",
+    "scientificName": "Homo sapiens",
+    "aliasName": "Students from hell",
+    "conservationStatus": "CRITICALLY_ENDANGERED",
+    "domain": "Eukarya",
+    "kingdom": 'Animalia',
+    "phylum": "Chordata",
+    "speciesClass": "Mammalia",
+    "order": "Carnivora",
+    'family': "Ursidae",
+    'genus': "Ailuropoda",
+    "nativeContinent": "ASIA",
+    "nativeBiomes": 'Temperate',
+    "groupSexualDynamic": "POLYANDROUS",
+    "habitatOrExhibit": "Singapore",
+    "generalDietPreference": "Air",
+    "imageUrl": "",
+    'lifeExpectancyYears': 4,
+    "ageToJuvenile": 1,
+    "ageToAdolescent": 2,
+    "ageToAdult": 3,
+    "ageToElder": 3.5,
+}
+
+new_physiological_reference_norms = {
+  "minSizeMaleCm": 180,
+  "maxSizeMaleCm": 180,
+  "minSizeFemaleCm": 170,
+  "maxSizeFemaleCm": 170,
+  "minWeightMaleKg": 70,
+  "maxWeightMaleKg": 70,
+  "minWeightFemaleKg": 60,
+  "maxWeightFemaleKg": 60,
+  "minAge": 1,
+  "maxAge": 4,
+  "growthStage": "UNKNOWN",
+}
+
+new_diet_need = {
+    "animalFeedCategory": "SUPPLEMENTS",
+    "amountPerMealGramMale": 500,
+    "amountPerMealGramFemale": 500,
+    "amountPerWeekGramMale": 500,
+    "amountPerWeekGramFemale": 500,
+    "presentationContainer": "Stainless Steel Bowls",
+    "presentationMethod": "PUZZLE",
+    "presentationLocation": "IN_CONTAINER",
+    "growthStage": "UNKNOWN",
 }

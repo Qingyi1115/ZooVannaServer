@@ -159,6 +159,7 @@ export async function updateSpecies(
     let species = await Species.update(updatedSpecies, {
       where: { speciesCode: speciesCode },
     });
+    return species;
   } catch (error: any) {
     throw validationErrorHandler(error);
   }
@@ -185,17 +186,13 @@ export async function updateSpeciesEduDesc(
   educationalDescription: string,
   educationalFunFact: string,
 ) {
-  let updatedSpecies = {
-    educationalDescription: educationalDescription,
-    educationalFunFact: educationalFunFact,
-  } as any;
-
-  console.log(updatedSpecies);
 
   try {
-    let species = await Species.update(updatedSpecies, {
-      where: { speciesCode: speciesCode },
-    });
+    let species = await getSpeciesByCode(speciesCode, []);
+    species.educationalDescription = educationalDescription;
+    species.educationalFunFact = educationalFunFact;
+    return species.save();
+
   } catch (error: any) {
     throw validationErrorHandler(error);
   }
@@ -220,16 +217,10 @@ export async function updateSpeciesFoodRemark(
   speciesCode: string,
   foodRemark: string,
 ) {
-  let updatedSpecies = {
-    foodRemark: foodRemark,
-  } as any;
-
-  console.log(updatedSpecies);
-
   try {
-    let species = await Species.update(updatedSpecies, {
-      where: { speciesCode: speciesCode },
-    });
+    let species = await getSpeciesByCode(speciesCode, []);
+    species.foodRemark = foodRemark;
+    return species.save();
   } catch (error: any) {
     throw validationErrorHandler(error);
   }
