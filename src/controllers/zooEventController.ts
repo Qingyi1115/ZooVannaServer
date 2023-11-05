@@ -312,6 +312,7 @@ export async function autoAssignKeeperToZooEvent(req: Request, res: Response){
 
       return res.status(200).json({zooEvents : await ZooEvent.autoAssignKeeperToZooEvent()});
   } catch (error: any) {
+    console.log("error",error);
     res.status(400).json({ error: error.message });
   }
 

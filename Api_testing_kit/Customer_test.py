@@ -179,8 +179,8 @@ def getCustomer_success(customer_dat, useAPI: UseAPI):
     assert response_json["customerId"] == customer_dat["customerId"], response_json
     assert res.status_code() == 200, "Status code not 200!"
 
-# @getApi
-@login_as_QingYi
+@getApi
+# @login_as_QingYi
 def updateCustomer_fail(customer_dat:dict, useAPI: UseAPI):
     new_customer_dat = customer_dat.copy()
     new_customer_dat["firstName"] = "definitely not marcus"
@@ -200,8 +200,8 @@ def updateCustomer_success(customer_dat, useAPI: UseAPI):
     assert "customer" in response_json, response_json
     assert res.status_code() == 200, "Status code not 200!"
 
-# @getApi
-@login_as_QingYi
+@getApi
+# @login_as_QingYi
 def updatePassword_fail(customer_dat:dict, useAPI: UseAPI):
     res = useAPI.put("/api/customer/updatePassword/{}".format(customer_dat["customerId"]-1),
                      json={
@@ -210,7 +210,7 @@ def updatePassword_fail(customer_dat:dict, useAPI: UseAPI):
                      })
     response_json = res.json()
     assert "error" in response_json, response_json
-    assert res.status_code() == 400, "Status code not 400!"
+    assert res.status_code() == 401, "Status code not 401!"
 
 @login_as_QingYi
 def updatePassword_success(customer_dat, useAPI: UseAPI):
