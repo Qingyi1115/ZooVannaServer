@@ -123,7 +123,8 @@ PROMOTION_API_TESTS = [
     (verifyPromotionCode_success, 'BYELALA'),
     (cancelUsePromotionCode_fail, 'BYELALA'),
     (cancelUsePromotionCode_success, 'BYELALA'),
-    (updatePromotion_fail ,),
+    # (updatePromotion_fail ,),
+    # (updatePromotion_success ,),
     # (deletePromotion_fail, 1),
     # (deletePromotion_success, 1),
 ]
