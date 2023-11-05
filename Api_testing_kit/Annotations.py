@@ -1,6 +1,10 @@
 from functools import wraps
 import requests
 from JsonData import marry_account, junior_keeper, qingYi_customer
+import os
+import base64
+
+fname = "image.png"
 
 env = dict(map(lambda x:(x.strip().split("=")[0].strip(), x.strip().split("=")[1].strip()), map(lambda x:x.split("#")[0] if "=" in x.split("#")[0] else "None=None", open("./.env", "r").read().strip().split("\n"))))
 
@@ -27,7 +31,25 @@ class UseAPI:
             headers=self.header)
         return self
     
-    def post(self, api, json=None):
+    def post(self, api, json=None, send_image=False):
+        if send_image:
+            header = self.header.copy()
+            # header['Content-Type'] = 'multipart/form-data'
+            with open(fname, 'rb') as f:
+                if json is None: json = {}
+                # json["file"] = base64.b64encode(f.read()).decode()
+
+                self.req = requests.post(
+                    url=BASE_URL + api, 
+                    json=json,
+                    headers=header,
+                    files={"file":base64.b64encode(f.read()).decode()}
+                    )
+                        
+                    # files=[
+                    #     ("file", (os.path.basename(fname), f, 'image/png')),
+                    #     ]
+            return self
         self.req = requests.post(
             url=BASE_URL + api, 
             json=json,
