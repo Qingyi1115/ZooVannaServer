@@ -184,3 +184,27 @@ export async function updateAnnouncement(req: Request, res: Response) {
     res.status(400).json({ error: error.message });
   }
 }
+
+export async function togglePublishAnnouncement(req: Request, res: Response) {
+  const { announcementId } = req.params;
+
+  if (announcementId == undefined) {
+    console.log("Missing field(s): ", {
+      announcementId,
+    });
+    return res.status(400).json({ error: "Missing announcement ID!" });
+  }
+
+  try {
+    const announcementIdInt = parseInt(announcementId);
+    if (!isNaN(announcementIdInt)) {
+      const announcement =
+        await AnnouncementService.togglePublishAnnouncement(announcementIdInt);
+      return res.status(200).json(announcement);
+    } else {
+      return res.status(400).json({ error: "Invalid announcement ID!" });
+    }
+  } catch (error: any) {
+    res.status(400).json({ error: error.message });
+  }
+}
