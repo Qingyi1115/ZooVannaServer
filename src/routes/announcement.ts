@@ -8,6 +8,7 @@ import {
   updateAnnouncement,
   deleteAnnouncement,
   getAllPublishedAnnouncements,
+  togglePublishAnnouncement,
 } from "../controllers/announcementController";
 
 const router = express.Router();
@@ -20,6 +21,10 @@ router.use(authMiddleware);
 router.post("/createAnnouncement", createAnnouncement);
 router.get("/getAllAnnouncements", getAllAnnouncements);
 router.put("/updateAnnouncement/:announcementId", updateAnnouncement);
+router.delete(
+  "/togglePublishAnnouncement/:announcementId",
+  togglePublishAnnouncement,
+);
 router.delete("/deleteAnnouncement/:announcementId", deleteAnnouncement);
 
 export default router;
