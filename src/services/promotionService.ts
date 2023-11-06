@@ -1,7 +1,5 @@
-import { Request } from "express";
-import { Op } from "Sequelize";
 import { validationErrorHandler } from "../helpers/errorHandler";
-import { Promotion } from "../models/promotion";
+import { Promotion } from "../models/Promotion";
 
 export async function createNewPromotion(
   title: string,

@@ -1,21 +1,21 @@
 import {
-    DataTypes,
-    Model,
-    InferAttributes,
-    InferCreationAttributes,
-    BelongsToSetAssociationMixin,
-    BelongsToGetAssociationMixin,
-    CreationOptional,
-    BelongsToManyAddAssociationMixin,
-    BelongsToManyGetAssociationsMixin,
-    BelongsToManySetAssociationsMixin,
-    BelongsToManyRemoveAssociationMixin,
-  } from "Sequelize";
-  import { conn } from "../db";
-  import { Animal } from "./animal";
-import { Rating } from "./enumerated";
-import { Keeper } from "./keeper";
-import { AnimalActivity } from "./animalActivity";
+  BelongsToGetAssociationMixin,
+  BelongsToManyAddAssociationMixin,
+  BelongsToManyGetAssociationsMixin,
+  BelongsToManyRemoveAssociationMixin,
+  BelongsToManySetAssociationsMixin,
+  BelongsToSetAssociationMixin,
+  CreationOptional,
+  DataTypes,
+  InferAttributes,
+  InferCreationAttributes,
+  Model,
+} from "Sequelize";
+import { conn } from "../db";
+import { Animal } from "./Animal";
+import { AnimalActivity } from "./AnimalActivity";
+import { Rating } from "./Enumerated";
+import { Keeper } from "./Keeper";
   
   class AnimalObservationLog extends Model<
     InferAttributes<AnimalObservationLog>,

@@ -1,21 +1,21 @@
 import {
-  DataTypes,
-  Model,
-  InferAttributes,
-  InferCreationAttributes,
   BelongsToGetAssociationMixin,
   BelongsToSetAssociationMixin,
   CreationOptional,
+  DataTypes,
+  InferAttributes,
+  InferCreationAttributes,
+  Model,
 } from "Sequelize";
 import { conn } from "../db";
 import {
-  PresentationContainer,
-  PresentationMethod,
-  PresentationLocation,
-  AnimalGrowthStage,
   AnimalFeedCategory,
-} from "./enumerated";
-import { Species } from "./species";
+  AnimalGrowthStage,
+  PresentationContainer,
+  PresentationLocation,
+  PresentationMethod,
+} from "./Enumerated";
+import { Species } from "./Species";
 
 class SpeciesDietNeed extends Model<
   InferAttributes<SpeciesDietNeed>,
@@ -106,3 +106,4 @@ SpeciesDietNeed.init(
 );
 
 export { SpeciesDietNeed };
+

@@ -1,14 +1,14 @@
 import {
+  BelongsToGetAssociationMixin,
+  BelongsToSetAssociationMixin,
+  CreationOptional,
   DataTypes,
-  Model,
   InferAttributes,
   InferCreationAttributes,
-  BelongsToSetAssociationMixin,
-  BelongsToGetAssociationMixin,
-  CreationOptional,
+  Model,
 } from "Sequelize";
 import { conn } from "../db";
-import { Enclosure } from "./enclosure";
+import { Enclosure } from "./Enclosure";
 
 class BarrierType extends Model<
   InferAttributes<BarrierType>,
@@ -72,3 +72,4 @@ BarrierType.init(
 );
 
 export { BarrierType };
+

@@ -1,22 +1,22 @@
 import {
-  DataTypes,
-  Model,
-  InferAttributes,
-  InferCreationAttributes,
-  CreationOptional,
   BelongsToGetAssociationMixin,
   BelongsToSetAssociationMixin,
-  HasManyGetAssociationsMixin,
-  HasManySetAssociationsMixin,
+  CreationOptional,
+  DataTypes,
   HasManyAddAssociationMixin,
+  HasManyGetAssociationsMixin,
   HasManyRemoveAssociationMixin,
+  HasManySetAssociationsMixin,
+  InferAttributes,
+  InferCreationAttributes,
+  Model,
 } from "Sequelize";
 import { conn } from "../db";
-import { Country, OrderStatus, PaymentStatus } from "./enumerated";
-import { Promotion } from "./promotion";
-import { Payment } from "./payment";
-import { Customer } from "./customer";
-import { OrderItem } from "./orderItem";
+import { Customer } from "./Customer";
+import { OrderStatus, PaymentStatus } from "./Enumerated";
+import { OrderItem } from "./OrderItem";
+import { Payment } from "./Payment";
+import { Promotion } from "./Promotion";
 
 class CustomerOrder extends Model<
   InferAttributes<CustomerOrder>,
@@ -137,3 +137,4 @@ CustomerOrder.init(
 );
 
 export { CustomerOrder };
+

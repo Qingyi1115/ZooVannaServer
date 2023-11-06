@@ -1,21 +1,21 @@
 import {
-  DataTypes,
-  Model,
-  InferAttributes,
-  InferCreationAttributes,
   BelongsToGetAssociationMixin,
   BelongsToSetAssociationMixin,
-  HasManySetAssociationsMixin,
-  HasManyGetAssociationsMixin,
-  HasManyAddAssociationMixin,
-  HasManyRemoveAssociationMixin,
   CreationOptional,
+  DataTypes,
+  HasManyAddAssociationMixin,
+  HasManyGetAssociationsMixin,
+  HasManyRemoveAssociationMixin,
+  HasManySetAssociationsMixin,
+  InferAttributes,
+  InferCreationAttributes,
+  Model,
 } from "Sequelize";
 import { conn } from "../db";
-import { DayOfWeek, EventTimingType } from "./enumerated";
-import { ZooEvent } from "./zooEvent";
-import { FeedingPlan } from "./feedingPlan";
-import { FeedingItem } from "./feedingItem";
+import { DayOfWeek, EventTimingType } from "./Enumerated";
+import { FeedingItem } from "./FeedingItem";
+import { FeedingPlan } from "./FeedingPlan";
+import { ZooEvent } from "./ZooEvent";
 
 class FeedingPlanSessionDetail extends Model<
   InferAttributes<FeedingPlanSessionDetail>,
@@ -96,3 +96,4 @@ FeedingPlanSessionDetail.init(
 );
 
 export { FeedingPlanSessionDetail };
+

@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import * as PromotionService from "../services/promotion";
+import * as PromotionService from "../services/promotionService";
 import { handleFileUpload } from "../helpers/multerProcessFile";
 import { cpuUsage } from "process";
 

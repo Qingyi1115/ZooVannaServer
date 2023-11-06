@@ -1,19 +1,19 @@
 import {
-  DataTypes,
-  Model,
-  InferAttributes,
-  InferCreationAttributes,
   BelongsToGetAssociationMixin,
   BelongsToSetAssociationMixin,
-  HasManyGetAssociationsMixin,
-  HasManySetAssociationsMixin,
+  DataTypes,
   HasManyAddAssociationMixin,
+  HasManyGetAssociationsMixin,
   HasManyRemoveAssociationMixin,
+  HasManySetAssociationsMixin,
+  InferAttributes,
+  InferCreationAttributes,
+  Model,
 } from "Sequelize";
 import { conn } from "../db";
-import { Employee } from "./employee";
-import { PlannerType, Specialization } from "./enumerated";
-import { ZooEvent } from "./zooEvent";
+import { Employee } from "./Employee";
+import { PlannerType, Specialization } from "./Enumerated";
+import { ZooEvent } from "./ZooEvent";
 
 class PlanningStaff extends Model<
   InferAttributes<PlanningStaff>,
@@ -135,3 +135,4 @@ PlanningStaff.init(
 );
 
 export { PlanningStaff };
+

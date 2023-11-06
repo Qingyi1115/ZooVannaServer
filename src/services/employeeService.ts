@@ -1,15 +1,13 @@
-import { Console } from "console";
-import { validationErrorHandler } from "../helpers/errorHandler";
-import { hash } from "../helpers/security";
-import { Employee } from "../models/employee";
-import { Keeper } from "../models/keeper";
-import { Token } from "../models/token";
 import { CreationOptional, literal } from "Sequelize";
 import * as nodemailer from "nodemailer";
 import { v4 as uuidv4 } from "uuid";
-import { PlanningStaff } from "../models/planningStaff";
-import { GeneralStaff } from "../models/generalStaff";
-import { Request, Response } from "express";
+import { validationErrorHandler } from "../helpers/errorHandler";
+import { hash } from "../helpers/security";
+import { Employee } from "../models/Employee";
+import { GeneralStaff } from "../models/GeneralStaff";
+import { Keeper } from "../models/Keeper";
+import { PlanningStaff } from "../models/PlanningStaff";
+import { Token } from "../models/Token";
 
 //Account Manager
 export async function createNewEmployee(

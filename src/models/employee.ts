@@ -1,22 +1,22 @@
 import {
-  DataTypes,
-  Model,
   CreationOptional,
-  InferAttributes,
-  InferCreationAttributes,
+  DataTypes,
+  HasManyAddAssociationMixin,
+  HasManyGetAssociationsMixin,
+  HasManyRemoveAssociationMixin,
+  HasManySetAssociationsMixin,
   HasOneGetAssociationMixin,
   HasOneSetAssociationMixin,
-  HasManyGetAssociationsMixin,
-  HasManyAddAssociationMixin,
-  HasManySetAssociationsMixin,
-  HasManyRemoveAssociationMixin,
+  InferAttributes,
+  InferCreationAttributes,
+  Model,
 } from "Sequelize";
 import { conn } from "../db";
-import { Keeper } from "./keeper";
-import { PlanningStaff } from "./planningStaff";
-import { GeneralStaff } from "./generalStaff";
 import { hash } from "../helpers/security";
-import { AnimalActivity } from "./animalActivity";
+import { AnimalActivity } from "./AnimalActivity";
+import { GeneralStaff } from "./GeneralStaff";
+import { Keeper } from "./Keeper";
+import { PlanningStaff } from "./PlanningStaff";
 
 function uppercaseFirst(str: string) {
   return `${str[0].toUpperCase()}${str.substr(1)}`;
@@ -224,3 +224,4 @@ Employee.init(
 );
 
 export { Employee };
+

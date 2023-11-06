@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { createToken } from "../helpers/security";
-import * as CustomerService from "../services/customer";
+import * as CustomerService from "../services/customerService";
 
 //verify customer email
 

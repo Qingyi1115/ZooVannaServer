@@ -1,12 +1,12 @@
 import {
+  CreationOptional,
   DataTypes,
-  Model,
   InferAttributes,
   InferCreationAttributes,
-  CreationOptional,
+  Model,
 } from "Sequelize";
 import { conn } from "../db";
-import { AnimalFeedCategory } from "./enumerated";
+import { AnimalFeedCategory } from "./Enumerated";
 
 class AnimalFeed extends Model<
   InferAttributes<AnimalFeed>,

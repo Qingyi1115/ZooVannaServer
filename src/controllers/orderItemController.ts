@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import {
   getDateOrderCount,
   getOrderByVerificationCode,
-} from "../services/orderItem";
+} from "../services/orderItemService";
 
 export async function getDateOrderCountController(req: Request, res: Response) {
   try {

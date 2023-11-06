@@ -1,15 +1,15 @@
 import {
+  BelongsToGetAssociationMixin,
+  BelongsToSetAssociationMixin,
+  CreationOptional,
   DataTypes,
-  Model,
   InferAttributes,
   InferCreationAttributes,
-  BelongsToSetAssociationMixin,
-  BelongsToGetAssociationMixin,
-  CreationOptional,
+  Model,
 } from "Sequelize";
 import { conn } from "../db";
-import { Enclosure } from "./enclosure";
-import { Biome } from "./enumerated";
+import { Enclosure } from "./Enclosure";
+import { Biome } from "./Enumerated";
 
 class Plantation extends Model<
   InferAttributes<Plantation>,
@@ -59,3 +59,4 @@ Plantation.init(
 );
 
 export { Plantation };
+

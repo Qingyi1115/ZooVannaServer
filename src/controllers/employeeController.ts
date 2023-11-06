@@ -1,26 +1,26 @@
 import { Request, Response } from "express";
 import { createToken } from "../helpers/security";
+import { GeneralStaffType, PlannerType } from "../models/Enumerated";
+import { GeneralStaff } from "../models/GeneralStaff";
 import {
   createNewEmployee,
+  disableEmployeeAccount,
+  disableRole,
   employeeLogin,
+  enableRole,
   findEmployeeByEmail,
   getAllEmployees,
-  setAsAccountManager,
+  getAllGeneralStaffs,
   getEmployee,
   resetPassword,
-  disableEmployeeAccount,
+  setAsAccountManager,
   setPassword,
   unsetAsAccountManager,
-  enableRole,
-  disableRole,
   // updateGeneralStaffType,
   // updatePlanningStaffType,
   updateRoleType,
   updateSpecializationType,
-  getAllGeneralStaffs,
-} from "../services/employee";
-import { GeneralStaffType, PlannerType } from "../models/enumerated";
-import { GeneralStaff } from "../models/generalStaff";
+} from "../services/employeeService";
 
 export async function login(req: Request, res: Response) {
   try {

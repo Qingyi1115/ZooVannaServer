@@ -1,15 +1,15 @@
 import {
-  DataTypes,
-  Model,
-  InferAttributes,
-  InferCreationAttributes,
   BelongsToGetAssociationMixin,
   BelongsToSetAssociationMixin,
   CreationOptional,
+  DataTypes,
+  InferAttributes,
+  InferCreationAttributes,
+  Model,
 } from "Sequelize";
 import { conn } from "../db";
-import { Facility } from "./facility";
-import { MedicalSupplyType } from "./enumerated";
+import { MedicalSupplyType } from "./Enumerated";
+import { Facility } from "./Facility";
 
 class MedicalSupply extends Model<
   InferAttributes<MedicalSupply>,
@@ -59,3 +59,4 @@ MedicalSupply.init(
 );
 
 export { MedicalSupply };
+

@@ -1,23 +1,23 @@
 import {
-  DataTypes,
-  Model,
+  BelongsToManyAddAssociationMixin,
+  BelongsToManyGetAssociationsMixin,
+  BelongsToManyRemoveAssociationMixin,
+  BelongsToManySetAssociationsMixin,
   CreationOptional,
+  DataTypes,
+  HasManyAddAssociationMixin,
+  HasManyGetAssociationsMixin,
+  HasManyRemoveAssociationMixin,
+  HasManySetAssociationsMixin,
   InferAttributes,
   InferCreationAttributes,
-  HasManyGetAssociationsMixin,
-  HasManySetAssociationsMixin,
-  HasManyAddAssociationMixin,
-  HasManyRemoveAssociationMixin,
-  BelongsToManyGetAssociationsMixin,
-  BelongsToManyAddAssociationMixin,
-  BelongsToManySetAssociationsMixin,
-  BelongsToManyRemoveAssociationMixin,
+  Model,
 } from "Sequelize";
-import { conn } from "../db";
 import crypto from "crypto";
-import { Country } from "./enumerated";
-import { CustomerOrder } from "./customerOrder";
-import { Species } from "./species";
+import { conn } from "../db";
+import { CustomerOrder } from "./CustomerOrder";
+import { Country } from "./Enumerated";
+import { Species } from "./Species";
 
 function hash(string: string): string {
   return crypto.createHash("sha256").update(string).digest("hex");
@@ -167,3 +167,4 @@ Customer.init(
 );
 
 export { Customer };
+

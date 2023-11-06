@@ -1,14 +1,14 @@
-import { DayOfWeek, EventTimingType, EventType, RecurringPattern } from "../models/enumerated";
-import { validationErrorHandler } from "../helpers/errorHandler";
-import * as AnimalService from "./animal";
-import * as EmployeeService from "./employee";
-import { ZooEvent } from "../models/zooEvent";
-import { ADVANCE_DAYS_FOR_ZOO_EVENT_GENERATION, ANIMAL_ACTIVITY_NOTIFICATION_HOURS, ANIMAL_FEEDING_NOTIFICATION_HOURS, DAY_IN_MILLISECONDS, HOUR_IN_MILLISECONDS, MINUTES_IN_MILLISECONDS } from "../helpers/staticValues";
-import { compareDates, getNextDayOfMonth, getNextDayOfWeek } from "../helpers/others";
 import { Op } from "Sequelize";
-import { Employee } from "../models/employee";
-import { Keeper } from "../models/keeper";
 import cron from "node-cron";
+import { validationErrorHandler } from "../helpers/errorHandler";
+import { compareDates, getNextDayOfMonth, getNextDayOfWeek } from "../helpers/others";
+import { ADVANCE_DAYS_FOR_ZOO_EVENT_GENERATION, ANIMAL_ACTIVITY_NOTIFICATION_HOURS, ANIMAL_FEEDING_NOTIFICATION_HOURS, DAY_IN_MILLISECONDS, HOUR_IN_MILLISECONDS } from "../helpers/staticValues";
+import { Employee } from "../models/Employee";
+import { DayOfWeek, EventTimingType, EventType, RecurringPattern } from "../models/Enumerated";
+import { Keeper } from "../models/Keeper";
+import { ZooEvent } from "../models/ZooEvent";
+import * as AnimalService from "./animalService";
+import * as EmployeeService from "./employeeService";
 
 cron.schedule('0 0 0 1 1 *', async () => {
   for (const animalAct of await AnimalService.getAllAnimalActivities()){

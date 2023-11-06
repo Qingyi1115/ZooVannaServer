@@ -1,6 +1,6 @@
-import { Listing } from "../models/listing";
 import { validationErrorHandler } from "../helpers/errorHandler";
-import { ListingStatus, ListingType } from "../models/enumerated";
+import { ListingStatus, ListingType } from "../models/Enumerated";
+import { Listing } from "../models/Listing";
 const Sequelize = require("sequelize");
 
 export async function createListing(

@@ -1,7 +1,9 @@
 import { Request, Response } from "express";
-import * as ZooEvent from "../services/zooEvent";
-import { findEmployeeByEmail } from "../services/employee";
-import { PlannerType } from "../models/enumerated";
+import { compareDates } from "../helpers/others";
+import { DAY_IN_MILLISECONDS } from "../helpers/staticValues";
+import { PlannerType } from "../models/Enumerated";
+import { findEmployeeByEmail } from "../services/employeeService";
+import * as ZooEvent from "../services/zooEventService";
 
 export async function getAllZooEvents(req: Request, res: Response) {
   try {

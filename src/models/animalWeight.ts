@@ -1,14 +1,14 @@
 import {
-  DataTypes,
-  Model,
-  InferAttributes,
-  InferCreationAttributes,
-  BelongsToSetAssociationMixin,
-  BelongsToGetAssociationMixin,
-  CreationOptional,
+    BelongsToGetAssociationMixin,
+    BelongsToSetAssociationMixin,
+    CreationOptional,
+    DataTypes,
+    InferAttributes,
+    InferCreationAttributes,
+    Model,
 } from "Sequelize";
 import { conn } from "../db";
-import { Animal } from "./animal";
+import { Animal } from "./Animal";
 
 class AnimalWeight extends Model<
   InferAttributes<AnimalWeight>,

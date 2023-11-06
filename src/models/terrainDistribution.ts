@@ -1,15 +1,11 @@
 import {
+  CreationOptional,
   DataTypes,
-  Model,
   InferAttributes,
   InferCreationAttributes,
-  HasManySetAssociationsMixin,
-  HasManyGetAssociationsMixin,
-  CreationOptional,
+  Model
 } from "Sequelize";
 import { conn } from "../db";
-import { SpeciesEnclosureNeed } from "./speciesEnclosureNeed";
-import { Enclosure } from "./enclosure";
 
 class TerrainDistribution extends Model<
   InferAttributes<TerrainDistribution>,
@@ -78,3 +74,4 @@ TerrainDistribution.init(
 );
 
 export { TerrainDistribution };
+

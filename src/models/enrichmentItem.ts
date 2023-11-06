@@ -1,16 +1,16 @@
 import {
-  DataTypes,
-  Model,
-  CreationOptional,
-  InferAttributes,
-  InferCreationAttributes,
-  HasManyGetAssociationsMixin,
-  HasManyAddAssociationMixin,
-  HasManySetAssociationsMixin,
-  HasManyRemoveAssociationMixin,
+    CreationOptional,
+    DataTypes,
+    HasManyAddAssociationMixin,
+    HasManyGetAssociationsMixin,
+    HasManyRemoveAssociationMixin,
+    HasManySetAssociationsMixin,
+    InferAttributes,
+    InferCreationAttributes,
+    Model,
 } from "Sequelize";
 import { conn } from "../db";
-import { AnimalActivity } from "./animalActivity";
+import { AnimalActivity } from "./AnimalActivity";
 
 class EnrichmentItem extends Model<
   InferAttributes<EnrichmentItem>,

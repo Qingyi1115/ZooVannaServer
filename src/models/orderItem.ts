@@ -1,15 +1,15 @@
 import {
-  DataTypes,
-  Model,
-  InferAttributes,
-  InferCreationAttributes,
   BelongsToGetAssociationMixin,
   BelongsToSetAssociationMixin,
   CreationOptional,
+  DataTypes,
+  InferAttributes,
+  InferCreationAttributes,
+  Model,
 } from "Sequelize";
 import { conn } from "../db";
-import { Listing } from "./listing";
-import { CustomerOrder } from "./customerOrder";
+import { CustomerOrder } from "./CustomerOrder";
+import { Listing } from "./Listing";
 
 class OrderItem extends Model<
   InferAttributes<OrderItem>,
@@ -67,3 +67,4 @@ OrderItem.init(
 );
 
 export { OrderItem };
+

@@ -1,7 +1,6 @@
-import { Request } from "express";
+import { AnimalFeedCategory } from "models/Enumerated";
 import { validationErrorHandler } from "../helpers/errorHandler";
-import { AnimalFeed } from "../models/animalFeed";
-import { AnimalFeedCategory } from "models/enumerated";
+import { AnimalFeed } from "../models/AnimalFeed";
 
 export async function createNewAnimalFeed(
   animalFeedName: string,

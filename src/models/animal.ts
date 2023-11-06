@@ -1,38 +1,38 @@
 import {
+  BelongsToGetAssociationMixin,
+  BelongsToManyAddAssociationMixin,
+  BelongsToManyGetAssociationsMixin,
+  BelongsToManyRemoveAssociationMixin,
+  BelongsToManySetAssociationsMixin,
+  BelongsToSetAssociationMixin,
+  CreationOptional,
   DataTypes,
-  Model,
+  HasManyAddAssociationMixin,
+  HasManyGetAssociationsMixin,
+  HasManyRemoveAssociationMixin,
+  HasManySetAssociationsMixin,
   InferAttributes,
   InferCreationAttributes,
-  BelongsToGetAssociationMixin,
-  BelongsToSetAssociationMixin,
-  HasManySetAssociationsMixin,
-  HasManyGetAssociationsMixin,
-  HasManyAddAssociationMixin,
-  HasManyRemoveAssociationMixin,
-  CreationOptional,
-  BelongsToManyGetAssociationsMixin,
-  BelongsToManyAddAssociationMixin,
-  BelongsToManySetAssociationsMixin,
-  BelongsToManyRemoveAssociationMixin,
+  Model,
 } from "Sequelize";
 import { conn } from "../db";
+import { uppercaseFirst } from "../helpers/others";
+import { AnimalActivity } from "./AnimalActivity";
+import { AnimalActivityLog } from "./AnimalActivityLog";
+import { AnimalFeedingLog } from "./AnimalFeedingLog";
+import { AnimalObservationLog } from "./AnimalObservationLog";
+import { AnimalWeight } from "./AnimalWeight";
+import { Enclosure } from "./Enclosure";
 import {
-  AnimalSex,
   AcquisitionMethod,
   AnimalGrowthStage,
+  AnimalSex,
   IdentifierType,
-} from "./enumerated";
-import { Species } from "./species";
-import { uppercaseFirst } from "../helpers/others";
-import { Enclosure } from "./enclosure";
-import { AnimalWeight } from "./animalWeight";
-import { AnimalActivity } from "./animalActivity";
-import { ZooEvent } from "./zooEvent";
-import { AnimalObservationLog } from "./animalObservationLog";
-import { AnimalActivityLog } from "./animalActivityLog";
-import { AnimalFeedingLog } from "./animalFeedingLog";
-import { FeedingPlan } from "./feedingPlan";
-import { FeedingItem } from "./feedingItem";
+} from "./Enumerated";
+import { FeedingItem } from "./FeedingItem";
+import { FeedingPlan } from "./FeedingPlan";
+import { Species } from "./Species";
+import { ZooEvent } from "./ZooEvent";
 
 class Animal extends Model<
   InferAttributes<Animal>,
@@ -395,3 +395,4 @@ Animal.init(
 // });
 
 export { Animal };
+

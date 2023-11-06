@@ -1,14 +1,14 @@
 import {
-    DataTypes,
-    Model,
-    InferAttributes,
-    InferCreationAttributes,
-    BelongsToGetAssociationMixin,
-    BelongsToSetAssociationMixin,
-    CreationOptional,
-  } from "Sequelize";
-  import { conn } from "../db";
-import { Sensor } from "./sensor";
+  BelongsToGetAssociationMixin,
+  BelongsToSetAssociationMixin,
+  CreationOptional,
+  DataTypes,
+  InferAttributes,
+  InferCreationAttributes,
+  Model,
+} from "Sequelize";
+import { conn } from "../db";
+import { Sensor } from "./Sensor";
   
 class MaintenanceLog extends Model<
   InferAttributes<MaintenanceLog>,

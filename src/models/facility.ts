@@ -1,25 +1,24 @@
 import {
-  DataTypes,
-  Model,
   CreationOptional,
-  InferAttributes,
-  InferCreationAttributes,
-  NonAttribute,
-  HasManyGetAssociationsMixin,
-  HasManySetAssociationsMixin,
+  DataTypes,
   HasManyAddAssociationMixin,
+  HasManyGetAssociationsMixin,
+  HasManyRemoveAssociationMixin,
+  HasManySetAssociationsMixin,
   HasOneGetAssociationMixin,
   HasOneSetAssociationMixin,
-  HasManyRemoveAssociationMixin,
+  InferAttributes,
+  InferCreationAttributes,
+  Model
 } from "Sequelize";
 import { conn } from "../db";
-import { InHouse } from "./inHouse";
-import { ThirdParty } from "./thirdParty";
-import { AnimalClinic } from "./animalClinics";
 import { uppercaseFirst } from "../helpers/others";
-import { HubProcessor } from "./hubProcessor";
-import { Enclosure } from "./enclosure";
-import { Zone } from "./zone";
+import { AnimalClinic } from "./AnimalClinics";
+import { Enclosure } from "./Enclosure";
+import { HubProcessor } from "./HubProcessor";
+import { InHouse } from "./InHouse";
+import { ThirdParty } from "./ThirdParty";
+import { Zone } from "./Zone";
 
 class Facility extends Model<
   InferAttributes<Facility>,
@@ -189,3 +188,4 @@ Facility.init(
 );
 
 export { Facility };
+

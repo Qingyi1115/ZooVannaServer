@@ -1,10 +1,7 @@
-import { Request } from "express";
-import { Op } from "Sequelize";
 import { validationErrorHandler } from "../helpers/errorHandler";
-import { Species } from "../models/species";
-import { Enclosure } from "../models/enclosure";
-import * as AssetFacilityService from "../services/assetFacility";
-import * as AnimalService from "../services/animal";
+import { Enclosure } from "../models/Enclosure";
+import * as AnimalService from "./animalService";
+import * as AssetFacilityService from "./assetFacilityService";
 
 export async function getAllEnclosures() {
   try {

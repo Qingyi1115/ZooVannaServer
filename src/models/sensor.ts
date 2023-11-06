@@ -1,22 +1,22 @@
 import {
-  DataTypes,
-  Model,
-  InferAttributes,
-  InferCreationAttributes,
   BelongsToGetAssociationMixin,
   BelongsToSetAssociationMixin,
+  CreationOptional,
+  DataTypes,
   HasManyAddAssociationMixin,
-  HasManySetAssociationsMixin,
   HasManyGetAssociationsMixin,
   HasManyRemoveAssociationMixin,
-  CreationOptional,
+  HasManySetAssociationsMixin,
+  InferAttributes,
+  InferCreationAttributes,
+  Model,
 } from "Sequelize";
 import { conn } from "../db";
-import { SensorType } from "./enumerated";
-import { HubProcessor } from "./hubProcessor";
-import { SensorReading } from "./sensorReading";
-import { GeneralStaff } from "./generalStaff";
-import { MaintenanceLog } from "./maintenanceLog";
+import { SensorType } from "./Enumerated";
+import { GeneralStaff } from "./GeneralStaff";
+import { HubProcessor } from "./HubProcessor";
+import { MaintenanceLog } from "./MaintenanceLog";
+import { SensorReading } from "./SensorReading";
 
 class Sensor extends Model<
   InferAttributes<Sensor>,
@@ -122,3 +122,4 @@ Sensor.init(
 // });
 
 export { Sensor };
+

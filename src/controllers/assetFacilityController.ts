@@ -1,78 +1,77 @@
 import { Request, Response } from "express";
-import { findEmployeeByEmail } from "../services/employee";
+import { CustomerReportLog } from "models/CustomerReportLog";
+import { handleFileUpload } from "../helpers/multerProcessFile";
 import {
   FacilityLogType,
   GeneralStaffType,
   PlannerType,
-} from "../models/enumerated";
+} from "../models/Enumerated";
+import { Facility } from "../models/Facility";
+import { FacilityLog } from "../models/FacilityLog";
+import { GeneralStaff } from "../models/GeneralStaff";
+import { HubProcessor } from "../models/HubProcessor";
+import { InHouse } from "../models/InHouse";
+import { MaintenanceLog } from "../models/MaintenanceLog";
+import { Sensor } from "../models/Sensor";
+import * as AnimalFeedService from "../services/animalFeedService";
 import {
-  getAllFacility,
-  getAllHubs,
-  getAllSensors,
   addHubProcessorByFacilityId,
   addSensorByHubProcessorId,
   assignMaintenanceStaffToFacilityById,
   assignMaintenanceStaffToSensorById,
   assignOperationStaffToFacilityById,
+  completeRepairTicket,
+  createCustomerReport,
+  createFacilityLog,
+  createFacilityMaintenanceLog,
   createNewFacility,
+  createNewSensorReading,
+  createNewZone,
+  createSensorMaintenanceLog,
   deleteFacilityById,
+  deleteFacilityLogById,
   deleteHubById,
   deleteSensorById,
+  deleteSensorMaintenanceLogById,
+  deleteZoneById,
+  findProcessorByName,
+  getAllCustomerReports,
+  getAllFacility,
   getAllFacilityMaintenanceSuggestions,
+  getAllHubs,
+  getAllMaintenanceStaff,
+  getAllSensorMaintenanceLogs,
   getAllSensorMaintenanceSuggestions,
+  getAllSensors,
+  getAllZones,
   getAuthorizationForCameraById,
+  getEarliestReadingBySensorId,
   getFacilityById,
-  getSensorReadingBySensorId,
+  getFacilityLogById,
+  getFacilityLogs,
+  getFacilityMaintenanceSuggestions,
   getHubProcessorById,
+  getMaintenanceStaffsByFacilityId,
+  getSensor,
+  getSensorMaintenanceLogById,
+  getSensorMaintenanceSuggestions,
+  getSensorReadingBySensorId,
+  getZoneById,
   initializeHubProcessor,
   removeMaintenanceStaffFromFacilityById,
   removeMaintenanceStaffFromSensorById,
   removeOperationStaffFromFacilityById,
+  updateCustomerReport,
   updateFacilityByFacilityId,
+  updateFacilityImage,
+  updateFacilityLog,
   updateHubByHubId,
   updateSensorById,
-  getMaintenanceStaffsByFacilityId,
-  getAllMaintenanceStaff,
-  getAllSensorMaintenanceLogs,
-  getFacilityLogs,
-  createFacilityLog,
-  getSensor,
-  createSensorMaintenanceLog,
-  createFacilityMaintenanceLog,
-  findProcessorByName,
-  createNewSensorReading,
-  getSensorMaintenanceSuggestions,
-  getFacilityMaintenanceSuggestions,
-  getEarliestReadingBySensorId,
-  updateFacilityLog,
-  getFacilityLogById,
-  deleteFacilityLogById,
   updateSensorMaintenanceLog,
-  deleteSensorMaintenanceLogById,
-  getSensorMaintenanceLogById,
-  createNewZone,
-  getAllZones,
-  getZoneById,
-  updateZone,
-  deleteZoneById,
-  completeRepairTicket,
-  createCustomerReport,
-  getAllCustomerReports,
-  updateCustomerReport,
-  updateFacilityImage,
-} from "../services/assetFacility";
-import { Facility } from "../models/facility";
-import { Sensor } from "../models/sensor";
-import { HubProcessor } from "../models/hubProcessor";
-import { handleFileUpload } from "../helpers/multerProcessFile";
-import * as AnimalFeedService from "../services/animalFeed";
-import * as EnrichmentItemService from "../services/enrichmentItem";
-import { compareDates } from "../helpers/others";
-import { InHouse } from "../models/inHouse";
-import { FacilityLog } from "../models/facilityLog";
-import { GeneralStaff } from "../models/generalStaff";
-import { MaintenanceLog } from "../models/maintenanceLog";
-import { CustomerReportLog } from "models/customerReportLog";
+  updateZone
+} from "../services/assetFacilityService";
+import { findEmployeeByEmail } from "../services/employeeService";
+import * as EnrichmentItemService from "../services/enrichmentItemService";
 
 export async function createNewZoneController(req: Request, res: Response) {
   try {

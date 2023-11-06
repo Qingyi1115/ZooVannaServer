@@ -1,21 +1,20 @@
-import { Token } from "../models/token";
+import fs from "fs";
+import * as nodemailer from "nodemailer";
+import PDFDocument from "pdfkit";
+import QRCode from "qrcode";
+import { v4 as uuidv4 } from "uuid";
+import { conn } from "../db";
 import { validationErrorHandler } from "../helpers/errorHandler";
 import { hash } from "../helpers/security";
-import { Customer } from "../models/customer";
-import { Country, OrderStatus, PaymentStatus } from "../models/enumerated";
-import * as nodemailer from "nodemailer";
-import { v4 as uuidv4 } from "uuid";
-import { OrderItem } from "../models/orderItem";
-import { Listing } from "../models/listing";
-import { CustomerOrder } from "../models/customerOrder";
-import { Payment } from "../models/payment";
+import { Customer } from "../models/Customer";
+import { CustomerOrder } from "../models/CustomerOrder";
+import { Country, PaymentStatus } from "../models/Enumerated";
+import { Listing } from "../models/Listing";
+import { OrderItem } from "../models/OrderItem";
+import { Payment } from "../models/Payment";
+import { Token } from "../models/Token";
 const { Sequelize } = require("sequelize");
-import { conn } from "../db";
-import QRCode from "qrcode";
-import { getDateOrderCount } from "./orderItem";
 const { Op } = Sequelize;
-import PDFDocument from "pdfkit";
-import fs from "fs";
 
 export async function sendEmailVerification(email: string) {
   let customer = await Customer.findOne({

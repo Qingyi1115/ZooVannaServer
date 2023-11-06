@@ -1,37 +1,34 @@
 import {
+  BelongsToManyAddAssociationMixin,
+  BelongsToManyGetAssociationsMixin,
+  BelongsToManyRemoveAssociationMixin,
+  BelongsToManySetAssociationsMixin,
+  CreationOptional,
   DataTypes,
-  Model,
-  InferAttributes,
-  InferCreationAttributes,
-  BelongsToGetAssociationMixin,
-  BelongsToSetAssociationMixin,
+  HasManyAddAssociationMixin,
+  HasManyGetAssociationsMixin,
+  HasManyRemoveAssociationMixin,
+  HasManySetAssociationsMixin,
   HasOneGetAssociationMixin,
   HasOneSetAssociationMixin,
-  HasManyGetAssociationsMixin,
-  HasManyAddAssociationMixin,
-  HasManySetAssociationsMixin,
-  HasManyRemoveAssociationMixin,
-  CreationOptional,
-  Op,
-  BelongsToManyGetAssociationsMixin,
-  BelongsToManyAddAssociationMixin,
-  BelongsToManySetAssociationsMixin,
-  BelongsToManyRemoveAssociationMixin,
+  InferAttributes,
+  InferCreationAttributes,
+  Model,
+  Op
 } from "Sequelize";
 import { conn } from "../db";
+import { Animal } from "./Animal";
+import { Compatibility } from "./Compatibility";
+import { Customer } from "./Customer";
 import {
-  AnimalGrowthStage,
   ConservationStatus,
   Continent,
-  GroupSexualDynamic,
-} from "./enumerated";
-import { SpeciesDietNeed } from "./speciesDietNeed";
-import { SpeciesEnclosureNeed } from "./speciesEnclosureNeed";
-import { PhysiologicalReferenceNorms } from "./physiologicalReferenceNorms";
-import { Compatibility } from "./compatibility";
-import { Customer } from "./customer";
-import { Animal } from "./animal";
-import { FeedingPlan } from "./feedingPlan";
+  GroupSexualDynamic
+} from "./Enumerated";
+import { FeedingPlan } from "./FeedingPlan";
+import { PhysiologicalReferenceNorms } from "./PhysiologicalReferenceNorms";
+import { SpeciesDietNeed } from "./SpeciesDietNeed";
+import { SpeciesEnclosureNeed } from "./SpeciesEnclosureNeed";
 
 class Species extends Model<
   InferAttributes<Species>,
@@ -303,3 +300,4 @@ Species.init(
 );
 
 export { Species };
+

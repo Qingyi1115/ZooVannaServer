@@ -1,16 +1,16 @@
 import {
-    DataTypes,
-    Model,
-    InferAttributes,
-    InferCreationAttributes,
-    CreationOptional,
-    HasManyGetAssociationsMixin,
-    HasManySetAssociationsMixin,
-    HasManyAddAssociationMixin,
-    HasManyRemoveAssociationMixin,
-  } from "Sequelize";
-  import { conn } from "../db";
-import { Facility } from "./facility";
+  CreationOptional,
+  DataTypes,
+  HasManyAddAssociationMixin,
+  HasManyGetAssociationsMixin,
+  HasManyRemoveAssociationMixin,
+  HasManySetAssociationsMixin,
+  InferAttributes,
+  InferCreationAttributes,
+  Model,
+} from "Sequelize";
+import { conn } from "../db";
+import { Facility } from "./Facility";
   
 class Zone extends Model<
     InferAttributes<Zone>,

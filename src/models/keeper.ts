@@ -1,27 +1,27 @@
 import {
-  DataTypes,
-  Model,
-  InferAttributes,
-  InferCreationAttributes,
   BelongsToGetAssociationMixin,
-  BelongsToSetAssociationMixin,
-  BelongsToManyGetAssociationsMixin,
   BelongsToManyAddAssociationMixin,
-  BelongsToManySetAssociationsMixin,
+  BelongsToManyGetAssociationsMixin,
   BelongsToManyRemoveAssociationMixin,
+  BelongsToManySetAssociationsMixin,
+  BelongsToSetAssociationMixin,
+  DataTypes,
   HasManyAddAssociationMixin,
   HasManyGetAssociationsMixin,
-  HasManySetAssociationsMixin,
   HasManyRemoveAssociationMixin,
+  HasManySetAssociationsMixin,
+  InferAttributes,
+  InferCreationAttributes,
+  Model,
 } from "Sequelize";
 import { conn } from "../db";
-import { Employee } from "./employee";
-import { Enclosure } from "./enclosure";
-import { KeeperType, Specialization } from "./enumerated";
-import { ZooEvent } from "./zooEvent";
-import { AnimalObservationLog } from "./animalObservationLog";
-import { AnimalActivityLog } from "./animalActivityLog";
-import { AnimalFeedingLog } from "./animalFeedingLog";
+import { AnimalActivityLog } from "./AnimalActivityLog";
+import { AnimalFeedingLog } from "./AnimalFeedingLog";
+import { AnimalObservationLog } from "./AnimalObservationLog";
+import { Employee } from "./Employee";
+import { Enclosure } from "./Enclosure";
+import { KeeperType, Specialization } from "./Enumerated";
+import { ZooEvent } from "./ZooEvent";
 
 class Keeper extends Model<
   InferAttributes<Keeper>,
@@ -147,3 +147,4 @@ Keeper.init(
 );
 
 export { Keeper };
+
