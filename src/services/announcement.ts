@@ -96,3 +96,26 @@ export async function updateAnnouncement(
     throw validationErrorHandler(error);
   }
 }
+
+export async function togglePublishAnnouncement(
+  announcementId: number,
+) {
+  let announcement = await getAnnouncementByAnnouncementId(announcementId);
+
+  let updatedAnnouncement = {
+    announcementId: announcementId,
+    title: announcement.title,
+    content: announcement.content,
+    isPublished: !announcement.isPublished,
+    scheduledStartPublish: announcement.scheduledStartPublish,
+    scheduledEndPublish: announcement.scheduledEndPublish,
+  } as any;
+
+  try {
+    let announcement = await Announcement.update(updatedAnnouncement, {
+      where: { announcementId: announcementId },
+    });
+  } catch (error: any) {
+    throw validationErrorHandler(error);
+  }
+}
