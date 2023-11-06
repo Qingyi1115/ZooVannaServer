@@ -22,7 +22,6 @@ export const sendEmailVerification = async (req: Request, res: Response) => {
   try {
     const { email } = req.params;
     await CustomerService.sendEmailVerification(email);
-    console.log("success");
     return res
       .status(200)
       .json({ message: "Email for verification has been sent successfully" });
@@ -96,7 +95,8 @@ export const login = async (req: Request, res: Response) => {
     const { email, password } = req.body;
     if (email && password) {
       if (!(await CustomerService.customerLogin(email, password))) {
-        return res.status(403).json({ error: "Invalid credentials!" });
+        console.log("Invalid credentials")
+        return res.status(401).json({ error: "Invalid credentials!" });
       }
       const token = createToken(email);
       const customer = await CustomerService.findCustomerByEmail(email);
@@ -104,6 +104,7 @@ export const login = async (req: Request, res: Response) => {
       res.status(200).json({ customerId, email, token });
     }
   } catch (error: any) {
+    console.log("error",error)
     res.status(400).json({ error: error.message });
   }
 };
@@ -264,13 +265,13 @@ export async function updatePassword(req: Request, res: Response) {
         return res.status(400).json({ error: "Please enter password!" });
       }
 
-      let customer = await CustomerService.updatePassword(
+      await CustomerService.updatePassword(
         customerIdInt,
         oldPassword,
         newPassword,
       );
       console.log("update success");
-      return res.status(200).json({ customer });
+      return res.status(200).json({ result:"success" });
     }
   } catch (error: any) {
     console.log("last error");
@@ -432,15 +433,16 @@ export async function purchaseTicketController(req: Request, res: Response) {
   const { listings, customerOrder, payment } = req.body;
 
   try {
-    const result = await CustomerService.purchaseTicket(
+    await CustomerService.purchaseTicket(
       Number(customerId),
       listings,
       customerOrder,
       payment,
     );
 
-    return res.status(200).json({ result: result });
+    return res.status(200).json({ result: "success" });
   } catch (error: any) {
+    console.log("error",error)
     return res.status(400).json({ error: error.message });
   }
 }

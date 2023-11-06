@@ -182,7 +182,7 @@ export async function updateCustomer(
   console.log(updatedCustomer);
 
   try {
-    let customer = await Customer.update(updatedCustomer, {
+    return await Customer.update(updatedCustomer, {
       where: { customerId: customerId },
     });
   } catch (error: any) {
@@ -1059,7 +1059,7 @@ export async function purchaseTicket(
   payment: any,
 ) {
   try {
-    await conn.transaction(async (t: any) => {
+    return await conn.transaction(async (t: any) => {
       let result = await Customer.findOne({
         where: { customerId: customerId },
       });
@@ -1107,7 +1107,7 @@ export async function purchaseTicket(
     });
   } catch (error) {
     console.log(error);
-    throw error;
+    throw validationErrorHandler(error);
   }
 }
 
