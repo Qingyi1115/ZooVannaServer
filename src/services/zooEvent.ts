@@ -814,9 +814,25 @@ async function greedyAssign(zooEvent: ZooEvent, zooEvents:ZooEvent[], keepers:Ke
   }
 }
 
-export async function autoAssignKeeperToZooEvent(
+function shuffleArray(array:any[]) {
+  for (var i = array.length - 1; i > 0; i--) {
+      var j = Math.floor(Math.random() * (i + 1));
+      var temp = array[i];
+      array[i] = array[j];
+      array[j] = temp;
+  }
+}
 
-) {
+function doesEventClash(ze1:ZooEvent, ze2:ZooEvent) {
+  const [ze1Start, ze1End] = ze1.eventIsPublic ? [ze1.eventStartDateTime, ze1.eventEndDateTime]
+    : convertEventTimingTypeToDate(ze1.eventStartDateTime, ze1.eventTiming as EventTimingType);
+  const [ze2Start, ze2End] = ze2.eventIsPublic ? [ze2.eventStartDateTime, ze2.eventEndDateTime]
+    : convertEventTimingTypeToDate(ze2.eventStartDateTime, ze2.eventTiming as EventTimingType);
+  return compareDates(ze1Start, ze2End as Date) < 0
+    && compareDates(ze1End as Date, ze2Start) > 0;
+};
+
+export async function autoAssignKeeperToZooEvent() {
   try {
     console.log("autoAssignKeeperToZooEvent");
 
@@ -847,7 +863,7 @@ export async function autoAssignKeeperToZooEvent(
       ]
     });
 
-    const keepers = await Keeper.findAll({
+    let keepers = await Keeper.findAll({
       include: [
         {
           association: "zooEvents",
@@ -868,11 +884,40 @@ export async function autoAssignKeeperToZooEvent(
       ]
     });
 
-      for (let zooEvent of zooEvents){
-        for (let i = 0; i < zooEvent.requiredNumberOfKeeper; i++){
-            await greedyAssign(zooEvent, zooEvents, keepers);
+      // for (let zooEvent of zooEvents){
+      //   for (let i = 0; i < zooEvent.requiredNumberOfKeeper; i++){
+      //       await greedyAssign(zooEvent, zooEvents, keepers);
+      //   }
+      // }
+    
+    shuffleArray(keepers);
+    for (const zooEvent of zooEvents){
+      while ((await zooEvent.getKeepers()).length > zooEvent.requiredNumberOfKeeper){
+        let notFound = false;  
+        const [zooEventStart, zooEventEnd] = zooEvent.eventIsPublic ? 
+          [zooEvent.eventStartDateTime, zooEvent.eventEndDateTime] : 
+          convertEventTimingTypeToDate(zooEvent.eventStartDateTime, zooEvent.eventTiming as EventTimingType);
+        // console.log("zooEventStart, zooEventEnd", zooEventStart, zooEventEnd);
+
+        for (let index =0; index < keepers.length; index++){
+          const keeper = keepers[index];
+          if (keeper.enclosures?.find(enclosure => zooEvent.enclosure?.enclosureId == enclosure.enclosureId)
+          && !(await keeper.getZooEvents()).find(ze=>doesEventClash(ze, zooEvent))){
+            const selKeeper = keepers.splice(index, 1)[0];
+            await selKeeper.addZooEvent(zooEvent);
+            keepers.push(selKeeper);
+            break;
+          }
+          if (index == keepers.length - 1){
+            notFound = true;
+          }
+        } 
+        if (notFound){
+          break;
         }
       }
+    }
+
 
 
     return zooEvents;
