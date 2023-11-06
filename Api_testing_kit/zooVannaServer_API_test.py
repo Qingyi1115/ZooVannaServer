@@ -39,51 +39,45 @@ def do_tests(test_list):
     # return cases, passes, fail_cases
 
 def test_api():
-    # print("-----------LOGIN_API_TESTS initiating-----------")
-    # do_tests(LOGIN_API_TESTS)
-    # print("-----------Group test finish!-------------------\n")
+    print("-----------LOGIN_API_TESTS initiating-----------")
+    do_tests(LOGIN_API_TESTS)
+    print("-----------Group test finish!-------------------\n")
     
-    # print("-----------EMPLOYEE_API_TESTS initiating-----------")
-    # do_tests(EMPLOYEE_API_TESTS)
-    # print("-----------Group test finish!-------------------\n")
+    print("-----------EMPLOYEE_API_TESTS initiating-----------")
+    do_tests(EMPLOYEE_API_TESTS)
+    print("-----------Group test finish!-------------------\n")
     
-    # print("-----------CUSTOMER_API_TESTS initiating-----------")
-    # do_tests(CUSTOMER_API_TESTS)
-    # print("-----------Group test finish!-------------------\n")
+    print("-----------CUSTOMER_API_TESTS initiating-----------")
+    do_tests(CUSTOMER_API_TESTS)
+    print("-----------Group test finish!-------------------\n")
     
     print("-----------PROMOTION_API_TESTS initiating-----------")
     do_tests(PROMOTION_API_TESTS)
     print("-----------Group test finish!---------------------\n")
 
-    # print("-----------ANIMAL_ACTIVITY_LOG_API_TESTS initiating-----------")
-    # do_tests(ANIMAL_ACTIVITY_LOG_API_TESTS)
-    # print("-----------Group test finish!---------------------\n")
+    print("-----------ANIMAL_ACTIVITY_LOG_API_TESTS initiating-----------")
+    do_tests(ANIMAL_ACTIVITY_LOG_API_TESTS)
+    print("-----------Group test finish!---------------------\n")
     
-    # print("-----------ANIMAL_ACTIVITY_API_TESTS initiating-----------")
-    # do_tests(ANIMAL_ACTIVITY_API_TESTS)
-    # print("-----------Group test finish!---------------------\n")
+    print("-----------ANIMAL_ACTIVITY_API_TESTS initiating-----------")
+    do_tests(ANIMAL_ACTIVITY_API_TESTS)
+    print("-----------Group test finish!---------------------\n")
         
-    # print("-----------FACILITY_LOG_API_TESTS initiating-----------")
-    # do_tests(FACILITY_LOG_API_TESTS)
-    # print("-----------Group test finish!---------------------\n")
+    print("-----------FACILITY_LOG_API_TESTS initiating-----------")
+    do_tests(FACILITY_LOG_API_TESTS)
+    print("-----------Group test finish!---------------------\n")
     
-    # print("-----------ZOO_EVENTS_API_TESTS initiating-----------")
-    # do_tests(ZOO_EVENTS_API_TESTS)
-    # print("-----------Group test finish!---------------------\n")
+    print("-----------ZOO_EVENTS_API_TESTS initiating-----------")
+    do_tests(ZOO_EVENTS_API_TESTS)
+    print("-----------Group test finish!---------------------\n")
     
-    # print("-----------SPECIES_API_TESTS initiating-----------")
-    # do_tests(SPECIES_API_TESTS)
-    # print("-----------Group test finish!---------------------\n")
-
-    
-
-
+    print("-----------SPECIES_API_TESTS initiating-----------")
+    do_tests(SPECIES_API_TESTS)
+    print("-----------Group test finish!---------------------\n")
 
     print("All test cases finished!\nTotal test cases pass : ", total_passes,"/", total_cases, ", Pass percentage ", round(total_passes/total_cases * 100, 2), "%\n")
     if len(all_fails):
         print("Failed test cases: ", ", ".join(all_fails))
-
-
 
 if __name__ == "__main__":
     test_api()

@@ -782,7 +782,6 @@ async function greedyAssign(zooEvent: ZooEvent, zooEvents:ZooEvent[], keepers:Ke
       && !(keeper.zooEvents?.find(keeperze => eventClashed.find(zeclashed => zeclashed.zooEventId == keeperze.zooEventId)));
 
   });
-  // console.log("availableKeeper", availableKeeper);
 
   const sortedKeeper = availableKeeper.map(keeper => {
     // sum opportunity cos per keeper
@@ -809,9 +808,10 @@ async function greedyAssign(zooEvent: ZooEvent, zooEvents:ZooEvent[], keepers:Ke
     }
   ).sort((a,b)=>a.totalCost - b.totalCost);
   
-  // console.log("sortedKeeper", sortedKeeper);
+  if (sortedKeeper.length > 0){
+    await zooEvent.addKeeper(sortedKeeper[0].keeper);
 
-  await zooEvent.addKeeper(sortedKeeper[0].keeper);
+  }
 }
 
 export async function autoAssignKeeperToZooEvent(
@@ -869,8 +869,8 @@ export async function autoAssignKeeperToZooEvent(
     });
 
       for (let zooEvent of zooEvents){
-        while (zooEvent.requiredNumberOfKeeper > (await zooEvent.getKeepers())?.length || 0){
-          await greedyAssign(zooEvent, zooEvents, keepers);
+        for (let i = 0; i < zooEvent.requiredNumberOfKeeper; i++){
+            await greedyAssign(zooEvent, zooEvents, keepers);
         }
       }
 
