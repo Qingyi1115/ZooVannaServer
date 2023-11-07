@@ -1,6 +1,5 @@
-import { Request } from "express";
 import { validationErrorHandler } from "../helpers/errorHandler";
-import { EnrichmentItem } from "../models/enrichmentItem";
+import { EnrichmentItem } from "../models/EnrichmentItem";
 
 export async function createNewEnrichmentItem(
   enrichmentItemName: string,

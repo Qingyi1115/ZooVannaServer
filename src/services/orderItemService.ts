@@ -1,8 +1,7 @@
-import { OrderItem } from "../models/orderItem";
-import { CustomerOrder } from "../models/customerOrder";
 import { conn } from "../db";
-import { Listing } from "../models/listing";
-import { PaymentStatus } from "../models/enumerated";
+import { CustomerOrder } from "../models/CustomerOrder";
+import { PaymentStatus } from "../models/Enumerated";
+import { OrderItem } from "../models/OrderItem";
 const Sequelize = require("sequelize");
 const { Op } = Sequelize;
 

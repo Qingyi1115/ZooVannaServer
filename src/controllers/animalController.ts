@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
-import * as AnimalService from "../services/animal";
 import { handleFileUpload } from "../helpers/multerProcessFile";
-import { findEmployeeByEmail } from "../services/employee";
+import * as AnimalService from "../services/animalService";
+import { findEmployeeByEmail } from "../services/employeeService";
 
 // -- Animal Basic Info
 export async function getAllAnimals(req: Request, res: Response) {

@@ -1,15 +1,15 @@
 import {
-  DataTypes,
-  Model,
-  InferAttributes,
-  InferCreationAttributes,
   BelongsToGetAssociationMixin,
   BelongsToSetAssociationMixin,
   CreationOptional,
+  DataTypes,
+  InferAttributes,
+  InferCreationAttributes,
+  Model,
 } from "Sequelize";
 import { conn } from "../db";
-import { AnimalGrowthStage } from "./enumerated";
-import { Species } from "./species";
+import { AnimalGrowthStage } from "./Enumerated";
+import { Species } from "./Species";
 
 class PhysiologicalReferenceNorms extends Model<
   InferAttributes<PhysiologicalReferenceNorms>,
@@ -103,3 +103,4 @@ PhysiologicalReferenceNorms.init(
 );
 
 export { PhysiologicalReferenceNorms };
+

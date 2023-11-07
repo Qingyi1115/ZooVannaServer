@@ -1,28 +1,27 @@
 import {
+  BelongsToGetAssociationMixin,
+  BelongsToManyAddAssociationMixin,
+  BelongsToManyGetAssociationsMixin,
+  BelongsToManyRemoveAssociationMixin,
+  BelongsToManySetAssociationsMixin,
+  BelongsToSetAssociationMixin,
+  CreationOptional,
   DataTypes,
-  Model,
   InferAttributes,
   InferCreationAttributes,
-  BelongsToGetAssociationMixin,
-  BelongsToSetAssociationMixin,
-  BelongsToManyGetAssociationsMixin,
-  BelongsToManySetAssociationsMixin,
-  BelongsToManyAddAssociationMixin,
-  HasManyRemoveAssociationMixin,
-  CreationOptional,
-  BelongsToManyRemoveAssociationMixin,
+  Model
 } from "Sequelize";
 import { conn } from "../db";
-import { EventTimingType, EventType } from "./enumerated";
-import { Enclosure } from "./enclosure";
-import { PlanningStaff } from "./planningStaff";
-import { Keeper } from "./keeper";
-import { Animal } from "./animal";
-import { InHouse } from "./inHouse";
-import { AnimalClinic } from "./animalClinics";
-import { AnimalActivity } from "./animalActivity";
-import { FeedingPlanSessionDetail } from "./feedingPlanSessionDetail";
-import { Employee } from "./employee";
+import { Animal } from "./Animal";
+import { AnimalActivity } from "./AnimalActivity";
+import { AnimalClinic } from "./AnimalClinics";
+import { Enclosure } from "./Enclosure";
+import { EventTimingType, EventType } from "./Enumerated";
+import { FeedingPlanSessionDetail } from "./FeedingPlanSessionDetail";
+import { InHouse } from "./InHouse";
+import { Keeper } from "./Keeper";
+import { PlanningStaff } from "./PlanningStaff";
+import { Employee } from "./Employee";
 
 class ZooEvent extends Model<
   InferAttributes<ZooEvent>,
@@ -44,7 +43,7 @@ class ZooEvent extends Model<
   // Public
   declare eventEndDateTime: Date | null;
   declare imageUrl: CreationOptional<string>;
-  
+
   declare planningStaff?: PlanningStaff;
   declare keepers?: Keeper[]; // work
   declare enclosure?: Enclosure;
@@ -76,10 +75,10 @@ class ZooEvent extends Model<
 
   declare getAnimalClinic: BelongsToGetAssociationMixin<AnimalClinic>;
   declare setAnimalClinic: BelongsToSetAssociationMixin<AnimalClinic, number>;
-  
+
   declare getAnimalActivity: BelongsToGetAssociationMixin<AnimalActivity>;
   declare setAnimalActivity: BelongsToSetAssociationMixin<AnimalActivity, number>;
-  
+
   declare getFeedingPlanSessionDetail: BelongsToGetAssociationMixin<FeedingPlanSessionDetail>;
   declare setFeedingPlanSessionDetail: BelongsToSetAssociationMixin<FeedingPlanSessionDetail, number>;
 
@@ -88,12 +87,12 @@ class ZooEvent extends Model<
 
 
   public toJSON() {
-      return {
-        ...this.get(),
-        eventNotificationDate:this.eventNotificationDate?.getTime(),
-        eventStartDateTime:this.eventStartDateTime?.getTime(),
-        eventEndDateTime:this.eventEndDateTime?.getTime(),
-      }
+    return {
+      ...this.get(),
+      eventNotificationDate: this.eventNotificationDate?.getTime(),
+      eventStartDateTime: this.eventStartDateTime?.getTime(),
+      eventEndDateTime: this.eventEndDateTime?.getTime(),
+    }
   }
 }
 
@@ -136,14 +135,14 @@ ZooEvent.init(
       values: Object.values(EventType),
       // allowNull: false,
     },
-    imageUrl:{
+    imageUrl: {
       type: DataTypes.STRING,
     },
     requiredNumberOfKeeper: {
       type: DataTypes.INTEGER,
-      allowNull:false
+      allowNull: false
     },
-    
+
   },
   {
     freezeTableName: true,
@@ -156,3 +155,4 @@ ZooEvent.init(
 );
 
 export { ZooEvent };
+

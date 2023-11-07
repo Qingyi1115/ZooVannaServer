@@ -1,30 +1,28 @@
 import {
-  DataTypes,
-  Model,
-  InferAttributes,
-  InferCreationAttributes,
+  BelongsToManyAddAssociationMixin,
   BelongsToManyGetAssociationsMixin,
-  BelongsToSetAssociationMixin,
-  HasManyGetAssociationsMixin,
-  HasManySetAssociationsMixin,
+  BelongsToManyRemoveAssociationMixin,
+  BelongsToManySetAssociationsMixin,
+  CreationOptional,
+  DataTypes,
   HasManyAddAssociationMixin,
+  HasManyGetAssociationsMixin,
+  HasManyRemoveAssociationMixin,
+  HasManySetAssociationsMixin,
   HasOneGetAssociationMixin,
   HasOneSetAssociationMixin,
-  HasManyRemoveAssociationMixin,
-  CreationOptional,
-  BelongsToManyAddAssociationMixin,
-  BelongsToManySetAssociationsMixin,
-  BelongsToManyRemoveAssociationMixin,
+  InferAttributes,
+  InferCreationAttributes,
+  Model
 } from "Sequelize";
 import { conn } from "../db";
-import { TerrainDistribution } from "./terrainDistribution";
-import { Animal } from "./animal";
-import { BarrierType } from "./barrierType";
-import { Plantation } from "./plantation";
-import { EnclosureStatus } from "./enumerated";
-import { Facility } from "./facility";
-import { Keeper } from "./keeper";
-import { ZooEvent } from "./zooEvent";
+import { Animal } from "./Animal";
+import { BarrierType } from "./BarrierType";
+import { EnclosureStatus } from "./Enumerated";
+import { Facility } from "./Facility";
+import { Keeper } from "./Keeper";
+import { Plantation } from "./Plantation";
+import { ZooEvent } from "./ZooEvent";
 
 class Enclosure extends Model<
   InferAttributes<Enclosure>,
@@ -217,3 +215,4 @@ Enclosure.init(
 );
 
 export { Enclosure };
+

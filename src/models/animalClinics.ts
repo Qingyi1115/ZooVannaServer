@@ -1,21 +1,21 @@
 import {
-  DataTypes,
-  Model,
-  InferAttributes,
-  InferCreationAttributes,
   BelongsToGetAssociationMixin,
   BelongsToSetAssociationMixin,
-  HasManySetAssociationsMixin,
-  HasManyGetAssociationsMixin,
+  DataTypes,
   HasManyAddAssociationMixin,
+  HasManyGetAssociationsMixin,
   HasManyRemoveAssociationMixin,
+  HasManySetAssociationsMixin,
+  InferAttributes,
+  InferCreationAttributes,
+  Model,
 } from "Sequelize";
 import { conn } from "../db";
-import { Facility } from "./facility";
-import { Specialization } from "./enumerated";
-import { MedicalSupply } from "./medicalSupply";
-import { Animal } from "./animal";
-import { ZooEvent } from "./zooEvent";
+import { Animal } from "./Animal";
+import { Specialization } from "./Enumerated";
+import { Facility } from "./Facility";
+import { MedicalSupply } from "./MedicalSupply";
+import { ZooEvent } from "./ZooEvent";
 
 class AnimalClinic extends Model<
   InferAttributes<AnimalClinic>,
@@ -70,3 +70,4 @@ AnimalClinic.init(
 );
 
 export { AnimalClinic };
+

@@ -1,10 +1,6 @@
-import { validationErrorHandler } from "../helpers/errorHandler";
-import { hash } from "../helpers/security";
-import { Keeper } from "../models/keeper";
-import { Employee } from "../models/employee";
-import { Enclosure } from "../models/enclosure";
-import { Token } from "../models/token";
-import { CreationOptional, literal } from "Sequelize";
+import { CreationOptional } from "Sequelize";
+import { Employee } from "../models/Employee";
+import { Enclosure } from "../models/Enclosure";
 
 //might need to change implementation
 export async function updateDetails(

@@ -1,48 +1,41 @@
-import { Request } from "express";
 import { Op } from "Sequelize";
-import { conn } from "../db";
 import { validationErrorHandler } from "../helpers/errorHandler";
-import { Animal } from "../models/animal";
-import { Species } from "../models/species";
-import { PhysiologicalReferenceNorms } from "../models/physiologicalReferenceNorms";
 import {
+  compareDates
+} from "../helpers/others";
+import {
+  DAY_IN_MILLISECONDS
+} from "../helpers/staticValues";
+import { Animal } from "../models/Animal";
+import { AnimalActivity } from "../models/AnimalActivity";
+import { AnimalActivityLog } from "../models/AnimalActivityLog";
+import { AnimalFeedingLog } from "../models/AnimalFeedingLog";
+import { AnimalObservationLog } from "../models/AnimalObservationLog";
+import { AnimalWeight } from "../models/AnimalWeight";
+import { EnrichmentItem } from "../models/EnrichmentItem";
+import {
+  AcquisitionMethod,
   ActivityType,
-  AnimalGrowthStage,
   AnimalSex,
   AnimalStatus,
   DayOfWeek,
   EventTimingType,
-  Rating,
-  RecurringPattern,
-  Reaction,
   IdentifierType,
-  AcquisitionMethod,
-} from "../models/enumerated";
-import { AnimalWeight } from "../models/animalWeight";
-import * as SpeciesService from "../services/species";
-import { EnrichmentItem } from "../models/enrichmentItem";
-import * as EnrichmentItemService from "../services/enrichmentItem";
-import { findEmployeeById } from "./employee";
-import { AnimalObservationLog } from "../models/animalObservationLog";
-import { AnimalActivity } from "../models/animalActivity";
-import * as ZooEventService from "./zooEvent";
-import {
-  DAY_IN_MILLISECONDS,
-  MINUTES_IN_MILLISECONDS,
-} from "../helpers/staticValues";
-import {
-  compareDates,
-  getNextDayOfMonth,
-  getNextDayOfWeek,
-} from "../helpers/others";
-import { AnimalActivityLog } from "../models/animalActivityLog";
-import { AnimalFeedingLog } from "../models/animalFeedingLog";
-import { FeedingPlan } from "../models/feedingPlan";
-import { ZooEvent } from "../models/zooEvent";
-import { FeedingPlanSessionDetail } from "../models/feedingPlanSessionDetail";
-import { FeedingItem } from "../models/feedingItem";
-import { SpeciesDietNeed } from "../models/speciesDietNeed";
-import { spec } from "node:test/reporters";
+  Rating,
+  Reaction,
+  RecurringPattern
+} from "../models/Enumerated";
+import { FeedingItem } from "../models/FeedingItem";
+import { FeedingPlan } from "../models/FeedingPlan";
+import { FeedingPlanSessionDetail } from "../models/FeedingPlanSessionDetail";
+import { PhysiologicalReferenceNorms } from "../models/PhysiologicalReferenceNorms";
+import { Species } from "../models/Species";
+import { SpeciesDietNeed } from "../models/SpeciesDietNeed";
+import { ZooEvent } from "../models/ZooEvent";
+import { findEmployeeById } from "./employeeService";
+import * as EnrichmentItemService from "./enrichmentItemService";
+import * as SpeciesService from "./speciesService";
+import * as ZooEventService from "./zooEventService";
 
 //-- Animal Basic Info
 export async function getAnimalIdByCode(animalCode: string) {

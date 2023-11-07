@@ -1,7 +1,6 @@
-import express from "express";
-import { Request, Response } from "express";
+import express, { Request, Response } from "express";
 import jwt from "jsonwebtoken";
-import { findEmployeeByEmail } from "../services/employee";
+import { findEmployeeByEmail } from "../services/employeeService";
 
 export const authMiddleware = (
   req: Request,

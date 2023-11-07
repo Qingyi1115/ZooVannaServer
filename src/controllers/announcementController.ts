@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import * as AnnouncementService from "../services/announcement";
+import * as AnnouncementService from "../services/announcementService";
 import { handleFileUpload } from "../helpers/multerProcessFile";
 import { cpuUsage } from "process";
 

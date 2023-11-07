@@ -1,26 +1,25 @@
 import {
+  BelongsToGetAssociationMixin,
+  BelongsToManyAddAssociationMixin,
+  BelongsToManyGetAssociationsMixin,
+  BelongsToManyRemoveAssociationMixin,
+  BelongsToManySetAssociationsMixin,
+  BelongsToSetAssociationMixin,
+  CreationOptional,
   DataTypes,
-  Model,
+  HasManyAddAssociationMixin,
+  HasManyGetAssociationsMixin,
+  HasManyRemoveAssociationMixin,
+  HasManySetAssociationsMixin,
   InferAttributes,
   InferCreationAttributes,
-  BelongsToGetAssociationMixin,
-  BelongsToSetAssociationMixin,
-  HasManySetAssociationsMixin,
-  HasManyGetAssociationsMixin,
-  HasManyAddAssociationMixin,
-  HasManyRemoveAssociationMixin,
-  CreationOptional,
-  BelongsToManyGetAssociationsMixin,
-  BelongsToManyAddAssociationMixin,
-  BelongsToManySetAssociationsMixin,
-  BelongsToManyRemoveAssociationMixin,
+  Model,
 } from "Sequelize";
 import { conn } from "../db";
-import { Species } from "./species";
-import { ZooEvent } from "./zooEvent";
-import { AnimalFeedingLog } from "./animalFeedingLog";
-import { FeedingPlanSessionDetail } from "./feedingPlanSessionDetail";
-import { Animal } from "./animal";
+import { Animal } from "./Animal";
+import { AnimalFeedingLog } from "./AnimalFeedingLog";
+import { FeedingPlanSessionDetail } from "./FeedingPlanSessionDetail";
+import { Species } from "./Species";
 
 class FeedingPlan extends Model<
   InferAttributes<FeedingPlan>,
@@ -116,3 +115,4 @@ FeedingPlan.init(
 );
 
 export { FeedingPlan };
+

@@ -1,10 +1,8 @@
-import { Request } from "express";
 import { Op, Sequelize } from "Sequelize";
 import { validationErrorHandler } from "../helpers/errorHandler";
-import { CustomerOrder } from "../models/customerOrder";
-import { Customer } from "../models/customer";
-import { OrderItem } from "../models/orderItem";
-import { Listing } from "../models/listing";
+import { CustomerOrder } from "../models/CustomerOrder";
+import { Listing } from "../models/Listing";
+import { OrderItem } from "../models/OrderItem";
 
 export async function getAllCustomerOrders(includes: string[]) {
   try {

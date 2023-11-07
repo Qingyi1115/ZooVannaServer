@@ -1,52 +1,72 @@
 import { Request, Response } from "express";
-import { findEmployeeByEmail } from "../services/employee";
+import { CustomerReportLog } from "models/CustomerReportLog";
+import { handleFileUpload } from "../helpers/multerProcessFile";
 import {
   FacilityLogType,
   GeneralStaffType,
   PlannerType,
-} from "../models/enumerated";
+} from "../models/Enumerated";
+import { Facility } from "../models/Facility";
+import { FacilityLog } from "../models/FacilityLog";
+import { GeneralStaff } from "../models/GeneralStaff";
+import { HubProcessor } from "../models/HubProcessor";
+import { InHouse } from "../models/InHouse";
+import { MaintenanceLog } from "../models/MaintenanceLog";
+import { Sensor } from "../models/Sensor";
+import * as AnimalFeedService from "../services/animalFeedService";
 import {
-  getAllFacility,
-  getAllHubs,
-  getAllSensors,
   addHubProcessorByFacilityId,
   addSensorByHubProcessorId,
   assignMaintenanceStaffToFacilityById,
   assignMaintenanceStaffToSensorById,
   assignOperationStaffToFacilityById,
+  completeRepairTicket,
+  createCustomerReport,
+  createFacilityLog,
+  createFacilityMaintenanceLog,
   createNewFacility,
+  createNewSensorReading,
+  createNewZone,
+  createSensorMaintenanceLog,
   deleteFacilityById,
+  deleteFacilityLogById,
   deleteHubById,
   deleteSensorById,
+  deleteSensorMaintenanceLogById,
+  deleteZoneById,
+  findProcessorByName,
+  getAllCustomerReports,
+  getAllFacility,
   getAllFacilityMaintenanceSuggestions,
+  getAllHubs,
+  getAllMaintenanceStaff,
+  getAllSensorMaintenanceLogs,
   getAllSensorMaintenanceSuggestions,
+  getAllSensors,
+  getAllZones,
   getAuthorizationForCameraById,
+  getEarliestReadingBySensorId,
   getFacilityById,
-  getSensorReadingBySensorId,
+  getFacilityLogById,
+  getFacilityLogs,
+  getFacilityMaintenanceSuggestions,
   getHubProcessorById,
+  getMaintenanceStaffsByFacilityId,
+  getSensor,
+  getSensorMaintenanceLogById,
+  getSensorMaintenanceSuggestions,
+  getSensorReadingBySensorId,
+  getZoneById,
   initializeHubProcessor,
   removeMaintenanceStaffFromFacilityById,
   removeMaintenanceStaffFromSensorById,
   removeOperationStaffFromFacilityById,
+  updateCustomerReport,
   updateFacilityByFacilityId,
+  updateFacilityImage,
+  updateFacilityLog,
   updateHubByHubId,
   updateSensorById,
-  getMaintenanceStaffsByFacilityId,
-  getAllMaintenanceStaff,
-  getAllSensorMaintenanceLogs,
-  getFacilityLogs,
-  createFacilityLog,
-  getSensor,
-  createSensorMaintenanceLog,
-  createFacilityMaintenanceLog,
-  findProcessorByName,
-  createNewSensorReading,
-  getSensorMaintenanceSuggestions,
-  getFacilityMaintenanceSuggestions,
-  getEarliestReadingBySensorId,
-  updateFacilityLog,
-  getFacilityLogById,
-  deleteFacilityLogById,
   updateSensorMaintenanceLog,
   deleteSensorMaintenanceLogById,
   getSensorMaintenanceLogById,
@@ -60,12 +80,6 @@ import {
   getAllCustomerReports,
   updateCustomerReport,
   updateFacilityImage,
-  getCustomerReportLog,
-  getAllNonViewedCustomerReportLogs,
-  getCustomerReportLogById,
-  markCustomerReportLogsViewed,
-  deleteCustomerReportLog,
-  getAllCustomerReportLogsByFacilityId,
 } from "../services/assetFacility";
 import { Facility } from "../models/facility";
 import { Sensor } from "../models/sensor";
@@ -273,7 +287,7 @@ export async function getAllFacilityController(req: Request, res: Response) {
       const result = [];
       for (const f of facilities) result.push(await f.toFullJson())
 
-      return res.status(200).json({ facilities: result});
+      return res.status(200).json({ facilities: result });
     }
 
     let facilities: Facility[] = [];
@@ -286,7 +300,7 @@ export async function getAllFacilityController(req: Request, res: Response) {
     const inHouse = await (
       await employee.getGeneralStaff()
     ).getOperatedFacility();
-    if (inHouse){
+    if (inHouse) {
       facilities.push(await (await inHouse.getFacility()));
 
     }
@@ -294,7 +308,7 @@ export async function getAllFacilityController(req: Request, res: Response) {
     const result = [];
     for (const f of facilities) result.push(await f.toFullJson())
 
-    return res.status(200).json({ facilities: result});
+    return res.status(200).json({ facilities: result });
   } catch (error: any) {
     console.log(error);
     res.status(400).json({ error: error.message });
@@ -573,7 +587,7 @@ export async function updateFacilityImageController(req: Request, res: Response)
 
     const { facilityId } = req.params;
 
-    if (facilityId === undefined || facilityId == "") throw {message:"Missing information!"}
+    if (facilityId === undefined || facilityId == "") throw { message: "Missing information!" }
 
     const imageUrl = await handleFileUpload(
       req,
@@ -898,9 +912,9 @@ export async function createCustomerReportController(
       title,
       remarks,
       viewed,
-     } = req.body;
+    } = req.body;
 
-    if (facilityId == ""  || [
+    if (facilityId == "" || [
       dateTime,
       title,
       remarks,
@@ -937,7 +951,7 @@ export async function getAllCustomerReportsController(
 
     let customerReportLogs: CustomerReportLog[] = await getAllCustomerReports();
 
-    return res.status(200).json({ customerReportLogs: customerReportLogs.map(log=>log.toJSON()) });
+    return res.status(200).json({ customerReportLogs: customerReportLogs.map(log => log.toJSON()) });
   } catch (error: any) {
     console.log(error);
     res.status(400).json({ error: error.message });
@@ -953,22 +967,22 @@ export async function updateCustomerReportController(
     // const employee = await findEmployeeByEmail(email);
 
     const { facilityLogId } = req.params;
-    let { 
+    let {
       customerReportLogId,
       customerReportLogIds,
       viewed,
-     } = req.body;
+    } = req.body;
 
-    if (viewed === undefined || (customerReportLogId === undefined && customerReportLogIds===undefined)) {
+    if (viewed === undefined || (customerReportLogId === undefined && customerReportLogIds === undefined)) {
       return res.status(400).json({ error: "Missing information!" });
     }
-    if (customerReportLogId){
+    if (customerReportLogId) {
       await updateCustomerReport(
         Number(customerReportLogId),
         viewed,
       );
-    }else{
-      for (const customerReportLogId of customerReportLogIds){
+    } else {
+      for (const customerReportLogId of customerReportLogIds) {
         await updateCustomerReport(
           Number(customerReportLogId),
           viewed,
@@ -1102,7 +1116,7 @@ export async function updateFacilityLogController(req: Request, res: Response) {
 
     if (
       (await employee.getPlanningStaff())?.plannerType !=
-        PlannerType.OPERATIONS_MANAGER &&
+      PlannerType.OPERATIONS_MANAGER &&
       !employee.superAdmin &&
       facilityLogFound.staffName != employee.employeeName &&
       !employees.find((emp) => emp.employeeId == employee.employeeId)
@@ -1131,10 +1145,10 @@ export async function deleteFacilityLogController(req: Request, res: Response) {
 
     if (
       (await employee.getPlanningStaff())?.plannerType !=
-        PlannerType.OPERATIONS_MANAGER &&
+      PlannerType.OPERATIONS_MANAGER &&
       !employee.superAdmin &&
       (await getFacilityLogById(Number(facilityLogId)))?.staffName !=
-        employee.employeeName
+      employee.employeeName
     )
       throw { message: "Only creator of the log can delete!" };
 
@@ -1160,7 +1174,7 @@ export async function getCustomerReportLogController(req: Request, res: Response
 
     if (
       (await employee.getPlanningStaff())?.plannerType !=
-        PlannerType.OPERATIONS_MANAGER &&
+      PlannerType.OPERATIONS_MANAGER &&
       !employee.superAdmin
     )
       throw { message: "Access denied!" };
@@ -1185,24 +1199,24 @@ export async function getAllNonViewedCustomerReportLogsController(req: Request, 
 
     if (
       (await employee.getPlanningStaff())?.plannerType !=
-        PlannerType.OPERATIONS_MANAGER &&
+      PlannerType.OPERATIONS_MANAGER &&
       !employee.superAdmin
     )
       throw { message: "Access denied!" };
 
-    if (employee.superAdmin || (await employee.getPlanningStaff()).plannerType == PlannerType.OPERATIONS_MANAGER){
+    if (employee.superAdmin || (await employee.getPlanningStaff()).plannerType == PlannerType.OPERATIONS_MANAGER) {
       const allCustomerReportLog = await getAllNonViewedCustomerReportLogs();
-      return res.status(200).json({ customerReportLogs: allCustomerReportLog.map((log:CustomerReportLog)=>log.toJSON()) });
+      return res.status(200).json({ customerReportLogs: allCustomerReportLog.map((log: CustomerReportLog) => log.toJSON()) });
     }
 
     const allCustomerReportLog = [];
-    for (const inHouse of (await (await employee.getGeneralStaff()).getMaintainedFacilities())){
-      for(const log of (await inHouse.getCustomerReportLogs())){
+    for (const inHouse of (await (await employee.getGeneralStaff()).getMaintainedFacilities())) {
+      for (const log of (await inHouse.getCustomerReportLogs())) {
         allCustomerReportLog.push(log);
-      } 
+      }
     }
 
-    return res.status(200).json({ customerReportLogs: allCustomerReportLog.map((log:CustomerReportLog)=>log.toJSON()) });
+    return res.status(200).json({ customerReportLogs: allCustomerReportLog.map((log: CustomerReportLog) => log.toJSON()) });
 
   } catch (error: any) {
     console.log(error);
@@ -1216,11 +1230,11 @@ export async function getAllCustomerReportLogsByFacilityIdController(req: Reques
     const { email } = (req as any).locals.jwtPayload;
     const employee = await findEmployeeByEmail(email);
 
-    const {facilityId} = req.params;
+    const { facilityId } = req.params;
 
     if (
       (await employee.getPlanningStaff())?.plannerType !=
-        PlannerType.OPERATIONS_MANAGER &&
+      PlannerType.OPERATIONS_MANAGER &&
       !employee.superAdmin
     )
       throw { message: "Access denied!" };
@@ -1232,7 +1246,7 @@ export async function getAllCustomerReportLogsByFacilityIdController(req: Reques
 
     const allCustomerReportLog = await getAllCustomerReportLogsByFacilityId(Number(facilityId));
 
-    return res.status(200).json({ customerReportLogs: allCustomerReportLog.map((log:CustomerReportLog)=>log.toJSON()) });
+    return res.status(200).json({ customerReportLogs: allCustomerReportLog.map((log: CustomerReportLog) => log.toJSON()) });
   } catch (error: any) {
     console.log(error);
     res.status(400).json({ error: error.message });
@@ -1248,7 +1262,7 @@ export async function markCustomerReportLogsViewedController(req: Request, res: 
 
     if (
       (await employee.getPlanningStaff())?.plannerType !=
-        PlannerType.OPERATIONS_MANAGER &&
+      PlannerType.OPERATIONS_MANAGER &&
       !employee.superAdmin
     )
       throw { message: "Access denied!" };
@@ -1260,9 +1274,9 @@ export async function markCustomerReportLogsViewedController(req: Request, res: 
     const customerReportLog = await markCustomerReportLogsViewed(
       customerReportLogIds,
       viewed
-      );
+    );
 
-    return res.status(200).json({ result:"success" });
+    return res.status(200).json({ result: "success" });
   } catch (error: any) {
     console.log(error);
     res.status(400).json({ error: error.message });
@@ -1278,7 +1292,7 @@ export async function deleteCustomerReportLogController(req: Request, res: Respo
 
     if (
       (await employee.getPlanningStaff())?.plannerType !=
-        PlannerType.OPERATIONS_MANAGER &&
+      PlannerType.OPERATIONS_MANAGER &&
       !employee.superAdmin
     )
       throw { message: "Access denied!" };
@@ -1315,7 +1329,7 @@ export async function completeRepairTicketController(
 
     if (
       (await employee.getPlanningStaff())?.plannerType !=
-        PlannerType.OPERATIONS_MANAGER &&
+      PlannerType.OPERATIONS_MANAGER &&
       !employee.superAdmin &&
       !employees.find((emp) => emp.employeeId == employee.employeeId)
     )
@@ -1828,7 +1842,7 @@ export async function updateSensorMaintenanceLogController(
 
     if (
       (await employee.getPlanningStaff()).plannerType !=
-        PlannerType.OPERATIONS_MANAGER &&
+      PlannerType.OPERATIONS_MANAGER &&
       !employee.superAdmin &&
       (await getSensorMaintenanceLogById(Number(sensorMaintenanceLogId)))
         .staffName != employee.employeeName
@@ -1864,7 +1878,7 @@ export async function deleteSensorMaintenanceLogController(
 
     if (
       (await employee.getPlanningStaff()).plannerType !=
-        PlannerType.OPERATIONS_MANAGER &&
+      PlannerType.OPERATIONS_MANAGER &&
       !employee.superAdmin &&
       (await getSensorMaintenanceLogById(Number(sensorMaintenanceLogId)))
         .staffName != employee.employeeName

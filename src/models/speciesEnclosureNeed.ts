@@ -1,16 +1,14 @@
 import {
+  BelongsToGetAssociationMixin,
+  BelongsToSetAssociationMixin,
+  CreationOptional,
   DataTypes,
-  Model,
   InferAttributes,
   InferCreationAttributes,
-  HasManySetAssociationsMixin,
-  HasManyGetAssociationsMixin,
-  BelongsToSetAssociationMixin,
-  BelongsToGetAssociationMixin,
-  CreationOptional,
+  Model
 } from "Sequelize";
 import { conn } from "../db";
-import { Species } from "./species";
+import { Species } from "./Species";
 
 class SpeciesEnclosureNeed extends Model<
   InferAttributes<SpeciesEnclosureNeed>,
@@ -161,3 +159,4 @@ SpeciesEnclosureNeed.init(
 );
 
 export { SpeciesEnclosureNeed };
+

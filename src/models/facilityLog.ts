@@ -1,20 +1,20 @@
 import {
-  DataTypes,
-  Model,
-  InferAttributes,
-  InferCreationAttributes,
   BelongsToGetAssociationMixin,
+  BelongsToManyAddAssociationMixin,
+  BelongsToManyGetAssociationsMixin,
+  BelongsToManyRemoveAssociationMixin,
+  BelongsToManySetAssociationsMixin,
   BelongsToSetAssociationMixin,
   CreationOptional,
-  BelongsToManyGetAssociationsMixin,
-  BelongsToManyAddAssociationMixin,
-  BelongsToManySetAssociationsMixin,
-  BelongsToManyRemoveAssociationMixin,
+  DataTypes,
+  InferAttributes,
+  InferCreationAttributes,
+  Model,
 } from "Sequelize";
 import { conn } from "../db";
-import { InHouse } from "./inHouse";
-import { FacilityLogType } from "./enumerated";
-import { GeneralStaff } from "./generalStaff";
+import { FacilityLogType } from "./Enumerated";
+import { GeneralStaff } from "./GeneralStaff";
+import { InHouse } from "./InHouse";
 
 class FacilityLog extends Model<
   InferAttributes<FacilityLog>,
@@ -98,3 +98,4 @@ FacilityLog.init(
 );
 
 export { FacilityLog };
+

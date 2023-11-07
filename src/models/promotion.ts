@@ -1,17 +1,16 @@
 import {
+  CreationOptional,
   DataTypes,
-  Model,
+  HasManyAddAssociationMixin,
+  HasManyGetAssociationsMixin,
+  HasManyRemoveAssociationMixin,
+  HasManySetAssociationsMixin,
   InferAttributes,
   InferCreationAttributes,
-  CreationOptional,
-  HasManyGetAssociationsMixin,
-  HasManySetAssociationsMixin,
-  HasManyAddAssociationMixin,
-  HasManyRemoveAssociationMixin,
-  Op,
+  Model
 } from "Sequelize";
 import { conn } from "../db";
-import { CustomerOrder } from "./customerOrder";
+import { CustomerOrder } from "./CustomerOrder";
 
 class Promotion extends Model<
   InferAttributes<Promotion>,
@@ -155,3 +154,4 @@ Promotion.init(
 );
 
 export { Promotion };
+

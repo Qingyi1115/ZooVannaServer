@@ -1,19 +1,19 @@
 import {
-  DataTypes,
-  Model,
-  InferAttributes,
-  InferCreationAttributes,
   BelongsToGetAssociationMixin,
   BelongsToSetAssociationMixin,
-  HasManyGetAssociationsMixin,
+  DataTypes,
   HasManyAddAssociationMixin,
-  HasManySetAssociationsMixin,
+  HasManyGetAssociationsMixin,
   HasManyRemoveAssociationMixin,
+  HasManySetAssociationsMixin,
+  InferAttributes,
+  InferCreationAttributes,
+  Model,
 } from "Sequelize";
 import { conn } from "../db";
-import { FacilityType } from "./enumerated";
-import { Facility } from "./facility";
-import { CustomerReportLog } from "./customerReportLog";
+import { CustomerReportLog } from "./CustomerReportLog";
+import { FacilityType } from "./Enumerated";
+import { Facility } from "./Facility";
 
 class ThirdParty extends Model<
   InferAttributes<ThirdParty>,
@@ -88,3 +88,4 @@ ThirdParty.init(
 );
 
 export { ThirdParty };
+

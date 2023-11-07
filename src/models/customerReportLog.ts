@@ -1,15 +1,15 @@
 import {
-    DataTypes,
-    Model,
-    InferAttributes,
-    InferCreationAttributes,
-    BelongsToGetAssociationMixin,
-    BelongsToSetAssociationMixin,
-    CreationOptional,
-  } from "Sequelize";
+  BelongsToGetAssociationMixin,
+  BelongsToSetAssociationMixin,
+  CreationOptional,
+  DataTypes,
+  InferAttributes,
+  InferCreationAttributes,
+  Model,
+} from "Sequelize";
 import { conn } from "../db";
-import { InHouse } from "./inHouse";
-import { ThirdParty } from "./thirdParty";
+import { InHouse } from "./InHouse";
+import { ThirdParty } from "./ThirdParty";
   
 class CustomerReportLog extends Model<
   InferAttributes<CustomerReportLog>,

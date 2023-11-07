@@ -1,17 +1,17 @@
 import {
+  CreationOptional,
   DataTypes,
-  Model,
+  HasManyAddAssociationMixin,
+  HasManyGetAssociationsMixin,
+  HasManyRemoveAssociationMixin,
+  HasManySetAssociationsMixin,
   InferAttributes,
   InferCreationAttributes,
-  CreationOptional,
-  HasManyGetAssociationsMixin,
-  HasManySetAssociationsMixin,
-  HasManyAddAssociationMixin,
-  HasManyRemoveAssociationMixin,
+  Model,
 } from "Sequelize";
 import { conn } from "../db";
-import { ListingStatus, ListingType } from "./enumerated";
-import { OrderItem } from "./orderItem";
+import { ListingStatus, ListingType } from "./Enumerated";
+import { OrderItem } from "./OrderItem";
 
 class Listing extends Model<
   InferAttributes<Listing>,
@@ -89,3 +89,4 @@ Listing.init(
 );
 
 export { Listing };
+

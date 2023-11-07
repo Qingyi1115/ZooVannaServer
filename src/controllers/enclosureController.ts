@@ -1,8 +1,5 @@
 import { Request, Response } from "express";
-import * as SpeciesService from "../services/species";
-import * as AnimalService from "../services/animal";
-import * as EnclosureService from "../services/enclosure";
-import { handleFileUpload } from "../helpers/multerProcessFile";
+import * as EnclosureService from "../services/enclosureService";
 
 export async function getAllEnclosures(req: Request, res: Response) {
   try {

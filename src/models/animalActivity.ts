@@ -1,30 +1,26 @@
 import {
+  CreationOptional,
   DataTypes,
-  Model,
+  HasManyAddAssociationMixin,
+  HasManyGetAssociationsMixin,
+  HasManyRemoveAssociationMixin,
+  HasManySetAssociationsMixin,
   InferAttributes,
   InferCreationAttributes,
-  HasManyGetAssociationsMixin,
-  HasManyAddAssociationMixin,
-  HasManySetAssociationsMixin,
-  HasManyRemoveAssociationMixin,
-  CreationOptional,
-  HasOneGetAssociationMixin,
-  HasOneSetAssociationMixin,
-  BelongsToGetAssociationMixin,
-  BelongsToSetAssociationMixin,
+  Model
 } from "Sequelize";
 import { conn } from "../db";
-import { Animal } from "./animal";
+import { Animal } from "./Animal";
+import { AnimalActivityLog } from "./AnimalActivityLog";
+import { AnimalObservationLog } from "./AnimalObservationLog";
+import { EnrichmentItem } from "./EnrichmentItem";
 import {
   ActivityType,
   DayOfWeek,
   EventTimingType,
   RecurringPattern,
-} from "./enumerated";
-import { EnrichmentItem } from "./enrichmentItem";
-import { ZooEvent } from "./zooEvent";
-import { AnimalActivityLog } from "./animalActivityLog";
-import { AnimalObservationLog } from "./animalObservationLog";
+} from "./Enumerated";
+import { ZooEvent } from "./ZooEvent";
 
 // type Time = {
 //   hours: number;
@@ -170,3 +166,4 @@ AnimalActivity.init(
 );
 
 export { AnimalActivity };
+

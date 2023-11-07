@@ -1,21 +1,13 @@
 import { Request, Response } from "express";
 import {
-    updateDetails,
-    removeEnclosure,
-    updateKeeperType,
-} from "../services/keeper";
+  findEmployeeByEmail,
+  findEmployeeById
+} from "../services/employeeService";
 import {
-    createNewEmployee,
-    employeeLogin,
-    findEmployeeByEmail,
-    getAllEmployees,
-    setAsAccountManager,
-    getEmployee,
-    resetPassword,
-    disableEmployeeAccount,
-    findEmployeeById,
-    setPassword
-  } from "../services/employee";
+  removeEnclosure,
+  updateDetails,
+  updateKeeperType,
+} from "../services/keeperService";
 
 export const addEnclosureToKeeperController = async (
 req: Request, 

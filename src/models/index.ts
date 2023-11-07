@@ -1,88 +1,85 @@
 //  Import models
-import { conn } from "../db";
-import * as SpeciesService from "../services/species";
-import * as AnimalService from "../services/animal";
-import { Animal } from "./animal";
-import { AnimalClinic } from "./animalClinics";
-import { AnimalFeed } from "./animalFeed";
-import { AnimalWeight } from "./animalWeight";
-import { BarrierType } from "./barrierType";
-import { Compatibility } from "./compatibility";
-import { Customer } from "./customer";
-import { CustomerOrder } from "./customerOrder";
-import { CustomerReportLog } from "./customerReportLog";
-import { Employee } from "./employee";
-import { Enclosure } from "./enclosure";
 import { v4 as uuidv4 } from "uuid";
-import { EnrichmentItem } from "./enrichmentItem";
-import * as AssetFacility from "../services/assetFacility";
+import { conn } from "../db";
+import { DAY_IN_MILLISECONDS } from "../helpers/staticValues";
+import * as AnimalService from "../services/animalService";
+import {
+  createCustomerOrderForSeeding
+} from "../services/customerService";
+import * as SpeciesService from "../services/speciesService";
+import { Animal } from "./Animal";
+import { AnimalActivity } from "./AnimalActivity";
+import * as AssetFacility from "../services/assetFacilityService";
+import { AnimalActivityLog } from "./AnimalActivityLog";
+import { AnimalClinic } from "./AnimalClinics";
+import { AnimalFeed } from "./AnimalFeed";
+import { AnimalFeedingLog } from "./AnimalFeedingLog";
+import { AnimalObservationLog } from "./AnimalObservationLog";
+import { AnimalWeight } from "./AnimalWeight";
+import { BarrierType } from "./BarrierType";
+import { Compatibility } from "./Compatibility";
+import { Customer } from "./Customer";
+import { CustomerOrder } from "./CustomerOrder";
+import { CustomerReportLog } from "./CustomerReportLog";
+import { Employee } from "./Employee";
+import { Enclosure } from "./Enclosure";
+import { EnrichmentItem } from "./EnrichmentItem";
 import {
   AcquisitionMethod,
+  ActivityType,
   AnimalFeedCategory,
   AnimalGrowthStage,
-  Country,
+  AnimalSex,
   ConservationStatus,
   Continent,
+  Country,
+  DayOfWeek,
+  EventTimingType,
+  FacilityLogType,
   FacilityType,
   GeneralStaffType,
   GroupSexualDynamic,
   HubStatus,
   IdentifierType,
   KeeperType,
+  ListingStatus,
+  ListingType,
+  OrderStatus,
+  PaymentStatus,
   PlannerType,
   PresentationContainer,
   PresentationLocation,
   PresentationMethod,
-  SensorType,
-  EventType,
-  ListingType,
-  ListingStatus,
-  Specialization,
-  AnimalSex,
-  ActivityType,
-  EventTimingType,
-  DayOfWeek,
   RecurringPattern,
-  FacilityLogType,
-  PaymentStatus,
-  OrderStatus,
-} from "./enumerated";
-import { ZooEvent } from "./zooEvent";
-import { Facility } from "./facility";
-import { FacilityLog } from "./facilityLog";
-import { GeneralStaff } from "./generalStaff";
-import { HubProcessor } from "./hubProcessor";
-import { InHouse } from "./inHouse";
-import { Keeper } from "./keeper";
-import { Listing } from "./listing";
-import { MaintenanceLog } from "./maintenanceLog";
-import { MedicalSupply } from "./medicalSupply";
-import { OrderItem } from "./orderItem";
-import { Payment } from "./payment";
-import { PhysiologicalReferenceNorms } from "./physiologicalReferenceNorms";
-import { PlanningStaff } from "./planningStaff";
-import { Plantation } from "./plantation";
-import { Promotion } from "./promotion";
-import { Sensor } from "./sensor";
-import { SensorReading } from "./sensorReading";
-import { Species } from "./species";
-import { SpeciesDietNeed } from "./speciesDietNeed";
-import { SpeciesEnclosureNeed } from "./speciesEnclosureNeed";
-import { TerrainDistribution } from "./terrainDistribution";
-import { ThirdParty } from "./thirdParty";
-import { AnimalActivity } from "./animalActivity";
-import { AnimalObservationLog } from "./animalObservationLog";
-import { Zone } from "./zone";
-import { AnimalActivityLog } from "./animalActivityLog";
-import { AnimalFeedingLog } from "./animalFeedingLog";
-import { FeedingPlan } from "./feedingPlan";
-import { FeedingPlanSessionDetail } from "./feedingPlanSessionDetail";
-import { FeedingItem } from "./feedingItem";
-import { DAY_IN_MILLISECONDS } from "../helpers/staticValues";
-import {
-  createCustomerOrderForGuest,
-  createCustomerOrderForSeeding,
-} from "../services/customer";
+  SensorType,
+  Specialization
+} from "./Enumerated";
+import { Facility } from "./Facility";
+import { FacilityLog } from "./FacilityLog";
+import { FeedingItem } from "./FeedingItem";
+import { FeedingPlan } from "./FeedingPlan";
+import { FeedingPlanSessionDetail } from "./FeedingPlanSessionDetail";
+import { GeneralStaff } from "./GeneralStaff";
+import { HubProcessor } from "./HubProcessor";
+import { InHouse } from "./InHouse";
+import { Keeper } from "./Keeper";
+import { Listing } from "./Listing";
+import { MaintenanceLog } from "./MaintenanceLog";
+import { MedicalSupply } from "./MedicalSupply";
+import { OrderItem } from "./OrderItem";
+import { Payment } from "./Payment";
+import { PhysiologicalReferenceNorms } from "./PhysiologicalReferenceNorms";
+import { PlanningStaff } from "./PlanningStaff";
+import { Plantation } from "./Plantation";
+import { Promotion } from "./Promotion";
+import { Sensor } from "./Sensor";
+import { SensorReading } from "./SensorReading";
+import { Species } from "./Species";
+import { SpeciesDietNeed } from "./SpeciesDietNeed";
+import { SpeciesEnclosureNeed } from "./SpeciesEnclosureNeed";
+import { ThirdParty } from "./ThirdParty";
+import { Zone } from "./Zone";
+import { ZooEvent } from "./ZooEvent";
 
 function addCascadeOptions(options: object) {
   return { ...options, onDelete: "CASCADE", onUpdate: "CASCADE" };
@@ -1046,8 +1043,8 @@ export const employeeSeed = async () => {
   });
 
   let bookingRef = uuidv4().substring(0, 8).toUpperCase();
-  let date = new Date(new Date().setMonth(new Date().getMonth() ));
-  date.setHours(0,0,0);
+  let date = new Date(new Date().setMonth(new Date().getMonth()));
+  date.setHours(0, 0, 0);
 
   let order1 = await CustomerOrder.create({
     bookingReference: bookingRef,
@@ -1081,7 +1078,7 @@ export const employeeSeed = async () => {
 
   let bookingRef2 = uuidv4().substring(0, 8).toUpperCase();
   let date2 = new Date(new Date().setMonth(new Date().getMonth() - 1));
-  date2.setHours(0,0,0);
+  date2.setHours(0, 0, 0);
 
   let order2 = await CustomerOrder.create({
     bookingReference: bookingRef2,
@@ -1118,7 +1115,7 @@ export const employeeSeed = async () => {
 
   let bookingRef3 = uuidv4().substring(0, 8).toUpperCase();
   let date3 = new Date(new Date().setMonth(new Date().getMonth() - 3));
-  date3.setHours(0,0,0);
+  date3.setHours(0, 0, 0);
 
   let order3 = await CustomerOrder.create({
     bookingReference: bookingRef3,
@@ -1148,7 +1145,7 @@ export const employeeSeed = async () => {
 
   let bookingRef4 = uuidv4().substring(0, 8).toUpperCase();
   let date4 = new Date(new Date().setMonth(new Date().getMonth() - 2));
-  date4.setHours(0,0,0);
+  date4.setHours(0, 0, 0);
 
   let order4 = await CustomerOrder.create({
     bookingReference: bookingRef4,
@@ -1178,7 +1175,7 @@ export const employeeSeed = async () => {
 
   let bookingRef5 = uuidv4().substring(0, 8).toUpperCase();
   let date5 = new Date(new Date().setMonth(new Date().getMonth() + 1));
-  date5.setHours(0,0,0);
+  date5.setHours(0, 0, 0);
 
   let order5 = await CustomerOrder.create({
     bookingReference: bookingRef5,
@@ -3317,7 +3314,7 @@ export const facilityAssetsSeed = async () => {
     "Pressed button and not working",
     false,
   );
-  
+
   let facility4 = {
     facilityName: "Directory",
     isSheltered: true,
@@ -3739,9 +3736,9 @@ export const facilityAssetsSeed = async () => {
   ]) {
     _day = new Date(
       _day.getTime() -
-        days * 1000 * 60 * 60 * 24 +
-        Math.random() * 1000 * 60 * 60 * 24 * 4 -
-        1000 * 60 * 60 * 24 * 2,
+      days * 1000 * 60 * 60 * 24 +
+      Math.random() * 1000 * 60 * 60 * 24 * 4 -
+      1000 * 60 * 60 * 24 * 2,
     );
     sensor.addMaintenanceLog(
       await MaintenanceLog.create({

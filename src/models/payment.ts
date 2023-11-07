@@ -1,15 +1,15 @@
 import {
-  DataTypes,
-  Model,
-  InferAttributes,
-  InferCreationAttributes,
-  CreationOptional,
   BelongsToGetAssociationMixin,
   BelongsToSetAssociationMixin,
+  CreationOptional,
+  DataTypes,
+  InferAttributes,
+  InferCreationAttributes,
+  Model,
 } from "Sequelize";
 import { conn } from "../db";
-import { PaymentStatus, PaymentType } from "./enumerated";
-import { CustomerOrder } from "./customerOrder";
+import { CustomerOrder } from "./CustomerOrder";
+import { PaymentType } from "./Enumerated";
 
 class Payment extends Model<
   InferAttributes<Payment>,
@@ -75,3 +75,4 @@ Payment.init(
 );
 
 export { Payment };
+

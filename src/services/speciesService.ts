@@ -1,12 +1,11 @@
-import { Request } from "express";
 import { Op } from "Sequelize";
 import { validationErrorHandler } from "../helpers/errorHandler";
-import { Species } from "../models/species";
-import { SpeciesEnclosureNeed } from "../models/speciesEnclosureNeed";
-import { PhysiologicalReferenceNorms } from "../models/physiologicalReferenceNorms";
-import { AnimalGrowthStage } from "../models/enumerated";
-import { SpeciesDietNeed } from "../models/speciesDietNeed";
-import { Compatibility } from "../models/compatibility";
+import { Compatibility } from "../models/Compatibility";
+import { AnimalGrowthStage } from "../models/Enumerated";
+import { PhysiologicalReferenceNorms } from "../models/PhysiologicalReferenceNorms";
+import { Species } from "../models/Species";
+import { SpeciesDietNeed } from "../models/SpeciesDietNeed";
+import { SpeciesEnclosureNeed } from "../models/SpeciesEnclosureNeed";
 
 export async function getAllSpecies(includes: string[]) {
   try {

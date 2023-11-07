@@ -1,21 +1,16 @@
 import {
-  DataTypes,
-  Model,
-  InferAttributes,
-  InferCreationAttributes,
   BelongsToGetAssociationMixin,
   BelongsToSetAssociationMixin,
-  HasManySetAssociationsMixin,
-  HasManyGetAssociationsMixin,
-  HasManyAddAssociationMixin,
-  HasManyRemoveAssociationMixin,
   CreationOptional,
+  DataTypes,
+  InferAttributes,
+  InferCreationAttributes,
+  Model
 } from "Sequelize";
 import { conn } from "../db";
-import { AnimalFeedCategory, FoodUnit } from "./enumerated";
-import { FeedingPlan } from "./feedingPlan";
-import { Animal } from "./animal";
-import { FeedingPlanSessionDetail } from "./feedingPlanSessionDetail";
+import { Animal } from "./Animal";
+import { AnimalFeedCategory, FoodUnit } from "./Enumerated";
+import { FeedingPlanSessionDetail } from "./FeedingPlanSessionDetail";
 
 class FeedingItem extends Model<
   InferAttributes<FeedingItem>,
@@ -78,3 +73,4 @@ FeedingItem.init(
 );
 
 export { FeedingItem };
+

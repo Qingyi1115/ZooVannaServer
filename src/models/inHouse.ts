@@ -1,28 +1,28 @@
 import {
-  DataTypes,
-  Model,
-  InferAttributes,
-  InferCreationAttributes,
   BelongsToGetAssociationMixin,
+  BelongsToManyAddAssociationMixin,
+  BelongsToManyGetAssociationsMixin,
+  BelongsToManyRemoveAssociationMixin,
+  BelongsToManySetAssociationsMixin,
   BelongsToSetAssociationMixin,
+  DataTypes,
+  HasManyAddAssociationMixin,
+  HasManyGetAssociationsMixin,
+  HasManyRemoveAssociationMixin,
+  HasManySetAssociationsMixin,
   HasOneGetAssociationMixin,
   HasOneSetAssociationMixin,
-  HasManyGetAssociationsMixin,
-  HasManySetAssociationsMixin,
-  HasManyAddAssociationMixin,
-  HasManyRemoveAssociationMixin,
-  BelongsToManyGetAssociationsMixin,
-  BelongsToManyAddAssociationMixin,
-  BelongsToManySetAssociationsMixin,
-  BelongsToManyRemoveAssociationMixin,
+  InferAttributes,
+  InferCreationAttributes,
+  Model,
 } from "Sequelize";
 import { conn } from "../db";
-import { Facility } from "./facility";
-import { FacilityType } from "./enumerated";
-import { GeneralStaff } from "./generalStaff";
-import { FacilityLog } from "./facilityLog";
-import { CustomerReportLog } from "./customerReportLog";
-import { ZooEvent } from "./zooEvent";
+import { CustomerReportLog } from "./CustomerReportLog";
+import { FacilityType } from "./Enumerated";
+import { Facility } from "./Facility";
+import { FacilityLog } from "./FacilityLog";
+import { GeneralStaff } from "./GeneralStaff";
+import { ZooEvent } from "./ZooEvent";
 
 class InHouse extends Model<
   InferAttributes<InHouse>,
@@ -134,3 +134,4 @@ InHouse.init(
 );
 
 export { InHouse };
+

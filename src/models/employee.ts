@@ -1,23 +1,23 @@
 import {
-  DataTypes,
-  Model,
   CreationOptional,
-  InferAttributes,
-  InferCreationAttributes,
+  DataTypes,
+  HasManyAddAssociationMixin,
+  HasManyGetAssociationsMixin,
+  HasManyRemoveAssociationMixin,
+  HasManySetAssociationsMixin,
   HasOneGetAssociationMixin,
   HasOneSetAssociationMixin,
-  HasManyGetAssociationsMixin,
-  HasManyAddAssociationMixin,
-  HasManySetAssociationsMixin,
-  HasManyRemoveAssociationMixin,
+  InferAttributes,
+  InferCreationAttributes,
+  Model,
 } from "Sequelize";
 import { conn } from "../db";
-import { Keeper } from "./keeper";
-import { PlanningStaff } from "./planningStaff";
-import { GeneralStaff } from "./generalStaff";
 import { hash } from "../helpers/security";
-import { AnimalActivity } from "./animalActivity";
-import { ZooEvent } from "./zooEvent";
+import { AnimalActivity } from "./AnimalActivity";
+import { GeneralStaff } from "./GeneralStaff";
+import { Keeper } from "./Keeper";
+import { PlanningStaff } from "./PlanningStaff";
+import { ZooEvent } from "./ZooEvent";
 
 function uppercaseFirst(str: string) {
   return `${str[0].toUpperCase()}${str.substr(1)}`;
@@ -76,11 +76,11 @@ class Employee extends Model<
   declare getZooEvents: HasManyGetAssociationsMixin<ZooEvent>;
   declare addZooEvent: HasManyAddAssociationMixin<ZooEvent, number>;
   declare setZooEvents: HasManySetAssociationsMixin<
-  ZooEvent,
+    ZooEvent,
     number
   >;
   declare removeZooEvent: HasManyRemoveAssociationMixin<
-  ZooEvent,
+    ZooEvent,
     number
   >;
 
@@ -237,3 +237,4 @@ Employee.init(
 );
 
 export { Employee };
+

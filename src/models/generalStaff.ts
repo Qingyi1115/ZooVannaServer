@@ -1,25 +1,25 @@
 import {
+  BelongsToGetAssociationMixin,
+  BelongsToManyAddAssociationMixin,
+  BelongsToManyGetAssociationsMixin,
+  BelongsToManyRemoveAssociationMixin,
+  BelongsToManySetAssociationsMixin,
+  BelongsToSetAssociationMixin,
   DataTypes,
-  Model,
+  HasManyAddAssociationMixin,
+  HasManyGetAssociationsMixin,
+  HasManyRemoveAssociationMixin,
+  HasManySetAssociationsMixin,
   InferAttributes,
   InferCreationAttributes,
-  BelongsToGetAssociationMixin,
-  BelongsToSetAssociationMixin,
-  HasManyGetAssociationsMixin,
-  HasManyAddAssociationMixin,
-  HasManySetAssociationsMixin,
-  BelongsToManyAddAssociationMixin,
-  BelongsToManyRemoveAssociationMixin,
-  HasManyRemoveAssociationMixin,
-  BelongsToManyGetAssociationsMixin,
-  BelongsToManySetAssociationsMixin,
+  Model,
 } from "Sequelize";
 import { conn } from "../db";
-import { Employee } from "./employee";
-import { GeneralStaffType } from "./enumerated";
-import { InHouse } from "./inHouse";
-import { Sensor } from "./sensor";
-import { FacilityLog } from "./facilityLog";
+import { Employee } from "./Employee";
+import { GeneralStaffType } from "./Enumerated";
+import { FacilityLog } from "./FacilityLog";
+import { InHouse } from "./InHouse";
+import { Sensor } from "./Sensor";
 
 class GeneralStaff extends Model<
   InferAttributes<GeneralStaff>,
@@ -115,3 +115,4 @@ GeneralStaff.init(
 );
 
 export { GeneralStaff };
+

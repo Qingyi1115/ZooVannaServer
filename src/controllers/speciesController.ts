@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
-import * as SpeciesService from "../services/species";
 import { handleFileUpload } from "../helpers/multerProcessFile";
+import * as SpeciesService from "../services/speciesService";
 
 export async function getAllSpecies(req: Request, res: Response) {
   const { includes = "" } = req.body;

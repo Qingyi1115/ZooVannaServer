@@ -1,21 +1,20 @@
 import {
-  DataTypes,
-  Model,
-  InferAttributes,
-  InferCreationAttributes,
-  BelongsToSetAssociationMixin,
   BelongsToGetAssociationMixin,
-  CreationOptional,
   BelongsToManyAddAssociationMixin,
   BelongsToManyGetAssociationsMixin,
-  BelongsToManySetAssociationsMixin,
   BelongsToManyRemoveAssociationMixin,
+  BelongsToManySetAssociationsMixin,
+  BelongsToSetAssociationMixin,
+  CreationOptional,
+  DataTypes,
+  InferAttributes,
+  InferCreationAttributes,
+  Model,
 } from "Sequelize";
 import { conn } from "../db";
-import { Animal } from "./animal";
-import { ActivityType, Rating, Reaction } from "./enumerated";
-import { Keeper } from "./keeper";
-import { FeedingPlan } from "./feedingPlan";
+import { Animal } from "./Animal";
+import { FeedingPlan } from "./FeedingPlan";
+import { Keeper } from "./Keeper";
 
 class AnimalFeedingLog extends Model<
   InferAttributes<AnimalFeedingLog>,
@@ -93,3 +92,4 @@ AnimalFeedingLog.init(
 );
 
 export { AnimalFeedingLog };
+

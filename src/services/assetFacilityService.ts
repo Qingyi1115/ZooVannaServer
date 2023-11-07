@@ -1,26 +1,26 @@
+import { Op } from "Sequelize";
+import { validationErrorHandler } from "../helpers/errorHandler";
+import { predictCycleLength, predictNextDate } from "../helpers/predictors";
+import { hash } from "../helpers/security";
+import { CustomerReportLog } from "../models/CustomerReportLog";
+import { Employee } from "../models/Employee";
 import {
   FacilityLogType,
   GeneralStaffType,
   HubStatus,
   PlannerType,
   SensorType,
-} from "../models/enumerated";
-import { validationErrorHandler } from "../helpers/errorHandler";
-import { Facility } from "../models/facility";
-import { Sensor } from "../models/sensor";
-import { HubProcessor } from "../models/hubProcessor";
-import { hash } from "../helpers/security";
-import { findEmployeeById, getAllEmployees } from "./employee";
-import { GeneralStaff } from "../models/generalStaff";
-import { InHouse } from "../models/inHouse";
-import { FacilityLog } from "../models/facilityLog";
-import { predictCycleLength, predictNextDate } from "../helpers/predictors";
-import { MaintenanceLog } from "../models/maintenanceLog";
-import { Employee } from "../models/employee";
-import { SensorReading } from "../models/sensorReading";
-import { Op } from "Sequelize";
-import { Zone } from "../models/zone";
-import { CustomerReportLog } from "../models/customerReportLog";
+} from "../models/Enumerated";
+import { Facility } from "../models/Facility";
+import { FacilityLog } from "../models/FacilityLog";
+import { GeneralStaff } from "../models/GeneralStaff";
+import { HubProcessor } from "../models/HubProcessor";
+import { InHouse } from "../models/InHouse";
+import { MaintenanceLog } from "../models/MaintenanceLog";
+import { Sensor } from "../models/Sensor";
+import { SensorReading } from "../models/SensorReading";
+import { Zone } from "../models/Zone";
+import { findEmployeeById, getAllEmployees } from "./employeeService";
 
 export async function createNewZone(zoneName: string) {
   try {

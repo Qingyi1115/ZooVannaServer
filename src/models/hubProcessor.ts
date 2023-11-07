@@ -1,22 +1,22 @@
 import {
-    DataTypes,
-    Model,
-    InferAttributes,
-    InferCreationAttributes,
-    BelongsToGetAssociationMixin,
-    BelongsToSetAssociationMixin,
-    CreationOptional,
-    HasManyGetAssociationsMixin,
-    HasManySetAssociationsMixin,
-    HasManyAddAssociationMixin,
-    HasManyRemoveAssociationMixin,
-  } from "Sequelize";
+  BelongsToGetAssociationMixin,
+  BelongsToSetAssociationMixin,
+  CreationOptional,
+  DataTypes,
+  HasManyAddAssociationMixin,
+  HasManyGetAssociationsMixin,
+  HasManyRemoveAssociationMixin,
+  HasManySetAssociationsMixin,
+  InferAttributes,
+  InferCreationAttributes,
+  Model,
+} from "Sequelize";
 import { conn } from "../db";
-import { Facility } from "./facility";
-import { Sensor } from "./sensor";
-import { HubStatus } from "./enumerated";
-import { hash } from "../helpers/security";
 import { compareDates } from "../helpers/others";
+import { hash } from "../helpers/security";
+import { HubStatus } from "./Enumerated";
+import { Facility } from "./Facility";
+import { Sensor } from "./Sensor";
 
 class HubProcessor extends Model<
   InferAttributes<HubProcessor>,
@@ -121,3 +121,4 @@ HubProcessor.addHook("afterFind", (findResult:HubProcessor[]) => {
 });
 
 export { HubProcessor };
+

@@ -11,20 +11,20 @@ import cors from "cors";
 import * as dotenv from "dotenv";
 dotenv.config({ path: __dirname + "/.env" }); // For my laptop
 
-import employeeRoutes from "./routes/employee";
-import customerRoutes from "./routes/customer";
-import assetFacilityRoutes from "./routes/assetFacility";
-import speciesRoutes from "./routes/species";
-import animalRoutes from "./routes/animal";
-import promotionRoutes from "./routes/promotion";
-import announcementRoutes from "./routes/announcement";
-import customerOrderRoutes from "./routes/customerOrder";
-import listingRoutes from "./routes/listing";
-import listingCustomerRoutes from "./routes/listingCustomer";
-import zooEventRoutes from "./routes/zooEvent";
-import orderItemRoutes from "./routes/orderItem";
-import enclosureRoutes from "./routes/enclosure";
-import { seedDatabase, createDatabase } from "./models/index";
+import employeeRoutes from "./routes/employeeRoute";
+import customerRoutes from "./routes/customerRoute";
+import assetFacilityRoutes from "./routes/assetFacilityRoute";
+import speciesRoutes from "./routes/speciesRoute";
+import animalRoutes from "./routes/animalRoute";
+import promotionRoutes from "./routes/promotionRoute";
+import announcementRoutes from "./routes/announcementRoute";
+import customerOrderRoutes from "./routes/customerOrderRoute";
+import listingRoutes from "./routes/listingRoute";
+import listingCustomerRoutes from "./routes/listingCustomerRoute";
+import zooEventRoutes from "./routes/zooEventRoute";
+import orderItemRoutes from "./routes/orderItemRoute";
+import enclosureRoutes from "./routes/enclosureRoute";
+import { seedDatabase, createDatabase } from "./models/Index";
 import { conn } from "./db";
 
 const truthy = ["TRUE", "true", "True", "1"];
