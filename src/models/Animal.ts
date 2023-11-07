@@ -73,7 +73,7 @@ class Animal extends Model<
   declare animalActivities?: AnimalActivity[];
   declare animalObservationLogs?: AnimalObservationLog[];
   declare animalActivityLogs?: AnimalActivityLog[];
-  declare animalFeedingLog?: AnimalFeedingLog[];
+  declare animalFeedingLogs?: AnimalFeedingLog[];
   declare feedingPlans?: FeedingPlan[];
   declare feedingItems?: FeedingItem[];
   declare publicEvents?: PublicEvent[];
@@ -179,7 +179,6 @@ class Animal extends Model<
   declare addPublicEvent: HasManyAddAssociationMixin<PublicEvent, number>;
   declare setPublicEvents: HasManySetAssociationsMixin<PublicEvent, number>;
   declare removePublicEvent: HasManyRemoveAssociationMixin<PublicEvent, number>;
-
 
   // declare age?: number;
 
@@ -404,4 +403,3 @@ Animal.init(
 // });
 
 export { Animal };
-
