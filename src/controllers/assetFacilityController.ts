@@ -14,90 +14,14 @@ import { InHouse } from "../models/InHouse";
 import { MaintenanceLog } from "../models/MaintenanceLog";
 import { Sensor } from "../models/Sensor";
 import * as AnimalFeedService from "../services/animalFeedService";
-import {
-  addHubProcessorByFacilityId,
-  addSensorByHubProcessorId,
-  assignMaintenanceStaffToFacilityById,
-  assignMaintenanceStaffToSensorById,
-  assignOperationStaffToFacilityById,
-  completeRepairTicket,
-  createCustomerReport,
-  createFacilityLog,
-  createFacilityMaintenanceLog,
-  createNewFacility,
-  createNewSensorReading,
-  createNewZone,
-  createSensorMaintenanceLog,
-  deleteFacilityById,
-  deleteFacilityLogById,
-  deleteHubById,
-  deleteSensorById,
-  deleteSensorMaintenanceLogById,
-  deleteZoneById,
-  findProcessorByName,
-  getAllCustomerReports,
-  getAllFacility,
-  getAllFacilityMaintenanceSuggestions,
-  getAllHubs,
-  getAllMaintenanceStaff,
-  getAllSensorMaintenanceLogs,
-  getAllSensorMaintenanceSuggestions,
-  getAllSensors,
-  getAllZones,
-  getAuthorizationForCameraById,
-  getEarliestReadingBySensorId,
-  getFacilityById,
-  getFacilityLogById,
-  getFacilityLogs,
-  getFacilityMaintenanceSuggestions,
-  getHubProcessorById,
-  getMaintenanceStaffsByFacilityId,
-  getSensor,
-  getSensorMaintenanceLogById,
-  getSensorMaintenanceSuggestions,
-  getSensorReadingBySensorId,
-  getZoneById,
-  initializeHubProcessor,
-  removeMaintenanceStaffFromFacilityById,
-  removeMaintenanceStaffFromSensorById,
-  removeOperationStaffFromFacilityById,
-  updateCustomerReport,
-  updateFacilityByFacilityId,
-  updateFacilityImage,
-  updateFacilityLog,
-  updateHubByHubId,
-  updateSensorById,
-  updateSensorMaintenanceLog,
-  deleteSensorMaintenanceLogById,
-  getSensorMaintenanceLogById,
-  createNewZone,
-  getAllZones,
-  getZoneById,
-  updateZone,
-  deleteZoneById,
-  completeRepairTicket,
-  createCustomerReport,
-  getAllCustomerReports,
-  updateCustomerReport,
-  updateFacilityImage,
-} from "../services/assetFacility";
-import { Facility } from "../models/facility";
-import { Sensor } from "../models/sensor";
-import { HubProcessor } from "../models/hubProcessor";
-import { handleFileUpload } from "../helpers/multerProcessFile";
-import * as AnimalFeedService from "../services/animalFeed";
-import * as EnrichmentItemService from "../services/enrichmentItem";
-import { compareDates } from "../helpers/others";
-import { InHouse } from "../models/inHouse";
-import { FacilityLog } from "../models/facilityLog";
-import { GeneralStaff } from "../models/generalStaff";
-import { MaintenanceLog } from "../models/maintenanceLog";
-import { CustomerReportLog } from "models/customerReportLog";
+import * as AssetFacilityService from "../services/assetFacilityService";
+import * as EnrichmentItemService from "../services/enrichmentItemService";
+import * as EmployeeService from "../services/employeeService";
 
 export async function createNewZoneController(req: Request, res: Response) {
   try {
     const { email } = (req as any).locals.jwtPayload;
-    const employee = await findEmployeeByEmail(email);
+    const employee = await EmployeeService.findEmployeeByEmail(email);
 
     const { zoneName } = req.body;
 
@@ -108,7 +32,7 @@ export async function createNewZoneController(req: Request, res: Response) {
       return res.status(400).json({ error: "Missing information!" });
     }
 
-    let zone = await createNewZone(zoneName);
+    let zone = await AssetFacilityService.createNewZone(zoneName);
 
     return res.status(200).json({ zone: zone.toJSON() });
   } catch (error: any) {
@@ -118,7 +42,7 @@ export async function createNewZoneController(req: Request, res: Response) {
 
 export async function getAllZoneController(req: Request, res: Response) {
   try {
-    const allZones = await getAllZones();
+    const allZones = await AssetFacilityService.getAllZones();
     return res
       .status(200)
       .json({ zones: allZones.map((zone) => zone.toJSON()) });
@@ -137,7 +61,7 @@ export async function getZoneByIdController(req: Request, res: Response) {
   }
 
   try {
-    const zone = await getZoneById(Number(zoneId));
+    const zone = await AssetFacilityService.getZoneById(Number(zoneId));
 
     return res.status(200).json({ zone: zone.toJSON() });
   } catch (error: any) {
@@ -159,7 +83,7 @@ export async function updateZoneController(req: Request, res: Response) {
   }
 
   try {
-    const zone = await updateZone(Number(zoneId), zoneName);
+    const zone = await AssetFacilityService.updateZone(Number(zoneId), zoneName);
 
     return res.status(200).json({ zone: zone.toJSON() });
   } catch (error: any) {
@@ -170,7 +94,7 @@ export async function updateZoneController(req: Request, res: Response) {
 
 export async function deleteZoneController(req: Request, res: Response) {
   const { email } = (req as any).locals.jwtPayload;
-  const employee = await findEmployeeByEmail(email);
+  const employee = await EmployeeService.findEmployeeByEmail(email);
 
   const { zoneId } = req.params;
 
@@ -182,7 +106,7 @@ export async function deleteZoneController(req: Request, res: Response) {
   }
 
   try {
-    await deleteZoneById(Number(zoneId));
+    await AssetFacilityService.deleteZoneById(Number(zoneId));
     return res.status(200).json({ result: "success" });
   } catch (error: any) {
     res.status(400).json({ error: error.message });
@@ -192,7 +116,7 @@ export async function deleteZoneController(req: Request, res: Response) {
 export async function createFacilityController(req: Request, res: Response) {
   try {
     const { email } = (req as any).locals.jwtPayload;
-    const employee = await findEmployeeByEmail(email);
+    const employee = await EmployeeService.findEmployeeByEmail(email);
 
     if (
       !employee.superAdmin &&
@@ -233,7 +157,7 @@ export async function createFacilityController(req: Request, res: Response) {
       return res.status(400).json({ error: "Missing information!" });
     }
 
-    let facility = await createNewFacility(
+    let facility = await AssetFacilityService.createNewFacility(
       facilityName,
       undefined,
       undefined,
@@ -253,7 +177,7 @@ export async function createFacilityController(req: Request, res: Response) {
 export async function getAllFacilityController(req: Request, res: Response) {
   try {
     const { email } = (req as any).locals.jwtPayload;
-    const employee = await findEmployeeByEmail(email);
+    const employee = await EmployeeService.findEmployeeByEmail(email);
 
     // if (
     //   !(
@@ -277,7 +201,7 @@ export async function getAllFacilityController(req: Request, res: Response) {
       PlannerType.OPERATIONS_MANAGER
     ) {
       let facilities: Facility[] = [];
-      for (const facility of await getAllFacility(
+      for (const facility of await AssetFacilityService.getAllFacility(
         _includes,
         includes.includes("facilityDetail"),
       )) {
@@ -326,7 +250,7 @@ export async function getAllFacilityCustomer(req: Request, res: Response) {
     }
 
     let facilities: Facility[] = [];
-    for (const facility of await getAllFacility(
+    for (const facility of await AssetFacilityService.getAllFacility(
       _includes,
       includes.includes("facilityDetail"),
     )) {
@@ -345,7 +269,7 @@ export async function getMyOperationFacilityController(
 ) {
   try {
     const { email } = (req as any).locals.jwtPayload;
-    const employee = await findEmployeeByEmail(email);
+    const employee = await EmployeeService.findEmployeeByEmail(email);
 
     if (
       !employee.superAdmin &&
@@ -375,7 +299,7 @@ export async function getMyMaintainedFacilityController(
 ) {
   try {
     const { email } = (req as any).locals.jwtPayload;
-    const employee = await findEmployeeByEmail(email);
+    const employee = await EmployeeService.findEmployeeByEmail(email);
 
     if (
       !employee.superAdmin &&
@@ -405,7 +329,7 @@ export async function getMyMaintainedFacilityController(
 export async function getFacilityController(req: Request, res: Response) {
   try {
     const { email } = (req as any).locals.jwtPayload;
-    const employee = await findEmployeeByEmail(email);
+    const employee = await EmployeeService.findEmployeeByEmail(email);
 
     // if (
     //   !(
@@ -426,7 +350,7 @@ export async function getFacilityController(req: Request, res: Response) {
       if (includes.includes(role)) _includes.push(role);
     }
 
-    let facility: Facility = await getFacilityById(
+    let facility: Facility = await AssetFacilityService.getFacilityById(
       Number(facilityId),
       _includes,
     );
@@ -443,7 +367,7 @@ export async function getFacilityMaintenanceSuggestionsController(
 ) {
   try {
     const { email } = (req as any).locals.jwtPayload;
-    const employee = await findEmployeeByEmail(email);
+    const employee = await EmployeeService.findEmployeeByEmail(email);
 
     if (
       !employee.superAdmin &&
@@ -456,7 +380,7 @@ export async function getFacilityMaintenanceSuggestionsController(
       return res
         .status(403)
         .json({ error: "Access Denied! Operation managers only!" });
-    let facilities = await getAllFacilityMaintenanceSuggestions(employee);
+    let facilities = await AssetFacilityService.getAllFacilityMaintenanceSuggestions(employee);
     return res
       .status(200)
       .json({ facilities: facilities?.map((facility) => facility.toJSON()) });
@@ -472,7 +396,7 @@ export async function getFacilityMaintenancePredictionValuesController(
 ) {
   try {
     const { email } = (req as any).locals.jwtPayload;
-    const employee = await findEmployeeByEmail(email);
+    const employee = await EmployeeService.findEmployeeByEmail(email);
 
     if (
       !employee.superAdmin &&
@@ -490,7 +414,7 @@ export async function getFacilityMaintenancePredictionValuesController(
     let values = undefined;
     for (let i = 4; i > 0; i--) {
       try {
-        values = await getFacilityMaintenanceSuggestions(Number(facilityId), i);
+        values = await AssetFacilityService.getFacilityMaintenanceSuggestions(Number(facilityId), i);
         break;
       } catch (err: any) {
         console.log(err);
@@ -506,7 +430,7 @@ export async function getFacilityMaintenancePredictionValuesController(
 export async function updateFacilityController(req: Request, res: Response) {
   try {
     const { email } = (req as any).locals.jwtPayload;
-    const employee = await findEmployeeByEmail(email);
+    const employee = await EmployeeService.findEmployeeByEmail(email);
 
     if (
       !employee.superAdmin &&
@@ -556,7 +480,7 @@ export async function updateFacilityController(req: Request, res: Response) {
         facilityAttribute[field] = v;
       }
     }
-    const newFacility = await updateFacilityByFacilityId(
+    const newFacility = await AssetFacilityService.updateFacilityByFacilityId(
       Number(facilityId),
       facilityAttribute,
       facilityDetailJson,
@@ -571,7 +495,7 @@ export async function updateFacilityController(req: Request, res: Response) {
 export async function updateFacilityImageController(req: Request, res: Response) {
   try {
     const { email } = (req as any).locals.jwtPayload;
-    const employee = await findEmployeeByEmail(email);
+    const employee = await EmployeeService.findEmployeeByEmail(email);
 
     if (
       !employee.superAdmin &&
@@ -594,7 +518,7 @@ export async function updateFacilityImageController(req: Request, res: Response)
       process.env.IMG_URL_ROOT! + "facility", //"D:/capstoneUploads/animalFeed",
     );
 
-    await updateFacilityImage(
+    await AssetFacilityService.updateFacilityImage(
       Number(facilityId),
       imageUrl,
     );
@@ -611,7 +535,7 @@ export async function getAssignedMaintenanceStaffOfFacilityController(
 ) {
   try {
     const { email } = (req as any).locals.jwtPayload;
-    const employee = await findEmployeeByEmail(email);
+    const employee = await EmployeeService.findEmployeeByEmail(email);
 
     if (
       !employee.superAdmin &&
@@ -630,7 +554,7 @@ export async function getAssignedMaintenanceStaffOfFacilityController(
       return res.status(400).json({ error: "Missing information!" });
     }
 
-    let staffs = await getMaintenanceStaffsByFacilityId(Number(facilityId));
+    let staffs = await AssetFacilityService.getMaintenanceStaffsByFacilityId(Number(facilityId));
     console.log("staffs", staffs);
     return res
       .status(200)
@@ -647,7 +571,7 @@ export async function getAllMaintenanceStaffController(
 ) {
   try {
     const { email } = (req as any).locals.jwtPayload;
-    const employee = await findEmployeeByEmail(email);
+    const employee = await EmployeeService.findEmployeeByEmail(email);
 
     if (
       !employee.superAdmin &&
@@ -667,7 +591,7 @@ export async function getAllMaintenanceStaffController(
       if (includes.includes(role)) _includes.push(role);
     }
 
-    let staffs = await getAllMaintenanceStaff(_includes);
+    let staffs = await AssetFacilityService.getAllMaintenanceStaff(_includes);
 
     return res
       .status(200)
@@ -684,7 +608,7 @@ export async function assignMaintenanceStaffToFacilityController(
 ) {
   try {
     const { email } = (req as any).locals.jwtPayload;
-    const employee = await findEmployeeByEmail(email);
+    const employee = await EmployeeService.findEmployeeByEmail(email);
 
     if (
       !employee.superAdmin &&
@@ -704,7 +628,7 @@ export async function assignMaintenanceStaffToFacilityController(
       return res.status(400).json({ error: "Missing information!" });
     }
 
-    let inHouse: InHouse = await assignMaintenanceStaffToFacilityById(
+    let inHouse: InHouse = await AssetFacilityService.assignMaintenanceStaffToFacilityById(
       Number(facilityId),
       employeeIds,
     );
@@ -722,7 +646,7 @@ export async function removeMaintenanceStaffFromFacilityController(
 ) {
   try {
     const { email } = (req as any).locals.jwtPayload;
-    const employee = await findEmployeeByEmail(email);
+    const employee = await EmployeeService.findEmployeeByEmail(email);
 
     if (
       !employee.superAdmin &&
@@ -741,7 +665,7 @@ export async function removeMaintenanceStaffFromFacilityController(
       return res.status(400).json({ error: "Missing information!" });
     }
 
-    let inHouse: InHouse = await removeMaintenanceStaffFromFacilityById(
+    let inHouse: InHouse = await AssetFacilityService.removeMaintenanceStaffFromFacilityById(
       Number(facilityId),
       employeeIds,
     );
@@ -759,7 +683,7 @@ export async function assignOperationStaffToFacilityController(
 ) {
   try {
     const { email } = (req as any).locals.jwtPayload;
-    const employee = await findEmployeeByEmail(email);
+    const employee = await EmployeeService.findEmployeeByEmail(email);
 
     if (
       !employee.superAdmin &&
@@ -779,7 +703,7 @@ export async function assignOperationStaffToFacilityController(
       return res.status(400).json({ error: "Missing information!" });
     }
 
-    let inHouse: InHouse = await assignOperationStaffToFacilityById(
+    let inHouse: InHouse = await AssetFacilityService.assignOperationStaffToFacilityById(
       Number(facilityId),
       employeeIds,
     );
@@ -796,7 +720,7 @@ export async function removeOperationStaffFromFacilityController(
 ) {
   try {
     const { email } = (req as any).locals.jwtPayload;
-    const employee = await findEmployeeByEmail(email);
+    const employee = await EmployeeService.findEmployeeByEmail(email);
 
     if (
       !employee.superAdmin &&
@@ -816,7 +740,7 @@ export async function removeOperationStaffFromFacilityController(
       return res.status(400).json({ error: "Missing information!" });
     }
 
-    let inHouse: InHouse = await removeOperationStaffFromFacilityById(
+    let inHouse: InHouse = await AssetFacilityService.removeOperationStaffFromFacilityById(
       Number(facilityId),
       employeeIds,
     );
@@ -830,7 +754,7 @@ export async function removeOperationStaffFromFacilityController(
 export async function getFacilityLogsController(req: Request, res: Response) {
   try {
     const { email } = (req as any).locals.jwtPayload;
-    // const employee = await findEmployeeByEmail(email);
+    // const employee = await EmployeeService.findEmployeeByEmail(email);
 
     const { facilityId } = req.params;
 
@@ -838,7 +762,7 @@ export async function getFacilityLogsController(req: Request, res: Response) {
       return res.status(400).json({ error: "Missing information!" });
     }
 
-    let facilityLogs: FacilityLog[] = await getFacilityLogs(Number(facilityId));
+    let facilityLogs: FacilityLog[] = await AssetFacilityService.getFacilityLogs(Number(facilityId));
     return res
       .status(200)
       .json({ facilityLogs: facilityLogs?.map((log) => log.toJSON()) });
@@ -853,7 +777,7 @@ export async function getFacilityLogByIdController(
 ) {
   try {
     const { email } = (req as any).locals.jwtPayload;
-    // const employee = await findEmployeeByEmail(email);
+    // const employee = await EmployeeService.findEmployeeByEmail(email);
 
     const { facilityLogId } = req.params;
     let { includes } = req.body;
@@ -886,7 +810,7 @@ export async function getFacilityLogByIdController(
       }
     }
 
-    let facilityLog: FacilityLog = await getFacilityLogById(
+    let facilityLog: FacilityLog = await AssetFacilityService.getFacilityLogById(
       Number(facilityLogId),
       _includes,
     );
@@ -904,7 +828,7 @@ export async function createCustomerReportController(
 ) {
   try {
     // const { email } = (req as any).locals.jwtPayload;
-    // const employee = await findEmployeeByEmail(email);
+    // const employee = await EmployeeService.findEmployeeByEmail(email);
 
     const { facilityId } = req.params;
     let {
@@ -923,7 +847,7 @@ export async function createCustomerReportController(
       return res.status(400).json({ error: "Missing information!" });
     }
 
-    let customerReportLog: CustomerReportLog = await createCustomerReport(
+    let customerReportLog: CustomerReportLog = await AssetFacilityService.createCustomerReport(
       Number(facilityId),
       dateTime,
       title,
@@ -944,12 +868,12 @@ export async function getAllCustomerReportsController(
 ) {
   try {
     const { email } = (req as any).locals.jwtPayload;
-    const employee = await findEmployeeByEmail(email);
+    const employee = await EmployeeService.findEmployeeByEmail(email);
 
     // const { facilityLogId } = req.params;
     // let { includes } = req.body;
 
-    let customerReportLogs: CustomerReportLog[] = await getAllCustomerReports();
+    let customerReportLogs: CustomerReportLog[] = await AssetFacilityService.getAllCustomerReports();
 
     return res.status(200).json({ customerReportLogs: customerReportLogs.map(log => log.toJSON()) });
   } catch (error: any) {
@@ -964,7 +888,7 @@ export async function updateCustomerReportController(
 ) {
   try {
     const { email } = (req as any).locals.jwtPayload;
-    // const employee = await findEmployeeByEmail(email);
+    // const employee = await EmployeeService.findEmployeeByEmail(email);
 
     const { facilityLogId } = req.params;
     let {
@@ -977,13 +901,13 @@ export async function updateCustomerReportController(
       return res.status(400).json({ error: "Missing information!" });
     }
     if (customerReportLogId) {
-      await updateCustomerReport(
+      await AssetFacilityService.updateCustomerReport(
         Number(customerReportLogId),
         viewed,
       );
     } else {
       for (const customerReportLogId of customerReportLogIds) {
-        await updateCustomerReport(
+        await AssetFacilityService.updateCustomerReport(
           Number(customerReportLogId),
           viewed,
         );
@@ -1000,7 +924,7 @@ export async function updateCustomerReportController(
 export async function createFacilityLogController(req: Request, res: Response) {
   try {
     const { email } = (req as any).locals.jwtPayload;
-    const employee = await findEmployeeByEmail(email);
+    const employee = await EmployeeService.findEmployeeByEmail(email);
 
     const { facilityId } = req.params;
     const { title, details, remarks, facilityLogType, employeeIds } = req.body;
@@ -1029,7 +953,7 @@ export async function createFacilityLogController(req: Request, res: Response) {
         .status(403)
         .json({ error: "Access Denied! Operation managers only!" });
 
-    let facilityLog: FacilityLog = await createFacilityLog(
+    let facilityLog: FacilityLog = await AssetFacilityService.createFacilityLog(
       Number(facilityId),
       title,
       details,
@@ -1052,7 +976,7 @@ export async function createFacilityMaintenanceLogController(
 ) {
   try {
     const { email } = (req as any).locals.jwtPayload;
-    const employee = await findEmployeeByEmail(email);
+    const employee = await EmployeeService.findEmployeeByEmail(email);
 
     if (
       !employee.superAdmin &&
@@ -1072,7 +996,7 @@ export async function createFacilityMaintenanceLogController(
       return res.status(400).json({ error: "Missing information!" });
     }
 
-    let maintenanceLog = await createFacilityMaintenanceLog(
+    let maintenanceLog = await AssetFacilityService.createFacilityMaintenanceLog(
       Number(facilityId),
       new Date(),
       title,
@@ -1098,7 +1022,7 @@ export async function createFacilityMaintenanceLogController(
 export async function updateFacilityLogController(req: Request, res: Response) {
   try {
     const { email } = (req as any).locals.jwtPayload;
-    const employee = await findEmployeeByEmail(email);
+    const employee = await EmployeeService.findEmployeeByEmail(email);
 
     const { facilityLogId } = req.params;
     const { title, details, remarks } = req.body;
@@ -1107,7 +1031,7 @@ export async function updateFacilityLogController(req: Request, res: Response) {
       return res.status(400).json({ error: "Missing information!" });
     }
 
-    const facilityLogFound = await getFacilityLogById(Number(facilityLogId));
+    const facilityLogFound = await AssetFacilityService.getFacilityLogById(Number(facilityLogId));
 
     const employees = [];
     for (const staff of await facilityLogFound.getGeneralStaffs()) {
@@ -1123,7 +1047,7 @@ export async function updateFacilityLogController(req: Request, res: Response) {
     )
       throw { message: "Only creator of the log can edit!" };
 
-    let facilityLog: FacilityLog = await updateFacilityLog(
+    let facilityLog: FacilityLog = await AssetFacilityService.updateFacilityLog(
       Number(facilityLogId),
       title,
       details,
@@ -1139,7 +1063,7 @@ export async function updateFacilityLogController(req: Request, res: Response) {
 export async function deleteFacilityLogController(req: Request, res: Response) {
   try {
     const { email } = (req as any).locals.jwtPayload;
-    const employee = await findEmployeeByEmail(email);
+    const employee = await EmployeeService.findEmployeeByEmail(email);
 
     const { facilityLogId } = req.params;
 
@@ -1147,7 +1071,7 @@ export async function deleteFacilityLogController(req: Request, res: Response) {
       (await employee.getPlanningStaff())?.plannerType !=
       PlannerType.OPERATIONS_MANAGER &&
       !employee.superAdmin &&
-      (await getFacilityLogById(Number(facilityLogId)))?.staffName !=
+      (await AssetFacilityService.getFacilityLogById(Number(facilityLogId)))?.staffName !=
       employee.employeeName
     )
       throw { message: "Only creator of the log can delete!" };
@@ -1156,7 +1080,7 @@ export async function deleteFacilityLogController(req: Request, res: Response) {
       return res.status(400).json({ error: "Missing information!" });
     }
 
-    await deleteFacilityLogById(Number(facilityLogId));
+    await AssetFacilityService.deleteFacilityLogById(Number(facilityLogId));
 
     return res.status(200).json({ result: "success" });
   } catch (error: any) {
@@ -1168,7 +1092,7 @@ export async function deleteFacilityLogController(req: Request, res: Response) {
 export async function getCustomerReportLogController(req: Request, res: Response) {
   try {
     const { email } = (req as any).locals.jwtPayload;
-    const employee = await findEmployeeByEmail(email);
+    const employee = await EmployeeService.findEmployeeByEmail(email);
 
     const { customerReportLogId } = req.params;
 
@@ -1183,7 +1107,7 @@ export async function getCustomerReportLogController(req: Request, res: Response
       return res.status(400).json({ error: "Missing information!" });
     }
 
-    const customerReportLog = await getCustomerReportLog(Number(customerReportLogId));
+    const customerReportLog = await AssetFacilityService.getCustomerReportLog(Number(customerReportLogId));
 
     return res.status(200).json({ customerReportLog: customerReportLog.toJSON() });
   } catch (error: any) {
@@ -1195,7 +1119,7 @@ export async function getCustomerReportLogController(req: Request, res: Response
 export async function getAllNonViewedCustomerReportLogsController(req: Request, res: Response) {
   try {
     const { email } = (req as any).locals.jwtPayload;
-    const employee = await findEmployeeByEmail(email);
+    const employee = await EmployeeService.findEmployeeByEmail(email);
 
     if (
       (await employee.getPlanningStaff())?.plannerType !=
@@ -1205,7 +1129,7 @@ export async function getAllNonViewedCustomerReportLogsController(req: Request, 
       throw { message: "Access denied!" };
 
     if (employee.superAdmin || (await employee.getPlanningStaff()).plannerType == PlannerType.OPERATIONS_MANAGER) {
-      const allCustomerReportLog = await getAllNonViewedCustomerReportLogs();
+      const allCustomerReportLog = await AssetFacilityService.getAllNonViewedCustomerReportLogs();
       return res.status(200).json({ customerReportLogs: allCustomerReportLog.map((log: CustomerReportLog) => log.toJSON()) });
     }
 
@@ -1228,7 +1152,7 @@ export async function getAllCustomerReportLogsByFacilityIdController(req: Reques
   try {
 
     const { email } = (req as any).locals.jwtPayload;
-    const employee = await findEmployeeByEmail(email);
+    const employee = await EmployeeService.findEmployeeByEmail(email);
 
     const { facilityId } = req.params;
 
@@ -1244,7 +1168,7 @@ export async function getAllCustomerReportLogsByFacilityIdController(req: Reques
       return res.status(400).json({ error: "Missing information!" });
     }
 
-    const allCustomerReportLog = await getAllCustomerReportLogsByFacilityId(Number(facilityId));
+    const allCustomerReportLog = await AssetFacilityService.getAllCustomerReportLogsByFacilityId(Number(facilityId));
 
     return res.status(200).json({ customerReportLogs: allCustomerReportLog.map((log: CustomerReportLog) => log.toJSON()) });
   } catch (error: any) {
@@ -1256,7 +1180,7 @@ export async function getAllCustomerReportLogsByFacilityIdController(req: Reques
 export async function markCustomerReportLogsViewedController(req: Request, res: Response) {
   try {
     const { email } = (req as any).locals.jwtPayload;
-    const employee = await findEmployeeByEmail(email);
+    const employee = await EmployeeService.findEmployeeByEmail(email);
 
     const { customerReportLogIds, viewed } = req.body;
 
@@ -1271,7 +1195,7 @@ export async function markCustomerReportLogsViewedController(req: Request, res: 
       return res.status(400).json({ error: "Missing information!" });
     }
 
-    const customerReportLog = await markCustomerReportLogsViewed(
+    const customerReportLog = await AssetFacilityService.markCustomerReportLogsViewed(
       customerReportLogIds,
       viewed
     );
@@ -1286,7 +1210,7 @@ export async function markCustomerReportLogsViewedController(req: Request, res: 
 export async function deleteCustomerReportLogController(req: Request, res: Response) {
   try {
     const { email } = (req as any).locals.jwtPayload;
-    const employee = await findEmployeeByEmail(email);
+    const employee = await EmployeeService.findEmployeeByEmail(email);
 
     const { customerReportLogId } = req.params;
 
@@ -1301,7 +1225,7 @@ export async function deleteCustomerReportLogController(req: Request, res: Respo
       return res.status(400).json({ error: "Missing information!" });
     }
 
-    await deleteCustomerReportLog(Number(customerReportLogId));
+    await AssetFacilityService.deleteCustomerReportLog(Number(customerReportLogId));
 
     return res.status(200).json({ result: "success" });
   } catch (error: any) {
@@ -1316,11 +1240,11 @@ export async function completeRepairTicketController(
 ) {
   try {
     const { email } = (req as any).locals.jwtPayload;
-    const employee = await findEmployeeByEmail(email);
+    const employee = await EmployeeService.findEmployeeByEmail(email);
 
     const { facilityLogId } = req.params;
 
-    const facilityLogFound = await getFacilityLogById(Number(facilityLogId));
+    const facilityLogFound = await AssetFacilityService.getFacilityLogById(Number(facilityLogId));
 
     const employees = [];
     for (const staff of await facilityLogFound.getGeneralStaffs()) {
@@ -1339,7 +1263,7 @@ export async function completeRepairTicketController(
       return res.status(400).json({ error: "Missing information!" });
     }
 
-    await completeRepairTicket(Number(facilityLogId));
+    await AssetFacilityService.completeRepairTicket(Number(facilityLogId));
 
     return res.status(200).json({ result: "success" });
   } catch (error: any) {
@@ -1351,7 +1275,7 @@ export async function completeRepairTicketController(
 export async function deleteFacilityController(req: Request, res: Response) {
   try {
     const { email } = (req as any).locals.jwtPayload;
-    const employee = await findEmployeeByEmail(email);
+    const employee = await EmployeeService.findEmployeeByEmail(email);
 
     if (
       !employee.superAdmin &&
@@ -1368,7 +1292,7 @@ export async function deleteFacilityController(req: Request, res: Response) {
     if (facilityId === undefined)
       return res.status(400).json({ error: "Missing information!" });
 
-    await deleteFacilityById(Number(facilityId));
+    await AssetFacilityService.deleteFacilityById(Number(facilityId));
 
     return res.status(200).json({ result: "Success!" });
   } catch (error: any) {
@@ -1379,7 +1303,7 @@ export async function deleteFacilityController(req: Request, res: Response) {
 export async function addHubToFacilityController(req: Request, res: Response) {
   try {
     const { email } = (req as any).locals.jwtPayload;
-    const employee = await findEmployeeByEmail(email);
+    const employee = await EmployeeService.findEmployeeByEmail(email);
 
     if (
       !employee.superAdmin &&
@@ -1398,7 +1322,7 @@ export async function addHubToFacilityController(req: Request, res: Response) {
       return res.status(400).json({ error: "Missing information!" });
     }
 
-    let hubProcessor: HubProcessor = await addHubProcessorByFacilityId(
+    let hubProcessor: HubProcessor = await AssetFacilityService.addHubProcessorByFacilityId(
       Number(facilityId),
       processorName,
     );
@@ -1412,7 +1336,7 @@ export async function addHubToFacilityController(req: Request, res: Response) {
 export async function getAllHubsController(req: Request, res: Response) {
   try {
     const { email } = (req as any).locals.jwtPayload;
-    const employee = await findEmployeeByEmail(email);
+    const employee = await EmployeeService.findEmployeeByEmail(email);
 
     if (
       !employee.superAdmin &&
@@ -1432,7 +1356,7 @@ export async function getAllHubsController(req: Request, res: Response) {
       if (includes.includes(role)) _includes.push(role);
     }
 
-    let hubs: HubProcessor[] = await getAllHubs(_includes);
+    let hubs: HubProcessor[] = await AssetFacilityService.getAllHubs(_includes);
 
     return res.status(200).json({ hubs: hubs.map((hub) => hub.toJSON()) });
   } catch (error: any) {
@@ -1443,7 +1367,7 @@ export async function getAllHubsController(req: Request, res: Response) {
 export async function getHubProcessorController(req: Request, res: Response) {
   try {
     const { email } = (req as any).locals.jwtPayload;
-    const employee = await findEmployeeByEmail(email);
+    const employee = await EmployeeService.findEmployeeByEmail(email);
 
     if (
       !employee.superAdmin &&
@@ -1466,7 +1390,7 @@ export async function getHubProcessorController(req: Request, res: Response) {
       if (includes.includes(role)) _includes.push(role);
     }
 
-    let hubProcessor: HubProcessor = await getHubProcessorById(
+    let hubProcessor: HubProcessor = await AssetFacilityService.getHubProcessorById(
       Number(hubProcessorId),
       _includes,
     );
@@ -1480,7 +1404,7 @@ export async function getHubProcessorController(req: Request, res: Response) {
 export async function getAllSensorsController(req: Request, res: Response) {
   try {
     const { email } = (req as any).locals.jwtPayload;
-    const employee = await findEmployeeByEmail(email);
+    const employee = await EmployeeService.findEmployeeByEmail(email);
 
     if (
       !employee.superAdmin &&
@@ -1500,7 +1424,7 @@ export async function getAllSensorsController(req: Request, res: Response) {
       if (includes.includes(role)) _includes.push(role);
     }
 
-    let sensors: Sensor[] = await getAllSensors(_includes);
+    let sensors: Sensor[] = await AssetFacilityService.getAllSensors(_includes);
 
     return res
       .status(200)
@@ -1513,7 +1437,7 @@ export async function getAllSensorsController(req: Request, res: Response) {
 export async function getSensorController(req: Request, res: Response) {
   try {
     const { email } = (req as any).locals.jwtPayload;
-    const employee = await findEmployeeByEmail(email);
+    const employee = await EmployeeService.findEmployeeByEmail(email);
 
     if (
       !employee.superAdmin &&
@@ -1534,7 +1458,7 @@ export async function getSensorController(req: Request, res: Response) {
       return res.status(400).json({ error: "Missing information!" });
     }
 
-    let sensor: Sensor = await getSensor(Number(sensorId));
+    let sensor: Sensor = await AssetFacilityService.getSensor(Number(sensorId));
 
     return res.status(200).json({ sensor: sensor.toJSON() });
   } catch (error: any) {
@@ -1545,7 +1469,7 @@ export async function getSensorController(req: Request, res: Response) {
 export async function getSensorReadingController(req: Request, res: Response) {
   try {
     const { email } = (req as any).locals.jwtPayload;
-    const employee = await findEmployeeByEmail(email);
+    const employee = await EmployeeService.findEmployeeByEmail(email);
 
     // if (
     //   !(
@@ -1560,14 +1484,14 @@ export async function getSensorReadingController(req: Request, res: Response) {
     const { sensorId } = req.params;
     const { startDate, endDate } = req.body;
 
-    let sensorReadings = await getSensorReadingBySensorId(
+    let sensorReadings = await AssetFacilityService.getSensorReadingBySensorId(
       Number(sensorId),
       new Date(startDate),
       new Date(endDate),
     );
-    let sensor = await getSensor(Number(sensorId));
+    let sensor = await AssetFacilityService.getSensor(Number(sensorId));
 
-    let earliestDate = await getEarliestReadingBySensorId(Number(sensorId));
+    let earliestDate = await AssetFacilityService.getEarliestReadingBySensorId(Number(sensorId));
 
     return res.status(200).json({
       sensorReadings: sensorReadings?.map((reading) => reading.toJSON()),
@@ -1583,7 +1507,7 @@ export async function getSensorReadingController(req: Request, res: Response) {
 export async function updateHubController(req: Request, res: Response) {
   try {
     const { email } = (req as any).locals.jwtPayload;
-    const employee = await findEmployeeByEmail(email);
+    const employee = await EmployeeService.findEmployeeByEmail(email);
 
     if (
       !employee.superAdmin &&
@@ -1602,7 +1526,7 @@ export async function updateHubController(req: Request, res: Response) {
       return res.status(400).json({ error: "Missing information!" });
     }
 
-    let hubUpdated = await updateHubByHubId(Number(hubProcessorId), {
+    let hubUpdated = await AssetFacilityService.updateHubByHubId(Number(hubProcessorId), {
       processorName: processorName,
       radioGroup: radioGroup,
     });
@@ -1617,7 +1541,7 @@ export async function updateHubController(req: Request, res: Response) {
 export async function updateSensorController(req: Request, res: Response) {
   try {
     const { email } = (req as any).locals.jwtPayload;
-    const employee = await findEmployeeByEmail(email);
+    const employee = await EmployeeService.findEmployeeByEmail(email);
 
     if (
       !employee.superAdmin &&
@@ -1647,7 +1571,7 @@ export async function updateSensorController(req: Request, res: Response) {
       data["sensorType"] = sensorType;
     }
 
-    let sensorUpdated = await updateSensorById(Number(sensorId), data);
+    let sensorUpdated = await AssetFacilityService.updateSensorById(Number(sensorId), data);
 
     return res.status(200).json({ sensor: sensorUpdated.toJSON() });
   } catch (error: any) {
@@ -1658,7 +1582,7 @@ export async function updateSensorController(req: Request, res: Response) {
 export async function deleteHubController(req: Request, res: Response) {
   try {
     const { email } = (req as any).locals.jwtPayload;
-    const employee = await findEmployeeByEmail(email);
+    const employee = await EmployeeService.findEmployeeByEmail(email);
 
     if (
       !employee.superAdmin &&
@@ -1672,7 +1596,7 @@ export async function deleteHubController(req: Request, res: Response) {
         .json({ error: "Access Denied! Operation managers only!" });
 
     const { hubProcessorId } = req.params;
-    await deleteHubById(Number(hubProcessorId));
+    await AssetFacilityService.deleteHubById(Number(hubProcessorId));
 
     return res.status(200).json({ result: "success" });
   } catch (error: any) {
@@ -1683,7 +1607,7 @@ export async function deleteHubController(req: Request, res: Response) {
 export async function deleteSensorController(req: Request, res: Response) {
   try {
     const { email } = (req as any).locals.jwtPayload;
-    const employee = await findEmployeeByEmail(email);
+    const employee = await EmployeeService.findEmployeeByEmail(email);
 
     if (
       !employee.superAdmin &&
@@ -1698,7 +1622,7 @@ export async function deleteSensorController(req: Request, res: Response) {
 
     const { sensorId } = req.params;
 
-    await deleteSensorById(Number(sensorId));
+    await AssetFacilityService.deleteSensorById(Number(sensorId));
 
     return res.status(200).json({ result: "success" });
   } catch (error: any) {
@@ -1712,7 +1636,7 @@ export async function createSensorMaintenanceLogController(
 ) {
   try {
     const { email } = (req as any).locals.jwtPayload;
-    const employee = await findEmployeeByEmail(email);
+    const employee = await EmployeeService.findEmployeeByEmail(email);
 
     if (
       !employee.superAdmin &&
@@ -1735,7 +1659,7 @@ export async function createSensorMaintenanceLogController(
       return res.status(400).json({ error: "Missing information!" });
     }
 
-    let sensor = await createSensorMaintenanceLog(
+    let sensor = await AssetFacilityService.createSensorMaintenanceLog(
       Number(sensorId),
       new Date(),
       title,
@@ -1766,7 +1690,7 @@ export async function getSensorMaintenanceLogController(
 ) {
   try {
     const { email } = (req as any).locals.jwtPayload;
-    // const employee = await findEmployeeByEmail(email);
+    // const employee = await EmployeeService.findEmployeeByEmail(email);
 
     const { sensorMaintenanceLogId } = req.params;
 
@@ -1774,7 +1698,7 @@ export async function getSensorMaintenanceLogController(
       return res.status(400).json({ error: "Missing information!" });
     }
 
-    let maintenanceLog: MaintenanceLog = await getSensorMaintenanceLogById(
+    let maintenanceLog: MaintenanceLog = await AssetFacilityService.getSensorMaintenanceLogById(
       Number(sensorMaintenanceLogId),
     );
 
@@ -1790,7 +1714,7 @@ export async function getAllSensorMaintenanceLogsController(
 ) {
   try {
     const { email } = (req as any).locals.jwtPayload;
-    const employee = await findEmployeeByEmail(email);
+    const employee = await EmployeeService.findEmployeeByEmail(email);
 
     if (
       !employee.superAdmin &&
@@ -1812,7 +1736,7 @@ export async function getAllSensorMaintenanceLogsController(
       return res.status(400).json({ error: "Missing information!" });
     }
 
-    let maintenanceLogs = await getAllSensorMaintenanceLogs(Number(sensorId));
+    let maintenanceLogs = await AssetFacilityService.getAllSensorMaintenanceLogs(Number(sensorId));
 
     return res
       .status(200)
@@ -1828,7 +1752,7 @@ export async function updateSensorMaintenanceLogController(
 ) {
   try {
     const { email } = (req as any).locals.jwtPayload;
-    const employee = await findEmployeeByEmail(email);
+    const employee = await EmployeeService.findEmployeeByEmail(email);
 
     const { sensorMaintenanceLogId } = req.params;
     const { title, details, remarks } = req.body;
@@ -1844,12 +1768,12 @@ export async function updateSensorMaintenanceLogController(
       (await employee.getPlanningStaff()).plannerType !=
       PlannerType.OPERATIONS_MANAGER &&
       !employee.superAdmin &&
-      (await getSensorMaintenanceLogById(Number(sensorMaintenanceLogId)))
+      (await AssetFacilityService.getSensorMaintenanceLogById(Number(sensorMaintenanceLogId)))
         .staffName != employee.employeeName
     )
       throw { message: "Only creator of the log can edit!" };
 
-    let maintenanceLog: MaintenanceLog = await updateSensorMaintenanceLog(
+    let maintenanceLog: MaintenanceLog = await AssetFacilityService.updateSensorMaintenanceLog(
       Number(sensorMaintenanceLogId),
       title,
       details,
@@ -1868,7 +1792,7 @@ export async function deleteSensorMaintenanceLogController(
 ) {
   try {
     const { email } = (req as any).locals.jwtPayload;
-    const employee = await findEmployeeByEmail(email);
+    const employee = await EmployeeService.findEmployeeByEmail(email);
 
     const { sensorMaintenanceLogId } = req.params;
 
@@ -1880,12 +1804,12 @@ export async function deleteSensorMaintenanceLogController(
       (await employee.getPlanningStaff()).plannerType !=
       PlannerType.OPERATIONS_MANAGER &&
       !employee.superAdmin &&
-      (await getSensorMaintenanceLogById(Number(sensorMaintenanceLogId)))
+      (await AssetFacilityService.getSensorMaintenanceLogById(Number(sensorMaintenanceLogId)))
         .staffName != employee.employeeName
     )
       throw { message: "Only creator of the log can delete!" };
 
-    await deleteSensorMaintenanceLogById(Number(sensorMaintenanceLogId));
+    await AssetFacilityService.deleteSensorMaintenanceLogById(Number(sensorMaintenanceLogId));
 
     return res.status(200).json({ result: "success" });
   } catch (error: any) {
@@ -1896,7 +1820,7 @@ export async function deleteSensorMaintenanceLogController(
 export async function addSensorToHubController(req: Request, res: Response) {
   try {
     const { email } = (req as any).locals.jwtPayload;
-    const employee = await findEmployeeByEmail(email);
+    const employee = await EmployeeService.findEmployeeByEmail(email);
 
     if (
       !employee.superAdmin &&
@@ -1915,7 +1839,7 @@ export async function addSensorToHubController(req: Request, res: Response) {
       return res.status(400).json({ error: "Missing information!" });
     }
 
-    let sensor: Sensor = await addSensorByHubProcessorId(
+    let sensor: Sensor = await AssetFacilityService.addSensorByHubProcessorId(
       Number(hubProcessorId),
       sensorType,
       sensorName,
@@ -1934,7 +1858,7 @@ export async function initializeHubController(req: Request, res: Response) {
 
     let ipaddress = req.socket.remoteAddress || "127.0.0.1";
     ipaddress = ipaddress == "::1" ? "127.0.0.1" : ipaddress.split(":")[3];
-    const token = await initializeHubProcessor(processorName, ipaddress);
+    const token = await AssetFacilityService.initializeHubProcessor(processorName, ipaddress);
     return res.status(200).json({ token: token });
   } catch (error: any) {
     console.log(error);
@@ -1953,7 +1877,7 @@ export async function pushSensorReadingsController(
     let ipaddress = req.socket.remoteAddress || "127.0.0.1";
     ipaddress = ipaddress == "::1" ? "127.0.0.1" : ipaddress.split(":")[3];
 
-    const processor: HubProcessor = await findProcessorByName(processorName);
+    const processor: HubProcessor = await AssetFacilityService.findProcessorByName(processorName);
     if (!processor.validatePayload(jsonPayloadString, sha256)) {
       try {
         return res
@@ -1967,7 +1891,7 @@ export async function pushSensorReadingsController(
 
     for (const sensor of Object.keys(payload)) {
       for (const sensorReading of payload[sensor]) {
-        await createNewSensorReading(
+        await AssetFacilityService.createNewSensorReading(
           sensor,
           sensorReading.readingDate,
           sensorReading.reading,
@@ -1996,7 +1920,7 @@ export async function getSensorMaintenanceSuggestionsController(
 ) {
   try {
     const { email } = (req as any).locals.jwtPayload;
-    const employee = await findEmployeeByEmail(email);
+    const employee = await EmployeeService.findEmployeeByEmail(email);
 
     if (
       !employee.superAdmin &&
@@ -2010,7 +1934,7 @@ export async function getSensorMaintenanceSuggestionsController(
         .status(403)
         .json({ error: "Access Denied! Operation managers only!" });
 
-    let sensors = await getAllSensorMaintenanceSuggestions(employee);
+    let sensors = await AssetFacilityService.getAllSensorMaintenanceSuggestions(employee);
     return res
       .status(200)
       .json({ sensors: sensors?.map((sensor) => sensor.toJSON()) });
@@ -2026,7 +1950,7 @@ export async function getSensorMaintenancePredictionValuesController(
 ) {
   try {
     const { email } = (req as any).locals.jwtPayload;
-    const employee = await findEmployeeByEmail(email);
+    const employee = await EmployeeService.findEmployeeByEmail(email);
 
     if (
       !employee.superAdmin &&
@@ -2044,7 +1968,7 @@ export async function getSensorMaintenancePredictionValuesController(
     let values = undefined;
     for (let i = 4; i > 0; i--) {
       try {
-        values = await getSensorMaintenanceSuggestions(Number(sensorId), i);
+        values = await AssetFacilityService.getSensorMaintenanceSuggestions(Number(sensorId), i);
         break;
       } catch (err: any) {
         console.log(err);
@@ -2061,7 +1985,7 @@ export async function getSensorMaintenancePredictionValuesController(
 // export async function getAssignedMaintenanceStaffOfSensorController(req: Request, res: Response) {
 //   try {
 //     const { email } = (req as any).locals.jwtPayload;
-//     const employee = await findEmployeeByEmail(email);
+//     const employee = await EmployeeService.findEmployeeByEmail(email);
 
 //     if (
 //       !(
@@ -2096,7 +2020,7 @@ export async function assignMaintenanceStaffToSensorController(
 ) {
   try {
     const { email } = (req as any).locals.jwtPayload;
-    const employee = await findEmployeeByEmail(email);
+    const employee = await EmployeeService.findEmployeeByEmail(email);
 
     if (
       !employee.superAdmin &&
@@ -2116,7 +2040,7 @@ export async function assignMaintenanceStaffToSensorController(
       return res.status(400).json({ error: "Missing information!" });
     }
 
-    let generalStaff: GeneralStaff = await assignMaintenanceStaffToSensorById(
+    let generalStaff: GeneralStaff = await AssetFacilityService.assignMaintenanceStaffToSensorById(
       Number(sensorId),
       Number(employeeId),
     );
@@ -2136,7 +2060,7 @@ export async function removeMaintenanceStaffFromSensorController(
 ) {
   try {
     const { email } = (req as any).locals.jwtPayload;
-    const employee = await findEmployeeByEmail(email);
+    const employee = await EmployeeService.findEmployeeByEmail(email);
 
     if (
       !employee.superAdmin &&
@@ -2156,7 +2080,7 @@ export async function removeMaintenanceStaffFromSensorController(
       return res.status(400).json({ error: "Missing information!" });
     }
 
-    let generalStaff: GeneralStaff = await removeMaintenanceStaffFromSensorById(
+    let generalStaff: GeneralStaff = await AssetFacilityService.removeMaintenanceStaffFromSensorById(
       Number(sensorId),
       Number(employeeId),
     );
@@ -2176,7 +2100,7 @@ export async function getAuthorizationForCameraController(
 ) {
   try {
     const { email } = (req as any).locals.jwtPayload;
-    const employee = await findEmployeeByEmail(email);
+    const employee = await EmployeeService.findEmployeeByEmail(email);
 
     if (
       !employee.superAdmin &&
@@ -2198,7 +2122,7 @@ export async function getAuthorizationForCameraController(
     return res
       .status(200)
       .json(
-        await getAuthorizationForCameraById(
+        await AssetFacilityService.getAuthorizationForCameraById(
           Number(sensorId),
           String(employee.employeeId),
         ),
@@ -2215,7 +2139,7 @@ export async function createNewAnimalFeedController(
 ) {
   try {
     const { email } = (req as any).locals.jwtPayload;
-    const employee = await findEmployeeByEmail(email);
+    const employee = await EmployeeService.findEmployeeByEmail(email);
 
     if (
       !employee.superAdmin &&
@@ -2310,7 +2234,7 @@ export async function getAnimalFeedByIdController(req: Request, res: Response) {
 export async function updateAnimalFeedController(req: Request, res: Response) {
   try {
     const { email } = (req as any).locals.jwtPayload;
-    const employee = await findEmployeeByEmail(email);
+    const employee = await EmployeeService.findEmployeeByEmail(email);
 
     if (
       !employee.superAdmin &&
@@ -2368,7 +2292,7 @@ export async function updateAnimalFeedImageController(
     // req has image??
 
     const { email } = (req as any).locals.jwtPayload;
-    const employee = await findEmployeeByEmail(email);
+    const employee = await EmployeeService.findEmployeeByEmail(email);
 
     if (
       !employee.superAdmin &&
@@ -2409,7 +2333,7 @@ export async function deleteAnimalFeedByNameController(
   res: Response,
 ) {
   const { email } = (req as any).locals.jwtPayload;
-  const employee = await findEmployeeByEmail(email);
+  const employee = await EmployeeService.findEmployeeByEmail(email);
 
   if (
     !employee.superAdmin &&
@@ -2441,7 +2365,7 @@ export async function createNewEnrichmentItemController(
 ) {
   try {
     const { email } = (req as any).locals.jwtPayload;
-    const employee = await findEmployeeByEmail(email);
+    const employee = await EmployeeService.findEmployeeByEmail(email);
 
     if (
       !employee.superAdmin &&
@@ -2522,7 +2446,7 @@ export async function updateEnrichmentItemController(
 ) {
   try {
     const { email } = (req as any).locals.jwtPayload;
-    const employee = await findEmployeeByEmail(email);
+    const employee = await EmployeeService.findEmployeeByEmail(email);
 
     if (
       !employee.superAdmin &&
@@ -2561,7 +2485,7 @@ export async function updateEnrichmentItemImageController(
 ) {
   try {
     const { email } = (req as any).locals.jwtPayload;
-    const employee = await findEmployeeByEmail(email);
+    const employee = await EmployeeService.findEmployeeByEmail(email);
 
     if (
       !employee.superAdmin &&
@@ -2603,7 +2527,7 @@ export async function deleteEnrichmentItemByNameController(
   res: Response,
 ) {
   const { email } = (req as any).locals.jwtPayload;
-  const employee = await findEmployeeByEmail(email);
+  const employee = await EmployeeService.findEmployeeByEmail(email);
 
   if (
     !employee.superAdmin &&

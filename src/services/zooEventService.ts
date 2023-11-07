@@ -4,11 +4,12 @@ import { validationErrorHandler } from "../helpers/errorHandler";
 import { compareDates, getNextDayOfMonth, getNextDayOfWeek } from "../helpers/others";
 import { ADVANCE_DAYS_FOR_ZOO_EVENT_GENERATION, ANIMAL_ACTIVITY_NOTIFICATION_HOURS, ANIMAL_FEEDING_NOTIFICATION_HOURS, DAY_IN_MILLISECONDS, HOUR_IN_MILLISECONDS } from "../helpers/staticValues";
 import { Employee } from "../models/Employee";
-import { DayOfWeek, EventTimingType, EventType, RecurringPattern } from "../models/Enumerated";
+import { ActivityType, DayOfWeek, EventTimingType, EventType, RecurringPattern } from "../models/Enumerated";
 import { Keeper } from "../models/Keeper";
 import { ZooEvent } from "../models/ZooEvent";
 import * as AnimalService from "./animalService";
 import * as EmployeeService from "./employeeService";
+import { PublicEvent } from "../models/PublicEvent";
 
 cron.schedule('0 0 0 1 1 *', async () => {
   for (const animalAct of await AnimalService.getAllAnimalActivities()) {
@@ -756,14 +757,14 @@ function convertEventTimingTypeToDate(date: Date, eventTimingType: EventTimingTy
   }
 }
 
-async function greedyAssign(zooEvent: ZooEvent, zooEvents:ZooEvent[], keepers:Keeper[]){
+async function greedyAssign(zooEvent: ZooEvent, zooEvents: ZooEvent[], keepers: Keeper[]) {
   // console.log("greedyAssign",keepers)
   for (const ze of zooEvents) await ze.reload();
   await zooEvent.reload();
   for (const kp of keepers) await kp.reload();
-  const [zooEventStart, zooEventEnd] = zooEvent.eventIsPublic ? 
-        [zooEvent.eventStartDateTime, zooEvent.eventEndDateTime] : 
-        convertEventTimingTypeToDate(zooEvent.eventStartDateTime, zooEvent.eventTiming as EventTimingType);
+  const [zooEventStart, zooEventEnd] = zooEvent.eventIsPublic ?
+    [zooEvent.eventStartDateTime, zooEvent.eventEndDateTime] :
+    convertEventTimingTypeToDate(zooEvent.eventStartDateTime, zooEvent.eventTiming as EventTimingType);
   // console.log("zooEventStart, zooEventEnd", zooEventStart, zooEventEnd);
 
 
@@ -799,31 +800,31 @@ async function greedyAssign(zooEvent: ZooEvent, zooEvents:ZooEvent[], keepers:Ke
             && !(keeper.zooEvents?.find(keeperze => eventClashed.find(zeclashed => zeclashed.zooEventId == keeperze.zooEventId)));
         }).length
 
-            return zeClashed.requiredNumberOfKeeper / noOfKeepers;
-          }).reduce((costA, costB)=>{
-            return costA + costB;
-          }),
-          keeper:keeper
-      }
+        return zeClashed.requiredNumberOfKeeper / noOfKeepers;
+      }).reduce((costA, costB) => {
+        return costA + costB;
+      }),
+      keeper: keeper
     }
-  ).sort((a,b)=>a.totalCost - b.totalCost);
-  
-  if (sortedKeeper.length > 0){
+  }
+  ).sort((a, b) => a.totalCost - b.totalCost);
+
+  if (sortedKeeper.length > 0) {
     await zooEvent.addKeeper(sortedKeeper[0].keeper);
 
   }
 }
 
-function shuffleArray(array:any[]) {
+function shuffleArray(array: any[]) {
   for (var i = array.length - 1; i > 0; i--) {
-      var j = Math.floor(Math.random() * (i + 1));
-      var temp = array[i];
-      array[i] = array[j];
-      array[j] = temp;
+    var j = Math.floor(Math.random() * (i + 1));
+    var temp = array[i];
+    array[i] = array[j];
+    array[j] = temp;
   }
 }
 
-function doesEventClash(ze1:ZooEvent, ze2:ZooEvent) {
+function doesEventClash(ze1: ZooEvent, ze2: ZooEvent) {
   const [ze1Start, ze1End] = ze1.eventIsPublic ? [ze1.eventStartDateTime, ze1.eventEndDateTime]
     : convertEventTimingTypeToDate(ze1.eventStartDateTime, ze1.eventTiming as EventTimingType);
   const [ze2Start, ze2End] = ze2.eventIsPublic ? [ze2.eventStartDateTime, ze2.eventEndDateTime]
@@ -884,35 +885,35 @@ export async function autoAssignKeeperToZooEvent() {
       ]
     });
 
-      // for (let zooEvent of zooEvents){
-      //   for (let i = 0; i < zooEvent.requiredNumberOfKeeper; i++){
-      //       await greedyAssign(zooEvent, zooEvents, keepers);
-      //   }
-      // }
-    
+    // for (let zooEvent of zooEvents){
+    //   for (let i = 0; i < zooEvent.requiredNumberOfKeeper; i++){
+    //       await greedyAssign(zooEvent, zooEvents, keepers);
+    //   }
+    // }
+
     shuffleArray(keepers);
-    for (const zooEvent of zooEvents){
-      while ((await zooEvent.getKeepers()).length > zooEvent.requiredNumberOfKeeper){
-        let notFound = false;  
-        const [zooEventStart, zooEventEnd] = zooEvent.eventIsPublic ? 
-          [zooEvent.eventStartDateTime, zooEvent.eventEndDateTime] : 
+    for (const zooEvent of zooEvents) {
+      while ((await zooEvent.getKeepers()).length > zooEvent.requiredNumberOfKeeper) {
+        let notFound = false;
+        const [zooEventStart, zooEventEnd] = zooEvent.eventIsPublic ?
+          [zooEvent.eventStartDateTime, zooEvent.eventEndDateTime] :
           convertEventTimingTypeToDate(zooEvent.eventStartDateTime, zooEvent.eventTiming as EventTimingType);
         // console.log("zooEventStart, zooEventEnd", zooEventStart, zooEventEnd);
 
-        for (let index =0; index < keepers.length; index++){
+        for (let index = 0; index < keepers.length; index++) {
           const keeper = keepers[index];
           if (keeper.enclosures?.find(enclosure => zooEvent.enclosure?.enclosureId == enclosure.enclosureId)
-          && !(await keeper.getZooEvents()).find(ze=>doesEventClash(ze, zooEvent))){
+            && !(await keeper.getZooEvents()).find(ze => doesEventClash(ze, zooEvent))) {
             const selKeeper = keepers.splice(index, 1)[0];
             await selKeeper.addZooEvent(zooEvent);
             keepers.push(selKeeper);
             break;
           }
-          if (index == keepers.length - 1){
+          if (index == keepers.length - 1) {
             notFound = true;
           }
-        } 
-        if (notFound){
+        }
+        if (notFound) {
           break;
         }
       }
@@ -929,33 +930,33 @@ export async function autoAssignKeeperToZooEvent() {
 export async function createEmployeeAbsence(
   employeeId: number,
   eventName: string,
-  eventDescription:string,
-  eventStartDateTimes : Date[]
-){
-  try{
+  eventDescription: string,
+  eventStartDateTimes: Date[]
+) {
+  try {
     const employee = await EmployeeService.findEmployeeById(employeeId);
 
     const promises = [];
 
-    for (const esdt of eventStartDateTimes){
+    for (const esdt of eventStartDateTimes) {
 
       promises.push(ZooEvent.create({
         eventName: eventName,
-        eventDescription:eventDescription,
+        eventDescription: eventDescription,
         eventIsPublic: false,
         eventType: EventType.EMPLOYEE_ABSENCE,
         eventStartDateTime: esdt,
-        eventNotificationDate : esdt,
+        eventNotificationDate: esdt,
         requiredNumberOfKeeper: 0,
         eventDurationHrs: 24 * DAY_IN_MILLISECONDS,
-        eventTiming : null,
-        eventEndDateTime : esdt
+        eventTiming: null,
+        eventEndDateTime: esdt
       }));
     }
 
     const zooEvents = [];
 
-    for (const p of promises){
+    for (const p of promises) {
       const zooEvent = await p;
       await zooEvent.setEmployee(employee);
       zooEvents.push(zooEvent);
@@ -968,20 +969,58 @@ export async function createEmployeeAbsence(
 
 }
 
-export async function getAllEmployeeAbsence(){
-  try{
+export async function getAllEmployeeAbsence() {
+  try {
     return ZooEvent.findAll({
-      where:{
+      where: {
         eventType: EventType.EMPLOYEE_ABSENCE
       },
-      include:[{
-        association:"keepers",
+      include: [{
+        association: "keepers",
         required: true
       }
-    ]
+      ]
     });
   } catch (error: any) {
     throw validationErrorHandler(error);
   }
 
 }
+
+export async function createPublicEvent(
+  activityType: ActivityType,
+  title: string,
+  details: string,
+  imageUrl: string,
+  startDate: Date,
+  endDate: Date | null
+) {
+  try {
+    return await PublicEvent.create({
+      activityType: activityType,
+      title: title,
+      details: details,
+      imageUrl: imageUrl,
+      startDate: startDate,
+      endDate: endDate
+    });
+  } catch (error: any) {
+    throw validationErrorHandler(error);
+  }
+
+}
+
+export async function getAllPublicEvents(
+  include: any[],
+) {
+  try {
+    return await PublicEvent.findAll({
+      include: include
+    });
+  } catch (error: any) {
+    throw validationErrorHandler(error);
+  }
+
+}
+
+

@@ -18,6 +18,7 @@ import { conn } from "../db";
 import { CustomerOrder } from "./CustomerOrder";
 import { Country } from "./Enumerated";
 import { Species } from "./Species";
+import { PublicEvent } from "./PublicEvent";
 
 function hash(string: string): string {
   return crypto.createHash("sha256").update(string).digest("hex");
@@ -43,6 +44,7 @@ class Customer extends Model<
 
   declare customerOrders?: CustomerOrder[];
   declare species?: Species[];
+  declare publicEvents?: PublicEvent[];
 
   declare getCustomerOrders: HasManyGetAssociationsMixin<CustomerOrder>;
   declare addCustomerOrder: HasManyAddAssociationMixin<CustomerOrder, number>;
@@ -53,6 +55,11 @@ class Customer extends Model<
   declare addSpecies: BelongsToManyAddAssociationMixin<Species, number>;
   declare setSpecies: BelongsToManySetAssociationsMixin<Species, number>;
   declare removeSpecies: BelongsToManyRemoveAssociationMixin<Species, number>;
+
+  declare getPublicEvents: HasManyGetAssociationsMixin<PublicEvent>;
+  declare addPublicEvent: HasManyAddAssociationMixin<PublicEvent, number>;
+  declare setPublicEvents: HasManySetAssociationsMixin<PublicEvent, number>;
+  declare removePublicEvent: HasManyRemoveAssociationMixin<PublicEvent, number>;
 
   static getTotalCustomer() {
     // Example for static class functions
@@ -88,7 +95,7 @@ class Customer extends Model<
       ...this.get(),
       passwordHash: undefined,
       salt: undefined,
-      birthday:this.birthday?.getTime(),
+      birthday: this.birthday?.getTime(),
     };
   }
 }

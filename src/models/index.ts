@@ -80,6 +80,8 @@ import { SpeciesEnclosureNeed } from "./SpeciesEnclosureNeed";
 import { ThirdParty } from "./ThirdParty";
 import { Zone } from "./Zone";
 import { ZooEvent } from "./ZooEvent";
+import { PublicEvent } from "./PublicEvent";
+import { PublicEventSession } from "./PublicEventSession";
 
 function addCascadeOptions(options: object) {
   return { ...options, onDelete: "CASCADE", onUpdate: "CASCADE" };
@@ -530,6 +532,48 @@ export const createDatabase = async (options: any) => {
     AnimalClinic,
     addCascadeOptions({ foreignKey: "animalClinicId" }),
   );
+
+  PublicEvent.belongsToMany(Animal, {
+    foreignKey: "publicEventId",
+    through: "animal_publicEvent",
+    as: "animals",
+  });
+  Animal.belongsToMany(PublicEvent, {
+    foreignKey: "animalId",
+    through: "animal_publicEvent",
+    as: "publicEvents",
+  });
+
+  PublicEvent.belongsToMany(Keeper, {
+    foreignKey: "publicEventId",
+    through: "keeper_publicEvent",
+    as: "keepers",
+  });
+  Keeper.belongsToMany(PublicEvent, {
+    foreignKey: "keeperId",
+    through: "keeper_publicEvent",
+    as: "publicEvents",
+  });
+
+  InHouse.hasMany(PublicEvent, addCascadeOptions({ foreignKey: "inHouseId" }));
+  PublicEvent.belongsTo(InHouse, addCascadeOptions({ foreignKey: "inHouseId" }));
+
+  PublicEvent.belongsToMany(Customer, {
+    foreignKey: "publicEventId",
+    through: "customer_publicEvent",
+    as: "customers",
+  });
+  Customer.belongsToMany(PublicEvent, {
+    foreignKey: "customerId",
+    through: "customer_publicEvent",
+    as: "publicEvents",
+  });
+
+  PublicEvent.hasMany(PublicEventSession, { foreignKey: "publicEventId" });
+  PublicEventSession.belongsTo(PublicEvent, { foreignKey: "publicEventId" });
+
+  PublicEventSession.hasMany(ZooEvent, { foreignKey: "publicEventSessionId" });
+  ZooEvent.belongsTo(PublicEventSession, { foreignKey: "publicEventSessionId" });
 
   Listing.hasMany(OrderItem, addCascadeOptions({ foreignKey: "listingId" }));
   OrderItem.belongsTo(Listing, addCascadeOptions({ foreignKey: "listingId" }));

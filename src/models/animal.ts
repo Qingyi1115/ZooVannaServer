@@ -33,6 +33,7 @@ import { FeedingItem } from "./FeedingItem";
 import { FeedingPlan } from "./FeedingPlan";
 import { Species } from "./Species";
 import { ZooEvent } from "./ZooEvent";
+import { PublicEvent } from "./PublicEvent";
 
 class Animal extends Model<
   InferAttributes<Animal>,
@@ -75,6 +76,7 @@ class Animal extends Model<
   declare animalFeedingLog?: AnimalFeedingLog[];
   declare feedingPlans?: FeedingPlan[];
   declare feedingItems?: FeedingItem[];
+  declare publicEvents?: PublicEvent[];
 
   //--hvnt do yet
   // declare animalClinic?: AnimalClinic;
@@ -172,6 +174,13 @@ class Animal extends Model<
   declare addFeedingItem: HasManyAddAssociationMixin<FeedingItem, number>;
   declare setFeedingItems: HasManySetAssociationsMixin<FeedingItem, number>;
   declare removeFeedingItem: HasManyRemoveAssociationMixin<FeedingItem, number>;
+
+  declare getPublicEvents: HasManyGetAssociationsMixin<PublicEvent>;
+  declare addPublicEvent: HasManyAddAssociationMixin<PublicEvent, number>;
+  declare setPublicEvents: HasManySetAssociationsMixin<PublicEvent, number>;
+  declare removePublicEvent: HasManyRemoveAssociationMixin<PublicEvent, number>;
+
+
   // declare age?: number;
 
   // public getAge(): number {

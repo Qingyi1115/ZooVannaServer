@@ -23,6 +23,7 @@ import { Facility } from "./Facility";
 import { FacilityLog } from "./FacilityLog";
 import { GeneralStaff } from "./GeneralStaff";
 import { ZooEvent } from "./ZooEvent";
+import { PublicEvent } from "./PublicEvent";
 
 class InHouse extends Model<
   InferAttributes<InHouse>,
@@ -42,6 +43,7 @@ class InHouse extends Model<
   declare facilityLogs?: FacilityLog[];
   declare zooEvents?: ZooEvent[];
   declare customerReportLogs?: CustomerReportLog[];
+  declare publicEvents?: PublicEvent[];
 
   declare getFacility: BelongsToGetAssociationMixin<Facility>;
   declare setFacility: BelongsToSetAssociationMixin<Facility, number>;
@@ -77,6 +79,11 @@ class InHouse extends Model<
   declare setCustomerReportLogs: HasManySetAssociationsMixin<CustomerReportLog, number>;
   declare removeCustomerReportLog: HasManyRemoveAssociationMixin<CustomerReportLog, number>;
 
+  declare getPublicEvents: HasManyGetAssociationsMixin<PublicEvent>;
+  declare addPublicEvent: HasManyAddAssociationMixin<PublicEvent, number>;
+  declare setPublicEvents: HasManySetAssociationsMixin<PublicEvent, number>;
+  declare removePublicEvent: HasManyRemoveAssociationMixin<PublicEvent, number>;
+
   public toJSON() {
     return {
       ...this.get()
@@ -89,12 +96,12 @@ class InHouse extends Model<
       facility: (await this.getFacility())?.toJSON(),
       previousTramStop: (await this.getPreviousTramStop())?.toJSON(),
       nextTramStop: (await this.getNextTramStop())?.toJSON(),
-      maintenanceStaffs: (await this.getMaintenanceStaffs())?.map(staff=>staff.toJSON()),
-      operationStaffs: (await this.getOperationStaffs())?.map(staff=>staff.toJSON()),
-      facilityLogs: (await this.getFacilityLogs())?.map(log=>log.toJSON()),
-      zooEvent: (await this.getZooEvents())?.map(event=>event.toJSON()),
-      customerReportLogs: (await this.getCustomerReportLogs())?.map(log=>log.toJSON()),
-      lastMaintained:this.lastMaintained?.getTime(),
+      maintenanceStaffs: (await this.getMaintenanceStaffs())?.map(staff => staff.toJSON()),
+      operationStaffs: (await this.getOperationStaffs())?.map(staff => staff.toJSON()),
+      facilityLogs: (await this.getFacilityLogs())?.map(log => log.toJSON()),
+      zooEvent: (await this.getZooEvents())?.map(event => event.toJSON()),
+      customerReportLogs: (await this.getCustomerReportLogs())?.map(log => log.toJSON()),
+      lastMaintained: this.lastMaintained?.getTime(),
     };
   }
 }

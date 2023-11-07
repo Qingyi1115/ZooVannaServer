@@ -1,25 +1,27 @@
 import express from "express";
 
 import { authMiddleware } from "../middlewares/authMiddleware";
-import { 
+import {
     assignZooEventKeeper,
     autoAssignKeeperToZooEvent,
     createEmployeeAbsence,
-    deleteZooEvent, 
-    getAllEmployeeAbsence, 
-    getAllZooEvents, 
-    getKeepersForZooEvent, 
-    getZooEventById, 
-    removeKeeperfromZooEvent, 
-    updateZooEventIncludeFuture, 
+    createPublicEvent,
+    deleteZooEvent,
+    getAllEmployeeAbsence,
+    getAllPublicEvents,
+    getAllZooEvents,
+    getKeepersForZooEvent,
+    getZooEventById,
+    removeKeeperfromZooEvent,
+    updateZooEventIncludeFuture,
     updateZooEventSingle,
- } from "../controllers/zooEventController";
+} from "../controllers/zooEventController";
 
 const router = express.Router();
 
 router.use(authMiddleware);
 
-//species basic
+// Zoo events
 router.post("/getAllZooEvents", getAllZooEvents);
 router.get("/getZooEventById/:zooEventId", getZooEventById);
 router.put("/updateZooEventSingle/:zooEventId", updateZooEventSingle);
@@ -33,5 +35,13 @@ router.get("/getKeepersForZooEvent/:zooEventId", getKeepersForZooEvent);
 // Employee Absence
 router.put("/createEmployeeAbsence/:employeeId", createEmployeeAbsence);
 router.get("/getAllEmployeeAbsence", getAllEmployeeAbsence);
+
+// Public Events
+router.post("/createPublicEvent", createPublicEvent);
+router.get("/getAllPublicEvents", getAllPublicEvents);
+
+// router.get("/getZooEventById/:zooEventId", getZooEventById);
+// router.put("/updateZooEventSingle/:zooEventId", updateZooEventSingle);
+
 
 export default router;
