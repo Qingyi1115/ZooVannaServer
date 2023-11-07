@@ -25,8 +25,8 @@ class PublicEvent extends Model<
 > {
     declare publicEventId: CreationOptional<number>;
     declare activityType: ActivityType;
-    declare title: String;
-    declare details: String;
+    declare title: string;
+    declare details: string;
     declare imageUrl: string;
     declare startDate: Date;
     declare endDate: Date | null;
@@ -34,9 +34,9 @@ class PublicEvent extends Model<
     declare animals?: Animal[];
     declare keepers?: Keeper[];
     declare inHouse?: InHouse;
+    declare publicEventSessions?: PublicEventSession[];
     declare customers?: Customer[];
     // declare itineraryItems?: ItineraryItem[];
-    declare publicEventSessions?: PublicEventSession[];
 
     declare getAnimals: HasManyGetAssociationsMixin<Animal>;
     declare addAnimal: HasManyAddAssociationMixin<Animal, number>;

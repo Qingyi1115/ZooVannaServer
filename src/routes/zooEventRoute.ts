@@ -11,8 +11,11 @@ import {
     getAllPublicEvents,
     getAllZooEvents,
     getKeepersForZooEvent,
+    getPublicEventById,
     getZooEventById,
     removeKeeperfromZooEvent,
+    updatePublicEventById,
+    updatePublicEventImageById,
     updateZooEventIncludeFuture,
     updateZooEventSingle,
 } from "../controllers/zooEventController";
@@ -39,9 +42,9 @@ router.get("/getAllEmployeeAbsence", getAllEmployeeAbsence);
 // Public Events
 router.post("/createPublicEvent", createPublicEvent);
 router.get("/getAllPublicEvents", getAllPublicEvents);
-
-// router.get("/getZooEventById/:zooEventId", getZooEventById);
-// router.put("/updateZooEventSingle/:zooEventId", updateZooEventSingle);
+router.get("/getPublicEventById/:publicEventId", getPublicEventById);
+router.put("/updatePublicEventById/:publicEventId", updatePublicEventById);
+router.put("/updatePublicEventImageById/:publicEventId", updatePublicEventImageById);
 
 
 export default router;

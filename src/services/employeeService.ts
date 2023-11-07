@@ -298,6 +298,25 @@ export async function getEmployee(
   };
 }
 
+export async function getKeeperByEmployeeId(
+  employeeId: number,
+): Promise<Keeper> {
+
+  let employee = await getEmployee(employeeId);
+
+  if (employee) {
+    return employee.getKeeper({
+      include: [{
+        association: "employee",
+        required: true
+      }]
+    });
+  }
+  throw {
+    message: "Employee does not exist",
+  };
+}
+
 export async function disableEmployeeAccount(
   employeeId: CreationOptional<number>,
   dateOfResignation: Date,

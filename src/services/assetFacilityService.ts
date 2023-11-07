@@ -123,6 +123,24 @@ export async function getFacilityById(
   }
 }
 
+export async function getInHouseByFacilityId(
+  facilityId: number,
+) {
+  try {
+    const facility = await getFacilityById(facilityId);
+    const inHouse = facility.getInHouse({
+      include: {
+        association: "facility",
+        required: true
+      }
+    });
+    if (!inHouse) throw { message: "Unable to find inHouse with facility Id: " + facilityId }
+    return inHouse;
+  } catch (error: any) {
+    throw validationErrorHandler(error);
+  }
+}
+
 export async function getAllFacilityMaintenanceSuggestions(employee: Employee) {
   try {
     let facilities: Facility[] = [];
@@ -682,8 +700,8 @@ export async function getAllSensorMaintenanceSuggestions(employee: Employee) {
         {
           association: "generalStaff",
           required: false,
-          include:[{
-            association : "employee"
+          include: [{
+            association: "employee"
           }]
         },
         {
@@ -702,12 +720,12 @@ export async function getAllSensorMaintenanceSuggestions(employee: Employee) {
       throw { message: "No access!" };
     } else {
       sensors = await (await employee.getGeneralStaff()).getSensors({
-        include:[
+        include: [
           {
             association: "generalStaff",
             required: false,
-            include:[{
-              association : "employee"
+            include: [{
+              association: "employee"
             }]
           },
           {
@@ -1100,18 +1118,18 @@ export async function getCustomerReportLog(customerReportLogId: number) {
 export async function getAllNonViewedCustomerReportLogs() {
   try {
     return CustomerReportLog.findAll({
-      where:{viewed:false},
-      include:[{
-        association:"inHouse",
-        required:false,
-        include:[{
-          association:"facility",
+      where: { viewed: false },
+      include: [{
+        association: "inHouse",
+        required: false,
+        include: [{
+          association: "facility",
         }]
-      },{
-        association:"thirdParty",
-        required:false,
-        include:[{
-          association:"facility",
+      }, {
+        association: "thirdParty",
+        required: false,
+        include: [{
+          association: "facility",
         }]
       }]
     });
@@ -1120,38 +1138,38 @@ export async function getAllNonViewedCustomerReportLogs() {
   }
 }
 
-export async function getAllCustomerReportLogsByFacilityId(facilityId:number) {
+export async function getAllCustomerReportLogsByFacilityId(facilityId: number) {
   try {
     const facility = await getFacilityById(facilityId);
 
-    const fDetail:InHouse = await facility.getFacilityDetail();
+    const fDetail: InHouse = await facility.getFacilityDetail();
 
     return fDetail.getCustomerReportLogs({
-      include:[{
-        association:"inHouse",
-        required:false,
-      },{
-        association:"thirdParty",
-        required:false,
+      include: [{
+        association: "inHouse",
+        required: false,
+      }, {
+        association: "thirdParty",
+        required: false,
       }]
-  });
-    
+    });
+
   } catch (error: any) {
     throw validationErrorHandler(error);
   }
 }
 
-export async function markCustomerReportLogsViewed(customerReportLogIds: number[], viewed:boolean) {
+export async function markCustomerReportLogsViewed(customerReportLogIds: number[], viewed: boolean) {
   try {
     const customerReportLogs = await CustomerReportLog.findAll({
       where: {
-        customerReportLogId: {[Op.or]: customerReportLogIds},
+        customerReportLogId: { [Op.or]: customerReportLogIds },
       },
     });
-    
+
     const p = [];
 
-    for (const CRL of customerReportLogs){
+    for (const CRL of customerReportLogs) {
       CRL.viewed = viewed;
       p.push(CRL.save());
     }

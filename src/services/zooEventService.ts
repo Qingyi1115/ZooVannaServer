@@ -9,6 +9,7 @@ import { Keeper } from "../models/Keeper";
 import { ZooEvent } from "../models/ZooEvent";
 import * as AnimalService from "./animalService";
 import * as EmployeeService from "./employeeService";
+import * as AssetFacilityService from "./assetFacilityService";
 import { PublicEvent } from "../models/PublicEvent";
 
 cron.schedule('0 0 0 1 1 *', async () => {
@@ -993,10 +994,25 @@ export async function createPublicEvent(
   details: string,
   imageUrl: string,
   startDate: Date,
-  endDate: Date | null
+  endDate: Date | null,
+  animalCodes: string,
+  keeperEmployeeIds: number[],
+  inHouseId: number,
 ) {
   try {
-    return await PublicEvent.create({
+    const animals = [];
+    for (const code of animalCodes) {
+      animals.push(await AnimalService.getAnimalByAnimalCode(code));
+    }
+
+    const keepers = [];
+    for (const id of keeperEmployeeIds) {
+      keepers.push(await EmployeeService.getKeeperByEmployeeId(id));
+    }
+
+    const inHouse = await AssetFacilityService.getInHouseByFacilityId(inHouseId);
+
+    const newPublicEvent = await PublicEvent.create({
       activityType: activityType,
       title: title,
       details: details,
@@ -1004,10 +1020,15 @@ export async function createPublicEvent(
       startDate: startDate,
       endDate: endDate
     });
+
+    await newPublicEvent.setAnimals(animals);
+    await newPublicEvent.setKeepers(keepers);
+    await newPublicEvent.setInHouse(inHouse);
+
+    return newPublicEvent;
   } catch (error: any) {
     throw validationErrorHandler(error);
   }
-
 }
 
 export async function getAllPublicEvents(
@@ -1020,7 +1041,81 @@ export async function getAllPublicEvents(
   } catch (error: any) {
     throw validationErrorHandler(error);
   }
+}
 
+export async function getPublicEventById(
+  publicEventId: number,
+  include: any[]
+) {
+  try {
+    const publicEvent = await PublicEvent.findOne({
+      where: {
+        publicEventId: publicEventId
+      },
+    });
+
+    if (!publicEvent) throw { message: "Public Event not found with id: " + publicEventId }
+
+    return publicEvent;
+  } catch (error: any) {
+    throw validationErrorHandler(error);
+  }
+}
+
+export async function updatePublicEventById(
+  publicEventId: number,
+  activityType: ActivityType,
+  title: string,
+  details: string,
+  imageUrl: string | null,
+  startDate: Date,
+  endDate: Date | null,
+  animalCodes: string[] | null,
+  keeperEmployeeIds: number[] | null,
+  inHouseId: number | null,
+) {
+  try {
+    const publicEvent = await getPublicEventById(publicEventId, []);
+
+    publicEvent.activityType = activityType;
+    publicEvent.title = title;
+    publicEvent.details = details;
+    publicEvent.startDate = startDate;
+    publicEvent.endDate = endDate;
+
+    if (imageUrl) {
+      publicEvent.imageUrl = imageUrl;
+    }
+
+
+    if (animalCodes) {
+      const animals = [];
+      for (const code of animalCodes) {
+        animals.push(await AnimalService.getAnimalByAnimalCode(code));
+      }
+      await publicEvent.setAnimals(animals);
+    }
+
+    if (keeperEmployeeIds) {
+      const keepers = [];
+      for (const id of keeperEmployeeIds) {
+        keepers.push(await EmployeeService.getKeeperByEmployeeId(id));
+      }
+      await publicEvent.setKeepers(keepers);
+    }
+
+    if (inHouseId) {
+      const inHouse = await AssetFacilityService.getInHouseByFacilityId(inHouseId);
+      await publicEvent.setInHouse(inHouse);
+    }
+
+
+    return publicEvent.save();
+
+
+  } catch (error: any) {
+    throw validationErrorHandler(error);
+  }
 }
 
 

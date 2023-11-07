@@ -4,6 +4,7 @@ import { DAY_IN_MILLISECONDS } from "../helpers/staticValues";
 import { PlannerType } from "../models/Enumerated";
 import { findEmployeeByEmail } from "../services/employeeService";
 import * as ZooEventService from "../services/zooEventService";
+import { handleFileUpload } from "../helpers/multerProcessFile";
 
 export async function getAllZooEvents(req: Request, res: Response) {
   try {
@@ -438,31 +439,42 @@ export async function createPublicEvent(req: Request, res: Response) {
         .status(403)
         .json({ error: "Access Denied! Operation managers only!" });
 
+    const imageUrl = await handleFileUpload(
+      req,
+      process.env.IMG_URL_ROOT! + "zooEvent", //"D:/capstoneUploads/animalFeed",
+    );
+
     const {
       activityType,
       title,
       details,
-      imageUrl,
       startDate,
-      endDate
+      endDate,
+      animalCodes,
+      keeperEmployeeIds,
+      inHouseId,
     } = req.body;
     if (
       [
         activityType,
         title,
         details,
-        imageUrl,
         startDate,
-        endDate
+        endDate,
+        animalCodes,
+        keeperEmployeeIds,
+        inHouseId,
       ].includes(undefined)
     ) {
       console.log("Missing field(s): ", {
         activityType,
         title,
         details,
-        imageUrl,
         startDate,
-        endDate
+        endDate,
+        animalCodes,
+        keeperEmployeeIds,
+        inHouseId,
       });
       return res.status(400).json({ error: "Missing information!" });
     }
@@ -473,7 +485,10 @@ export async function createPublicEvent(req: Request, res: Response) {
       details,
       imageUrl,
       new Date(startDate),
-      endDate ? new Date(endDate) : null
+      endDate ? new Date(endDate) : null,
+      animalCodes,
+      keeperEmployeeIds,
+      Number(inHouseId),
     );
     return res.status(200).json({ publicEvent: publicEvent.toJSON() });
   } catch (error: any) {
@@ -532,6 +547,186 @@ export async function getAllPublicEvents(req: Request, res: Response) {
       ]
     );
     return res.status(200).json({ publicEvent: publicEvents.map(e => e.toJSON()) });
+  } catch (error: any) {
+    console.log(error);
+    res.status(400).json({ error: error.message });
+  }
+}
+
+export async function getPublicEventById(req: Request, res: Response) {
+  try {
+
+    // Check authentication
+    const { email } = (req as any).locals.jwtPayload;
+    const employee = await findEmployeeByEmail(email);
+    // const planningStaff = await employee.getPlanningStaff();
+
+    if (
+      !employee.superAdmin &&
+      !(await employee.getPlanningStaff())
+    )
+      return res
+        .status(403)
+        .json({ error: "Access Denied! Operation managers only!" });
+
+    const { publicEventId } = req.params;
+    if (
+      [publicEventId
+      ].includes("")
+    ) {
+      console.log("Missing field(s): ", {
+        publicEventId
+      });
+      return res.status(400).json({ error: "Missing information!" });
+    }
+
+    const publicEvent = await ZooEventService.getPublicEventById(
+      Number(publicEventId),
+      [
+        {
+          association: "animals",
+          required: false,
+          include: [{
+            association: "species",
+            required: true
+          }]
+        },
+        {
+          association: "keepers",
+          required: false,
+          include: [{
+            association: "employee",
+            required: true
+          }]
+        },
+        {
+          association: "inHouse",
+          required: false,
+          include: [{
+            association: "facility",
+            required: true
+          }]
+        },
+        {
+          association: "publicEventSessions",
+          required: false
+        }
+      ]
+    );
+    return res.status(200).json({ publicEvent: publicEvent.toJSON() });
+  } catch (error: any) {
+    console.log(error);
+    res.status(400).json({ error: error.message });
+  }
+}
+
+export async function updatePublicEventById(req: Request, res: Response) {
+  try {
+
+    // Check authentication
+    const { email } = (req as any).locals.jwtPayload;
+    const employee = await findEmployeeByEmail(email);
+    // const planningStaff = await employee.getPlanningStaff();
+
+    if (
+      !employee.superAdmin &&
+      !(await employee.getPlanningStaff())
+    )
+      return res
+        .status(403)
+        .json({ error: "Access Denied! Operation managers only!" });
+
+    const { publicEventId } = req.params;
+    const {
+      activityType,
+      title,
+      details,
+      startDate,
+      endDate,
+      animalCodes,
+      keeperEmployeeIds,
+      inHouseId,
+    } = req.body;
+
+    if (
+      [publicEventId,
+        activityType,
+        title,
+        details,
+        startDate,
+        endDate,
+      ].includes(undefined)
+    ) {
+      console.log("Missing field(s): ", {
+        publicEventId,
+        activityType,
+        title,
+        details,
+        startDate,
+        endDate,
+      });
+      return res.status(400).json({ error: "Missing information!" });
+    }
+
+    await ZooEventService.updatePublicEventById(
+      Number(publicEventId),
+      activityType,
+      title,
+      details,
+      null,
+      new Date(startDate),
+      endDate ? new Date(endDate) : null,
+      animalCodes,
+      keeperEmployeeIds,
+      inHouseId,
+    );
+    return res.status(200).json({ result: "success" });
+  } catch (error: any) {
+    console.log(error);
+    res.status(400).json({ error: error.message });
+  }
+}
+
+export async function updatePublicEventImageById(req: Request, res: Response) {
+  try {
+
+    // Check authentication
+    const { email } = (req as any).locals.jwtPayload;
+    const employee = await findEmployeeByEmail(email);
+    // const planningStaff = await employee.getPlanningStaff();
+
+    if (
+      !employee.superAdmin &&
+      !(await employee.getPlanningStaff())
+    )
+      return res
+        .status(403)
+        .json({ error: "Access Denied! Operation managers only!" });
+
+    const { publicEventId } = req.params;
+
+    const publicEvent = await ZooEventService.getPublicEventById(Number(publicEventId), []);
+
+    const imageUrl = await handleFileUpload(
+      req,
+      process.env.IMG_URL_ROOT! + "zooEvent", //"D:/capstoneUploads/animalFeed",
+    );
+
+
+
+    await ZooEventService.updatePublicEventById(
+      Number(publicEventId),
+      publicEvent.activityType,
+      publicEvent.title,
+      publicEvent.details,
+      imageUrl,
+      new Date(publicEvent.startDate),
+      publicEvent.endDate,
+      null,
+      null,
+      null,
+    );
+    return res.status(200).json({ result: "success" });
   } catch (error: any) {
     console.log(error);
     res.status(400).json({ error: error.message });
