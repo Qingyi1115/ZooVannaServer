@@ -9,7 +9,7 @@ import {
   DataTypes,
   InferAttributes,
   InferCreationAttributes,
-  Model,
+  Model
 } from "Sequelize";
 import { conn } from "../db";
 import { Animal } from "./Animal";
@@ -79,25 +79,16 @@ class ZooEvent extends Model<
   declare setAnimalClinic: BelongsToSetAssociationMixin<AnimalClinic, number>;
 
   declare getAnimalActivity: BelongsToGetAssociationMixin<AnimalActivity>;
-  declare setAnimalActivity: BelongsToSetAssociationMixin<
-    AnimalActivity,
-    number
-  >;
+  declare setAnimalActivity: BelongsToSetAssociationMixin<AnimalActivity, number>;
 
   declare getFeedingPlanSessionDetail: BelongsToGetAssociationMixin<FeedingPlanSessionDetail>;
-  declare setFeedingPlanSessionDetail: BelongsToSetAssociationMixin<
-    FeedingPlanSessionDetail,
-    number
-  >;
+  declare setFeedingPlanSessionDetail: BelongsToSetAssociationMixin<FeedingPlanSessionDetail, number>;
 
   declare getEmployee: BelongsToGetAssociationMixin<Employee>;
   declare setEmployee: BelongsToSetAssociationMixin<Employee, number>;
 
   declare getPublicEventSession: BelongsToGetAssociationMixin<PublicEventSession>;
-  declare setPublicEventSession: BelongsToSetAssociationMixin<
-    PublicEventSession,
-    number
-  >;
+  declare setPublicEventSession: BelongsToSetAssociationMixin<PublicEventSession, number>;
 
   public toJSON() {
     return {
@@ -105,7 +96,7 @@ class ZooEvent extends Model<
       eventNotificationDate: this.eventNotificationDate?.getTime(),
       eventStartDateTime: this.eventStartDateTime?.getTime(),
       eventEndDateTime: this.eventEndDateTime?.getTime(),
-    };
+    }
   }
 }
 
@@ -153,8 +144,9 @@ ZooEvent.init(
     },
     requiredNumberOfKeeper: {
       type: DataTypes.INTEGER,
-      allowNull: false,
+      allowNull: false
     },
+
   },
   {
     freezeTableName: true,
@@ -167,3 +159,4 @@ ZooEvent.init(
 );
 
 export { ZooEvent };
+
