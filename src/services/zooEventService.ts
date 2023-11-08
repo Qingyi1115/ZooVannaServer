@@ -1151,7 +1151,7 @@ export async function createPublicEvent(
   imageUrl: string,
   startDate: Date,
   endDate: Date | null,
-  animalCodes: string,
+  animalCodes: string[],
   keeperEmployeeIds: number[],
   inHouseId: number,
 ) {

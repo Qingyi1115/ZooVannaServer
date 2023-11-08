@@ -10,6 +10,7 @@ import * as SpeciesService from "../services/speciesService";
 import { Animal } from "./Animal";
 import { AnimalActivity } from "./AnimalActivity";
 import * as AssetFacility from "../services/assetFacilityService";
+import * as ZooEventService from "../services/zooEventService";
 import { AnimalActivityLog } from "./AnimalActivityLog";
 import { AnimalClinic } from "./AnimalClinics";
 import { AnimalFeed } from "./AnimalFeed";
@@ -35,6 +36,7 @@ import {
   Country,
   DayOfWeek,
   EventTimingType,
+  EventType,
   FacilityLogType,
   FacilityType,
   GeneralStaffType,
@@ -660,6 +662,7 @@ export const seedDatabase = async () => {
   await enclosureSeed();
   await promotionSeed();
   await customerSeed();
+  await publicEventSeed();
 };
 
 export const promotionSeed = async () => {
@@ -3930,4 +3933,32 @@ export const facilityAssetsSeed = async () => {
   //   sensorType: SensorType.CAMERA,
   // } as any;
   // let camera = await Sensor.create(cameraTemplate);
+};
+
+export const publicEventSeed = async () => {
+
+  const pubEvent = await ZooEventService.createPublicEvent(
+    EventType.CUSTOMER_FEEDING,
+    "Homo sapiens feeding",
+    "do not feed them fast food",
+    "img/animal/ANM00001.jpg",
+    new Date(),
+    new Date(Date.now() + 60 * DAY_IN_MILLISECONDS),
+    [],
+    [],
+    8
+  );
+
+  const pubEventSession = await ZooEventService.createPublicEventSession(
+    pubEvent.publicEventId,
+    RecurringPattern.WEEKLY,
+    DayOfWeek.THURSDAY,
+    null,
+    60,
+    "16:00",
+    1
+  );
+
+
+
 };

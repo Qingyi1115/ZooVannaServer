@@ -83,7 +83,11 @@ PublicEventSession.init(
             allowNull: false,
         },
         time: {
-            type: DataTypes.STRING,
+            type: DataTypes.STRING(5),
+            allowNull: false,
+            validate: {
+                is: /[0-2]\d:[0-5]\d/
+            }
         },
         daysInAdvanceNotification: {
             type: DataTypes.DOUBLE(10, 6),

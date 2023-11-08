@@ -546,7 +546,7 @@ export async function getAllPublicEvents(req: Request, res: Response) {
 
       ]
     );
-    return res.status(200).json({ publicEvent: publicEvents.map(e => e.toJSON()) });
+    return res.status(200).json({ publicEvents: publicEvents.map(e => e.toJSON()) });
   } catch (error: any) {
     console.log(error);
     res.status(400).json({ error: error.message });
