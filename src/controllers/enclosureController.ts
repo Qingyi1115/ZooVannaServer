@@ -187,6 +187,27 @@ export async function deleteEnclosure(req: Request, res: Response) {
   }
 }
 
+// /getanimalsofenclosure/:enclosureId
+export async function getAnimalsOfEnclosure(req: Request, res: Response) {
+  const { enclosureId } = req.params;
+
+  if (enclosureId == undefined) {
+    console.log("Missing field(s): ", {
+      enclosureId,
+    });
+    return res.status(400).json({ error: "Missing information!" });
+  }
+
+  try {
+    const animalsList = await EnclosureService.getAnimalsOfEnclosure(
+      Number(enclosureId),
+    );
+    return res.status(200).json({ animalsList });
+  } catch (error: any) {
+    res.status(400).json({ error: error.message });
+  }
+}
+
 //assignAnimalToEnclosure
 export async function assignAnimalToEnclosure(req: Request, res: Response) {
   try {

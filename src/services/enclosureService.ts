@@ -1,3 +1,4 @@
+import { Animal } from "../models/Animal";
 import { validationErrorHandler } from "../helpers/errorHandler";
 import { Enclosure } from "../models/Enclosure";
 import * as AnimalService from "./animalService";
@@ -104,6 +105,29 @@ export async function deleteEnclosure(enclosureId: number) {
   });
 
   //delete facility also HEREE!!!!!!!!!
+
+  if (result) {
+    return result;
+  }
+  throw new Error("Invalid Enclosure ID!");
+}
+
+export async function getAnimalsOfEnclosure(enclosureId: number) {
+  let result: Animal[] = [];
+
+  // let curEnclosure = await getEnclosuresById(enclosureId)
+
+  let allAnimals = await AnimalService.getAllAnimals();
+
+  if (allAnimals) {
+    for (let a of allAnimals) {
+      console.log('here')
+      if (a.animalCode == "ANM00001") console.log(a)
+      if (a.enclosure?.enclosureId === enclosureId) {
+        result.push(a);
+      }
+    }
+  }
 
   if (result) {
     return result;
