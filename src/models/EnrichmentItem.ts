@@ -1,13 +1,13 @@
 import {
-    CreationOptional,
-    DataTypes,
-    HasManyAddAssociationMixin,
-    HasManyGetAssociationsMixin,
-    HasManyRemoveAssociationMixin,
-    HasManySetAssociationsMixin,
-    InferAttributes,
-    InferCreationAttributes,
-    Model,
+  CreationOptional,
+  DataTypes,
+  HasManyAddAssociationMixin,
+  HasManyGetAssociationsMixin,
+  HasManyRemoveAssociationMixin,
+  HasManySetAssociationsMixin,
+  InferAttributes,
+  InferCreationAttributes,
+  Model,
 } from "Sequelize";
 import { conn } from "../db";
 import { AnimalActivity } from "./AnimalActivity";
@@ -21,7 +21,7 @@ class EnrichmentItem extends Model<
   declare enrichmentItemImageUrl: string;
 
   //-- FK
-  declare enrichmentItems?: EnrichmentItem[];
+  declare animalActivities?: AnimalActivity[];
 
   declare getAnimalActivities: HasManyGetAssociationsMixin<AnimalActivity>;
   declare addAnimalActivity: HasManyAddAssociationMixin<AnimalActivity, number>;
