@@ -121,8 +121,6 @@ export async function getAnimalsOfEnclosure(enclosureId: number) {
 
   if (allAnimals) {
     for (let a of allAnimals) {
-      console.log('here')
-      if (a.animalCode == "ANM00001") console.log(a)
       if (a.enclosure?.enclosureId === enclosureId) {
         result.push(a);
       }
@@ -145,6 +143,22 @@ export async function assignAnimalToEnclosure(
 
     if (enclosure && animal) {
       enclosure.addAnimal(animal);
+    }
+  } catch (error: any) {
+    throw validationErrorHandler(error);
+  }
+}
+
+export async function removeAnimalFromEnclosure(
+  enclosureId: number,
+  animalCode: string,
+) {
+  try {
+    let enclosure = await getEnclosuresById(enclosureId);
+    let animal = await AnimalService.getAnimalActivityByAnimalCode(animalCode);
+
+    if (enclosure && animal) {
+      enclosure.removeAnimal(animal);
     }
   } catch (error: any) {
     throw validationErrorHandler(error);

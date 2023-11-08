@@ -232,3 +232,28 @@ export async function assignAnimalToEnclosure(req: Request, res: Response) {
     res.status(400).json({ error: error.message });
   }
 }
+
+//removeAnimalFromEnclosure
+export async function removeAnimalFromEnclosure(req: Request, res: Response) {
+  try {
+    const { enclosureId, animalCode } = req.body;
+
+    if ([enclosureId, animalCode].includes(undefined)) {
+      console.log("Missing field(s): ", {
+        enclosureId,
+        animalCode,
+      });
+      return res.status(400).json({ error: "Missing information!" });
+    }
+
+    // have to pass in req for image uploading
+    let enclosure = await EnclosureService.removeAnimalFromEnclosure(
+      Number(enclosureId),
+      animalCode,
+    );
+
+    return res.status(200).json({ enclosure });
+  } catch (error: any) {
+    res.status(400).json({ error: error.message });
+  }
+}
