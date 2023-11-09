@@ -3,13 +3,14 @@ import { v4 as uuidv4 } from "uuid";
 import { conn } from "../db";
 import { DAY_IN_MILLISECONDS } from "../helpers/staticValues";
 import * as AnimalService from "../services/animalService";
+import * as AssetFacility from "../services/assetFacilityService";
 import {
   createCustomerOrderForSeeding
 } from "../services/customerService";
 import * as SpeciesService from "../services/speciesService";
+import * as ZooEventService from "../services/zooEventService";
 import { Animal } from "./Animal";
 import { AnimalActivity } from "./AnimalActivity";
-import * as AssetFacility from "../services/assetFacilityService";
 import { AnimalActivityLog } from "./AnimalActivityLog";
 import { AnimalClinic } from "./AnimalClinics";
 import { AnimalFeed } from "./AnimalFeed";
@@ -72,6 +73,8 @@ import { PhysiologicalReferenceNorms } from "./PhysiologicalReferenceNorms";
 import { PlanningStaff } from "./PlanningStaff";
 import { Plantation } from "./Plantation";
 import { Promotion } from "./Promotion";
+import { PublicEvent } from "./PublicEvent";
+import { PublicEventSession } from "./PublicEventSession";
 import { Sensor } from "./Sensor";
 import { SensorReading } from "./SensorReading";
 import { Species } from "./Species";
@@ -80,8 +83,6 @@ import { SpeciesEnclosureNeed } from "./SpeciesEnclosureNeed";
 import { ThirdParty } from "./ThirdParty";
 import { Zone } from "./Zone";
 import { ZooEvent } from "./ZooEvent";
-import { PublicEvent } from "./PublicEvent";
-import { PublicEventSession } from "./PublicEventSession";
 
 function addCascadeOptions(options: object) {
   return { ...options, onDelete: "CASCADE", onUpdate: "CASCADE" };
@@ -3340,6 +3341,7 @@ export const facilityAssetsSeed = async () => {
     showOnMap: true,
     xCoordinate: 103.78114318847656,
     yCoordinate: 1.29179263114929,
+    imageUrl: "img/facility/InfoCentre.jpg",
     inHouse: {
       lastMaintained: new Date(),
       isPaid: false,
@@ -3365,6 +3367,7 @@ export const facilityAssetsSeed = async () => {
     showOnMap: true,
     xCoordinate: 103.78115844726562,
     yCoordinate: 1.29660260677338,
+    imageUrl: "img/facility/Directory.png",
     inHouse: {
       lastMaintained: new Date(),
       isPaid: false,
@@ -3398,6 +3401,7 @@ export const facilityAssetsSeed = async () => {
     showOnMap: true,
     xCoordinate: 103.78221130371094,
     yCoordinate: 1.29178547859192,
+    imageUrl: "img/facility/Shop.jpg",
     inHouse: {
       lastMaintained: new Date(),
       isPaid: false,
@@ -3415,6 +3419,7 @@ export const facilityAssetsSeed = async () => {
     showOnMap: true,
     xCoordinate: 103.7817,
     yCoordinate: 1.291,
+    imageUrl: "img/facility/Parking.jpg",
     inHouse: {
       lastMaintained: new Date(),
       isPaid: false,
@@ -3445,6 +3450,7 @@ export const facilityAssetsSeed = async () => {
     showOnMap: true,
     xCoordinate: 103.77511596679688,
     yCoordinate: 1.2956326007843,
+    imageUrl: "img/facility/Amphitheatre.jpg",
     inHouse: {
       lastMaintained: new Date(),
       isPaid: false,
@@ -3462,6 +3468,7 @@ export const facilityAssetsSeed = async () => {
     showOnMap: true,
     xCoordinate: 103.7804946899414,
     yCoordinate: 1.29745411872864,
+    imageUrl: "img/facility/Playground.jpg",
     inHouse: {
       lastMaintained: new Date(),
       isPaid: false,
@@ -3479,6 +3486,7 @@ export const facilityAssetsSeed = async () => {
     showOnMap: true,
     xCoordinate: 103.7739486694336,
     yCoordinate: 1.29762589931488,
+    imageUrl: "img/facility/Nursery.JPG",
     inHouse: {
       lastMaintained: new Date(),
       isPaid: false,
@@ -3496,6 +3504,7 @@ export const facilityAssetsSeed = async () => {
     showOnMap: true,
     xCoordinate: 103.7840576171875,
     yCoordinate: 1.29575824737549,
+    imageUrl: "img/facility/Gazebo.jpg",
     inHouse: {
       lastMaintained: new Date(),
       isPaid: false,
@@ -3513,6 +3522,7 @@ export const facilityAssetsSeed = async () => {
     showOnMap: true,
     xCoordinate: 103.7768325805664,
     yCoordinate: 1.2946457862854,
+    imageUrl: "img/facility/Tiger Pool Cafe.jpg",
     inHouse: {
       lastMaintained: new Date(),
       isPaid: false,
@@ -3530,6 +3540,7 @@ export const facilityAssetsSeed = async () => {
     showOnMap: true,
     xCoordinate: 103.77333068847656,
     yCoordinate: 1.2970198392868,
+    imageUrl: "img/facility/Toilet.jpg",
     inHouse: {
       lastMaintained: new Date(),
       isPaid: false,
@@ -3566,6 +3577,7 @@ export const facilityAssetsSeed = async () => {
       yCoordinate: 1.29767763614655,
       isSheltered: true,
       showOnMap: true,
+      imageUrl: "img/facility/Tram Stop 1.jpg",
       hubProcessors: [
         {
           processorName: "A01",
@@ -3660,7 +3672,7 @@ export const facilityAssetsSeed = async () => {
       isSheltered: true,
       xCoordinate: 5,
       yCoordinate: 50,
-
+      imageUrl: "img/facility/Tram Stop 2.jpg",
       //@ts-ignore
       inHouse: {
         isPaid: true,
@@ -3688,6 +3700,7 @@ export const facilityAssetsSeed = async () => {
     {
       facilityName: "tram2",
       isSheltered: true,
+      imageUrl: "img/facility/Tram Stop 2.jpg",
       //@ts-ignore
       inHouse: {
         isPaid: true,
