@@ -3956,7 +3956,8 @@ export const publicEventSeed = async () => {
     null,
     60,
     "16:00",
-    1
+    1,
+    null
   );
 
 

@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import { compareDates } from "../helpers/others";
 import { DAY_IN_MILLISECONDS } from "../helpers/staticValues";
-import { PlannerType } from "../models/Enumerated";
+import { PlannerType, RecurringPattern } from "../models/Enumerated";
 import { findEmployeeByEmail } from "../services/employeeService";
 import * as ZooEventService from "../services/zooEventService";
 import { handleFileUpload } from "../helpers/multerProcessFile";
@@ -797,13 +797,12 @@ export async function createPublicEventSession(req: Request, res: Response) {
       durationInMinutes,
       time,
       daysInAdvanceNotification,
+      oneDate
     } = req.body;
     if (
       [
         publicEventId,
         recurringPattern,
-        dayOfWeek,
-        dayOfMonth,
         durationInMinutes,
         time,
         daysInAdvanceNotification,
@@ -818,11 +817,12 @@ export async function createPublicEventSession(req: Request, res: Response) {
         durationInMinutes,
         time,
         daysInAdvanceNotification,
+        oneDate
       });
       return res.status(400).json({ error: "Missing information!" });
     }
 
-    const publicEvent = await ZooEventService.createPublicEventSession(
+    const newPublicEventSession = await ZooEventService.createPublicEventSession(
       Number(publicEventId),
       recurringPattern,
       dayOfWeek,
@@ -830,8 +830,9 @@ export async function createPublicEventSession(req: Request, res: Response) {
       durationInMinutes,
       time,
       daysInAdvanceNotification,
+      recurringPattern == RecurringPattern.NON_RECURRING ? new Date(oneDate) : null
     );
-    return res.status(200).json({ publicEvent: publicEvent.toJSON() });
+    return res.status(200).json({ publicEventSession: newPublicEventSession.toJSON() });
   } catch (error: any) {
     console.log(error);
     res.status(400).json({ error: error.message });
@@ -865,7 +866,46 @@ export async function getAllPublicEventSessions(req: Request, res: Response) {
       },
     ]);
 
-    return res.status(200).json({ publicEvent: publicEventSessions.map(session => session.toJSON()) });
+    return res.status(200).json({ publicEventSessions: publicEventSessions.map(session => session.toJSON()) });
+  } catch (error: any) {
+    console.log(error);
+    res.status(400).json({ error: error.message });
+  }
+}
+
+export async function getAllPublicEventSessionsByPublicEventId(req: Request, res: Response) {
+  try {
+
+    // Check authentication
+    const { email } = (req as any).locals.jwtPayload;
+    const employee = await findEmployeeByEmail(email);
+    // const planningStaff = await employee.getPlanningStaff();
+
+    if (
+      !employee.superAdmin &&
+      !(await employee.getPlanningStaff())
+    )
+      return res
+        .status(403)
+        .json({ error: "Access Denied! Planning Staff only!" });
+
+    const { publicEventId } = req.params;
+
+
+    const publicEventSessions = await ZooEventService.getAllPublicEventSessions([
+      {
+        association: "publicEvent",
+        require: true,
+        where: {
+          publicEventId: publicEventId
+        }
+      }, {
+        association: "zooEvents",
+        require: false
+      },
+    ]);
+
+    return res.status(200).json({ publicEventSessions: publicEventSessions.map(session => session.toJSON()) });
   } catch (error: any) {
     console.log(error);
     res.status(400).json({ error: error.message });
@@ -906,7 +946,7 @@ export async function getPublicEventSessionById(req: Request, res: Response) {
         },
       ]);
 
-    return res.status(200).json({ publicEvent: publicEventSession });
+    return res.status(200).json({ publicEventSession: publicEventSession });
   } catch (error: any) {
     console.log(error);
     res.status(400).json({ error: error.message });

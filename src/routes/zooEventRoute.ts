@@ -2,27 +2,28 @@ import express from "express";
 
 import { authMiddleware } from "../middlewares/authMiddleware";
 import {
-    assignZooEventKeeper,
-    autoAssignKeeperToZooEvent,
-    createEmployeeAbsence,
-    createPublicEvent,
-    createPublicEventSession,
-    deletePublicEventById,
-    deleteZooEvent,
-    getAllEmployeeAbsence,
-    getAllPublicEventSessions,
-    getAllPublicEvents,
-    getAllZooEvents,
-    getKeepersForZooEvent,
-    getPublicEventById,
-    getPublicEventSessionById,
-    getZooEventById,
-    removeKeeperfromZooEvent,
-    updatePublicEventById,
-    updatePublicEventImageById,
-    updatePublicEventSessionById,
-    updateZooEventIncludeFuture,
-    updateZooEventSingle,
+  assignZooEventKeeper,
+  autoAssignKeeperToZooEvent,
+  createEmployeeAbsence,
+  createPublicEvent,
+  createPublicEventSession,
+  deletePublicEventById,
+  deleteZooEvent,
+  getAllEmployeeAbsence,
+  getAllPublicEventSessions,
+  getAllPublicEventSessionsByPublicEventId,
+  getAllPublicEvents,
+  getAllZooEvents,
+  getKeepersForZooEvent,
+  getPublicEventById,
+  getPublicEventSessionById,
+  getZooEventById,
+  removeKeeperfromZooEvent,
+  updatePublicEventById,
+  updatePublicEventImageById,
+  updatePublicEventSessionById,
+  updateZooEventIncludeFuture,
+  updateZooEventSingle,
 } from "../controllers/zooEventController";
 import { deletePublicEventSessionById } from "../services/zooEventService";
 
@@ -56,6 +57,7 @@ router.delete("/deletePublicEventById/:publicEventId", deletePublicEventById);
 // PublicEventSession
 router.post("/createPublicEventSession/:publicEventId", createPublicEventSession);
 router.get("/getAllPublicEventSessions", getAllPublicEventSessions);
+router.get("/getAllPublicEventSessionsByPublicEventId/:publicEventId", getAllPublicEventSessionsByPublicEventId);
 router.get("/getPublicEventSessionById/:publicEventSessionId", getPublicEventSessionById);
 router.put("/updatePublicEventSessionById/:publicEventSessionId", updatePublicEventSessionById);
 router.delete("/deletePublicEventSessionById/:publicEventSessionId", deletePublicEventSessionById);

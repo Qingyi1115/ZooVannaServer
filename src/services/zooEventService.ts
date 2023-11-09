@@ -1294,22 +1294,47 @@ export async function createPublicEventSession(
   durationInMinutes: number,
   time: string,
   daysInAdvanceNotification: number,
+  oneDate: Date | null
 ) {
   try {
 
-    const publicEvenet = await getPublicEventById(publicEventId, []);
-    const newPublicEvent = await PublicEventSession.create({
+    const publicEvent = await getPublicEventById(publicEventId, []);
+    if (recurringPattern == RecurringPattern.NON_RECURRING && !oneDate) throw { message: "Date of non recurring event not specified!" }
+    if (recurringPattern == RecurringPattern.MONTHLY && !dayOfMonth) throw { message: "Date of monthly event not specified!" }
+    if (recurringPattern == RecurringPattern.WEEKLY && !dayOfWeek) throw { message: "Date of weekly event not specified!" }
+
+    const data = {
       recurringPattern: recurringPattern,
       dayOfWeek: dayOfWeek,
       dayOfMonth: dayOfMonth,
       durationInMinutes: durationInMinutes,
       time: time,
       daysInAdvanceNotification: daysInAdvanceNotification
-    });
+    };
+    console.log("data", data, " oneDate, ", oneDate);
+    const newPublicEventSession = await PublicEventSession.create(data);
 
-    await newPublicEvent.setPublicEvent(publicEvenet);
+    await newPublicEventSession.setPublicEvent(publicEvent);
 
-    return newPublicEvent;
+    if (recurringPattern == RecurringPattern.NON_RECURRING) {
+      createPublicSessionZooEvent(
+        newPublicEventSession.publicEventSessionId,
+        oneDate as Date,
+        durationInMinutes,
+        daysInAdvanceNotification,
+        publicEvent.details,
+        publicEvent.title,
+        publicEvent.imageUrl,
+        publicEvent.eventType,
+        await publicEvent.getKeepers(),
+        await publicEvent.getInHouse(),
+        await publicEvent.getAnimals()
+      )
+    }
+
+    await generateMonthlyZooEventForPublicEventSession(newPublicEventSession);
+
+    return newPublicEventSession;
   } catch (error: any) {
     throw validationErrorHandler(error);
   }
