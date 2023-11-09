@@ -12,7 +12,7 @@ import {
     Model,
 } from "Sequelize";
 import { conn } from "../db";
-import { ActivityType } from "./Enumerated";
+import { EventType } from "./Enumerated";
 import { Animal } from "./Animal";
 import { Keeper } from "./Keeper";
 import { InHouse } from "./InHouse";
@@ -24,7 +24,7 @@ class PublicEvent extends Model<
     InferCreationAttributes<PublicEvent>
 > {
     declare publicEventId: CreationOptional<number>;
-    declare activityType: ActivityType;
+    declare eventType: EventType;
     declare title: string;
     declare details: string;
     declare imageUrl: string;
@@ -88,9 +88,9 @@ PublicEvent.init(
             autoIncrement: true,
             primaryKey: true,
         },
-        activityType: {
+        eventType: {
             type: DataTypes.ENUM,
-            values: Object.values(ActivityType),
+            values: Object.values(EventType),
             allowNull: false,
         },
         title: {

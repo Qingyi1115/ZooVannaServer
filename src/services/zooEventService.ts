@@ -2,7 +2,7 @@ import { Op } from "Sequelize";
 import cron from "node-cron";
 import { validationErrorHandler } from "../helpers/errorHandler";
 import { compareDates, getNextDayOfMonth, getNextDayOfWeek } from "../helpers/others";
-import { ADVANCE_DAYS_FOR_ZOO_EVENT_GENERATION, ANIMAL_ACTIVITY_NOTIFICATION_HOURS, ANIMAL_FEEDING_NOTIFICATION_HOURS, DAY_IN_MILLISECONDS, HOUR_IN_MILLISECONDS } from "../helpers/staticValues";
+import { ADVANCE_DAYS_FOR_ZOO_EVENT_GENERATION, ANIMAL_ACTIVITY_NOTIFICATION_HOURS, ANIMAL_FEEDING_NOTIFICATION_HOURS, DAY_IN_MILLISECONDS, HOUR_IN_MILLISECONDS, MINUTES_IN_MILLISECONDS } from "../helpers/staticValues";
 import { Employee } from "../models/Employee";
 import { ActivityType, DayOfWeek, EventTimingType, EventType, RecurringPattern } from "../models/Enumerated";
 import { Keeper } from "../models/Keeper";
@@ -11,6 +11,9 @@ import * as AnimalService from "./animalService";
 import * as EmployeeService from "./employeeService";
 import * as AssetFacilityService from "./assetFacilityService";
 import { PublicEvent } from "../models/PublicEvent";
+import { PublicEventSession } from "../models/PublicEventSession";
+import { InHouse } from "../models/InHouse";
+import { Animal } from "../models/Animal";
 
 cron.schedule('0 0 0 1 1 *', async () => {
   for (const animalAct of await AnimalService.getAllAnimalActivities()) {
@@ -19,6 +22,10 @@ cron.schedule('0 0 0 1 1 *', async () => {
 
   for (const feedingplansessiondetail of await AnimalService.getAllFeedingPlanSessionDetails()) {
     generateMonthlyZooEventForFeedingPlanSession(feedingplansessiondetail.feedingPlanSessionDetailId);
+  }
+
+  for (const publicEvent of (await getAllPublicEvents()).filter(ev => ev.endDate && compareDates(ev.endDate, new Date()) >= 0)) {
+    generateMonthlyZooEventForPublicEvent(publicEvent.publicEventId);
   }
 });
 
@@ -137,6 +144,155 @@ export async function generateMonthlyZooEventForAnimalActivity(animalActivityId:
     await p;
   }
   return animalActivity;
+}
+
+export async function createPublicSessionZooEvent(
+  publicEventSessionId: number,
+  date: Date,
+  durationInMinutes: number,
+  daysInAdvanceNotification: number,
+  details: string,
+  title: string,
+  imageUrl: string,
+  eventType: EventType,
+  keepers: Keeper[],
+  inHouse: InHouse,
+  animals: Animal[],
+) {
+  const publicEventSession = await getPublicEventSessionById(publicEventSessionId);
+  const newZooEvent = await ZooEvent.create({
+    eventName: title,
+    eventDescription: details,
+    eventIsPublic: true,
+    eventType: eventType,
+    eventStartDateTime: date,
+    eventNotificationDate: new Date(date.getTime() + daysInAdvanceNotification * DAY_IN_MILLISECONDS),
+    requiredNumberOfKeeper: keepers.length,
+    eventEndDateTime: new Date(date.getTime() + durationInMinutes * MINUTES_IN_MILLISECONDS),
+    imageUrl: imageUrl
+  });
+
+  await newZooEvent.setPublicEventSession(publicEventSession);
+  await newZooEvent.setInHouse(inHouse);
+  await newZooEvent.setAnimals(animals);
+
+}
+
+async function generateMonthlyZooEventForPublicEventSession(session: PublicEventSession) {
+  const publicEvent = await session.getPublicEvent();
+  const zooEvents = await session.getZooEvents();
+  const keepers = await publicEvent.getKeepers();
+  const inHouse = await publicEvent.getInHouse();
+  const animals = await publicEvent.getAnimals();
+
+  let startDate = compareDates(new Date(), publicEvent.startDate) > 0 ? new Date() : publicEvent.startDate;
+  startDate = new Date(Date.UTC(startDate.getFullYear(), startDate.getMonth(), startDate.getDate()));
+  const time = session.time.split(":").map(numStr => Number(numStr));
+
+  if (zooEvents.length > 0) {
+    const latestEventDate = zooEvents.reduce((a, b) => compareDates(a.eventStartDateTime, b.eventStartDateTime) > 0 ? a : b).eventStartDateTime;
+    startDate = compareDates(latestEventDate, startDate) > 0 ? latestEventDate : startDate;
+    let lastday = new Date(Date.UTC(startDate.getFullYear(), startDate.getMonth() + 1, 0)).getDate();
+
+    startDate = session.recurringPattern == RecurringPattern.DAILY ?
+      new Date(startDate.getTime() + DAY_IN_MILLISECONDS)
+      : session.recurringPattern == RecurringPattern.WEEKLY ?
+        new Date(startDate.getTime() + DAY_IN_MILLISECONDS * 7)
+        : session.recurringPattern == RecurringPattern.MONTHLY ?
+          new Date(Date.UTC(startDate.getFullYear(), startDate.getMonth() + 1, Math.min(lastday, session.dayOfMonth || 1)))
+          : startDate;
+  }
+
+  if (publicEvent.endDate && compareDates(new Date(), publicEvent.endDate) > 0) return;
+  let lastDate = !publicEvent.endDate ? new Date(Date.now() + DAY_IN_MILLISECONDS * ADVANCE_DAYS_FOR_ZOO_EVENT_GENERATION) :
+    compareDates(new Date(Date.now() + DAY_IN_MILLISECONDS * ADVANCE_DAYS_FOR_ZOO_EVENT_GENERATION), publicEvent.endDate) < 0
+      ? new Date(Date.now() + DAY_IN_MILLISECONDS * ADVANCE_DAYS_FOR_ZOO_EVENT_GENERATION)
+      : publicEvent.endDate;
+  lastDate = new Date(Date.UTC(lastDate.getFullYear(), lastDate.getMonth(), lastDate.getDate()));
+
+  let interval = 0;
+  switch (session.recurringPattern) {
+    case RecurringPattern.DAILY: interval = DAY_IN_MILLISECONDS; break;
+    case RecurringPattern.WEEKLY: interval = DAY_IN_MILLISECONDS * 7; break;
+  }
+
+  let iKeepMyPromises: Promise<any>[] = [];
+
+  if (session.recurringPattern == RecurringPattern.NON_RECURRING) {
+    return;
+  } else if (session.recurringPattern == RecurringPattern.MONTHLY) {
+    if (!session.dayOfMonth) throw { error: "session day of month missing!" }
+
+    const startDT = getNextDayOfMonth(startDate, session.dayOfMonth);
+    startDT.setHours(time[0], time[1]);
+    iKeepMyPromises = loopCallbackDateIntervals(
+      (date: Date) => {
+        return createPublicSessionZooEvent(
+          session.publicEventSessionId,
+          date,
+          session.durationInMinutes,
+          session.daysInAdvanceNotification,
+          publicEvent.details,
+          publicEvent.title,
+          publicEvent.imageUrl,
+          publicEvent.eventType,
+          keepers,
+          inHouse,
+          animals
+        );
+      },
+      startDT,
+      lastDate,
+      session.dayOfMonth,
+      true
+    );
+  } else {
+    let dayOfWeekNumber = 0;
+    switch (session.dayOfWeek) {
+      case DayOfWeek.MONDAY: dayOfWeekNumber = 1; break;
+      case DayOfWeek.TUESDAY: dayOfWeekNumber = 2; break;
+      case DayOfWeek.WEDNESDAY: dayOfWeekNumber = 3; break;
+      case DayOfWeek.THURSDAY: dayOfWeekNumber = 4; break;
+      case DayOfWeek.FRIDAY: dayOfWeekNumber = 5; break;
+      case DayOfWeek.SATURDAY: dayOfWeekNumber = 6; break;
+    }
+    const startDT = session.recurringPattern == RecurringPattern.WEEKLY ? getNextDayOfWeek(startDate, dayOfWeekNumber) : startDate;
+    startDT.setHours(time[0], time[1]);
+
+    iKeepMyPromises = loopCallbackDateIntervals(
+      (date: Date) => {
+        return createPublicSessionZooEvent(
+          session.publicEventSessionId,
+          date,
+          session.durationInMinutes,
+          session.daysInAdvanceNotification,
+          publicEvent.details,
+          publicEvent.title,
+          publicEvent.imageUrl,
+          publicEvent.eventType,
+          keepers,
+          inHouse,
+          animals
+        );
+      },
+      startDT,
+      lastDate,
+      interval,
+      false
+    );
+  }
+
+  for (const p of iKeepMyPromises) {
+    await p;
+  }
+  return session;
+}
+
+export async function generateMonthlyZooEventForPublicEvent(publicEventId: number) {
+  const publicEvent = await getPublicEventById(publicEventId, []);
+  const promises: Promise<any>[] = [];
+  (await publicEvent.getPublicEventSessions()).filter(session => session.recurringPattern != RecurringPattern.NON_RECURRING).forEach(session => promises.push(generateMonthlyZooEventForPublicEventSession(session)));
+  for (const p of promises) await p;
 }
 
 export async function createAnimalActivityZooEvent(
@@ -989,7 +1145,7 @@ export async function getAllEmployeeAbsence() {
 }
 
 export async function createPublicEvent(
-  activityType: ActivityType,
+  eventType: EventType,
   title: string,
   details: string,
   imageUrl: string,
@@ -1013,7 +1169,7 @@ export async function createPublicEvent(
     const inHouse = await AssetFacilityService.getInHouseByFacilityId(inHouseId);
 
     const newPublicEvent = await PublicEvent.create({
-      activityType: activityType,
+      eventType: eventType,
       title: title,
       details: details,
       imageUrl: imageUrl,
@@ -1032,7 +1188,7 @@ export async function createPublicEvent(
 }
 
 export async function getAllPublicEvents(
-  include: any[],
+  include: any[] = [],
 ) {
   try {
     return await PublicEvent.findAll({
@@ -1045,16 +1201,17 @@ export async function getAllPublicEvents(
 
 export async function getPublicEventById(
   publicEventId: number,
-  include: any[]
+  include: any[] = []
 ) {
   try {
     const publicEvent = await PublicEvent.findOne({
       where: {
         publicEventId: publicEventId
       },
+      include: include
     });
 
-    if (!publicEvent) throw { message: "Public Event not found with id: " + publicEventId }
+    if (!publicEvent) throw { message: "Public Event not found with id: " + publicEvent }
 
     return publicEvent;
   } catch (error: any) {
@@ -1064,7 +1221,7 @@ export async function getPublicEventById(
 
 export async function updatePublicEventById(
   publicEventId: number,
-  activityType: ActivityType,
+  eventType: EventType,
   title: string,
   details: string,
   imageUrl: string | null,
@@ -1077,7 +1234,7 @@ export async function updatePublicEventById(
   try {
     const publicEvent = await getPublicEventById(publicEventId, []);
 
-    publicEvent.activityType = activityType;
+    publicEvent.eventType = eventType;
     publicEvent.title = title;
     publicEvent.details = details;
     publicEvent.startDate = startDate;
@@ -1118,4 +1275,123 @@ export async function updatePublicEventById(
   }
 }
 
+export async function deletePublicEventById(
+  publicEventId: number
+) {
+  try {
+    const publicEvent = await getPublicEventById(publicEventId, []);
+    return publicEvent.destroy();
+  } catch (error: any) {
+    throw validationErrorHandler(error);
+  }
+}
 
+export async function createPublicEventSession(
+  publicEventId: number,
+  recurringPattern: RecurringPattern,
+  dayOfWeek: DayOfWeek | null,
+  dayOfMonth: number | null,
+  durationInMinutes: number,
+  time: string,
+  daysInAdvanceNotification: number,
+) {
+  try {
+
+    const publicEvenet = await getPublicEventById(publicEventId, []);
+    const newPublicEvent = await PublicEventSession.create({
+      recurringPattern: recurringPattern,
+      dayOfWeek: dayOfWeek,
+      dayOfMonth: dayOfMonth,
+      durationInMinutes: durationInMinutes,
+      time: time,
+      daysInAdvanceNotification: daysInAdvanceNotification
+    });
+
+    await newPublicEvent.setPublicEvent(publicEvenet);
+
+    return newPublicEvent;
+  } catch (error: any) {
+    throw validationErrorHandler(error);
+  }
+}
+
+export async function getAllPublicEventSessions(
+  include: any[] = [],
+) {
+  try {
+    return await PublicEventSession.findAll({
+      include: include
+    });
+  } catch (error: any) {
+    throw validationErrorHandler(error);
+  }
+}
+
+export async function getPublicEventSessionById(
+  publicEventSessionId: number,
+  include: any[] = []
+) {
+  try {
+    const publicEventSession = await PublicEventSession.findOne({
+      where: {
+        publicEventSessionId: publicEventSessionId
+      },
+      include: include
+    });
+
+    if (!publicEventSession) throw { message: "Public Event not found with id: " + publicEventSessionId }
+
+    return publicEventSession;
+  } catch (error: any) {
+    throw validationErrorHandler(error);
+  }
+}
+
+export async function updatePublicEventSessionById(
+  publicEventSessionId: number,
+  recurringPattern: RecurringPattern,
+  dayOfWeek: DayOfWeek,
+  dayOfMonth: number,
+  durationInMinutes: number,
+  time: string,
+  daysInAdvanceNotification: number
+) {
+  try {
+    const publicEventsession = await getPublicEventSessionById(publicEventSessionId, []);
+
+    if (publicEventsession.recurringPattern != recurringPattern) {
+      publicEventsession.recurringPattern = recurringPattern;
+      publicEventsession.dayOfWeek = dayOfWeek;
+      publicEventsession.dayOfMonth = dayOfMonth;
+
+      const promises = [];
+      for (const ze of await publicEventsession.getZooEvents()) {
+        if (compareDates(new Date(), ze.eventStartDateTime) <= 0) {
+          promises.push(ze.destroy());
+        }
+      }
+      for (const p of promises) await p;
+
+    }
+    publicEventsession.durationInMinutes = durationInMinutes;
+    publicEventsession.time = time;
+    publicEventsession.daysInAdvanceNotification = daysInAdvanceNotification;
+    await publicEventsession.save();
+
+    return generateMonthlyZooEventForPublicEventSession(publicEventsession);
+
+  } catch (error: any) {
+    throw validationErrorHandler(error);
+  }
+}
+
+export async function deletePublicEventSessionById(
+  publicEventSessionId: number
+) {
+  try {
+    const publicEventSession = await getPublicEventById(publicEventSessionId);
+    return publicEventSession.destroy();
+  } catch (error: any) {
+    throw validationErrorHandler(error);
+  }
+}
