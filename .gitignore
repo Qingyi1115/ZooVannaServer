@@ -130,7 +130,7 @@ dist
 .pnp.*
 
 #img path
-# img
+img
 
 #pdf path
 pdf
