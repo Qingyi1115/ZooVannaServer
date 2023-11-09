@@ -6,6 +6,7 @@ import * as AnimalService from "../services/animalService";
 import * as AssetFacility from "../services/assetFacilityService";
 import { createCustomerOrderForSeeding } from "../services/customerService";
 import * as SpeciesService from "../services/speciesService";
+import * as ZooEventService from "../services/zooEventService";
 import { Animal } from "./Animal";
 import { AnimalActivity } from "./AnimalActivity";
 import { AnimalActivityLog } from "./AnimalActivityLog";
