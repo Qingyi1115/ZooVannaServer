@@ -257,3 +257,28 @@ export async function removeAnimalFromEnclosure(req: Request, res: Response) {
     res.status(400).json({ error: error.message });
   }
 }
+
+// getSpeciesCompatibilityInEnclosure
+export async function getSpeciesCompatibilityInEnclosure(req: Request, res: Response) {
+  try {
+    const { speciesCode, enclosureId } = req.params;
+
+    if (enclosureId == undefined || speciesCode == undefined) {
+      console.log("Missing field(s): ", {
+        enclosureId,
+        speciesCode,
+      });
+      return res.status(400).json({ error: "Missing information!" });
+    }
+
+    // have to pass in req for image uploading
+    let isCompatible = await EnclosureService.getSpeciesCompatibilityInEnclosure(
+      Number(enclosureId),
+      speciesCode,
+    );
+
+    return res.status(200).json({ isCompatible });
+  } catch (error: any) {
+    res.status(400).json({ error: error.message });
+  }
+}

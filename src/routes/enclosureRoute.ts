@@ -10,7 +10,8 @@ import {
   deleteEnclosure,
   assignAnimalToEnclosure,
   getAnimalsOfEnclosure,
-  removeAnimalFromEnclosure
+  removeAnimalFromEnclosure,
+  getSpeciesCompatibilityInEnclosure
 } from "../controllers/enclosureController";
 
 const router = express.Router();
@@ -28,5 +29,7 @@ router.delete("/deleteEnclosure/:enclosureId", deleteEnclosure);
 router.get("/getanimalsofenclosure/:enclosureId", getAnimalsOfEnclosure)
 router.put("/assignAnimalToEnclosure", assignAnimalToEnclosure);
 router.put("/removeAnimalFromEnclosure", removeAnimalFromEnclosure);
+
+router.get("/getSpeciesCompatibilityInEnclosure/:enclosureId/:speciesCode", getSpeciesCompatibilityInEnclosure)
 
 export default router;

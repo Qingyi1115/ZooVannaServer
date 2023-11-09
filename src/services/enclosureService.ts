@@ -2,6 +2,7 @@ import { Animal } from "../models/Animal";
 import { validationErrorHandler } from "../helpers/errorHandler";
 import { Enclosure } from "../models/Enclosure";
 import * as AnimalService from "./animalService";
+import * as SpeciesService from "./speciesService";
 import * as AssetFacilityService from "./assetFacilityService";
 
 export async function getAllEnclosures() {
@@ -163,4 +164,35 @@ export async function removeAnimalFromEnclosure(
   } catch (error: any) {
     throw validationErrorHandler(error);
   }
+}
+
+export async function getSpeciesCompatibilityInEnclosure(enclosureId: number, speciesCode: string) {
+  // let result: Animal[] = [];
+
+  try {
+    let allAnimalsOfEnclosure = await getAnimalsOfEnclosure(enclosureId);
+
+    const speciesCodeSet = new Set<string>();
+
+    allAnimalsOfEnclosure.forEach(animal => {
+      if (animal.species && animal.species.speciesCode) {
+        speciesCodeSet.add(animal.species.speciesCode);
+      }
+    });
+
+    let isCompatible = true
+    for (const curSpeciesCode of speciesCodeSet) {
+      console.log("test")
+      console.log(speciesCode)
+      console.log(curSpeciesCode)
+      console.log(await SpeciesService.checkIsCompatible(speciesCode, curSpeciesCode))
+      if (!(await SpeciesService.checkIsCompatible(speciesCode, curSpeciesCode))) {
+        isCompatible = false;
+      }
+    }
+    return isCompatible
+  } catch (error: any) {
+    throw validationErrorHandler(error);
+  }
+
 }
