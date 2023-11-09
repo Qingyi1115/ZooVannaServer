@@ -460,7 +460,6 @@ export async function createPublicEvent(req: Request, res: Response) {
         title,
         details,
         startDate,
-        endDate,
         animalCodes,
         keeperEmployeeIds,
         inHouseId,
@@ -471,21 +470,29 @@ export async function createPublicEvent(req: Request, res: Response) {
         title,
         details,
         startDate,
-        endDate,
         animalCodes,
         keeperEmployeeIds,
         inHouseId,
       });
       return res.status(400).json({ error: "Missing information!" });
     }
+    console.log("field(s): ", {
+      eventType,
+      title,
+      details,
+      startDate,
+      animalCodes,
+      keeperEmployeeIds,
+      inHouseId,
+    });
 
     const publicEvent = await ZooEventService.createPublicEvent(
       eventType,
       title,
       details,
       imageUrl,
-      new Date(startDate),
-      endDate ? new Date(endDate) : null,
+      new Date(Number(startDate)),
+      endDate ? new Date(Number(endDate)) : null,
       animalCodes,
       keeperEmployeeIds,
       Number(inHouseId),
@@ -638,7 +645,7 @@ export async function updatePublicEventById(req: Request, res: Response) {
 
     const { publicEventId } = req.params;
     const {
-      activityType,
+      eventType,
       title,
       details,
       startDate,
@@ -650,7 +657,7 @@ export async function updatePublicEventById(req: Request, res: Response) {
 
     if (
       [publicEventId,
-        activityType,
+        eventType,
         title,
         details,
         startDate,
@@ -659,7 +666,7 @@ export async function updatePublicEventById(req: Request, res: Response) {
     ) {
       console.log("Missing field(s): ", {
         publicEventId,
-        activityType,
+        eventType,
         title,
         details,
         startDate,
@@ -670,7 +677,7 @@ export async function updatePublicEventById(req: Request, res: Response) {
 
     await ZooEventService.updatePublicEventById(
       Number(publicEventId),
-      activityType,
+      eventType,
       title,
       details,
       null,
