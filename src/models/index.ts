@@ -3,9 +3,7 @@ import { v4 as uuidv4 } from "uuid";
 import { conn } from "../db";
 import { DAY_IN_MILLISECONDS } from "../helpers/staticValues";
 import * as AnimalService from "../services/animalService";
-import {
-  createCustomerOrderForSeeding
-} from "../services/customerService";
+import { createCustomerOrderForSeeding } from "../services/customerService";
 import * as SpeciesService from "../services/speciesService";
 import { Animal } from "./Animal";
 import { AnimalActivity } from "./AnimalActivity";
@@ -52,7 +50,7 @@ import {
   PresentationMethod,
   RecurringPattern,
   SensorType,
-  Specialization
+  Specialization,
 } from "./Enumerated";
 import { Facility } from "./Facility";
 import { FacilityLog } from "./FacilityLog";
@@ -122,14 +120,8 @@ export const createDatabase = async (options: any) => {
     addCascadeOptions({ foreignKey: "employeeId" }),
   );
 
-  Employee.hasMany(
-    ZooEvent,
-    addCascadeOptions({ foreignKey: "employeeId" }),
-  );
-  ZooEvent.belongsTo(
-    Employee,
-    addCascadeOptions({ foreignKey: "employeeId" }),
-  );
+  Employee.hasMany(ZooEvent, addCascadeOptions({ foreignKey: "employeeId" }));
+  ZooEvent.belongsTo(Employee, addCascadeOptions({ foreignKey: "employeeId" }));
 
   AnimalActivity.hasMany(
     ZooEvent,
@@ -556,7 +548,10 @@ export const createDatabase = async (options: any) => {
   });
 
   InHouse.hasMany(PublicEvent, addCascadeOptions({ foreignKey: "inHouseId" }));
-  PublicEvent.belongsTo(InHouse, addCascadeOptions({ foreignKey: "inHouseId" }));
+  PublicEvent.belongsTo(
+    InHouse,
+    addCascadeOptions({ foreignKey: "inHouseId" }),
+  );
 
   PublicEvent.belongsToMany(Customer, {
     foreignKey: "publicEventId",
@@ -573,7 +568,9 @@ export const createDatabase = async (options: any) => {
   PublicEventSession.belongsTo(PublicEvent, { foreignKey: "publicEventId" });
 
   PublicEventSession.hasMany(ZooEvent, { foreignKey: "publicEventSessionId" });
-  ZooEvent.belongsTo(PublicEventSession, { foreignKey: "publicEventSessionId" });
+  ZooEvent.belongsTo(PublicEventSession, {
+    foreignKey: "publicEventSessionId",
+  });
 
   Listing.hasMany(OrderItem, addCascadeOptions({ foreignKey: "listingId" }));
   OrderItem.belongsTo(Listing, addCascadeOptions({ foreignKey: "listingId" }));
@@ -3579,7 +3576,7 @@ export const facilityAssetsSeed = async () => {
         isPaid: false,
         maxAccommodationSize: 5,
         hasAirCon: false,
-        facilityType: FacilityType.PARKING,
+        facilityType: FacilityType.TRAMSTOP,
       } as any,
     } as any,
     {
@@ -3780,9 +3777,9 @@ export const facilityAssetsSeed = async () => {
   ]) {
     _day = new Date(
       _day.getTime() -
-      days * 1000 * 60 * 60 * 24 +
-      Math.random() * 1000 * 60 * 60 * 24 * 4 -
-      1000 * 60 * 60 * 24 * 2,
+        days * 1000 * 60 * 60 * 24 +
+        Math.random() * 1000 * 60 * 60 * 24 * 4 -
+        1000 * 60 * 60 * 24 * 2,
     );
     sensor.addMaintenanceLog(
       await MaintenanceLog.create({
