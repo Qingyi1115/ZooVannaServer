@@ -6,7 +6,6 @@ import * as AnimalService from "../services/animalService";
 import * as AssetFacility from "../services/assetFacilityService";
 import { createCustomerOrderForSeeding } from "../services/customerService";
 import * as SpeciesService from "../services/speciesService";
-import * as ZooEventService from "../services/zooEventService";
 import { Animal } from "./Animal";
 import { AnimalActivity } from "./AnimalActivity";
 import { AnimalActivityLog } from "./AnimalActivityLog";
@@ -3697,7 +3696,7 @@ export const facilityAssetsSeed = async () => {
     {
       facilityName: "tram2",
       isSheltered: true,
-      imageUrl: "img/facility/Tram Stop 2.jpg",
+      imageUrl: "img/facility/tram2.jpg",
       //@ts-ignore
       inHouse: {
         isPaid: true,
