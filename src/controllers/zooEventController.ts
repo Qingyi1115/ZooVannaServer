@@ -21,7 +21,7 @@ export async function getAllZooEvents(req: Request, res: Response) {
     // )
     //   return res
     //     .status(403)
-    //     .json({ error: "Access Denied! Operation managers only!" });
+    //     .json({ error: "Access Denied! Planning Staff only!" });
 
     const { startDate, endDate, includes = [] } = req.body;
     if (
@@ -309,7 +309,7 @@ export async function autoAssignKeeperToZooEvent(req: Request, res: Response) {
     )
       return res
         .status(403)
-        .json({ error: "Access Denied! Operation managers only!" });
+        .json({ error: "Access Denied! Planning Staff only!" });
 
 
 
@@ -437,7 +437,7 @@ export async function createPublicEvent(req: Request, res: Response) {
     )
       return res
         .status(403)
-        .json({ error: "Access Denied! Operation managers only!" });
+        .json({ error: "Access Denied! Planning Staff only!" });
 
     const imageUrl = await handleFileUpload(
       req,
@@ -445,7 +445,7 @@ export async function createPublicEvent(req: Request, res: Response) {
     );
 
     const {
-      activityType,
+      eventType,
       title,
       details,
       startDate,
@@ -456,7 +456,7 @@ export async function createPublicEvent(req: Request, res: Response) {
     } = req.body;
     if (
       [
-        activityType,
+        eventType,
         title,
         details,
         startDate,
@@ -467,7 +467,7 @@ export async function createPublicEvent(req: Request, res: Response) {
       ].includes(undefined)
     ) {
       console.log("Missing field(s): ", {
-        activityType,
+        eventType,
         title,
         details,
         startDate,
@@ -480,7 +480,7 @@ export async function createPublicEvent(req: Request, res: Response) {
     }
 
     const publicEvent = await ZooEventService.createPublicEvent(
-      activityType,
+      eventType,
       title,
       details,
       imageUrl,
@@ -511,7 +511,7 @@ export async function getAllPublicEvents(req: Request, res: Response) {
     )
       return res
         .status(403)
-        .json({ error: "Access Denied! Operation managers only!" });
+        .json({ error: "Access Denied! Planning Staff only!" });
 
     const publicEvents = await ZooEventService.getAllPublicEvents(
       [
@@ -567,7 +567,7 @@ export async function getPublicEventById(req: Request, res: Response) {
     )
       return res
         .status(403)
-        .json({ error: "Access Denied! Operation managers only!" });
+        .json({ error: "Access Denied! Planning Staff only!" });
 
     const { publicEventId } = req.params;
     if (
@@ -634,7 +634,7 @@ export async function updatePublicEventById(req: Request, res: Response) {
     )
       return res
         .status(403)
-        .json({ error: "Access Denied! Operation managers only!" });
+        .json({ error: "Access Denied! Planning Staff only!" });
 
     const { publicEventId } = req.params;
     const {
@@ -701,7 +701,7 @@ export async function updatePublicEventImageById(req: Request, res: Response) {
     )
       return res
         .status(403)
-        .json({ error: "Access Denied! Operation managers only!" });
+        .json({ error: "Access Denied! Planning Staff only!" });
 
     const { publicEventId } = req.params;
 
@@ -716,7 +716,7 @@ export async function updatePublicEventImageById(req: Request, res: Response) {
 
     await ZooEventService.updatePublicEventById(
       Number(publicEventId),
-      publicEvent.activityType,
+      publicEvent.eventType,
       publicEvent.title,
       publicEvent.details,
       imageUrl,
@@ -726,6 +726,234 @@ export async function updatePublicEventImageById(req: Request, res: Response) {
       null,
       null,
     );
+    return res.status(200).json({ result: "success" });
+  } catch (error: any) {
+    console.log(error);
+    res.status(400).json({ error: error.message });
+  }
+}
+
+
+export async function deletePublicEventById(req: Request, res: Response) {
+  try {
+
+    // Check authentication
+    const { email } = (req as any).locals.jwtPayload;
+    const employee = await findEmployeeByEmail(email);
+    // const planningStaff = await employee.getPlanningStaff();
+
+    if (
+      !employee.superAdmin &&
+      !(await employee.getPlanningStaff())
+    )
+      return res
+        .status(403)
+        .json({ error: "Access Denied! Planning Staff only!" });
+
+    const { publicEventId } = req.params;
+
+    if ([publicEventId].includes("")) {
+      return res.status(400).json({ error: "Missing information!" });
+    }
+
+    const publicEvent = await ZooEventService.deletePublicEventById(Number(publicEventId));
+
+    return res.status(200).json({ result: "success" });
+  } catch (error: any) {
+    console.log(error);
+    res.status(400).json({ error: error.message });
+  }
+}
+
+export async function createPublicEventSession(req: Request, res: Response) {
+  try {
+
+    // Check authentication
+    const { email } = (req as any).locals.jwtPayload;
+    const employee = await findEmployeeByEmail(email);
+    // const planningStaff = await employee.getPlanningStaff();
+
+    if (
+      !employee.superAdmin &&
+      !(await employee.getPlanningStaff())
+    )
+      return res
+        .status(403)
+        .json({ error: "Access Denied! Planning Staff only!" });
+
+    const { publicEventId } = req.params;
+
+    const {
+      recurringPattern,
+      dayOfWeek,
+      dayOfMonth,
+      durationInMinutes,
+      time,
+      daysInAdvanceNotification,
+    } = req.body;
+    if (
+      [
+        publicEventId,
+        recurringPattern,
+        dayOfWeek,
+        dayOfMonth,
+        durationInMinutes,
+        time,
+        daysInAdvanceNotification,
+      ].includes(undefined) ||
+      publicEventId == ""
+    ) {
+      console.log("Missing field(s): ", {
+        publicEventId,
+        recurringPattern,
+        dayOfWeek,
+        dayOfMonth,
+        durationInMinutes,
+        time,
+        daysInAdvanceNotification,
+      });
+      return res.status(400).json({ error: "Missing information!" });
+    }
+
+    const publicEvent = await ZooEventService.createPublicEventSession(
+      Number(publicEventId),
+      recurringPattern,
+      dayOfWeek,
+      dayOfMonth,
+      durationInMinutes,
+      time,
+      daysInAdvanceNotification,
+    );
+    return res.status(200).json({ publicEvent: publicEvent.toJSON() });
+  } catch (error: any) {
+    console.log(error);
+    res.status(400).json({ error: error.message });
+  }
+}
+
+export async function getAllPublicEventSessions(req: Request, res: Response) {
+  try {
+
+    // Check authentication
+    const { email } = (req as any).locals.jwtPayload;
+    const employee = await findEmployeeByEmail(email);
+    // const planningStaff = await employee.getPlanningStaff();
+
+    if (
+      !employee.superAdmin &&
+      !(await employee.getPlanningStaff())
+    )
+      return res
+        .status(403)
+        .json({ error: "Access Denied! Planning Staff only!" });
+
+
+    const publicEventSessions = await ZooEventService.getAllPublicEventSessions([
+      {
+        association: "publicEvent",
+        require: false
+      }, {
+        association: "zooEvents",
+        require: false
+      },
+    ]);
+
+    return res.status(200).json({ publicEvent: publicEventSessions.map(session => session.toJSON()) });
+  } catch (error: any) {
+    console.log(error);
+    res.status(400).json({ error: error.message });
+  }
+}
+
+export async function getPublicEventSessionById(req: Request, res: Response) {
+  try {
+
+    // Check authentication
+    const { email } = (req as any).locals.jwtPayload;
+    const employee = await findEmployeeByEmail(email);
+    // const planningStaff = await employee.getPlanningStaff();
+
+    if (
+      !employee.superAdmin &&
+      !(await employee.getPlanningStaff())
+    )
+      return res
+        .status(403)
+        .json({ error: "Access Denied! Planning Staff only!" });
+
+    const { publicEventSessionId } = req.params;
+
+    if ([publicEventSessionId].includes("")) {
+      return res.status(400).json({ error: "Missing information!" });
+    }
+
+
+    const publicEventSession = await ZooEventService.getPublicEventSessionById(Number(publicEventSessionId),
+      [
+        {
+          association: "publicEvent",
+          require: false
+        }, {
+          association: "zooEvents",
+          require: false
+        },
+      ]);
+
+    return res.status(200).json({ publicEvent: publicEventSession });
+  } catch (error: any) {
+    console.log(error);
+    res.status(400).json({ error: error.message });
+  }
+}
+
+export async function updatePublicEventSessionById(req: Request, res: Response) {
+  try {
+
+    // Check authentication
+    const { email } = (req as any).locals.jwtPayload;
+    const employee = await findEmployeeByEmail(email);
+    // const planningStaff = await employee.getPlanningStaff();
+
+    if (
+      !employee.superAdmin &&
+      !(await employee.getPlanningStaff())
+    )
+      return res
+        .status(403)
+        .json({ error: "Access Denied! Planning Staff only!" });
+
+    const { publicEventSessionId } = req.params;
+    const {
+      recurringPattern,
+      dayOfWeek,
+      dayOfMonth,
+      durationInMinutes,
+      time,
+      daysInAdvanceNotification
+    } = req.body;
+
+    if ([
+      recurringPattern,
+      dayOfWeek,
+      dayOfMonth,
+      durationInMinutes,
+      time,
+      daysInAdvanceNotification
+    ].includes(undefined) || publicEventSessionId == "") {
+      return res.status(400).json({ error: "Missing information!" });
+    }
+
+
+    await ZooEventService.updatePublicEventSessionById(
+      Number(publicEventSessionId),
+      recurringPattern,
+      dayOfWeek,
+      dayOfMonth,
+      durationInMinutes,
+      time,
+      daysInAdvanceNotification
+    );
+
     return res.status(200).json({ result: "success" });
   } catch (error: any) {
     console.log(error);
