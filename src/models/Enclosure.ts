@@ -35,6 +35,7 @@ class Enclosure extends Model<
   declare width: number;
   declare height: number;
   declare enclosureStatus: EnclosureStatus;
+  declare designDiagramJsonUrl: string;
 
   // Terrain Distribution
   declare longGrassPercent: number | null;
@@ -127,6 +128,10 @@ Enclosure.init(
       type: DataTypes.ENUM,
       values: Object.values(EnclosureStatus),
       allowNull: false,
+    },
+    designDiagramJsonUrl: {
+      type: DataTypes.STRING,
+      allowNull: true,
     },
     longGrassPercent: {
       type: DataTypes.INTEGER,

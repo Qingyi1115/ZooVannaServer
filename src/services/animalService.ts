@@ -36,6 +36,7 @@ import { findEmployeeById } from "./employeeService";
 import * as EnrichmentItemService from "./enrichmentItemService";
 import * as SpeciesService from "./speciesService";
 import * as ZooEventService from "./zooEventService";
+import { Enclosure } from "../models/Enclosure";
 
 //-- Animal Basic Info
 export async function getAnimalIdByCode(animalCode: string) {
@@ -61,7 +62,7 @@ export async function getAnimalIdByCode(animalCode: string) {
 export async function getAllAnimals() {
   try {
     const allAnimals = await Animal.findAll({
-      include: [Species],
+      include: [Species, Enclosure],
     });
     return allAnimals;
   } catch (error: any) {
