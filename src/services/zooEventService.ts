@@ -1414,7 +1414,7 @@ export async function deletePublicEventSessionById(
   publicEventSessionId: number
 ) {
   try {
-    const publicEventSession = await getPublicEventById(publicEventSessionId);
+    const publicEventSession = await getPublicEventSessionById(publicEventSessionId);
     return publicEventSession.destroy();
   } catch (error: any) {
     throw validationErrorHandler(error);
