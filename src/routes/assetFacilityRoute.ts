@@ -3,247 +3,247 @@ import express from "express";
 // Controller functions
 import { authMiddleware } from "../middlewares/authMiddleware";
 import {
-  addHubToFacilityController,
-  createFacilityController,
-  updateFacilityController,
-  addSensorToHubController,
-  initializeHubController,
-  createNewAnimalFeedController,
-  getAllAnimalFeedController,
-  getAnimalFeedByNameController,
-  updateAnimalFeedController,
-  deleteAnimalFeedByNameController,
-  getAnimalFeedByIdController,
-  createNewEnrichmentItemController,
-  getAllEnrichmentItemController,
-  getEnrichmentItemByIdController,
-  updateEnrichmentItemImageController,
-  updateEnrichmentItemController,
-  deleteEnrichmentItemByNameController,
-  getAllHubsController,
-  getHubProcessorController,
-  getAllSensorsController,
-  getSensorReadingController,
-  updateHubController,
-  updateSensorController,
-  deleteHubController,
-  deleteSensorController,
-  getAuthorizationForCameraController,
-  getAllFacilityController,
-  deleteFacilityController,
-  assignMaintenanceStaffToSensorController,
-  removeMaintenanceStaffFromSensorController,
-  assignMaintenanceStaffToFacilityController,
-  removeMaintenanceStaffFromFacilityController,
-  assignOperationStaffToFacilityController,
-  removeOperationStaffFromFacilityController,
-  getFacilityMaintenanceSuggestionsController,
-  getSensorMaintenanceSuggestionsController,
-  updateAnimalFeedImageController,
-  getFacilityController,
-  getAssignedMaintenanceStaffOfFacilityController,
-  getAllMaintenanceStaffController,
-  createSensorMaintenanceLogController,
-  getAllSensorMaintenanceLogsController,
-  getMyOperationFacilityController,
-  getMyMaintainedFacilityController,
-  getFacilityLogsController,
-  createFacilityLogController,
-  getSensorController,
-  createFacilityMaintenanceLogController,
-  pushSensorReadingsController,
-  getSensorMaintenancePredictionValuesController,
-  getFacilityMaintenancePredictionValuesController,
-  updateFacilityLogController,
-  deleteFacilityLogController,
-  updateSensorMaintenanceLogController,
-  deleteSensorMaintenanceLogController,
-  getFacilityLogByIdController,
-  getSensorMaintenanceLogController,
-  createNewZoneController,
-  getAllZoneController,
-  getZoneByIdController,
-  updateZoneController,
-  deleteZoneController,
-  completeRepairTicketController,
+  addHubToFacility,
+  createFacility,
+  updateFacility,
+  addSensorToHub,
+  initializeHub,
+  createNewAnimalFeed,
+  getAllAnimalFeed,
+  getAnimalFeedByName,
+  updateAnimalFeed,
+  deleteAnimalFeedByName,
+  getAnimalFeedById,
+  createNewEnrichmentItem,
+  getAllEnrichmentItem,
+  getEnrichmentItemById,
+  updateEnrichmentItemImage,
+  updateEnrichmentItem,
+  deleteEnrichmentItemByName,
+  getAllHubs,
+  getHubProcessor,
+  getAllSensors,
+  getSensorReading,
+  updateHub,
+  updateSensor,
+  deleteHub,
+  deleteSensor,
+  getAuthorizationForCamera,
+  getAllFacility,
+  deleteFacility,
+  assignMaintenanceStaffToSensor,
+  removeMaintenanceStaffFromSensor,
+  assignMaintenanceStaffToFacility,
+  removeMaintenanceStaffFromFacility,
+  assignOperationStaffToFacility,
+  removeOperationStaffFromFacility,
+  getFacilityMaintenanceSuggestions,
+  getSensorMaintenanceSuggestions,
+  updateAnimalFeedImage,
+  getFacility,
+  getAssignedMaintenanceStaffOfFacility,
+  getAllMaintenanceStaff,
+  createSensorMaintenanceLog,
+  getAllSensorMaintenanceLogs,
+  getMyOperationFacility,
+  getMyMaintainedFacility,
+  getFacilityLogs,
+  createFacilityLog,
+  getSensor,
+  createFacilityMaintenanceLog,
+  pushSensorReadings,
+  getSensorMaintenancePredictionValues,
+  getFacilityMaintenancePredictionValues,
+  updateFacilityLog,
+  deleteFacilityLog,
+  updateSensorMaintenanceLog,
+  deleteSensorMaintenanceLog,
+  getFacilityLogById,
+  getSensorMaintenanceLog,
+  createNewZone,
+  getAllZone,
+  getZoneById,
+  updateZone,
+  deleteZone,
+  completeRepairTicket,
   getAllFacilityCustomer,
-  createCustomerReportController,
-  getAllCustomerReportsController,
-  updateCustomerReportController,
-  updateFacilityImageController,
-  getCustomerReportLogController,
-  getAllNonViewedCustomerReportLogsController,
-  markCustomerReportLogsViewedController,
-  deleteCustomerReportLogController,
-  getAllCustomerReportLogsByFacilityIdController,
+  createCustomerReport,
+  getAllCustomerReports,
+  updateCustomerReport,
+  updateFacilityImage,
+  getCustomerReportLog,
+  getAllNonViewedCustomerReportLogs,
+  markCustomerReportLogsViewed,
+  deleteCustomerReportLog,
+  getAllCustomerReportLogsByFacilityId,
   crowdLevelByFacilityId,
 } from "../controllers/assetFacilityController";
 
 const router = express.Router();
 
 // IP device API
-router.put("/initializeHub", initializeHubController);
-router.post("/pushSensorReadings/:processorName", pushSensorReadingsController);
+router.put("/initializeHub", initializeHub);
+router.post("/pushSensorReadings/:processorName", pushSensorReadings);
 router.post("/getAllFacilityCustomer", getAllFacilityCustomer);
 router.get("/crowdLevelByFacilityId/:facilityId", crowdLevelByFacilityId);
 
 // Customer Report
-router.post("/createCustomerReportLog/:facilityId", createCustomerReportController);
+router.post("/createCustomerReportLog/:facilityId", createCustomerReport);
 
 router.use(authMiddleware);
 
 // Zone
-router.post("/createNewZone", createNewZoneController);
-router.get("/getAllZone", getAllZoneController);
-router.get("/getZone/:zoneId", getZoneByIdController);
-router.put("/updateZone/:zoneId", updateZoneController);
-router.delete("/deleteZone/:zoneId", deleteZoneController);
+router.post("/createNewZone", createNewZone);
+router.get("/getAllZone", getAllZone);
+router.get("/getZone/:zoneId", getZoneById);
+router.put("/updateZone/:zoneId", updateZone);
+router.delete("/deleteZone/:zoneId", deleteZone);
 
 // Facilities
-router.post("/createFacility", createFacilityController);
-router.post("/getAllFacility", getAllFacilityController);
-router.get("/getMyOperationFacility", getMyOperationFacilityController);
-router.get("/getMyMaintainedFacility", getMyMaintainedFacilityController);
-router.post("/getFacility/:facilityId", getFacilityController);
+router.post("/createFacility", createFacility);
+router.post("/getAllFacility", getAllFacility);
+router.get("/getMyOperationFacility", getMyOperationFacility);
+router.get("/getMyMaintainedFacility", getMyMaintainedFacility);
+router.post("/getFacility/:facilityId", getFacility);
 router.get(
   "/getFacilityMaintenanceSuggestions",
-  getFacilityMaintenanceSuggestionsController,
+  getFacilityMaintenanceSuggestions,
 );
 router.get(
   "/getFacilityMaintenancePredictionValues/:facilityId",
-  getFacilityMaintenancePredictionValuesController,
+  getFacilityMaintenancePredictionValues,
 );
-router.put("/updateFacility/:facilityId", updateFacilityController);
-router.put("/updateFacilityImage/:facilityId", updateFacilityImageController);
-router.delete("/deleteFacility/:facilityId", deleteFacilityController);
+router.put("/updateFacility/:facilityId", updateFacility);
+router.put("/updateFacilityImage/:facilityId", updateFacilityImage);
+router.delete("/deleteFacility/:facilityId", deleteFacility);
 router.get(
   "/getAssignedMaintenanceStaffOfFacility/:facilityId",
-  getAssignedMaintenanceStaffOfFacilityController,
+  getAssignedMaintenanceStaffOfFacility,
 );
-router.get("/getAllMaintenanceStaff", getAllMaintenanceStaffController);
+router.get("/getAllMaintenanceStaff", getAllMaintenanceStaff);
 router.put(
   "/assignMaintenanceStaffToFacility/:facilityId",
-  assignMaintenanceStaffToFacilityController,
+  assignMaintenanceStaffToFacility,
 );
 router.delete(
   "/removeMaintenanceStaffFromFacility/:facilityId",
-  removeMaintenanceStaffFromFacilityController,
+  removeMaintenanceStaffFromFacility,
 );
 router.put(
   "/assignOperationStaffToFacility/:facilityId",
-  assignOperationStaffToFacilityController,
+  assignOperationStaffToFacility,
 );
 router.delete(
   "/removeOperationStaffFromFacility/:facilityId",
-  removeOperationStaffFromFacilityController,
+  removeOperationStaffFromFacility,
 );
 
-router.get("/getAllCustomerReportLogs", getAllCustomerReportsController);
-router.put("/updateCustomerReportLogs", updateCustomerReportController);
+router.get("/getAllCustomerReportLogs", getAllCustomerReports);
+router.put("/updateCustomerReportLogs", updateCustomerReport);
 
 //Facility Logs
-router.post("/createFacilityLog/:facilityId", createFacilityLogController);
+router.post("/createFacilityLog/:facilityId", createFacilityLog);
 router.post(
   "/createFacilityMaintenanceLog/:facilityId",
-  createFacilityMaintenanceLogController,
+  createFacilityMaintenanceLog,
 );
-router.get("/getFacilityLogs/:facilityId", getFacilityLogsController);
-router.post("/getFacilityLog/:facilityLogId", getFacilityLogByIdController);
-router.put("/updateFacilityLog/:facilityLogId", updateFacilityLogController);
+router.get("/getFacilityLogs/:facilityId", getFacilityLogs);
+router.post("/getFacilityLog/:facilityLogId", getFacilityLogById);
+router.put("/updateFacilityLog/:facilityLogId", updateFacilityLog);
 router.get(
   "/completeRepairTicket/:facilityLogId",
-  completeRepairTicketController,
+  completeRepairTicket,
 );
-router.delete("/deleteFacilityLog/:facilityLogId", deleteFacilityLogController);
+router.delete("/deleteFacilityLog/:facilityLogId", deleteFacilityLog);
 
 // Customer Report
-router.get("/getCustomerReportLog/:customerReportLogId", getCustomerReportLogController);
-router.get("/getAllNonViewedCustomerReportLogs", getAllNonViewedCustomerReportLogsController);
-router.get("/getAllCustomerReportLogsByFacilityId/:facilityId", getAllCustomerReportLogsByFacilityIdController);
-router.put("/markCustomerReportLogsViewed", markCustomerReportLogsViewedController);
-router.delete("/deleteCustomerReportLog/:customerReportLogId", deleteCustomerReportLogController);
+router.get("/getCustomerReportLog/:customerReportLogId", getCustomerReportLog);
+router.get("/getAllNonViewedCustomerReportLogs", getAllNonViewedCustomerReportLogs);
+router.get("/getAllCustomerReportLogsByFacilityId/:facilityId", getAllCustomerReportLogsByFacilityId);
+router.put("/markCustomerReportLogsViewed", markCustomerReportLogsViewed);
+router.delete("/deleteCustomerReportLog/:customerReportLogId", deleteCustomerReportLog);
 
 //Animal Feed
-router.post("/createNewAnimalFeed", createNewAnimalFeedController);
-router.get("/getAllAnimalFeed", getAllAnimalFeedController);
-router.get("/getAnimalFeed/:animalFeedName", getAnimalFeedByNameController);
-router.get("/getAnimalFeedById/:animalFeedId", getAnimalFeedByIdController);
-router.put("/updateAnimalFeed", updateAnimalFeedController);
-router.put("/updateAnimalFeedImage", updateAnimalFeedImageController); // dont use
+router.post("/createNewAnimalFeed", createNewAnimalFeed);
+router.get("/getAllAnimalFeed", getAllAnimalFeed);
+router.get("/getAnimalFeed/:animalFeedName", getAnimalFeedByName);
+router.get("/getAnimalFeedById/:animalFeedId", getAnimalFeedById);
+router.put("/updateAnimalFeed", updateAnimalFeed);
+router.put("/updateAnimalFeedImage", updateAnimalFeedImage); // dont use
 router.delete(
   "/deleteAnimalFeed/:animalFeedName",
-  deleteAnimalFeedByNameController,
+  deleteAnimalFeedByName,
 );
 
 // Enrichment Items
-router.post("/createNewEnrichmentItem", createNewEnrichmentItemController);
-router.get("/getAllEnrichmentItem", getAllEnrichmentItemController);
+router.post("/createNewEnrichmentItem", createNewEnrichmentItem);
+router.get("/getAllEnrichmentItem", getAllEnrichmentItem);
 router.get(
   "/getEnrichmentItem/:enrichmentItemId",
-  getEnrichmentItemByIdController,
+  getEnrichmentItemById,
 );
-router.put("/updateEnrichmentItem", updateEnrichmentItemController);
-router.put("/updateEnrichmentItemImage", updateEnrichmentItemImageController);
+router.put("/updateEnrichmentItem", updateEnrichmentItem);
+router.put("/updateEnrichmentItemImage", updateEnrichmentItemImage);
 router.delete(
   "/deleteEnrichmentItem/:enrichmentItemName",
-  deleteEnrichmentItemByNameController,
+  deleteEnrichmentItemByName,
 );
 
 // Hubs and Sensors
-router.post("/addHub", addHubToFacilityController);
-router.get("/getAllHubs", getAllHubsController);
-router.post("/getHub/:hubProcessorId", getHubProcessorController);
-router.put("/updateHub/:hubProcessorId", updateHubController);
-router.delete("/deleteHub/:hubProcessorId", deleteHubController);
+router.post("/addHub", addHubToFacility);
+router.get("/getAllHubs", getAllHubs);
+router.post("/getHub/:hubProcessorId", getHubProcessor);
+router.put("/updateHub/:hubProcessorId", updateHub);
+router.delete("/deleteHub/:hubProcessorId", deleteHub);
 
-router.post("/addSensor", addSensorToHubController);
-router.get("/getAllSensors", getAllSensorsController);
-router.post("/getSensor/:sensorId", getSensorController);
-router.post("/getSensorReading/:sensorId", getSensorReadingController);
+router.post("/addSensor", addSensorToHub);
+router.get("/getAllSensors", getAllSensors);
+router.post("/getSensor/:sensorId", getSensor);
+router.post("/getSensorReading/:sensorId", getSensorReading);
 router.get(
   "/getSensorMaintenanceSuggestions",
-  getSensorMaintenanceSuggestionsController,
+  getSensorMaintenanceSuggestions,
 );
 router.get(
   "/getSensorMaintenancePredictionValues/:sensorId",
-  getSensorMaintenancePredictionValuesController,
+  getSensorMaintenancePredictionValues,
 );
-// router.get("/getAssignedMaintenanceStaffOfSensor/:sensorId", getAssignedMaintenanceStaffOfSensorController);
+// router.get("/getAssignedMaintenanceStaffOfSensor/:sensorId", getAssignedMaintenanceStaffOfSensor);
 router.put(
   "/assignMaintenanceStaffToSensor/:sensorId",
-  assignMaintenanceStaffToSensorController,
+  assignMaintenanceStaffToSensor,
 );
 router.put(
   "/removeMaintenanceStaffFromSensor/:sensorId",
-  removeMaintenanceStaffFromSensorController,
+  removeMaintenanceStaffFromSensor,
 );
-router.put("/updateSensor/:sensorId", updateSensorController);
-router.delete("/deleteSensor/:sensorId", deleteSensorController);
+router.put("/updateSensor/:sensorId", updateSensor);
+router.delete("/deleteSensor/:sensorId", deleteSensor);
 
 router.post(
   "/createSensorMaintenanceLog/:sensorId",
-  createSensorMaintenanceLogController,
+  createSensorMaintenanceLog,
 );
 router.get(
   "/getSensorMaintenanceLog/:sensorMaintenanceLogId",
-  getSensorMaintenanceLogController,
+  getSensorMaintenanceLog,
 );
 router.post(
   "/getAllSensorMaintenanceLogs/:sensorId",
-  getAllSensorMaintenanceLogsController,
+  getAllSensorMaintenanceLogs,
 );
 router.put(
   "/updateSensorMaintenanceLog/:sensorMaintenanceLogId",
-  updateSensorMaintenanceLogController,
+  updateSensorMaintenanceLog,
 );
 router.delete(
   "/deleteSensorMaintenanceLog/:sensorMaintenanceLogId",
-  deleteSensorMaintenanceLogController,
+  deleteSensorMaintenanceLog,
 );
 
 router.get(
   "/getAuthorizationForCamera/:sensorId",
-  getAuthorizationForCameraController,
+  getAuthorizationForCamera,
 );
 
 export default router;

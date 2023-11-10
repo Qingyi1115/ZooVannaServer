@@ -24,8 +24,8 @@ import {
   updatePublicEventSessionById,
   updateZooEventIncludeFuture,
   updateZooEventSingle,
+  deletePublicEventSessionById
 } from "../controllers/zooEventController";
-import { deletePublicEventSessionById } from "../services/zooEventService";
 
 const router = express.Router();
 

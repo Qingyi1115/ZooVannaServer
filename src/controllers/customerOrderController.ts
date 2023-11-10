@@ -86,7 +86,7 @@ export async function getCustomerOrderByBookingReference(
   }
 }
 
-export async function getAllUpcomingCustomerOrderByCustomerController(
+export async function getAllUpcomingCustomerOrderByCustomer(
   req: Request,
   res: Response,
 ) {
@@ -102,7 +102,7 @@ export async function getAllUpcomingCustomerOrderByCustomerController(
   }
 }
 
-export async function getPastCustomerOrderByCustomerController(
+export async function getPastCustomerOrderByCustomer(
   req: Request,
   res: Response,
 ) {
