@@ -1,11 +1,18 @@
+import { Animal } from "../models/Animal";
 import { validationErrorHandler } from "../helpers/errorHandler";
 import { Enclosure } from "../models/Enclosure";
 import * as AnimalService from "./animalService";
+import * as SpeciesService from "./speciesService";
 import * as AssetFacilityService from "./assetFacilityService";
+import { Facility } from "../models/Facility";
+
+import { writeFile } from 'fs/promises';
 
 export async function getAllEnclosures() {
   try {
-    const allEnclosures = await Enclosure.findAll();
+    const allEnclosures = await Enclosure.findAll(
+      { include: [Facility] }
+    );
     return allEnclosures;
   } catch (error: any) {
     throw validationErrorHandler(error);
@@ -111,6 +118,27 @@ export async function deleteEnclosure(enclosureId: number) {
   throw new Error("Invalid Enclosure ID!");
 }
 
+export async function getAnimalsOfEnclosure(enclosureId: number) {
+  let result: Animal[] = [];
+
+  // let curEnclosure = await getEnclosuresById(enclosureId)
+
+  let allAnimals = await AnimalService.getAllAnimals();
+
+  if (allAnimals) {
+    for (let a of allAnimals) {
+      if (a.enclosure?.enclosureId === enclosureId) {
+        result.push(a);
+      }
+    }
+  }
+
+  if (result) {
+    return result;
+  }
+  throw new Error("Invalid Enclosure ID!");
+}
+
 export async function assignAnimalToEnclosure(
   enclosureId: number,
   animalCode: string,
@@ -122,6 +150,82 @@ export async function assignAnimalToEnclosure(
     if (enclosure && animal) {
       enclosure.addAnimal(animal);
     }
+  } catch (error: any) {
+    throw validationErrorHandler(error);
+  }
+}
+
+export async function removeAnimalFromEnclosure(
+  enclosureId: number,
+  animalCode: string,
+) {
+  try {
+    let enclosure = await getEnclosuresById(enclosureId);
+    let animal = await AnimalService.getAnimalActivityByAnimalCode(animalCode);
+
+    if (enclosure && animal) {
+      enclosure.removeAnimal(animal);
+    }
+  } catch (error: any) {
+    throw validationErrorHandler(error);
+  }
+}
+
+export async function getSpeciesCompatibilityInEnclosure(enclosureId: number, speciesCode: string) {
+  // let result: Animal[] = [];
+
+  try {
+    let allAnimalsOfEnclosure = await getAnimalsOfEnclosure(enclosureId);
+
+    const speciesCodeSet = new Set<string>();
+
+    allAnimalsOfEnclosure.forEach(animal => {
+      if (animal.species && animal.species.speciesCode) {
+        speciesCodeSet.add(animal.species.speciesCode);
+      }
+    });
+
+    let isCompatible = true
+    for (const curSpeciesCode of speciesCodeSet) {
+      console.log("test")
+      console.log(speciesCode)
+      console.log(curSpeciesCode)
+      console.log(await SpeciesService.checkIsCompatible(speciesCode, curSpeciesCode))
+      console.log("-------")
+      if (curSpeciesCode != speciesCode) {
+        if (!(await SpeciesService.checkIsCompatible(speciesCode, curSpeciesCode))) {
+          isCompatible = false;
+        }
+      }
+
+    }
+    return isCompatible
+  } catch (error: any) {
+    throw validationErrorHandler(error);
+  }
+}
+
+export async function updateDesignDiagram(
+  enclosureId: number,
+  designDiagramJson: string,
+) {
+  // let updatedEnclosureStatus = {
+  //   enclosureStatus: enclosureStatus,
+  // } as any;
+
+  try {
+    let enclosure = await getEnclosuresById(enclosureId);
+    console.log("here")
+    console.log(designDiagramJson)
+    const filePath = `enclosureDiagramJson/${enclosure.name}.json`;
+
+    await writeFile(filePath, designDiagramJson);
+    if (enclosure.designDiagramJsonUrl == null) {
+      await Enclosure.update({ designDiagramJsonUrl: filePath }, {
+        where: { enclosureId: enclosureId },
+      });
+    }
+
   } catch (error: any) {
     throw validationErrorHandler(error);
   }
