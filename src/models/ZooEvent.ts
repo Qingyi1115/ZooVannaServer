@@ -38,7 +38,7 @@ class ZooEvent extends Model<
   declare requiredNumberOfKeeper: number;
 
   // Internal
-  declare eventDurationHrs: number;
+  declare eventDurationHrs: number | null;
   declare eventTiming: EventTimingType | null;
 
   // Public

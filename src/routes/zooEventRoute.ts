@@ -6,19 +6,25 @@ import {
     autoAssignKeeperToZooEvent,
     createEmployeeAbsence,
     createPublicEvent,
+    createPublicEventSession,
+    deletePublicEventById,
     deleteZooEvent,
     getAllEmployeeAbsence,
+    getAllPublicEventSessions,
     getAllPublicEvents,
     getAllZooEvents,
     getKeepersForZooEvent,
     getPublicEventById,
+    getPublicEventSessionById,
     getZooEventById,
     removeKeeperfromZooEvent,
     updatePublicEventById,
     updatePublicEventImageById,
+    updatePublicEventSessionById,
     updateZooEventIncludeFuture,
     updateZooEventSingle,
 } from "../controllers/zooEventController";
+import { deletePublicEventSessionById } from "../services/zooEventService";
 
 const router = express.Router();
 
@@ -45,6 +51,14 @@ router.get("/getAllPublicEvents", getAllPublicEvents);
 router.get("/getPublicEventById/:publicEventId", getPublicEventById);
 router.put("/updatePublicEventById/:publicEventId", updatePublicEventById);
 router.put("/updatePublicEventImageById/:publicEventId", updatePublicEventImageById);
+router.delete("/deletePublicEventById/:publicEventId", deletePublicEventById);
+
+// PublicEventSession
+router.post("/createPublicEventSession/:publicEventId", createPublicEventSession);
+router.get("/getAllPublicEventSessions", getAllPublicEventSessions);
+router.get("/getPublicEventSessionById/:publicEventSessionId", getPublicEventSessionById);
+router.put("/updatePublicEventSessionById/:publicEventSessionId", updatePublicEventSessionById);
+router.delete("/deletePublicEventSessionById/:publicEventSessionId", deletePublicEventSessionById);
 
 
 export default router;
