@@ -1,5 +1,5 @@
 from functools import reduce
-from Json import newAnimalActivityLogDetails, newAnimalActivityDetails, DAY_IN_MILLISECONDS
+from JsonData import newAnimalActivityLogDetails, newAnimalActivityDetails, DAY_IN_MILLISECONDS
 from Annotations import UseAPI, getApi, login_as_marry, login_as_junior_keeper
 from time import time
 import json
@@ -60,7 +60,7 @@ def updateAnimalActivity(mockData, useAPI: UseAPI):
     assert(response_json["updatedAnimalActivity"]["details"] == mockData["details"])
     assert len(response_json["updatedAnimalActivity"]["zooEvents"]) in [4,5], "Zoo events incorrectly created " + str(len(response_json["updatedAnimalActivity"]["zooEvents"])) + " found!"
 
-    mockData["recurringPattern"] = "NON_RECURRING"
+    mockData["recurringPattern"] = "NON-RECURRING"
     mockData["startDate"] = round(time()  +  60 * 60 * 24 * 10) * 1000
     mockData["endDate"] = mockData["startDate"]
     res = useAPI.put("/api/animal/updateAnimalActivity", json=mockData)

@@ -1,11 +1,11 @@
 import { Request, Response } from "express";
-import * as PromotionService from "../services/promotion";
+import * as PromotionService from "../services/promotionService";
 import { handleFileUpload } from "../helpers/multerProcessFile";
 import { cpuUsage } from "process";
 
 export async function createPromotion(req: Request, res: Response) {
   try {
-    console.log("in create promotion controller");
+    console.log(req);
     const imageUrl = await handleFileUpload(
       req,
       process.env.IMG_URL_ROOT! + "promotion", //"D:/capstoneUploads/promotion",
@@ -271,8 +271,6 @@ export async function updatePromotion(req: Request, res: Response) {
 export async function verifyPromotionCode(req: Request, res: Response) {
   const { promotionCode } = req.params;
   const { currentSpending } = req.body;
-
-  console.log("Controller: " + currentSpending);
 
   if ([promotionCode, currentSpending].includes(undefined)) {
     console.log("Missing field(s): ", {

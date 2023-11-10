@@ -7,7 +7,7 @@ import {
   getListing,
   getLocalListing,
   getForeignerListing,
-} from "../services/listing";
+} from "../services/listingService";
 import { Request, Response } from "express";
 
 export async function createNewListingController(req: Request, res: Response) {

@@ -1,87 +1,87 @@
 //  Import models
-import { conn } from "../db";
-import * as SpeciesService from "../services/species";
-import * as AnimalService from "../services/animal";
-import { Animal } from "./animal";
-import { AnimalClinic } from "./animalClinics";
-import { AnimalFeed } from "./animalFeed";
-import { AnimalWeight } from "./animalWeight";
-import { BarrierType } from "./barrierType";
-import { Compatibility } from "./compatibility";
-import { Customer } from "./customer";
-import { CustomerOrder } from "./customerOrder";
-import { CustomerReportLog } from "./customerReportLog";
-import { Employee } from "./employee";
-import { Enclosure } from "./enclosure";
 import { v4 as uuidv4 } from "uuid";
-import { EnrichmentItem } from "./enrichmentItem";
+import { conn } from "../db";
+import { DAY_IN_MILLISECONDS } from "../helpers/staticValues";
+import * as AnimalService from "../services/animalService";
+import * as AssetFacility from "../services/assetFacilityService";
+import { createCustomerOrderForSeeding } from "../services/customerService";
+import * as SpeciesService from "../services/speciesService";
+import * as ZooEventService from "../services/zooEventService";
+import { Animal } from "./Animal";
+import { AnimalActivity } from "./AnimalActivity";
+import { AnimalActivityLog } from "./AnimalActivityLog";
+import { AnimalClinic } from "./AnimalClinics";
+import { AnimalFeed } from "./AnimalFeed";
+import { AnimalFeedingLog } from "./AnimalFeedingLog";
+import { AnimalObservationLog } from "./AnimalObservationLog";
+import { AnimalWeight } from "./AnimalWeight";
+import { BarrierType } from "./BarrierType";
+import { Compatibility } from "./Compatibility";
+import { Customer } from "./Customer";
+import { CustomerOrder } from "./CustomerOrder";
+import { CustomerReportLog } from "./CustomerReportLog";
+import { Employee } from "./Employee";
+import { Enclosure } from "./Enclosure";
+import { EnrichmentItem } from "./EnrichmentItem";
 import {
   AcquisitionMethod,
+  ActivityType,
   AnimalFeedCategory,
   AnimalGrowthStage,
-  Country,
+  AnimalSex,
   ConservationStatus,
   Continent,
+  Country,
+  DayOfWeek,
+  EventTimingType,
+  EventType,
+  FacilityLogType,
   FacilityType,
   GeneralStaffType,
   GroupSexualDynamic,
   HubStatus,
   IdentifierType,
   KeeperType,
+  ListingStatus,
+  ListingType,
+  OrderStatus,
+  PaymentStatus,
   PlannerType,
   PresentationContainer,
   PresentationLocation,
   PresentationMethod,
-  SensorType,
-  EventType,
-  ListingType,
-  ListingStatus,
-  Specialization,
-  AnimalSex,
-  ActivityType,
-  EventTimingType,
-  DayOfWeek,
   RecurringPattern,
-  FacilityLogType,
-  PaymentStatus,
-  OrderStatus,
-} from "./enumerated";
-import { ZooEvent } from "./zooEvent";
-import { Facility } from "./facility";
-import { FacilityLog } from "./facilityLog";
-import { GeneralStaff } from "./generalStaff";
-import { HubProcessor } from "./hubProcessor";
-import { InHouse } from "./inHouse";
-import { Keeper } from "./keeper";
-import { Listing } from "./listing";
-import { MaintenanceLog } from "./maintenanceLog";
-import { MedicalSupply } from "./medicalSupply";
-import { OrderItem } from "./orderItem";
-import { Payment } from "./payment";
-import { PhysiologicalReferenceNorms } from "./physiologicalReferenceNorms";
-import { PlanningStaff } from "./planningStaff";
-import { Plantation } from "./plantation";
-import { Promotion } from "./promotion";
-import { Sensor } from "./sensor";
-import { SensorReading } from "./sensorReading";
-import { Species } from "./species";
-import { SpeciesDietNeed } from "./speciesDietNeed";
-import { SpeciesEnclosureNeed } from "./speciesEnclosureNeed";
-import { TerrainDistribution } from "./terrainDistribution";
-import { ThirdParty } from "./thirdParty";
-import { AnimalActivity } from "./animalActivity";
-import { AnimalObservationLog } from "./animalObservationLog";
-import { Zone } from "./zone";
-import { AnimalActivityLog } from "./animalActivityLog";
-import { AnimalFeedingLog } from "./animalFeedingLog";
-import { FeedingPlan } from "./feedingPlan";
-import { FeedingPlanSessionDetail } from "./feedingPlanSessionDetail";
-import { FeedingItem } from "./feedingItem";
-import { DAY_IN_MILLISECONDS } from "../helpers/staticValues";
-import {
-  createCustomerOrderForGuest,
-  createCustomerOrderForSeeding,
-} from "../services/customer";
+  SensorType,
+  Specialization,
+} from "./Enumerated";
+import { Facility } from "./Facility";
+import { FacilityLog } from "./FacilityLog";
+import { FeedingItem } from "./FeedingItem";
+import { FeedingPlan } from "./FeedingPlan";
+import { FeedingPlanSessionDetail } from "./FeedingPlanSessionDetail";
+import { GeneralStaff } from "./GeneralStaff";
+import { HubProcessor } from "./HubProcessor";
+import { InHouse } from "./InHouse";
+import { Keeper } from "./Keeper";
+import { Listing } from "./Listing";
+import { MaintenanceLog } from "./MaintenanceLog";
+import { MedicalSupply } from "./MedicalSupply";
+import { OrderItem } from "./OrderItem";
+import { Payment } from "./Payment";
+import { PhysiologicalReferenceNorms } from "./PhysiologicalReferenceNorms";
+import { PlanningStaff } from "./PlanningStaff";
+import { Plantation } from "./Plantation";
+import { Promotion } from "./Promotion";
+import { PublicEvent } from "./PublicEvent";
+import { PublicEventSession } from "./PublicEventSession";
+import { Sensor } from "./Sensor";
+import { SensorReading } from "./SensorReading";
+import { Species } from "./Species";
+import { SpeciesDietNeed } from "./SpeciesDietNeed";
+import { SpeciesEnclosureNeed } from "./SpeciesEnclosureNeed";
+import { ThirdParty } from "./ThirdParty";
+import { Zone } from "./Zone";
+import { ZooEvent } from "./ZooEvent";
 
 function addCascadeOptions(options: object) {
   return { ...options, onDelete: "CASCADE", onUpdate: "CASCADE" };
@@ -121,6 +121,9 @@ export const createDatabase = async (options: any) => {
     Employee,
     addCascadeOptions({ foreignKey: "employeeId" }),
   );
+
+  Employee.hasMany(ZooEvent, addCascadeOptions({ foreignKey: "employeeId" }));
+  ZooEvent.belongsTo(Employee, addCascadeOptions({ foreignKey: "employeeId" }));
 
   AnimalActivity.hasMany(
     ZooEvent,
@@ -414,14 +417,16 @@ export const createDatabase = async (options: any) => {
 
   // ------------ End of Animal Relation --------------
 
-  TerrainDistribution.hasMany(
-    Enclosure,
-    addCascadeOptions({ foreignKey: "terrainDistributionId" }),
-  );
-  Enclosure.belongsTo(
-    TerrainDistribution,
-    addCascadeOptions({ foreignKey: "terrainDistributionId" }),
-  );
+  // ------------ Enclosure --------------
+
+  // TerrainDistribution.hasMany(
+  //   Enclosure,
+  //   addCascadeOptions({ foreignKey: "terrainDistributionId" }),
+  // );
+  // Enclosure.belongsTo(
+  //   TerrainDistribution,
+  //   addCascadeOptions({ foreignKey: "terrainDistributionId" }),
+  // );
 
   Enclosure.hasMany(Animal, addCascadeOptions({ foreignKey: "enclosureId" }));
   Animal.belongsTo(Enclosure, addCascadeOptions({ foreignKey: "enclosureId" }));
@@ -522,6 +527,53 @@ export const createDatabase = async (options: any) => {
     addCascadeOptions({ foreignKey: "animalClinicId" }),
   );
 
+  PublicEvent.belongsToMany(Animal, {
+    foreignKey: "publicEventId",
+    through: "animal_publicEvent",
+    as: "animals",
+  });
+  Animal.belongsToMany(PublicEvent, {
+    foreignKey: "animalId",
+    through: "animal_publicEvent",
+    as: "publicEvents",
+  });
+
+  PublicEvent.belongsToMany(Keeper, {
+    foreignKey: "publicEventId",
+    through: "keeper_publicEvent",
+    as: "keepers",
+  });
+  Keeper.belongsToMany(PublicEvent, {
+    foreignKey: "keeperId",
+    through: "keeper_publicEvent",
+    as: "publicEvents",
+  });
+
+  InHouse.hasMany(PublicEvent, addCascadeOptions({ foreignKey: "inHouseId" }));
+  PublicEvent.belongsTo(
+    InHouse,
+    addCascadeOptions({ foreignKey: "inHouseId" }),
+  );
+
+  PublicEvent.belongsToMany(Customer, {
+    foreignKey: "publicEventId",
+    through: "customer_publicEvent",
+    as: "customers",
+  });
+  Customer.belongsToMany(PublicEvent, {
+    foreignKey: "customerId",
+    through: "customer_publicEvent",
+    as: "publicEvents",
+  });
+
+  PublicEvent.hasMany(PublicEventSession, { foreignKey: "publicEventId" });
+  PublicEventSession.belongsTo(PublicEvent, { foreignKey: "publicEventId" });
+
+  PublicEventSession.hasMany(ZooEvent, { foreignKey: "publicEventSessionId" });
+  ZooEvent.belongsTo(PublicEventSession, {
+    foreignKey: "publicEventSessionId",
+  });
+
   Listing.hasMany(OrderItem, addCascadeOptions({ foreignKey: "listingId" }));
   OrderItem.belongsTo(Listing, addCascadeOptions({ foreignKey: "listingId" }));
 
@@ -604,8 +656,10 @@ export const seedDatabase = async () => {
   await facilityAssetsSeed();
   await speciesSeed();
   await animalSeed();
+  await enclosureSeed();
   await promotionSeed();
   await customerSeed();
+  await publicEventSeed();
 };
 
 export const promotionSeed = async () => {
@@ -729,8 +783,6 @@ export const employeeSeed = async () => {
       },
     },
   );
-  console.log(marry.toJSON());
-  console.log("marry's actuall secret hash: ", marry.employeePasswordHash);
 
   let marryKeeper = await Keeper.create({
     keeperType: KeeperType.SENIOR_KEEPER,
@@ -738,18 +790,8 @@ export const employeeSeed = async () => {
     isDisabled: false,
   });
 
-  console.log(marryKeeper.toJSON());
-
   await marryKeeper.setEmployee(marry);
   await marry.setKeeper(marryKeeper);
-
-  console.log("\nmarry", marry.toJSON());
-  console.log("\nmarry's keeper", (await marry.getKeeper()).toJSON());
-  console.log("\nmarryKeeper", marryKeeper.toJSON());
-  console.log(
-    "\nmarryKeeper's employee",
-    (await marryKeeper.getEmployee()).toJSON(),
-  );
 
   const minions = await Employee.bulkCreate(
     [
@@ -797,10 +839,10 @@ export const employeeSeed = async () => {
     },
   );
 
-  console.log("-------------EMPLOYEES--------------------");
-  (await Employee.findAll()).forEach((a) => console.log(a.toJSON()));
-  console.log("-------------KEEPERS--------------------");
-  (await Keeper.findAll()).forEach((a) => console.log(a.toJSON()));
+  // console.log("-------------EMPLOYEES--------------------");
+  // (await Employee.findAll()).forEach((a) => console.log(a.toJSON()));
+  // console.log("-------------KEEPERS--------------------");
+  // (await Keeper.findAll()).forEach((a) => console.log(a.toJSON()));
 
   const johnKeeper = await minions[0].getKeeper();
   const bobKeeper = await minions[1].getKeeper();
@@ -808,7 +850,7 @@ export const employeeSeed = async () => {
   const senior = await Keeper.findOne({
     where: { keeperType: KeeperType.SENIOR_KEEPER },
   });
-  console.log("senior", senior?.get());
+  // console.log("senior", senior?.get());
 
   // console.log("-------------KEEPERS--------------------");
   // (await Keeper.findAll({include:{ all: true }})).forEach(a => console.log(JSON.stringify(a, null, 4)));
@@ -839,8 +881,8 @@ export const employeeSeed = async () => {
       },
     },
   );
-  console.log(planner1.toJSON());
-  console.log((await planner1.getPlanningStaff()).toJSON());
+  // console.log(planner1.toJSON());
+  // console.log((await planner1.getPlanningStaff()).toJSON());
 
   await Employee.create(
     {
@@ -966,10 +1008,10 @@ export const employeeSeed = async () => {
       },
     },
   );
-  console.log((await manager.getGeneralStaff()).toJSON());
+  // console.log((await manager.getGeneralStaff()).toJSON());
   manager.employeeName = "manager_new_name";
   await manager.save();
-  console.log(manager.toJSON());
+  // console.log(manager.toJSON());
 
   let manager3 = await Employee.create(
     {
@@ -1045,14 +1087,14 @@ export const employeeSeed = async () => {
   });
 
   let bookingRef = uuidv4().substring(0, 8).toUpperCase();
-  let temp = new Date(new Date().setMonth(new Date().getMonth()));
-  temp.setHours(0, 0, 0);
+  let date = new Date(new Date().setMonth(new Date().getMonth()));
+  date.setHours(0, 0, 0);
 
   let order1 = await CustomerOrder.create({
     bookingReference: bookingRef,
     totalAmount: 295,
     orderStatus: OrderStatus.ACTIVE,
-    entryDate: temp,
+    entryDate: date,
     customerFirstName: "Admin",
     customerLastName: "Seeding",
     customerContactNo: "12345678",
@@ -1079,13 +1121,14 @@ export const employeeSeed = async () => {
   await createCustomerOrderForSeeding(listings1, order1);
 
   let bookingRef2 = uuidv4().substring(0, 8).toUpperCase();
-  temp.setMonth(temp.getMonth() - 2);
+  let date2 = new Date(new Date().setMonth(new Date().getMonth() - 1));
+  date2.setHours(0, 0, 0);
 
   let order2 = await CustomerOrder.create({
     bookingReference: bookingRef2,
     totalAmount: 345,
     orderStatus: OrderStatus.ACTIVE,
-    entryDate: temp,
+    entryDate: date2,
     customerFirstName: "Admin",
     customerLastName: "Seeding",
     customerContactNo: "12345678",
@@ -1115,13 +1158,14 @@ export const employeeSeed = async () => {
   await createCustomerOrderForSeeding(listings2, order2);
 
   let bookingRef3 = uuidv4().substring(0, 8).toUpperCase();
-  temp.setMonth(temp.getMonth() - 3);
+  let date3 = new Date(new Date().setMonth(new Date().getMonth() - 3));
+  date3.setHours(0, 0, 0);
 
   let order3 = await CustomerOrder.create({
     bookingReference: bookingRef3,
     totalAmount: 165,
     orderStatus: OrderStatus.ACTIVE,
-    entryDate: temp,
+    entryDate: date3,
     customerFirstName: "Admin",
     customerLastName: "Seeding",
     customerContactNo: "12345678",
@@ -1144,13 +1188,14 @@ export const employeeSeed = async () => {
   await createCustomerOrderForSeeding(listings3, order3);
 
   let bookingRef4 = uuidv4().substring(0, 8).toUpperCase();
-  temp.setMonth(temp.getMonth() - 1);
+  let date4 = new Date(new Date().setMonth(new Date().getMonth() - 2));
+  date4.setHours(0, 0, 0);
 
   let order4 = await CustomerOrder.create({
     bookingReference: bookingRef4,
     totalAmount: 195,
     orderStatus: OrderStatus.ACTIVE,
-    entryDate: temp,
+    entryDate: date4,
     customerFirstName: "Admin",
     customerLastName: "Seeding",
     customerContactNo: "12345678",
@@ -1173,13 +1218,14 @@ export const employeeSeed = async () => {
   await createCustomerOrderForSeeding(listings4, order4);
 
   let bookingRef5 = uuidv4().substring(0, 8).toUpperCase();
-  temp.setMonth(temp.getMonth() + 1);
+  let date5 = new Date(new Date().setMonth(new Date().getMonth() + 1));
+  date5.setHours(0, 0, 0);
 
   let order5 = await CustomerOrder.create({
     bookingReference: bookingRef5,
     totalAmount: 175,
     orderStatus: OrderStatus.ACTIVE,
-    entryDate: temp,
+    entryDate: date5,
     customerFirstName: "Admin",
     customerLastName: "Seeding",
     customerContactNo: "12345678",
@@ -1235,7 +1281,7 @@ export const speciesSeed = async () => {
     // foodRemark: "Food remark...",
   } as any;
   let panda = await Species.create(pandaTemplate);
-  console.log(panda.toJSON());
+  // console.log(panda.toJSON());
 
   let pandaEnclosure = await SpeciesService.createEnclosureNeeds(
     "SPE001",
@@ -1262,7 +1308,7 @@ export const speciesSeed = async () => {
     0,
     0,
   );
-  console.log(pandaEnclosure.toJSON());
+  // console.log(pandaEnclosure.toJSON());
 
   let pandaPhy1 = await SpeciesService.createPhysiologicalReferenceNorms(
     "SPE001",
@@ -1278,7 +1324,7 @@ export const speciesSeed = async () => {
     1,
     AnimalGrowthStage.INFANT,
   );
-  console.log(pandaPhy1.toJSON());
+  // console.log(pandaPhy1.toJSON());
 
   let pandaPhy2 = await SpeciesService.createPhysiologicalReferenceNorms(
     "SPE001",
@@ -1380,7 +1426,7 @@ export const speciesSeed = async () => {
     PresentationLocation.IN_CONTAINER,
     AnimalGrowthStage.ADULT,
   );
-  console.log(pandaDietNeed1.toJSON());
+  // console.log(pandaDietNeed1.toJSON());
 
   let pandaDietNeed2 = await SpeciesService.createDietNeed(
     "SPE001",
@@ -1394,7 +1440,7 @@ export const speciesSeed = async () => {
     PresentationLocation.IN_CONTAINER,
     AnimalGrowthStage.ELDER,
   );
-  console.log(pandaDietNeed2.toJSON());
+  // console.log(pandaDietNeed2.toJSON());
 
   let pandaDietNeed3 = await SpeciesService.createDietNeed(
     "SPE001",
@@ -1408,7 +1454,7 @@ export const speciesSeed = async () => {
     PresentationLocation.IN_CONTAINER,
     AnimalGrowthStage.ADULT,
   );
-  console.log(pandaDietNeed3.toJSON());
+  // console.log(pandaDietNeed3.toJSON());
 
   let pandaDietNeed4 = await SpeciesService.createDietNeed(
     "SPE001",
@@ -1422,7 +1468,7 @@ export const speciesSeed = async () => {
     PresentationLocation.IN_CONTAINER,
     AnimalGrowthStage.ELDER,
   );
-  console.log(pandaDietNeed4.toJSON());
+  // console.log(pandaDietNeed4.toJSON());
 
   let pandaDietNeed5 = await SpeciesService.createDietNeed(
     "SPE001",
@@ -1614,6 +1660,30 @@ export const speciesSeed = async () => {
     "SPE003",
   );
   console.log(compatibility3.toJSON());
+};
+
+export const enclosureSeed = async () => {
+  let enclosure1Template = {
+    facilityId: 1,
+    name: "Panda Enclosure 01",
+    remark: "NA",
+    length: 200,
+    width: 400,
+    height: 20,
+    enclosureStatus: "CONSTRUCTING",
+  } as any;
+  await Enclosure.create(enclosure1Template);
+
+  let enclosure2Template = {
+    facilityId: 2,
+    name: "Panda Enclosure 02",
+    remark: "NA",
+    length: 300,
+    width: 500,
+    height: 25,
+    enclosureStatus: "ACTIVE",
+  } as any;
+  await Enclosure.create(enclosure2Template);
 };
 
 export const animalSeed = async () => {
@@ -3137,62 +3207,62 @@ export const animalSeed = async () => {
     [],
   );
 
-  await AnimalService.createFeedingPlanSessionDetail(
-    1,
-    DayOfWeek.MONDAY,
-    EventTimingType.MORNING,
-    120,
-    false,
-    null,
-    [],
-    1,
-  );
-  await AnimalService.createFeedingPlanSessionDetail(
-    1,
-    DayOfWeek.MONDAY,
-    EventTimingType.AFTERNOON,
-    120,
-    false,
-    null,
-    [],
-    1,
-  );
-  await AnimalService.createFeedingPlanSessionDetail(
-    1,
-    DayOfWeek.FRIDAY,
-    EventTimingType.EVENING,
-    120,
-    false,
-    null,
-    [],
-    1,
-  );
-  await AnimalService.createFeedingPlanSessionDetail(
-    2,
-    DayOfWeek.MONDAY,
-    EventTimingType.AFTERNOON,
-    120,
-    false,
-    null,
-    [],
-    1,
-  );
-  await AnimalService.createFeedingPlanSessionDetail(
-    2,
-    DayOfWeek.MONDAY,
-    EventTimingType.AFTERNOON,
-    120,
-    true,
-    "13:15",
-    [],
-    1,
-  );
+  // await AnimalService.createFeedingPlanSessionDetail(
+  //   1,
+  //   DayOfWeek.MONDAY,
+  //   EventTimingType.MORNING,
+  //   120,
+  //   false,
+  //   null,
+  //   [],
+  //   1,
+  // );
+  // await AnimalService.createFeedingPlanSessionDetail(
+  //   1,
+  //   DayOfWeek.MONDAY,
+  //   EventTimingType.AFTERNOON,
+  //   120,
+  //   false,
+  //   null,
+  //   [],
+  //   1,
+  // );
+  // await AnimalService.createFeedingPlanSessionDetail(
+  //   1,
+  //   DayOfWeek.FRIDAY,
+  //   EventTimingType.EVENING,
+  //   120,
+  //   false,
+  //   null,
+  //   [],
+  //   1,
+  // );
+  // await AnimalService.createFeedingPlanSessionDetail(
+  //   2,
+  //   DayOfWeek.MONDAY,
+  //   EventTimingType.AFTERNOON,
+  //   120,
+  //   false,
+  //   null,
+  //   [],
+  //   1,
+  // );
+  // await AnimalService.createFeedingPlanSessionDetail(
+  //   2,
+  //   DayOfWeek.MONDAY,
+  //   EventTimingType.AFTERNOON,
+  //   120,
+  //   true,
+  //   "13:15",
+  //   [],
+  //   1,
+  // );
 
-  await AnimalService.createFeedingItem(1, "ANM00001", "FRUITS", 5, "KG");
-  await AnimalService.createFeedingItem(1, "ANM00001", "HAY", 20, "KG");
-  await AnimalService.createFeedingItem(1, "ANM00002", "FRUITS", 10, "KG");
-  await AnimalService.createFeedingItem(2, "ANM00001", "HAY", 2000, "KG");
-  await AnimalService.createFeedingItem(2, "ANM00003", "FRUITS", 5, "KG");
+  // await AnimalService.createFeedingItem(1, "ANM00001", "FRUITS", 5, "KG");
+  // await AnimalService.createFeedingItem(1, "ANM00001", "HAY", 20, "KG");
+  // await AnimalService.createFeedingItem(1, "ANM00002", "FRUITS", 10, "KG");
+  // await AnimalService.createFeedingItem(2, "ANM00001", "HAY", 2000, "KG");
+  // await AnimalService.createFeedingItem(2, "ANM00003", "FRUITS", 5, "KG");
 };
 
 export const animalFeedSeed = async () => {
@@ -3270,6 +3340,7 @@ export const facilityAssetsSeed = async () => {
     showOnMap: true,
     xCoordinate: 103.78114318847656,
     yCoordinate: 1.29179263114929,
+    imageUrl: "img/facility/InfoCentre.jpg",
     inHouse: {
       lastMaintained: new Date(),
       isPaid: false,
@@ -3281,12 +3352,21 @@ export const facilityAssetsSeed = async () => {
   let f3 = await Facility.create(facility3, { include: ["inHouse"] });
   let f3h: InHouse = await f3.getFacilityDetail();
 
+  await AssetFacility.createCustomerReport(
+    f3.facilityId,
+    new Date(),
+    "Button broken",
+    "Pressed button and not working",
+    false,
+  );
+
   let facility4 = {
     facilityName: "Directory",
     isSheltered: true,
     showOnMap: true,
     xCoordinate: 103.78115844726562,
     yCoordinate: 1.29660260677338,
+    imageUrl: "img/facility/Directory.png",
     inHouse: {
       lastMaintained: new Date(),
       isPaid: false,
@@ -3298,12 +3378,29 @@ export const facilityAssetsSeed = async () => {
   let f4 = await Facility.create(facility4, { include: ["inHouse"] });
   let f4h: InHouse = await f4.getFacilityDetail();
 
+  await AssetFacility.createCustomerReport(
+    f4.facilityId,
+    new Date(),
+    "Directory broken",
+    "Pressed Directory and not working",
+    false,
+  );
+
+  await AssetFacility.createCustomerReport(
+    f4.facilityId,
+    new Date(),
+    "Directory is awesome",
+    "Pressed Directory and working",
+    true,
+  );
+
   let facility5 = {
     facilityName: "Shop",
     isSheltered: true,
     showOnMap: true,
     xCoordinate: 103.78221130371094,
     yCoordinate: 1.29178547859192,
+    imageUrl: "img/facility/Shop.jpg",
     inHouse: {
       lastMaintained: new Date(),
       isPaid: false,
@@ -3321,6 +3418,7 @@ export const facilityAssetsSeed = async () => {
     showOnMap: true,
     xCoordinate: 103.7817,
     yCoordinate: 1.291,
+    imageUrl: "img/facility/Parking.jpg",
     inHouse: {
       lastMaintained: new Date(),
       isPaid: false,
@@ -3351,6 +3449,7 @@ export const facilityAssetsSeed = async () => {
     showOnMap: true,
     xCoordinate: 103.77511596679688,
     yCoordinate: 1.2956326007843,
+    imageUrl: "img/facility/Amphitheatre.jpg",
     inHouse: {
       lastMaintained: new Date(),
       isPaid: false,
@@ -3368,6 +3467,7 @@ export const facilityAssetsSeed = async () => {
     showOnMap: true,
     xCoordinate: 103.7804946899414,
     yCoordinate: 1.29745411872864,
+    imageUrl: "img/facility/Playground.jpg",
     inHouse: {
       lastMaintained: new Date(),
       isPaid: false,
@@ -3385,6 +3485,7 @@ export const facilityAssetsSeed = async () => {
     showOnMap: true,
     xCoordinate: 103.7739486694336,
     yCoordinate: 1.29762589931488,
+    imageUrl: "img/facility/Nursery.JPG",
     inHouse: {
       lastMaintained: new Date(),
       isPaid: false,
@@ -3402,6 +3503,7 @@ export const facilityAssetsSeed = async () => {
     showOnMap: true,
     xCoordinate: 103.7840576171875,
     yCoordinate: 1.29575824737549,
+    imageUrl: "img/facility/Gazebo.jpg",
     inHouse: {
       lastMaintained: new Date(),
       isPaid: false,
@@ -3419,6 +3521,7 @@ export const facilityAssetsSeed = async () => {
     showOnMap: true,
     xCoordinate: 103.7768325805664,
     yCoordinate: 1.2946457862854,
+    imageUrl: "img/facility/Tiger Pool Cafe.jpg",
     inHouse: {
       lastMaintained: new Date(),
       isPaid: false,
@@ -3436,6 +3539,7 @@ export const facilityAssetsSeed = async () => {
     showOnMap: true,
     xCoordinate: 103.77333068847656,
     yCoordinate: 1.2970198392868,
+    imageUrl: "img/facility/Toilet.jpg",
     inHouse: {
       lastMaintained: new Date(),
       isPaid: false,
@@ -3472,6 +3576,7 @@ export const facilityAssetsSeed = async () => {
       yCoordinate: 1.29767763614655,
       isSheltered: true,
       showOnMap: true,
+      imageUrl: "img/facility/Tram Stop 1.jpg",
       hubProcessors: [
         {
           processorName: "A01",
@@ -3485,7 +3590,7 @@ export const facilityAssetsSeed = async () => {
         isPaid: false,
         maxAccommodationSize: 5,
         hasAirCon: false,
-        facilityType: FacilityType.PARKING,
+        facilityType: FacilityType.TRAMSTOP,
       } as any,
     } as any,
     {
@@ -3566,7 +3671,7 @@ export const facilityAssetsSeed = async () => {
       isSheltered: true,
       xCoordinate: 5,
       yCoordinate: 50,
-
+      imageUrl: "img/facility/Tram Stop 2.jpg",
       //@ts-ignore
       inHouse: {
         isPaid: true,
@@ -3594,6 +3699,7 @@ export const facilityAssetsSeed = async () => {
     {
       facilityName: "tram2",
       isSheltered: true,
+      imageUrl: "img/facility/tram2.jpg",
       //@ts-ignore
       inHouse: {
         isPaid: true,
@@ -3836,4 +3942,33 @@ export const facilityAssetsSeed = async () => {
   //   sensorType: SensorType.CAMERA,
   // } as any;
   // let camera = await Sensor.create(cameraTemplate);
+};
+
+export const publicEventSeed = async () => {
+
+  const pubEvent = await ZooEventService.createPublicEvent(
+    EventType.CUSTOMER_FEEDING,
+    "Homo sapiens feeding",
+    "do not feed them fast food",
+    "img/animal/ANM00001.jpg",
+    new Date(),
+    new Date(Date.now() + 60 * DAY_IN_MILLISECONDS),
+    [],
+    [],
+    8
+  );
+
+  const pubEventSession = await ZooEventService.createPublicEventSession(
+    pubEvent.publicEventId,
+    RecurringPattern.WEEKLY,
+    DayOfWeek.THURSDAY,
+    null,
+    60,
+    "16:00",
+    1,
+    null
+  );
+
+
+
 };

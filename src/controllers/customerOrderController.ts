@@ -1,8 +1,6 @@
 import { Request, Response } from "express";
-import * as CustomerOrderService from "../services/customerOrder";
-import { handleFileUpload } from "../helpers/multerProcessFile";
-import { cpuUsage } from "process";
-import { CustomerOrder } from "../models/customerOrder";
+import { CustomerOrder } from "../models/CustomerOrder";
+import * as CustomerOrderService from "../services/customerOrderService";
 
 export async function getAllCustomerOrders(req: Request, res: Response) {
   const { includes = "" } = req.body;

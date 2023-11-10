@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { createToken } from "../helpers/security";
-import * as CustomerService from "../services/customer";
+import * as CustomerService from "../services/customerService";
 
 //verify customer email
 
@@ -22,7 +22,6 @@ export const sendEmailVerification = async (req: Request, res: Response) => {
   try {
     const { email } = req.params;
     await CustomerService.sendEmailVerification(email);
-    console.log("success");
     return res
       .status(200)
       .json({ message: "Email for verification has been sent successfully" });
@@ -96,7 +95,8 @@ export const login = async (req: Request, res: Response) => {
     const { email, password } = req.body;
     if (email && password) {
       if (!(await CustomerService.customerLogin(email, password))) {
-        return res.status(403).json({ error: "Invalid credentials!" });
+        console.log("Invalid credentials")
+        return res.status(401).json({ error: "Invalid credentials!" });
       }
       const token = createToken(email);
       const customer = await CustomerService.findCustomerByEmail(email);
@@ -104,6 +104,7 @@ export const login = async (req: Request, res: Response) => {
       res.status(200).json({ customerId, email, token });
     }
   } catch (error: any) {
+    console.log("error",error)
     res.status(400).json({ error: error.message });
   }
 };
@@ -111,7 +112,6 @@ export const login = async (req: Request, res: Response) => {
 export async function getCustomerByEmail(req: Request, res: Response) {
   try {
     const { email } = (req as any).locals.jwtPayload;
-    console.log("here");
     if (email) {
       const customer = await CustomerService.findCustomerByEmail(email);
       if (!customer)
@@ -265,13 +265,13 @@ export async function updatePassword(req: Request, res: Response) {
         return res.status(400).json({ error: "Please enter password!" });
       }
 
-      let customer = await CustomerService.updatePassword(
+      await CustomerService.updatePassword(
         customerIdInt,
         oldPassword,
         newPassword,
       );
       console.log("update success");
-      return res.status(200).json({ customer });
+      return res.status(200).json({ result:"success" });
     }
   } catch (error: any) {
     console.log("last error");
@@ -353,7 +353,6 @@ export async function createCustomerOrderForCustomerController(
       customerOrder,
     );
 
-    console.log(result);
     return res.status(200).json({ result: result });
   } catch (error: any) {
     return res.status(400).json({ error: error.message });
@@ -371,7 +370,6 @@ export async function createCustomerOrderForGuestController(
       listings,
       customerOrder,
     );
-    console.log(result);
     return res.status(200).json({ result: result });
   } catch (error: any) {
     return res.status(400).json({ error: error.message });
@@ -416,7 +414,6 @@ export async function completePaymentForGuestController(
   }
 
   const { payment } = req.body;
-  console.log(payment);
   try {
     const result = await CustomerService.completePaymentForGuest(
       Number(customerOrderId),
@@ -429,25 +426,23 @@ export async function completePaymentForGuestController(
 }
 
 export async function purchaseTicketController(req: Request, res: Response) {
-  console.log("here");
   const { customerId } = req.params;
-  console.log(customerId);
   if (!customerId) {
-    console.log("missing customer id");
     return res.status(400).json({ error: "Missing customer ID!" });
   }
   const { listings, customerOrder, payment } = req.body;
 
   try {
-    const result = await CustomerService.purchaseTicket(
+    await CustomerService.purchaseTicket(
       Number(customerId),
       listings,
       customerOrder,
       payment,
     );
 
-    return res.status(200).json({ result: result });
+    return res.status(200).json({ result: "success" });
   } catch (error: any) {
+    console.log("error",error)
     return res.status(400).json({ error: error.message });
   }
 }

@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
-import * as SpeciesService from "../services/species";
 import { handleFileUpload } from "../helpers/multerProcessFile";
+import * as SpeciesService from "../services/speciesService";
 
 export async function getAllSpecies(req: Request, res: Response) {
   const { includes = "" } = req.body;
@@ -61,7 +61,7 @@ export async function createSpecies(req: Request, res: Response) {
     // if (!((await employee.getPlanningStaff())?.plannerType == PlannerType.OPERATIONS_MANAGER)) {
     //     return res.status(403).json({error: "Access Denied! Operation managers only!"});
     // }
-
+    console.log("req", req, req.file, req.files)
     const imageUrl = await handleFileUpload(
       req,
       process.env.IMG_URL_ROOT! + "species", //"D:/capstoneUploads/species",
@@ -294,7 +294,7 @@ export async function updateSpecies(req: Request, res: Response) {
       ageToElder,
     );
 
-    return res.status(200).json({ species });
+    return res.status(200).json({ result:"success" });
   } catch (error: any) {
     res.status(400).json({ error: error.message });
   }
@@ -368,7 +368,7 @@ export async function updateSpeciesEduDesc(req: Request, res: Response) {
       educationalFunFact,
     );
 
-    return res.status(200).json({ species });
+    return res.status(200).json({ result:"success" });
   } catch (error: any) {
     res.status(400).json({ error: error.message });
   }
@@ -875,7 +875,7 @@ export async function updatePhysiologicalReferenceNorms(
         growthStage,
       );
 
-    return res.status(200).json({ physiologicalRefNorms });
+    return res.status(200).json({ result :"success" });
   } catch (error: any) {
     res.status(400).json({ error: error.message });
   }
@@ -899,7 +899,7 @@ export async function deletePhysiologicalReferenceNorms(
       await SpeciesService.deletePhysiologicalReferenceNorms(
         physiologicalRefId,
       );
-    return res.status(200).json(physiologicalRefNorms);
+    return res.status(200).json({result: "success"});
   } catch (error: any) {
     res.status(400).json({ error: error.message });
   }
@@ -1054,7 +1054,7 @@ export async function updateDietNeed(req: Request, res: Response) {
       growthStage,
     );
 
-    return res.status(200).json({ dietNeed });
+    return res.status(200).json({ result:"success" });
   } catch (error: any) {
     res.status(400).json({ error: error.message });
   }
@@ -1072,7 +1072,7 @@ export async function deleteDietNeed(req: Request, res: Response) {
 
   try {
     const dietNeed = await SpeciesService.deleteDietNeed(speciesDietNeedId);
-    return res.status(200).json(dietNeed);
+    return res.status(200).json({result:"success"});
   } catch (error: any) {
     res.status(400).json({ error: error.message });
   }
@@ -1096,7 +1096,7 @@ export async function createCompatibility(req: Request, res: Response) {
       speciesCode2,
     );
 
-    return res.status(200).json({ compatibility });
+    return res.status(200).json({ result:"success" });
   } catch (error: any) {
     res.status(400).json({ error: error.message });
   }
@@ -1147,7 +1147,7 @@ export async function deleteCompatibility(req: Request, res: Response) {
       speciesCode1,
       speciesCode2,
     );
-    return res.status(200).json(compatibility);
+    return res.status(200).json({result:"success"});
   } catch (error: any) {
     res.status(400).json({ error: error.message });
   }
