@@ -282,3 +282,33 @@ export async function getSpeciesCompatibilityInEnclosure(req: Request, res: Resp
     res.status(400).json({ error: error.message });
   }
 }
+
+export async function updateDesignDiagram(req: Request, res: Response) {
+  try {
+    const { enclosureId } = req.params;
+    const { designDiagramJson } = req.body;
+    if (enclosureId == undefined) {
+      console.log("Missing field(s): ", {
+        enclosureId,
+      });
+      return res.status(400).json({ error: "Missing information!" });
+    }
+
+    if ([designDiagramJson].includes(undefined)) {
+      console.log("Missing field(s): ", {
+        designDiagramJson,
+      });
+      return res.status(400).json({ error: "Missing information!" });
+    }
+
+    // have to pass in req for image uploading
+    await EnclosureService.updateDesignDiagram(
+      Number(enclosureId),
+      designDiagramJson,
+    );
+
+    return res.status(200).json('Successfully saved diagram!');
+  } catch (error: any) {
+    res.status(400).json({ error: error.message });
+  }
+}

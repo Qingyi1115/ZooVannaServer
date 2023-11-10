@@ -4,10 +4,15 @@ import { Enclosure } from "../models/Enclosure";
 import * as AnimalService from "./animalService";
 import * as SpeciesService from "./speciesService";
 import * as AssetFacilityService from "./assetFacilityService";
+import { Facility } from "../models/Facility";
+
+import { writeFile } from 'fs/promises';
 
 export async function getAllEnclosures() {
   try {
-    const allEnclosures = await Enclosure.findAll();
+    const allEnclosures = await Enclosure.findAll(
+      { include: [Facility] }
+    );
     return allEnclosures;
   } catch (error: any) {
     throw validationErrorHandler(error);
@@ -186,13 +191,42 @@ export async function getSpeciesCompatibilityInEnclosure(enclosureId: number, sp
       console.log(speciesCode)
       console.log(curSpeciesCode)
       console.log(await SpeciesService.checkIsCompatible(speciesCode, curSpeciesCode))
-      if (!(await SpeciesService.checkIsCompatible(speciesCode, curSpeciesCode))) {
-        isCompatible = false;
+      console.log("-------")
+      if (curSpeciesCode != speciesCode) {
+        if (!(await SpeciesService.checkIsCompatible(speciesCode, curSpeciesCode))) {
+          isCompatible = false;
+        }
       }
+
     }
     return isCompatible
   } catch (error: any) {
     throw validationErrorHandler(error);
   }
+}
 
+export async function updateDesignDiagram(
+  enclosureId: number,
+  designDiagramJson: string,
+) {
+  // let updatedEnclosureStatus = {
+  //   enclosureStatus: enclosureStatus,
+  // } as any;
+
+  try {
+    let enclosure = await getEnclosuresById(enclosureId);
+    console.log("here")
+    console.log(designDiagramJson)
+    const filePath = `enclosureDiagramJson/${enclosure.name}.json`;
+
+    await writeFile(filePath, designDiagramJson);
+    if (enclosure.designDiagramJsonUrl == null) {
+      await Enclosure.update({ designDiagramJsonUrl: filePath }, {
+        where: { enclosureId: enclosureId },
+      });
+    }
+
+  } catch (error: any) {
+    throw validationErrorHandler(error);
+  }
 }

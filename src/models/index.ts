@@ -3320,6 +3320,7 @@ export const enclosureSeed = async () => {
     width: 400,
     height: 20,
     enclosureStatus: "CONSTRUCTING",
+    designDiagramJsonUrl: "enclosureDiagramJson/pandaEnclosure1.json"
   } as any;
   await Enclosure.create(enclosure1Template);
 
