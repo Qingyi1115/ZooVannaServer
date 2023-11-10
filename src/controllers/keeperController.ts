@@ -3,105 +3,101 @@ import {
   findEmployeeByEmail,
   findEmployeeById
 } from "../services/employeeService";
-import {
-  removeEnclosure,
-  updateDetails,
-  updateKeeperType,
-} from "../services/keeperService";
+import * as KeeperService from "../services/keeperService";
 
-export const addEnclosureToKeeperController = async (
-req: Request, 
-res: Response,
+export const addEnclosureToKeeper = async (
+  req: Request,
+  res: Response,
 ) => {
-    try {
-        const { email } = (req as any).locals.jwtPayload;
-        const employee = await findEmployeeByEmail(email);
+  try {
+    const { email } = (req as any).locals.jwtPayload;
+    const employee = await findEmployeeByEmail(email);
 
-        if (!employee.isAccountManager) {
-        return res
-            .status(403)
-            .json({ error: "Access Denied! Account managers only!" });
-        }
+    if (!employee.isAccountManager) {
+      return res
+        .status(403)
+        .json({ error: "Access Denied! Account managers only!" });
+    }
 
-        const { employeeId } = req.params;
-        const { enclosureIds } = req.body;
-        const result = await findEmployeeById(Number(employeeId));
-        if(await result.getKeeper()) {
-            let keeper = await result.getKeeper();
-            if(!keeper.isDisabled) {
-                for (const enclosureId of enclosureIds){
-                    await updateDetails((await keeper.getEmployee()).employeeId, Number(enclosureId));
-                }
-                return res.status(200).json({result: "success"});
-            }
-            throw {error: "The keeper role has been disabled!"};
+    const { employeeId } = req.params;
+    const { enclosureIds } = req.body;
+    const result = await findEmployeeById(Number(employeeId));
+    if (await result.getKeeper()) {
+      let keeper = await result.getKeeper();
+      if (!keeper.isDisabled) {
+        for (const enclosureId of enclosureIds) {
+          await KeeperService.updateDetails((await keeper.getEmployee()).employeeId, Number(enclosureId));
         }
-        throw {error: "Employee has no keeper role!"};
+        return res.status(200).json({ result: "success" });
+      }
+      throw { error: "The keeper role has been disabled!" };
     }
-    catch (error: any) {
-        console.log("error",error)
-        return res.status(400).json({error: error.message});
-    }
+    throw { error: "Employee has no keeper role!" };
+  }
+  catch (error: any) {
+    console.log("error", error)
+    return res.status(400).json({ error: error.message });
+  }
 }
 
-export const removeEnclosureFromKeeperController = async (
-    req: Request,
-    res: Response,
+export const removeEnclosureFromKeeper = async (
+  req: Request,
+  res: Response,
 ) => {
-    try {
-        const { email } = (req as any).locals.jwtPayload;
-        const employee = await findEmployeeByEmail(email);
+  try {
+    const { email } = (req as any).locals.jwtPayload;
+    const employee = await findEmployeeByEmail(email);
 
-        if (!employee.isAccountManager) {
-        return res
-            .status(403)
-            .json({ error: "Access Denied! Account managers only!" });
-        }
+    if (!employee.isAccountManager) {
+      return res
+        .status(403)
+        .json({ error: "Access Denied! Account managers only!" });
+    }
 
-        const { employeeId } = req.params;
-        const { enclosureIds } = req.body;
-        const result = await findEmployeeById(Number(employeeId));
-        if(await result.getKeeper()) {
-            let keeper = await result.getKeeper();
-            if(!keeper.isDisabled) {
-                for (const enclosureId of enclosureIds){
-                    await removeEnclosure((await keeper.getEmployee()).employeeId, Number(enclosureId));
-                }
-                return res.status(200).json({updated: keeper});
-            }
-            throw {error: "The keeper role has been disabled!"};
+    const { employeeId } = req.params;
+    const { enclosureIds } = req.body;
+    const result = await findEmployeeById(Number(employeeId));
+    if (await result.getKeeper()) {
+      let keeper = await result.getKeeper();
+      if (!keeper.isDisabled) {
+        for (const enclosureId of enclosureIds) {
+          await KeeperService.removeEnclosure((await keeper.getEmployee()).employeeId, Number(enclosureId));
         }
-        throw {error: "Employee has no keeper role!"};
+        return res.status(200).json({ updated: keeper });
+      }
+      throw { error: "The keeper role has been disabled!" };
     }
-    catch (error: any) {
-        console.log("error",error)
-        return res.status(400).json({error: error.message});
-    }
+    throw { error: "Employee has no keeper role!" };
+  }
+  catch (error: any) {
+    console.log("error", error)
+    return res.status(400).json({ error: error.message });
+  }
 }
 
-export const updateKeeperTypeController = async (
-    req: Request,
-    res: Response,
+export const updateKeeperType = async (
+  req: Request,
+  res: Response,
 ) => {
-    try {
-        const { email } = (req as any).locals.jwtPayload;
-        const employee = await findEmployeeByEmail(email);
+  try {
+    const { email } = (req as any).locals.jwtPayload;
+    const employee = await findEmployeeByEmail(email);
 
-        if (!employee.isAccountManager) {
-        return res
-            .status(403)
-            .json({ error: "Access Denied! Account managers only!" });
-        }
-
-        const {employeeId} = req.params;
-        const {roleType} = req.body;
-
-        await updateKeeperType(Number(employeeId), roleType);
-
-        return res.status(200).json({message: `The role type for this account has been updated to ${roleType}`});
-
+    if (!employee.isAccountManager) {
+      return res
+        .status(403)
+        .json({ error: "Access Denied! Account managers only!" });
     }
-    catch (error: any) {
-        return res.status(400).json({error: error.message});
-    }
+
+    const { employeeId } = req.params;
+    const { roleType } = req.body;
+
+    await KeeperService.updateKeeperType(Number(employeeId), roleType);
+
+    return res.status(200).json({ message: `The role type for this account has been updated to ${roleType}` });
+
+  }
+  catch (error: any) {
+    return res.status(400).json({ error: error.message });
+  }
 }

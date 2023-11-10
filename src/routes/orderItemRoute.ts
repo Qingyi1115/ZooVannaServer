@@ -1,16 +1,15 @@
 import express from "express";
-import { authMiddleware } from "../middlewares/authMiddleware";
 import {
-  getDateOrderCountController,
-  getOrderByVerificationCodeController,
+  getDateOrderCount,
+  getOrderByVerificationCode,
 } from "../controllers/orderItemController";
 
 const router = express.Router();
 
-router.get("/getDateOrderCount", getDateOrderCountController);
+router.get("/getDateOrderCount", getDateOrderCount);
 router.get(
   "/getOrderItemByVerificationCode/:verificationCode",
-  getOrderByVerificationCodeController,
+  getOrderByVerificationCode,
 );
 
 export default router;

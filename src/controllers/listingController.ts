@@ -1,16 +1,7 @@
-import {
-  createListing,
-  disableListing,
-  editListingDetails,
-  enableListing,
-  getAllListings,
-  getListing,
-  getLocalListing,
-  getForeignerListing,
-} from "../services/listingService";
+import * as ListingService from "../services/listingService";
 import { Request, Response } from "express";
 
-export async function createNewListingController(req: Request, res: Response) {
+export async function createNewListing(req: Request, res: Response) {
   try {
     const { name, description, price, listingType } = req.body;
 
@@ -24,14 +15,14 @@ export async function createNewListingController(req: Request, res: Response) {
       return res.status(400).json({ error: "missing information" });
     }
 
-    let listing = await createListing(name, description, price, listingType);
+    let listing = await ListingService.createListing(name, description, price, listingType);
     return res.status(200).json({ result: listing });
   } catch (error: any) {
     return res.status(400).json({ error: error.message });
   }
 }
 
-export async function editListingDetailsController(
+export async function editListingDetails(
   req: Request,
   res: Response,
 ) {
@@ -39,7 +30,7 @@ export async function editListingDetailsController(
     const { name, description, price, listingType, listingStatus } = req.body;
     if (name && description && price && listingType && listingStatus) {
       const { listingId } = req.params;
-      editListingDetails(
+      ListingService.editListingDetails(
         Number(listingId),
         name,
         description,
@@ -56,60 +47,60 @@ export async function editListingDetailsController(
   }
 }
 
-export async function disableListingController(req: Request, res: Response) {
+export async function disableListing(req: Request, res: Response) {
   try {
     const { listingId } = req.params;
-    await disableListing(Number(listingId));
+    await ListingService.disableListing(Number(listingId));
     return res.status(200).json({ result: "Listing has been disabled" });
   } catch (error: any) {
     return res.status(400).json({ error: error.message });
   }
 }
 
-export async function enableListingController(req: Request, res: Response) {
+export async function enableListing(req: Request, res: Response) {
   try {
     const { listingId } = req.params;
-    await enableListing(Number(listingId));
+    await ListingService.enableListing(Number(listingId));
     return res.status(200).json({ result: "Listing has been enabled" });
   } catch (error: any) {
     return res.status(400).json({ error: error.message });
   }
 }
 
-export async function getListingController(req: Request, res: Response) {
+export async function getListing(req: Request, res: Response) {
   try {
     const { listingId } = req.params;
-    let result = await getListing(Number(listingId));
+    let result = await ListingService.getListing(Number(listingId));
     return res.status(200).json({ result: result });
   } catch (error: any) {
     return res.status(400).json({ error: error.message });
   }
 }
 
-export async function getAllListingsController(req: Request, res: Response) {
+export async function getAllListings(req: Request, res: Response) {
   try {
-    let result = await getAllListings();
+    let result = await ListingService.getAllListings();
     return res.status(200).json({ result: result });
   } catch (error: any) {
     return res.status(400).json({ error: error.message });
   }
 }
 
-export async function getLocalListingController(req: Request, res: Response) {
+export async function getLocalListing(req: Request, res: Response) {
   try {
-    const result = await getLocalListing();
+    const result = await ListingService.getLocalListing();
     return res.status(200).json({ result: result });
   } catch (error: any) {
     return res.status(400).json({ error: error.message });
   }
 }
 
-export async function getForeignerListingController(
+export async function getForeignerListing(
   req: Request,
   res: Response,
 ) {
   try {
-    const result = await getForeignerListing();
+    const result = await ListingService.getForeignerListing();
     return res.status(200).json({ result: result });
   } catch (error: any) {
     return res.status(400).json({ error: error.message });
