@@ -76,6 +76,7 @@ import {
   markCustomerReportLogsViewedController,
   deleteCustomerReportLogController,
   getAllCustomerReportLogsByFacilityIdController,
+  crowdLevelByFacilityId,
 } from "../controllers/assetFacilityController";
 
 const router = express.Router();
@@ -84,6 +85,7 @@ const router = express.Router();
 router.put("/initializeHub", initializeHubController);
 router.post("/pushSensorReadings/:processorName", pushSensorReadingsController);
 router.post("/getAllFacilityCustomer", getAllFacilityCustomer);
+router.get("/crowdLevelByFacilityId/:facilityId", crowdLevelByFacilityId);
 
 // Customer Report
 router.post("/createCustomerReportLog/:facilityId", createCustomerReportController);

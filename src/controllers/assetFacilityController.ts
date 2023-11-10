@@ -263,6 +263,22 @@ export async function getAllFacilityCustomer(req: Request, res: Response) {
   }
 }
 
+export async function crowdLevelByFacilityId(req: Request, res: Response) {
+  try {
+
+    const { facilityId } = req.params;
+    const ratio = await AssetFacilityService.crowdLevelRatioByFacilityId(Number(facilityId));
+
+    return res.status(200).json({
+      crowdLevel: ratio < 0.3 ? "LOW"
+        : ratio < 0.6 ? "MEDIUM" : "HIGH"
+    });
+  } catch (error: any) {
+    console.log(error);
+    res.status(400).json({ error: error.message });
+  }
+}
+
 export async function getMyOperationFacilityController(
   req: Request,
   res: Response,
