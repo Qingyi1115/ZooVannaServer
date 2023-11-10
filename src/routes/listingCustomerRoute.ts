@@ -1,9 +1,5 @@
 import express from "express";
 import {
-  createNewListingController,
-  disableListingController,
-  editListingDetailsController,
-  enableListingController,
   getAllListingsController,
   getListingController,
   getLocalListingController,

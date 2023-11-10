@@ -1007,3 +1007,36 @@ export async function updatePublicEventSessionById(req: Request, res: Response) 
     res.status(400).json({ error: error.message });
   }
 }
+
+export async function deletePublicEventSessionById(req: Request, res: Response) {
+  try {
+
+    // Check authentication
+    const { email } = (req as any).locals.jwtPayload;
+    const employee = await findEmployeeByEmail(email);
+    // const planningStaff = await employee.getPlanningStaff();
+
+    if (
+      !employee.superAdmin &&
+      !(await employee.getPlanningStaff())
+    )
+      return res
+        .status(403)
+        .json({ error: "Access Denied! Planning Staff only!" });
+
+    const { publicEventSessionId } = req.params;
+    if (publicEventSessionId == "") {
+      return res.status(400).json({ error: "Missing information!" });
+    }
+
+
+    await ZooEventService.deletePublicEventSessionById(
+      Number(publicEventSessionId),
+    );
+
+    return res.status(200).json({ result: "success" });
+  } catch (error: any) {
+    console.log(error);
+    res.status(400).json({ error: error.message });
+  }
+}
