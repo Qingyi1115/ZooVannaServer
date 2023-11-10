@@ -24,6 +24,7 @@ import {
 } from "../controllers/employeeController";
 import {
   addEnclosureToKeeper,
+  getAllKeepers,
   removeEnclosureFromKeeper,
   // updateKeeperType,
 } from "../controllers/keeperController";
@@ -74,6 +75,7 @@ router.put(
   removeEnclosureFromKeeper,
 );
 
+router.get("/getAllKeepers", getAllKeepers);
 // router.put("getEmployee/:employeeId/updateKeeperType", updateKeeperType);
 // router.put("getEmployee/:employeeId/updateGeneralStaffType", updateGeneralStaffType);
 // router.put("getEmployee/:employeeId/updatePlanningStaffType", updatePlanningStaffType);

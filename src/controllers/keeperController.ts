@@ -75,7 +75,7 @@ export const removeEnclosureFromKeeper = async (
   }
 }
 
-export const updateKeeperType = async (
+export const getAllKeepers = async (
   req: Request,
   res: Response,
 ) => {
@@ -89,15 +89,13 @@ export const updateKeeperType = async (
         .json({ error: "Access Denied! Account managers only!" });
     }
 
-    const { employeeId } = req.params;
-    const { roleType } = req.body;
+    const keepers = await KeeperService.getAllKeepers();
 
-    await KeeperService.updateKeeperType(Number(employeeId), roleType);
-
-    return res.status(200).json({ message: `The role type for this account has been updated to ${roleType}` });
+    return res.status(200).json({ keepers: keepers });
 
   }
   catch (error: any) {
     return res.status(400).json({ error: error.message });
   }
 }
+
