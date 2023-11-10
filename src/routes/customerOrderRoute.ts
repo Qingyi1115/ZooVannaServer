@@ -5,8 +5,8 @@ import {
   getAllCustomerOrders,
   getCustomerOrderByCustomerOrderId,
   getCustomerOrderByBookingReference,
-  getAllUpcomingCustomerOrderByCustomerController,
-  getPastCustomerOrderByCustomerController,
+  getAllUpcomingCustomerOrderByCustomer,
+  getPastCustomerOrderByCustomer,
   getTotalCustomerOrder,
   getRevenueByMonth,
   getRevenueByDay,
@@ -40,12 +40,12 @@ router.post("/getNumberOfOrdersPerDay", getNumberOfOrdersPerDay);
 
 router.get(
   "/getAllUpcomingCustomerOrderByCustomer",
-  getAllUpcomingCustomerOrderByCustomerController,
+  getAllUpcomingCustomerOrderByCustomer,
 );
 
 router.get(
   "/getPastCustomerOrderByCustomer",
-  getPastCustomerOrderByCustomerController,
+  getPastCustomerOrderByCustomer,
 );
 
 export default router;

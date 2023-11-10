@@ -35,15 +35,15 @@ class Facility extends Model<
   declare facilityDetail?: string;
 
   declare hubProcessors?: HubProcessor[];
-  declare zone? : Zone;
+  declare zone?: Zone;
   declare inHouse?: InHouse;
   declare thirdParty?: ThirdParty;
   declare animalClinic?: AnimalClinic;
   declare enclosure?: Enclosure;
 
-  declare getHubProcessors: HasManyGetAssociationsMixin<HubProcessor[]>;
+  declare getHubProcessors: HasManyGetAssociationsMixin<HubProcessor>;
   declare addHubProcessor: HasManyAddAssociationMixin<HubProcessor, number>;
-  declare setHubProcessors: HasManySetAssociationsMixin<HubProcessor[], number>;
+  declare setHubProcessors: HasManySetAssociationsMixin<HubProcessor, number>;
   declare removeHubProcessor: HasManyRemoveAssociationMixin<
     HubProcessor,
     number
@@ -67,24 +67,24 @@ class Facility extends Model<
   public async getFacilityDetail() {
     if (true) {
       let inHouse = await this.getInHouse({
-        include:[{
-          association:"maintenanceStaffs",
-          required:false,
-          include:[{
-            association:"employee",
+        include: [{
+          association: "maintenanceStaffs",
+          required: false,
+          include: [{
+            association: "employee",
           }]
-        },{
-          association:"operationStaffs",
-          required:false,
-          include:[{
-            association:"employee",
+        }, {
+          association: "operationStaffs",
+          required: false,
+          include: [{
+            association: "employee",
           }]
-        },{
-          association:"facilityLogs",
-          required:false
-        },{
-          association:"customerReportLogs",
-          required:false
+        }, {
+          association: "facilityLogs",
+          required: false
+        }, {
+          association: "customerReportLogs",
+          required: false
         }]
       });
       if (inHouse) {
@@ -92,24 +92,24 @@ class Facility extends Model<
         return inHouse;
       }
       let thirdParty = await this.getThirdParty({
-        include:[{
-          association:"maintenanceStaffs",
-          required:false,
-          include:[{
-            association:"employee",
+        include: [{
+          association: "maintenanceStaffs",
+          required: false,
+          include: [{
+            association: "employee",
           }]
-        },{
-          association:"operationStaffs",
-          required:false,
-          include:[{
-            association:"employee",
+        }, {
+          association: "operationStaffs",
+          required: false,
+          include: [{
+            association: "employee",
           }]
-        },{
-          association:"facilityLogs",
-          required:false
-        },{
-          association:"customerReportLogs",
-          required:false
+        }, {
+          association: "facilityLogs",
+          required: false
+        }, {
+          association: "customerReportLogs",
+          required: false
         }]
       });
       if (thirdParty) {
@@ -156,10 +156,10 @@ Facility.init(
       unique: true,
     },
     xCoordinate: {
-      type: DataTypes.FLOAT(17,14),
+      type: DataTypes.FLOAT(17, 14),
     },
     yCoordinate: {
-      type: DataTypes.FLOAT(17,14),
+      type: DataTypes.FLOAT(17, 14),
     },
     facilityDetail: {
       type: DataTypes.STRING,

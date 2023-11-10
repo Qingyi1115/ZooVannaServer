@@ -104,7 +104,7 @@ export const login = async (req: Request, res: Response) => {
       res.status(200).json({ customerId, email, token });
     }
   } catch (error: any) {
-    console.log("error",error)
+    console.log("error", error)
     res.status(400).json({ error: error.message });
   }
 };
@@ -271,7 +271,7 @@ export async function updatePassword(req: Request, res: Response) {
         newPassword,
       );
       console.log("update success");
-      return res.status(200).json({ result:"success" });
+      return res.status(200).json({ result: "success" });
     }
   } catch (error: any) {
     console.log("last error");
@@ -280,7 +280,7 @@ export async function updatePassword(req: Request, res: Response) {
   }
 }
 
-export const resetForgottenPasswordController = async (
+export const resetForgottenPassword = async (
   req: Request,
   res: Response,
 ) => {
@@ -337,7 +337,7 @@ export async function deleteCustomerByEmail(req: Request, res: Response) {
   }
 }
 
-export async function createCustomerOrderForCustomerController(
+export async function createCustomerOrderForCustomer(
   req: Request,
   res: Response,
 ) {
@@ -359,7 +359,7 @@ export async function createCustomerOrderForCustomerController(
   }
 }
 
-export async function createCustomerOrderForGuestController(
+export async function createCustomerOrderForGuest(
   req: Request,
   res: Response,
 ) {
@@ -376,7 +376,7 @@ export async function createCustomerOrderForGuestController(
   }
 }
 
-export async function completePaymentForCustomerController(
+export async function completePaymentForCustomer(
   req: Request,
   res: Response,
 ) {
@@ -403,7 +403,7 @@ export async function completePaymentForCustomerController(
   }
 }
 
-export async function completePaymentForGuestController(
+export async function completePaymentForGuest(
   req: Request,
   res: Response,
 ) {
@@ -425,7 +425,7 @@ export async function completePaymentForGuestController(
   }
 }
 
-export async function purchaseTicketController(req: Request, res: Response) {
+export async function purchaseTicket(req: Request, res: Response) {
   const { customerId } = req.params;
   if (!customerId) {
     return res.status(400).json({ error: "Missing customer ID!" });
@@ -442,7 +442,7 @@ export async function purchaseTicketController(req: Request, res: Response) {
 
     return res.status(200).json({ result: "success" });
   } catch (error: any) {
-    console.log("error",error)
+    console.log("error", error)
     return res.status(400).json({ error: error.message });
   }
 }
