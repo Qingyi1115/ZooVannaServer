@@ -3320,7 +3320,7 @@ export const enclosureSeed = async () => {
     width: 400,
     height: 20,
     enclosureStatus: "CONSTRUCTING",
-    designDiagramJsonUrl: "enclosureDiagramJson/pandaEnclosure1.json"
+    designDiagramJsonUrl: "enclosureDiagramJson/Panda Enclosure 01.json"
   } as any;
   await Enclosure.create(enclosure1Template);
 
@@ -3799,9 +3799,9 @@ export const facilityAssetsSeed = async () => {
   ]) {
     _day = new Date(
       _day.getTime() -
-        days * 1000 * 60 * 60 * 24 +
-        Math.random() * 1000 * 60 * 60 * 24 * 4 -
-        1000 * 60 * 60 * 24 * 2,
+      days * 1000 * 60 * 60 * 24 +
+      Math.random() * 1000 * 60 * 60 * 24 * 4 -
+      1000 * 60 * 60 * 24 * 2,
     );
     sensor.addMaintenanceLog(
       await MaintenanceLog.create({
