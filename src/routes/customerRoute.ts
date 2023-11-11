@@ -11,13 +11,13 @@ import {
   updateCustomer,
   updatePassword,
   sendForgetPasswordLink,
-  resetForgottenPasswordController,
+  resetForgottenPassword,
   deleteCustomerByEmail,
-  purchaseTicketController,
-  createCustomerOrderForCustomerController,
-  completePaymentForCustomerController,
-  createCustomerOrderForGuestController,
-  completePaymentForGuestController,
+  purchaseTicket,
+  createCustomerOrderForCustomer,
+  completePaymentForCustomer,
+  createCustomerOrderForGuest,
+  completePaymentForGuest,
   sendEmailVerification,
 } from "../controllers/customerController";
 import { authMiddleware } from "../middlewares/authMiddleware";
@@ -26,7 +26,7 @@ const router = express.Router();
 
 //forgot password
 router.post("/sendForgetPasswordLink/:email", sendForgetPasswordLink); //send reset password link to customer email
-router.put("/resetForgottenPassword/:token", resetForgottenPasswordController); //reset from the customer side using email
+router.put("/resetForgottenPassword/:token", resetForgottenPassword); //reset from the customer side using email
 
 //verify email before signup
 router.get("/sendEmailVerification/:email", sendEmailVerification); //send reset password link to customer email
@@ -37,14 +37,14 @@ router.post("/createCustomer/:token", createCustomer);
 // log in
 router.post("/login", login);
 
-router.post("/createTicket/:customerId", purchaseTicketController);
+router.post("/createTicket/:customerId", purchaseTicket);
 router.post(
   "/createCustomerOrderForGuest",
-  createCustomerOrderForGuestController,
+  createCustomerOrderForGuest,
 );
 router.post(
   "/completePaymentForGuest/:customerOrderId",
-  completePaymentForGuestController,
+  completePaymentForGuest,
 );
 
 router.use(authMiddleware);
@@ -58,12 +58,12 @@ router.delete("/deleteCustomer", deleteCustomerByEmail);
 
 router.post(
   "/createCustomerOrderForCustomer",
-  createCustomerOrderForCustomerController,
+  createCustomerOrderForCustomer,
 );
 
 router.post(
   "/completePaymentForCustomer/:customerOrderId",
-  completePaymentForCustomerController,
+  completePaymentForCustomer,
 );
 
 export default router;

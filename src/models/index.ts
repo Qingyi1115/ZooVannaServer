@@ -5,7 +5,9 @@ import { DAY_IN_MILLISECONDS } from "../helpers/staticValues";
 import * as AnimalService from "../services/animalService";
 import * as AssetFacility from "../services/assetFacilityService";
 import { createCustomerOrderForSeeding } from "../services/customerService";
+import * as EnclosureService from "../services/enclosureService";
 import * as SpeciesService from "../services/speciesService";
+import * as ZooEventService from "../services/zooEventService";
 import { Animal } from "./Animal";
 import { AnimalActivity } from "./AnimalActivity";
 import { AnimalActivityLog } from "./AnimalActivityLog";
@@ -33,6 +35,7 @@ import {
   Country,
   DayOfWeek,
   EventTimingType,
+  EventType,
   FacilityLogType,
   FacilityType,
   GeneralStaffType,
@@ -657,6 +660,7 @@ export const seedDatabase = async () => {
   await enclosureSeed();
   await promotionSeed();
   await customerSeed();
+  await publicEventSeed();
 };
 
 export const promotionSeed = async () => {
@@ -1657,30 +1661,6 @@ export const speciesSeed = async () => {
     "SPE003",
   );
   console.log(compatibility3.toJSON());
-};
-
-export const enclosureSeed = async () => {
-  let enclosure1Template = {
-    facilityId: 1,
-    name: "Panda Enclosure 01",
-    remark: "NA",
-    length: 200,
-    width: 400,
-    height: 20,
-    enclosureStatus: "CONSTRUCTING",
-  } as any;
-  await Enclosure.create(enclosure1Template);
-
-  let enclosure2Template = {
-    facilityId: 2,
-    name: "Panda Enclosure 02",
-    remark: "NA",
-    length: 300,
-    width: 500,
-    height: 25,
-    enclosureStatus: "ACTIVE",
-  } as any;
-  await Enclosure.create(enclosure2Template);
 };
 
 export const animalSeed = async () => {
@@ -3330,6 +3310,36 @@ export const enrichmentItemSeed = async () => {
   console.log(Feeder.toJSON());
 };
 
+
+export const enclosureSeed = async () => {
+  let enclosure1Template = {
+    facilityId: 1,
+    name: "Panda Enclosure 01",
+    remark: "NA",
+    length: 200,
+    width: 400,
+    height: 20,
+    enclosureStatus: "CONSTRUCTING",
+    designDiagramJsonUrl: "enclosureDiagramJson/pandaEnclosure1.json"
+  } as any;
+  await Enclosure.create(enclosure1Template);
+
+  let enclosure2Template = {
+    facilityId: 2,
+    name: "Panda Enclosure 02",
+    remark: "NA",
+    length: 300,
+    width: 500,
+    height: 25,
+    enclosureStatus: "ACTIVE",
+  } as any;
+  await Enclosure.create(enclosure2Template);
+
+  // assign animals to enclosure
+  await EnclosureService.assignAnimalToEnclosure(1, "ANM00001")
+  await EnclosureService.assignAnimalToEnclosure(1, "ANM00002")
+};
+
 export const facilityAssetsSeed = async () => {
   let facility3 = {
     facilityName: "Info Centre",
@@ -3939,4 +3949,33 @@ export const facilityAssetsSeed = async () => {
   //   sensorType: SensorType.CAMERA,
   // } as any;
   // let camera = await Sensor.create(cameraTemplate);
+};
+
+export const publicEventSeed = async () => {
+
+  const pubEvent = await ZooEventService.createPublicEvent(
+    EventType.CUSTOMER_FEEDING,
+    "Homo sapiens feeding",
+    "do not feed them fast food",
+    "img/animal/ANM00001.jpg",
+    new Date(),
+    new Date(Date.now() + 60 * DAY_IN_MILLISECONDS),
+    [],
+    [],
+    8
+  );
+
+  const pubEventSession = await ZooEventService.createPublicEventSession(
+    pubEvent.publicEventId,
+    RecurringPattern.WEEKLY,
+    DayOfWeek.THURSDAY,
+    null,
+    60,
+    "16:00",
+    1,
+    null
+  );
+
+
+
 };

@@ -27,7 +27,7 @@ class FeedingPlanSessionDetail extends Model<
   declare durationInMinutes: number;
   declare isPublic: boolean;
   declare publicEventStartTime: string | null;
-  declare requiredNumberOfKeeper : number;
+  declare requiredNumberOfKeeper: number;
 
   //--FK
   declare feedingPlan?: FeedingPlan;
@@ -65,24 +65,24 @@ FeedingPlanSessionDetail.init(
       values: Object.values(EventTimingType),
       allowNull: false,
     },
-    durationInMinutes:{
+    durationInMinutes: {
       type: DataTypes.INTEGER,
       allowNull: false,
     },
-    isPublic:{
+    isPublic: {
       type: DataTypes.BOOLEAN,
       allowNull: false,
     },
-    publicEventStartTime:{
+    publicEventStartTime: {
       type: DataTypes.STRING(5),
       allowNull: true,
-      validate:{
+      validate: {
         is: /[0-2]\d:[0-5]\d/
       }
     },
     requiredNumberOfKeeper: {
       type: DataTypes.INTEGER,
-      allowNull:false
+      allowNull: false
     },
   },
   {

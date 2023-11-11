@@ -21,6 +21,7 @@ import { Sensor } from "../models/Sensor";
 import { SensorReading } from "../models/SensorReading";
 import { Zone } from "../models/Zone";
 import { findEmployeeById, getAllEmployees } from "./employeeService";
+import { MINUTES_IN_MILLISECONDS } from "../helpers/staticValues";
 
 export async function createNewZone(zoneName: string) {
   try {
@@ -563,6 +564,44 @@ export async function getAllFacility(
     }
 
     return allFacilities;
+  } catch (error: any) {
+    throw validationErrorHandler(error);
+  }
+}
+
+export async function crowdLevelRatioByFacilityId(
+  facilityId: number,
+): Promise<number> {
+  try {
+    const facility = await getFacilityById(facilityId);
+
+    const readings: number[] = [];
+
+    for (const hub of (await facility.getHubProcessors())) {
+      for (const sensor of (await hub.getSensors())) {
+        if (sensor.sensorType == SensorType.CAMERA) {
+          const sensorReadings = await sensor.getSensorReadings({
+            where: {
+              readingDate: {
+                [Op.lt]: new Date(),
+                [Op.gt]: new Date(Date.now() + MINUTES_IN_MILLISECONDS),
+              },
+            }
+          })
+          for (const sensorReading of sensorReadings) {
+            readings.push(sensorReading.value);
+          }
+
+        }
+      }
+    }
+
+    const total = readings.length
+    console.log("Number of reading from cameras : " + total);
+    if (!total) return 0;
+
+    const average = readings.reduce((r1, r2) => r1 + r2) / total
+    return average / (await facility.getFacilityDetail()).maxAccommodationSize;
   } catch (error: any) {
     throw validationErrorHandler(error);
   }
