@@ -66,7 +66,8 @@ import {
   updateZoneController,
   deleteZoneController,
   completeRepairTicketController,
-  getAllFacilityCustomer,
+  getAllFacilityCustomerController,
+  getFacilityCustomerController,
   createCustomerReportController,
   getAllCustomerReportsController,
   updateCustomerReportController,
@@ -83,10 +84,14 @@ const router = express.Router();
 // IP device API
 router.put("/initializeHub", initializeHubController);
 router.post("/pushSensorReadings/:processorName", pushSensorReadingsController);
-router.post("/getAllFacilityCustomer", getAllFacilityCustomer);
+router.post("/getAllFacilityCustomer", getAllFacilityCustomerController);
+router.post("/getFacilityCustomer/:facilityId", getFacilityCustomerController);
 
 // Customer Report
-router.post("/createCustomerReportLog/:facilityId", createCustomerReportController);
+router.post(
+  "/createCustomerReportLog/:facilityId",
+  createCustomerReportController,
+);
 
 router.use(authMiddleware);
 
@@ -155,11 +160,26 @@ router.get(
 router.delete("/deleteFacilityLog/:facilityLogId", deleteFacilityLogController);
 
 // Customer Report
-router.get("/getCustomerReportLog/:customerReportLogId", getCustomerReportLogController);
-router.get("/getAllNonViewedCustomerReportLogs", getAllNonViewedCustomerReportLogsController);
-router.get("/getAllCustomerReportLogsByFacilityId/:facilityId", getAllCustomerReportLogsByFacilityIdController);
-router.put("/markCustomerReportLogsViewed", markCustomerReportLogsViewedController);
-router.delete("/deleteCustomerReportLog/:customerReportLogId", deleteCustomerReportLogController);
+router.get(
+  "/getCustomerReportLog/:customerReportLogId",
+  getCustomerReportLogController,
+);
+router.get(
+  "/getAllNonViewedCustomerReportLogs",
+  getAllNonViewedCustomerReportLogsController,
+);
+router.get(
+  "/getAllCustomerReportLogsByFacilityId/:facilityId",
+  getAllCustomerReportLogsByFacilityIdController,
+);
+router.put(
+  "/markCustomerReportLogsViewed",
+  markCustomerReportLogsViewedController,
+);
+router.delete(
+  "/deleteCustomerReportLog/:customerReportLogId",
+  deleteCustomerReportLogController,
+);
 
 //Animal Feed
 router.post("/createNewAnimalFeed", createNewAnimalFeedController);
