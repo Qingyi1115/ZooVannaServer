@@ -129,11 +129,16 @@ export async function createFacility(req: Request, res: Response) {
         .status(403)
         .json({ error: "Access Denied! Operation managers only!" });
     }
-
-    const imageUrl = await handleFileUpload(
-      req,
-      process.env.IMG_URL_ROOT! + "facility", //"D:/capstoneUploads/animalFeed",
-    );
+    let imageUrl;
+    try {
+      imageUrl = await handleFileUpload(
+        req,
+        process.env.IMG_URL_ROOT! + "facility", //"D:/capstoneUploads/animalFeed",
+      );
+    } catch {
+      console.log("No image!")
+      imageUrl = "";
+    }
 
     const { facilityName, isSheltered, facilityDetail, facilityDetailJson } =
       req.body;
@@ -436,6 +441,7 @@ export async function getFacilityMaintenancePredictionValues(
         console.log(err);
       }
     }
+    if (!values) throw { message: "Unable to obtain values for facilityId" + facilityId }
     return res.status(200).json({ values: values });
   } catch (error: any) {
     console.log("error", error);
@@ -480,6 +486,14 @@ export async function updateFacility(req: Request, res: Response) {
         showOnMap,
       ].every((field) => field === undefined)
     ) {
+      console.log({
+        facilityName,
+        xCoordinate,
+        yCoordinate,
+        facilityDetailJson,
+        isSheltered,
+        showOnMap,
+      })
       return res.status(400).json({ error: "Missing information!" });
     }
 
@@ -904,9 +918,20 @@ export async function updateCustomerReport(
 ) {
   try {
     const { email } = (req as any).locals.jwtPayload;
-    // const employee = await EmployeeService.findEmployeeByEmail(email);
+    const employee = await EmployeeService.findEmployeeByEmail(email);
 
-    const { facilityLogId } = req.params;
+    if (
+      !employee.superAdmin &&
+      !(
+        (await employee.getGeneralStaff())?.generalStaffType ==
+        GeneralStaffType.ZOO_MAINTENANCE
+      ) &&
+      !(await employee.getPlanningStaff())
+    )
+      return res
+        .status(403)
+        .json({ error: "Access Denied! Operation managers only!" });
+
     let {
       customerReportLogId,
       customerReportLogIds,

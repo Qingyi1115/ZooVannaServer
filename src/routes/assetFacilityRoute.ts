@@ -138,9 +138,6 @@ router.delete(
   removeOperationStaffFromFacility,
 );
 
-router.get("/getAllCustomerReportLogs", getAllCustomerReports);
-router.put("/updateCustomerReportLogs", updateCustomerReport);
-
 //Facility Logs
 router.post("/createFacilityLog/:facilityId", createFacilityLog);
 router.post(
@@ -157,9 +154,11 @@ router.get(
 router.delete("/deleteFacilityLog/:facilityLogId", deleteFacilityLog);
 
 // Customer Report
+router.get("/getAllCustomerReportLogs", getAllCustomerReports);
 router.get("/getCustomerReportLog/:customerReportLogId", getCustomerReportLog);
 router.get("/getAllNonViewedCustomerReportLogs", getAllNonViewedCustomerReportLogs);
 router.get("/getAllCustomerReportLogsByFacilityId/:facilityId", getAllCustomerReportLogsByFacilityId);
+router.put("/updateCustomerReportLogs", updateCustomerReport);
 router.put("/markCustomerReportLogsViewed", markCustomerReportLogsViewed);
 router.delete("/deleteCustomerReportLog/:customerReportLogId", deleteCustomerReportLog);
 

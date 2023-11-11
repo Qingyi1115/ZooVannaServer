@@ -91,6 +91,30 @@ newRepairTicketDetails = {
     "employeeIds" : [8, 10]
 }
 
+import json
+
+newFacility = {
+    "facilityName" : "Fake shelter",
+    "isSheltered" : True,
+    "facilityDetail" : "inHouse",
+    "xCoordinate" : 1,
+    "yCoordinate" : 1,
+    "showOnMap" : False,
+    "facilityDetailJson" :json.dumps( {
+      "isPaid":True,
+      "maxAccommodationSize":1,
+      "hasAirCon" : False,
+      "facilityType" : "AED"
+    }),
+}
+
+newCustomerReportLog = {
+    "dateTime" : time.time() * 1000 - DAY_IN_MILLISECONDS * 2,
+    "title" : "Virtual report",
+    "remarks" :"Nothing",
+    "viewed" : False,
+}
+
 new_customer_dat = {
   "password":"very_secure_string", 
   "firstName": "string",
