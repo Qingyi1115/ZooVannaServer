@@ -67,6 +67,7 @@ import {
   deleteZone,
   completeRepairTicket,
   getAllFacilityCustomer,
+  getFacilityCustomer,
   createCustomerReport,
   getAllCustomerReports,
   updateCustomerReport,

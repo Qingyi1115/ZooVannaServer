@@ -241,7 +241,7 @@ export async function getAllFacility(req: Request, res: Response) {
   }
 }
 
-export async function getAllFacilityCustomerController(
+export async function getAllFacilityCustomer(
   req: Request,
   res: Response,
 ) {
