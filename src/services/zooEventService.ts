@@ -1075,9 +1075,6 @@ export async function autoAssignKeeperToZooEvent() {
         }
       }
     }
-
-
-
     return zooEvents;
   } catch (error: any) {
     throw validationErrorHandler(error);

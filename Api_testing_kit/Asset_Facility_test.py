@@ -1,4 +1,4 @@
-from JsonData import newRepairTicketDetails, newFacility, newCustomerReportLog
+from JsonData import newRepairTicketDetails, newFacility, newCustomerReportLog, newAnimalFeed, newEnrichmentItem, newHub
 from Annotations import UseAPI, getApi, login_as_marry, login_as_junior_keeper
 from time import time
 import json
@@ -493,4 +493,290 @@ FACILITY_LOG_API_TESTS = [
     (updateFacilityLog, newRepairTicketDetails),
     (completeRepairTicket,newRepairTicketDetails),
     (deleteFacilityLog,newRepairTicketDetails),
+]
+
+# Animal Feed API test
+@login_as_marry
+def createNewAnimalFeed_fail(animalFeedData, useAPI: UseAPI):
+    res = useAPI.post("/api/assetFacility/createNewAnimalFeed",
+                      json={"no data" : "still no data"})
+    response_json = res.json()
+    assert "error" in response_json, response_json
+    assert res.status_code() == 400, "Status code not 400!" + str(res.status_code())
+
+@login_as_marry
+def createNewAnimalFeed_success(animalFeedData, useAPI: UseAPI):
+    res = useAPI.post("/api/assetFacility/createNewAnimalFeed",
+                      json=animalFeedData)
+    response_json = res.json()
+    assert "animalFeed" in response_json, response_json
+    assert res.status_code() == 200, "Status code not 200!" + str(res.status_code())
+    animalFeedData["animalFeedId"] = response_json["animalFeed"]["animalFeedId"]
+
+@getApi
+def getAllAnimalFeed_fail(useAPI: UseAPI):
+    res = useAPI.get("/api/assetFacility/getAllAnimalFeed")
+    response_json = res.json()
+    assert "error" in response_json, response_json
+    assert res.status_code() == 401, "Status code not 401!" + str(res.status_code())
+
+@login_as_marry
+def getAllAnimalFeed_success(useAPI: UseAPI):
+    res = useAPI.get("/api/assetFacility/getAllAnimalFeed")
+    response_json = res.json()
+    assert "animalFeeds" in response_json, response_json
+    assert isinstance(response_json["animalFeeds"], list), response_json
+    assert res.status_code() == 200, "Status code not 200!" + str(res.status_code())
+
+@login_as_marry
+def getAnimalFeed_fail(animalFeedData, useAPI: UseAPI):
+    res = useAPI.get("/api/assetFacility/getAnimalFeed/{}".format("Fake-name"))
+    response_json = res.json()
+    assert "error" in response_json, response_json
+    assert res.status_code() == 400, "Status code not 400!" + str(res.status_code())
+
+@login_as_marry
+def getAnimalFeed_success(animalFeedData, useAPI: UseAPI):
+    res = useAPI.get("/api/assetFacility/getAnimalFeed/{}".format(animalFeedData["animalFeedName"]))
+    response_json = res.json()
+    assert "animalFeed" in response_json, response_json
+    assert res.status_code() == 200, "Status code not 200!" + str(res.status_code())
+
+@login_as_marry
+def getAnimalFeedById_fail(animalFeedData, useAPI: UseAPI):
+    res = useAPI.get("/api/assetFacility/getAnimalFeedById/{}".format("Fake-id"))
+    response_json = res.json()
+    assert "error" in response_json, response_json
+    assert res.status_code() == 400, "Status code not 400!" + str(res.status_code())
+
+@login_as_marry
+def getAnimalFeedById_success(animalFeedData, useAPI: UseAPI):
+    res = useAPI.get("/api/assetFacility/getAnimalFeedById/{}".format(animalFeedData["animalFeedId"]))
+    response_json = res.json()
+    assert "animalFeed" in response_json, response_json
+    assert res.status_code() == 200, "Status code not 200!" + str(res.status_code())
+
+@login_as_marry
+def updateAnimalFeed_fail(animalFeedData, useAPI: UseAPI):
+    res = useAPI.put("/api/assetFacility/updateAnimalFeed",
+                     json={"no data" : "no data"})
+    response_json = res.json()
+    assert "error" in response_json, response_json
+    assert res.status_code() == 400, "Status code not 400!" + str(res.status_code())
+
+@login_as_marry
+def updateAnimalFeed_success(animalFeedData, useAPI: UseAPI):
+    animalFeedData["animalFeedName"] = "tofu with chocolate"
+    res = useAPI.put("/api/assetFacility/updateAnimalFeed",
+                     json=animalFeedData)
+    response_json = res.json()
+    assert "result" in response_json, response_json
+    assert res.status_code() == 200, "Status code not 200!" + str(res.status_code())
+
+@getApi
+def deleteAnimalFeed_fail(animalFeedData, useAPI: UseAPI):
+    res = useAPI.delete("/api/assetFacility/deleteAnimalFeed/{}".format("fake-animalFeedName"))
+    response_json = res.json()
+    assert "error" in response_json, response_json
+    assert res.status_code() == 401, "Status code not 401!" + str(res.status_code())
+
+@login_as_marry
+def deleteAnimalFeed_success(animalFeedData, useAPI: UseAPI):
+    res = useAPI.delete("/api/assetFacility/deleteAnimalFeed/{}".format(animalFeedData["animalFeedName"]))
+    response_json = res.json()
+    assert "result" in response_json, response_json
+    assert res.status_code() == 200, "Status code not 200!" + str(res.status_code())
+
+# Enrightmenet Items Api test
+@login_as_marry
+def createNewEnrichmentItem_fail(enrichmentItemData, useAPI: UseAPI):
+    res = useAPI.post("/api/assetFacility/createNewEnrichmentItem",
+                      json={"no data":"Nope"})
+    response_json = res.json()
+    assert "error" in response_json, response_json
+    assert res.status_code() == 400, "Status code not 400!" + str(res.status_code())
+
+@login_as_marry
+def createNewEnrichmentItem_success(enrichmentItemData, useAPI: UseAPI):
+    res = useAPI.post("/api/assetFacility/createNewEnrichmentItem",
+                      json=enrichmentItemData)
+    response_json = res.json()
+    assert "enrichmentItem" in response_json, response_json
+    assert res.status_code() == 200, "Status code not 200!" + str(res.status_code())
+    enrichmentItemData["enrichmentItemId"] = response_json["enrichmentItem"]["enrichmentItemId"]
+
+@getApi
+def getAllEnrichmentItem_fail(useAPI: UseAPI):
+    res = useAPI.get("/api/assetFacility/getAllEnrichmentItem")
+    response_json = res.json()
+    assert "error" in response_json, response_json
+    assert res.status_code() == 401, "Status code not 401!" + str(res.status_code())
+
+@login_as_marry
+def getAllEnrichmentItem_success(useAPI: UseAPI):
+    res = useAPI.get("/api/assetFacility/getAllEnrichmentItem")
+    response_json = res.json()
+    assert isinstance(response_json, list), response_json
+    assert res.status_code() == 200, "Status code not 200!" + str(res.status_code())
+
+@login_as_marry
+def getEnrichmentItem_fail(enrichmentItemData, useAPI: UseAPI):
+    res = useAPI.get("/api/assetFacility/getEnrichmentItem/{}".format("Fake-id"))
+    response_json = res.json()
+    assert "error" in response_json, response_json
+    assert res.status_code() == 400, "Status code not 400!" + str(res.status_code())
+
+@login_as_marry
+def getEnrichmentItem_success(enrichmentItemData, useAPI: UseAPI):
+    res = useAPI.get("/api/assetFacility/getEnrichmentItem/{}".format(enrichmentItemData["enrichmentItemId"]))
+    response_json = res.json()
+    assert "enrichmentItem" in response_json, response_json
+    assert res.status_code() == 200, "Status code not 200!" + str(res.status_code())
+
+@login_as_marry
+def updateEnrichmentItem_fail(enrichmentItemData, useAPI: UseAPI):
+    res = useAPI.put("/api/assetFacility/updateEnrichmentItem",
+                     json={"nodata": "no-data"})
+    response_json = res.json()
+    assert "error" in response_json, response_json
+    assert res.status_code() == 400, "Status code not 400!" + str(res.status_code())
+
+@login_as_marry
+def updateEnrichmentItem_success(enrichmentItemData, useAPI: UseAPI):
+    enrichmentItemData["enrichmentItemName"] = "a push-up bar"
+    res = useAPI.put("/api/assetFacility/updateEnrichmentItem",
+                     json=enrichmentItemData)
+    response_json = res.json()
+    assert "result" in response_json, response_json
+    assert res.status_code() == 200, "Status code not 200!" + str(res.status_code())
+
+@login_as_marry
+def deleteEnrichmentItem_fail(enrichmentItemData, useAPI: UseAPI):
+    res = useAPI.delete("/api/assetFacility/deleteEnrichmentItem/{}".format("Fake-name"))
+    response_json = res.json()
+    assert "error" in response_json, response_json
+    assert res.status_code() == 400, "Status code not 400!" + str(res.status_code())
+
+@login_as_marry
+def deleteEnrichmentItem_success(enrichmentItemData, useAPI: UseAPI):
+    res = useAPI.delete("/api/assetFacility/deleteEnrichmentItem/{}".format(enrichmentItemData["enrichmentItemName"]))
+    response_json = res.json()
+    assert "result" in response_json, response_json
+    assert res.status_code() == 200, "Status code not 200!" + str(res.status_code())
+
+@login_as_marry
+def addHub_fail(hubData, facilityId, useAPI: UseAPI):
+    if "facilityId" in hubData: del hubData["facilityId"]
+    res = useAPI.post("/api/assetFacility/addHub",
+                        json=hubData)
+    response_json = res.json()
+    assert "error" in response_json, response_json
+    assert res.status_code() == 400, "Status code not 400!" + str(res.status_code())
+
+@login_as_marry
+def addHub_success(hubData, facilityId, useAPI: UseAPI):
+    hubData["facilityId"] = facilityId
+    res = useAPI.post("/api/assetFacility/addHub",
+                        json=hubData)
+    response_json = res.json()
+    assert "hubProcessor" in response_json, response_json
+    assert res.status_code() == 200, "Status code not 200!" + str(res.status_code())
+    hubData["hubProcessorId"] = response_json["hubProcessor"]["hubProcessorId"]
+
+@getApi
+def getAllHubs_fail(useAPI: UseAPI):
+    res = useAPI.get("/api/assetFacility/getAllHubs")
+    response_json = res.json()
+    assert "error" in response_json, response_json
+    assert res.status_code() == 401, "Status code not 401!" + str(res.status_code())
+
+@login_as_marry
+def getAllHubs_success(useAPI: UseAPI):
+    res = useAPI.get("/api/assetFacility/getAllHubs")
+    response_json = res.json()
+    assert "hubs" in response_json, response_json
+    assert isinstance(response_json["hubs"], list) , response_json
+    assert res.status_code() == 200, "Status code not 200!" + str(res.status_code())
+
+@login_as_marry
+def getHub_fail(hubData, useAPI: UseAPI):
+    res = useAPI.post("/api/assetFacility/getHub/{}".format("fake-id"))
+    response_json = res.json()
+    assert "error" in response_json, response_json
+    assert res.status_code() == 400, "Status code not 400!" + str(res.status_code())
+
+@login_as_marry 
+def getHub_success(hubData, useAPI: UseAPI):
+    res = useAPI.post("/api/assetFacility/getHub/{}".format(hubData["hubProcessorId"]))
+    response_json = res.json()
+    assert "hubProcessor" in response_json, response_json
+    assert res.status_code() == 200, "Status code not 200!" + str(res.status_code())
+
+@login_as_marry
+def updateHub_fail(hubData, useAPI: UseAPI):
+    res = useAPI.put("/api/assetFacility/updateHub/{}".format("fake-id"),
+                      json={"no data" : "nope"})
+    response_json = res.json()
+    assert "error" in response_json, response_json
+    assert res.status_code() == 400, "Status code not 400!" + str(res.status_code())
+
+@login_as_marry 
+def updateHub_success(hubData, useAPI: UseAPI):
+    hubData["radioGroup"] = 190
+    res = useAPI.put("/api/assetFacility/updateHub/{}".format(hubData["hubProcessorId"]),
+                      json=hubData)
+    response_json = res.json()
+    assert "hub" in response_json, response_json
+    assert res.status_code() == 200, "Status code not 200!" + str(res.status_code())
+
+@login_as_marry
+def deleteHub_fail(hubData, useAPI: UseAPI):
+    res = useAPI.delete("/api/assetFacility/deleteHub/{}".format("fake-id"))
+    response_json = res.json()
+    assert "error" in response_json, response_json
+    assert res.status_code() == 400, "Status code not 400!" + str(res.status_code())
+
+@login_as_marry 
+def deleteHub_success(hubData, useAPI: UseAPI):
+    res = useAPI.delete("/api/assetFacility/deleteHub/{}".format(hubData["hubProcessorId"]))
+    response_json = res.json()
+    assert "result" in response_json, response_json
+    assert res.status_code() == 200, "Status code not 200!" + str(res.status_code())
+
+ASSET_API_TEST = [
+    # Animal Feed
+    (createNewAnimalFeed_fail, newAnimalFeed),
+    (createNewAnimalFeed_success, newAnimalFeed),
+    (getAllAnimalFeed_fail, ),
+    (getAllAnimalFeed_success, ),
+    (getAnimalFeed_fail, newAnimalFeed),
+    (getAnimalFeed_success, newAnimalFeed),
+    (getAnimalFeedById_fail, newAnimalFeed),
+    (getAnimalFeedById_success, newAnimalFeed),
+    (updateAnimalFeed_fail, newAnimalFeed),
+    (updateAnimalFeed_success, newAnimalFeed),
+    (deleteAnimalFeed_fail, newAnimalFeed),
+    (deleteAnimalFeed_success, newAnimalFeed),
+
+    # Enrichment Items
+    (createNewEnrichmentItem_fail, newEnrichmentItem),
+    (createNewEnrichmentItem_success, newEnrichmentItem),
+    (getAllEnrichmentItem_fail, ),
+    (getAllEnrichmentItem_success, ),
+    (getEnrichmentItem_fail, newEnrichmentItem),
+    (getEnrichmentItem_success, newEnrichmentItem),
+    (updateEnrichmentItem_fail, newEnrichmentItem),
+    (updateEnrichmentItem_success, newEnrichmentItem),
+
+    #  Hubs
+    (addHub_fail, newHub, 1),
+    (addHub_success, newHub, 1),
+    (getAllHubs_fail, ),
+    (getAllHubs_success, ),
+    (getHub_fail, newHub, ),
+    (getHub_success, newHub, ),
+    (updateHub_fail, newHub, ),
+    (updateHub_success, newHub, ),
+    (deleteHub_fail, newHub, ),
+    (deleteHub_success, newHub, ),
 ]
