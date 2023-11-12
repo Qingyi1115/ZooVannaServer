@@ -67,6 +67,7 @@ import {
   deleteZone,
   completeRepairTicket,
   getAllFacilityCustomer,
+  getFacilityCustomer,
   createCustomerReport,
   getAllCustomerReports,
   updateCustomerReport,
@@ -85,6 +86,7 @@ const router = express.Router();
 router.put("/initializeHub", initializeHub);
 router.post("/pushSensorReadings/:processorName", pushSensorReadings);
 router.post("/getAllFacilityCustomer", getAllFacilityCustomer);
+router.post("/getFacilityCustomer/:facilityId", getFacilityCustomer);
 router.get("/crowdLevelByFacilityId/:facilityId", crowdLevelByFacilityId);
 
 // Customer Report
