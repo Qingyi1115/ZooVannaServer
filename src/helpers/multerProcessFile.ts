@@ -63,7 +63,9 @@ export const handleFileUpload = (
             if (err) {
                 reject(err);
             } else if (!req.file) {
-                reject(new Error("No file provided"));
+                // reject(new Error("No file provided"));
+                console.log("No image file")
+                resolve("");
             } else {
                 const { filename, path } = req.file;
                 const targetPath = customDestination + "/" + filename;

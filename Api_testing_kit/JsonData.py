@@ -115,6 +115,21 @@ newCustomerReportLog = {
     "viewed" : False,
 }
 
+newAnimalFeed = {
+    "animalFeedName":"tofu with cheeze",
+    "animalFeedCategory" :"VEGETABLES",
+    "imageUrl" : ""
+}
+
+newEnrichmentItem={
+    "enrichmentItemName" : "A pull-up bar",
+    "radioGroup" : 12
+}
+
+newHub = {
+    "processorName" : "Fake hub"
+}
+
 new_customer_dat = {
   "password":"very_secure_string", 
   "firstName": "string",

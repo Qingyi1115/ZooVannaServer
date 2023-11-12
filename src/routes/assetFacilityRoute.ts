@@ -220,7 +220,6 @@ router.put(
 );
 router.put("/updateSensor/:sensorId", updateSensor);
 router.delete("/deleteSensor/:sensorId", deleteSensor);
-
 router.post(
   "/createSensorMaintenanceLog/:sensorId",
   createSensorMaintenanceLog,
@@ -241,10 +240,8 @@ router.delete(
   "/deleteSensorMaintenanceLog/:sensorMaintenanceLogId",
   deleteSensorMaintenanceLog,
 );
-
 router.get(
   "/getAuthorizationForCamera/:sensorId",
   getAuthorizationForCamera,
 );
-
 export default router;
