@@ -79,6 +79,7 @@ import {
   getAllCustomerReportLogsByFacilityId,
   crowdLevelByFacilityId,
   getCrowdLevelOfAllFacility,
+  getAuthorizationForCameraByFacilityId,
 } from "../controllers/assetFacilityController";
 
 const router = express.Router();
@@ -245,5 +246,9 @@ router.delete(
 router.get(
   "/getAuthorizationForCamera/:sensorId",
   getAuthorizationForCamera,
+);
+router.get(
+  "/getAuthorizationForCameraByFacilityId/:facilityId",
+  getAuthorizationForCameraByFacilityId,
 );
 export default router;

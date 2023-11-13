@@ -1337,7 +1337,9 @@ function doesEventClash(ze1: ZooEvent, ze2: ZooEvent) {
   );
 }
 
-export async function autoAssignKeeperToZooEvent() {
+export async function autoAssignKeeperToZooEvent(
+  endDate: Date
+) {
   try {
     console.log("autoAssignKeeperToZooEvent");
 
@@ -1346,7 +1348,7 @@ export async function autoAssignKeeperToZooEvent() {
         eventStartDateTime: {
           [Op.between]: [
             new Date(),
-            new Date(Date.now() + DAY_IN_MILLISECONDS * 90),
+            endDate,
           ],
         },
       },
