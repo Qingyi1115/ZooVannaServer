@@ -246,6 +246,31 @@ export async function getAllFacility(req: Request, res: Response) {
   }
 }
 
+export async function getCrowdLevelOfAllFacility(req: Request, res: Response) {
+  try {
+
+    const { facilityId } = req.params;
+    const facilities = await AssetFacilityService.getAllFacility([], true);
+    const facilitiesData = [];
+    for (const facility of facilities) {
+      const ratio = await AssetFacilityService.crowdLevelRatioByFacilityId(facility.facilityId);
+      facilitiesData.push({
+        facility: facility,
+        crowdLevel: ratio == -1 ? "NO_DATA" : ratio < 0.3 ? "LOW"
+          : ratio < 0.7 ? "MEDIUM" : "HIGH"
+      })
+
+    }
+
+    return res.status(200).json({
+      facilitiesData: facilitiesData
+    });
+  } catch (error: any) {
+    console.log(error);
+    res.status(400).json({ error: error.message });
+  }
+}
+
 export async function getAllFacilityCustomer(
   req: Request,
   res: Response,

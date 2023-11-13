@@ -78,6 +78,7 @@ import {
   deleteCustomerReportLog,
   getAllCustomerReportLogsByFacilityId,
   crowdLevelByFacilityId,
+  getCrowdLevelOfAllFacility,
 } from "../controllers/assetFacilityController";
 
 const router = express.Router();
@@ -104,6 +105,7 @@ router.delete("/deleteZone/:zoneId", deleteZone);
 // Facilities
 router.post("/createFacility", createFacility);
 router.post("/getAllFacility", getAllFacility);
+router.get("/getCrowdLevelOfAllFacility", getCrowdLevelOfAllFacility);
 router.get("/getMyOperationFacility", getMyOperationFacility);
 router.get("/getMyMaintainedFacility", getMyMaintainedFacility);
 router.post("/getFacility/:facilityId", getFacility);

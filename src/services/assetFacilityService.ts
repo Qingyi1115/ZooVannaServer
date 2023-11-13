@@ -584,9 +584,10 @@ export async function crowdLevelRatioByFacilityId(
             where: {
               readingDate: {
                 [Op.lt]: new Date(),
-                [Op.gt]: new Date(Date.now() + MINUTES_IN_MILLISECONDS),
+                [Op.gt]: new Date(Date.now() - 15 * MINUTES_IN_MILLISECONDS),
               },
-            }
+            },
+            limit: 5
           })
           for (const sensorReading of sensorReadings) {
             readings.push(sensorReading.value);
@@ -597,8 +598,7 @@ export async function crowdLevelRatioByFacilityId(
     }
 
     const total = readings.length
-    console.log("Number of reading from cameras : " + total);
-    if (!total) return 0;
+    if (!total) return -1;
 
     const average = readings.reduce((r1, r2) => r1 + r2) / total
     return average / (await facility.getFacilityDetail()).maxAccommodationSize;

@@ -3710,7 +3710,7 @@ export const facilityAssetsSeed = async () => {
       //@ts-ignore
       inHouse: {
         isPaid: true,
-        maxAccommodationSize: 15,
+        maxAccommodationSize: 40,
         hasAirCon: true,
         facilityType: FacilityType.TRAMSTOP,
       },
