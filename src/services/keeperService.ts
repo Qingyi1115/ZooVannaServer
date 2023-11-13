@@ -73,9 +73,9 @@ export async function getAllKeepers() {
   return Keeper.findAll({
     include: {
       association: "employee",
-      required: true
-    }
-  })
+      required: true,
+    },
+  });
 }
 
 export async function updateKeeperType(employeeId: number, roleType: string) {

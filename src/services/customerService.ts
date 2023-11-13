@@ -117,10 +117,12 @@ export async function findCustomerByEmail(email: string) {
   let result = await Customer.findOne({
     where: { email: email },
   });
+
   if (result) {
     return result;
+  } else {
+    throw { message: "Invalid email!" };
   }
-  throw { message: "Invalid email!" };
 }
 
 //might have an error for param type, might be CreationOptional<number>
