@@ -95,7 +95,7 @@ export const login = async (req: Request, res: Response) => {
     const { email, password } = req.body;
     if (email && password) {
       if (!(await CustomerService.customerLogin(email, password))) {
-        console.log("Invalid credentials")
+        console.log("Invalid credentials");
         return res.status(401).json({ error: "Invalid credentials!" });
       }
       const token = createToken(email);
@@ -104,7 +104,7 @@ export const login = async (req: Request, res: Response) => {
       res.status(200).json({ customerId, email, token });
     }
   } catch (error: any) {
-    console.log("error", error)
+    console.log("error", error);
     res.status(400).json({ error: error.message });
   }
 };
@@ -280,10 +280,7 @@ export async function updatePassword(req: Request, res: Response) {
   }
 }
 
-export const resetForgottenPassword = async (
-  req: Request,
-  res: Response,
-) => {
+export const resetForgottenPassword = async (req: Request, res: Response) => {
   try {
     const { token, password } = req.body;
 
@@ -359,10 +356,7 @@ export async function createCustomerOrderForCustomer(
   }
 }
 
-export async function createCustomerOrderForGuest(
-  req: Request,
-  res: Response,
-) {
+export async function createCustomerOrderForGuest(req: Request, res: Response) {
   const { listings, customerOrder } = req.body;
 
   try {
@@ -376,10 +370,7 @@ export async function createCustomerOrderForGuest(
   }
 }
 
-export async function completePaymentForCustomer(
-  req: Request,
-  res: Response,
-) {
+export async function completePaymentForCustomer(req: Request, res: Response) {
   try {
     const { email } = (req as any).locals.jwtPayload;
     const { customerOrderId } = req.params;
@@ -403,10 +394,7 @@ export async function completePaymentForCustomer(
   }
 }
 
-export async function completePaymentForGuest(
-  req: Request,
-  res: Response,
-) {
+export async function completePaymentForGuest(req: Request, res: Response) {
   const { customerOrderId } = req.params;
 
   if (!customerOrderId) {
@@ -442,7 +430,18 @@ export async function purchaseTicket(req: Request, res: Response) {
 
     return res.status(200).json({ result: "success" });
   } catch (error: any) {
-    console.log("error", error)
+    console.log("error", error);
+    return res.status(400).json({ error: error.message });
+  }
+}
+
+export async function verifyToken(req: Request, res: Response) {
+  try {
+    const { token } = req.params;
+    console.log(token);
+    const result = await CustomerService.verifyToken(token);
+    return res.status(200).json({ result: result });
+  } catch (error: any) {
     return res.status(400).json({ error: error.message });
   }
 }

@@ -33,6 +33,13 @@ import {
 
 const router = express.Router();
 
+router.get("/getAllSpeciesCustomer", getAllSpecies);
+router.get("/getSpeciesCustomer/:speciesCode", getSpeciesByCode);
+router.get(
+  "/getSpeciesEduDescBySpeciesCodeCustomer/:speciesCode",
+  getSpeciesEduDescBySpeciesCode,
+);
+
 router.use(authMiddleware);
 
 //species basic

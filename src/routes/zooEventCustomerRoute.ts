@@ -1,0 +1,33 @@
+import express from "express";
+
+import { authMiddleware } from "../middlewares/authMiddleware";
+import {
+  getAllPublishedPublicZooEvents,
+  getPublishedPublicZooEvent,
+} from "../controllers/zooEventCustomerController";
+
+const router = express.Router();
+
+router.get("/getAllPublishedPublicZooEvents", getAllPublishedPublicZooEvents);
+router.get(
+  "/getPublishedPublicZooEvent/:zooEventId",
+  getPublishedPublicZooEvent,
+);
+router.use(authMiddleware);
+
+// Public Events
+//router.get("/getAllPublicEvents", getAllPublicEvents);
+//router.get("/getPublicEventById/:publicEventId", getPublicEventById);
+
+// PublicEventSession
+//router.get("/getAllPublicEventSessions", getAllPublicEventSessions);
+/*router.get(
+  "/getAllPublicEventSessionsByPublicEventId/:publicEventId",
+  getAllPublicEventSessionsByPublicEventId,
+);
+router.get(
+  "/getPublicEventSessionById/:publicEventSessionId",
+  getPublicEventSessionById,
+);*/
+
+export default router;

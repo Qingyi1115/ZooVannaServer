@@ -117,10 +117,12 @@ export async function findCustomerByEmail(email: string) {
   let result = await Customer.findOne({
     where: { email: email },
   });
+
   if (result) {
     return result;
+  } else {
+    throw { message: "Invalid email!" };
   }
-  throw { message: "Invalid email!" };
 }
 
 //might have an error for param type, might be CreationOptional<number>
@@ -1107,6 +1109,22 @@ export async function purchaseTicket(
   } catch (error) {
     console.log(error);
     throw validationErrorHandler(error);
+  }
+}
+
+export async function verifyToken(token: string) {
+  let result = await Token.findOne({
+    where: { token: token },
+  });
+
+  if (result) {
+    if (result.expiresAt.getTime() > Date.now()) {
+      return true;
+    } else {
+      return false;
+    }
+  } else {
+    return false;
   }
 }
 
