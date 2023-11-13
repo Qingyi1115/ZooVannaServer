@@ -44,8 +44,6 @@ class Enclosure extends Model<
   declare sandPercent: number | null;
   declare snowPercent: number | null;
   declare soilPercent: number | null;
-
-  // Virtual
   declare landArea?: number | null;
   declare waterArea?: number | null;
   declare plantationCoveragePercent?: number | null;
@@ -58,7 +56,7 @@ class Enclosure extends Model<
   // declare terrainDistribution?: TerrainDistribution;
   declare animals?: Animal[];
   declare barrierType?: BarrierType;
-  declare plantation?: Plantation;
+  declare plantation?: Plantation; // to make into a list, plantations
   declare zooEvents?: ZooEvent[];
   declare facility?: Facility;
   declare Keeper?: Keeper[];

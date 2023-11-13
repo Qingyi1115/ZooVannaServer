@@ -10,7 +10,7 @@ export async function getAllEnclosures(req: Request, res: Response) {
   }
 }
 
-export async function getEnclosuresById(req: Request, res: Response) {
+export async function getEnclosureById(req: Request, res: Response) {
   const { enclosureId } = req.params;
 
   if (enclosureId == undefined) {
@@ -21,7 +21,7 @@ export async function getEnclosuresById(req: Request, res: Response) {
   }
 
   try {
-    const enclosure = await EnclosureService.getEnclosuresById(
+    const enclosure = await EnclosureService.getEnclosureById(
       Number(enclosureId),
     );
     return res.status(200).json(enclosure);

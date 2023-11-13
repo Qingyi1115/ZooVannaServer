@@ -19,12 +19,12 @@ export async function getAllEnclosures() {
   }
 }
 
-export async function getEnclosuresById(enclosureId: number) {
-  let result = await Enclosure.findOne({
+export async function getEnclosureById(enclosureId: number) {
+  let enclosure = await Enclosure.findOne({
     where: { enclosureId: enclosureId },
   });
-  if (result) {
-    return result;
+  if (enclosure) {
+    return enclosure;
   }
   throw new Error("Invalid Enclosure ID!");
 }
@@ -119,7 +119,7 @@ export async function deleteEnclosure(enclosureId: number) {
 }
 
 export async function getAnimalsOfEnclosure(enclosureId: number) {
-  let result: Animal[] = [];
+  let animalsOfEnclosure: Animal[] = [];
 
   // let curEnclosure = await getEnclosuresById(enclosureId)
 
@@ -128,13 +128,13 @@ export async function getAnimalsOfEnclosure(enclosureId: number) {
   if (allAnimals) {
     for (let a of allAnimals) {
       if (a.enclosure?.enclosureId === enclosureId) {
-        result.push(a);
+        animalsOfEnclosure.push(a);
       }
     }
   }
 
-  if (result) {
-    return result;
+  if (animalsOfEnclosure) {
+    return animalsOfEnclosure;
   }
   throw new Error("Invalid Enclosure ID!");
 }
@@ -144,7 +144,7 @@ export async function assignAnimalToEnclosure(
   animalCode: string,
 ) {
   try {
-    let enclosure = await getEnclosuresById(enclosureId);
+    let enclosure = await getEnclosureById(enclosureId);
     let animal = await AnimalService.getAnimalActivityByAnimalCode(animalCode);
 
     if (enclosure && animal) {
@@ -160,7 +160,7 @@ export async function removeAnimalFromEnclosure(
   animalCode: string,
 ) {
   try {
-    let enclosure = await getEnclosuresById(enclosureId);
+    let enclosure = await getEnclosureById(enclosureId);
     let animal = await AnimalService.getAnimalActivityByAnimalCode(animalCode);
 
     if (enclosure && animal) {
@@ -214,9 +214,9 @@ export async function updateDesignDiagram(
   // } as any;
 
   try {
-    let enclosure = await getEnclosuresById(enclosureId);
-    console.log("here")
-    console.log(designDiagramJson)
+    let enclosure = await getEnclosureById(enclosureId);
+    // console.log("here")
+    // console.log(designDiagramJson)
     const filePath = `enclosureDiagramJson/${enclosure.name}.json`;
 
     await writeFile(filePath, designDiagramJson);
