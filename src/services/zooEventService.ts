@@ -1171,7 +1171,8 @@ export async function createPublicEvent(
       details: details,
       imageUrl: imageUrl,
       startDate: startDate,
-      endDate: endDate
+      endDate: endDate,
+      isDisabled: false
     });
 
     await newPublicEvent.setAnimals(animals);
@@ -1241,6 +1242,19 @@ export async function updatePublicEventById(
       publicEvent.imageUrl = imageUrl;
     }
 
+    const zooEvents = [];
+    const promises = [];
+
+    if (animalCodes || keeperEmployeeIds || inHouseId) {
+      for (const session of (await publicEvent.getPublicEventSessions())) {
+        for (const ze of (await session.getZooEvents())) {
+          if (compareDates(ze.eventStartDateTime, new Date()) >= 0) {
+            zooEvents.push(ze);
+          }
+        }
+      }
+    }
+
 
     if (animalCodes) {
       const animals = [];
@@ -1248,6 +1262,10 @@ export async function updatePublicEventById(
         animals.push(await AnimalService.getAnimalByAnimalCode(code));
       }
       await publicEvent.setAnimals(animals);
+      for (const ze of zooEvents) {
+        ze.setAnimals(animals);
+        promises.push(ze.save());
+      }
     }
 
     if (keeperEmployeeIds) {
@@ -1256,17 +1274,67 @@ export async function updatePublicEventById(
         keepers.push(await EmployeeService.getKeeperByEmployeeId(id));
       }
       await publicEvent.setKeepers(keepers);
+      for (const ze of zooEvents) {
+        ze.setKeepers(keepers);
+        promises.push(ze.save());
+      }
     }
 
     if (inHouseId) {
       const inHouse = await AssetFacilityService.getInHouseByFacilityId(inHouseId);
       await publicEvent.setInHouse(inHouse);
+      for (const ze of zooEvents) {
+        ze.setInHouse(inHouse);
+        promises.push(ze.save());
+      }
     }
 
-
+    for (const p of promises) await p;
     return publicEvent.save();
 
 
+  } catch (error: any) {
+    throw validationErrorHandler(error);
+  }
+}
+
+export async function enablePublicEventById(
+  publicEventId: number
+) {
+  try {
+    const publicEvent = await getPublicEventById(publicEventId, []);
+
+    publicEvent.isDisabled = false;
+    await publicEvent.save();
+
+    for (const session of (await publicEvent.getPublicEventSessions())) {
+      await generateMonthlyZooEventForPublicEventSession(session);
+    }
+  } catch (error: any) {
+    throw validationErrorHandler(error);
+  }
+}
+
+export async function disablePublicEventById(
+  publicEventId: number
+) {
+  try {
+    const publicEvent = await getPublicEventById(publicEventId, []);
+
+    publicEvent.isDisabled = true;
+    const promises = []
+    promises.push(publicEvent.save());
+    for (const session of (await publicEvent.getPublicEventSessions())) {
+      if (session.recurringPattern == RecurringPattern.NON_RECURRING) {
+        promises.push(session.destroy());
+      } else {
+        for (const ze of (await session.getZooEvents())) {
+          promises.push(ze.destroy());
+        }
+      }
+    }
+
+    for (const p of promises) await p;
   } catch (error: any) {
     throw validationErrorHandler(error);
   }
