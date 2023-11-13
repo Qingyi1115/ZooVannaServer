@@ -3710,7 +3710,7 @@ export const facilityAssetsSeed = async () => {
       //@ts-ignore
       inHouse: {
         isPaid: true,
-        maxAccommodationSize: 15,
+        maxAccommodationSize: 40,
         hasAirCon: true,
         facilityType: FacilityType.TRAMSTOP,
       },
@@ -3957,22 +3957,79 @@ export const publicEventSeed = async () => {
     EventType.CUSTOMER_FEEDING,
     "Homo sapiens feeding",
     "do not feed them fast food",
-    "img/animal/ANM00001.jpg",
+    "img/species/elephant.jpg",
     new Date(),
     new Date(Date.now() + 60 * DAY_IN_MILLISECONDS),
     [],
-    [],
+    [1],
     8
   );
 
   const pubEventSession = await ZooEventService.createPublicEventSession(
     pubEvent.publicEventId,
+    RecurringPattern.NON_RECURRING,
+    null,
+    null,
+    60,
+    "16:00",
+    30,
+    new Date(Date.now() + DAY_IN_MILLISECONDS * 5)
+  );
+
+  const pubEvent2 = await ZooEventService.createPublicEvent(
+    EventType.SHOW,
+    "Pandas dance",
+    "Watch our ambassador put on a show",
+    "img/animal/ANM00001.jpg",
+    new Date(),
+    new Date(Date.now() + 90 * DAY_IN_MILLISECONDS),
+    (await AnimalService.getAllAnimalsBySpeciesCode("SPE001")).map(animal => animal.animalCode),
+    [1],
+    8
+  );
+
+  const pubEventSession2 = await ZooEventService.createPublicEventSession(
+    pubEvent2.publicEventId,
     RecurringPattern.WEEKLY,
     DayOfWeek.THURSDAY,
     null,
     60,
     "16:00",
-    1,
+    7,
+    null
+  );
+
+  const pubEventSession3 = await ZooEventService.createPublicEventSession(
+    pubEvent2.publicEventId,
+    RecurringPattern.WEEKLY,
+    DayOfWeek.FRIDAY,
+    null,
+    60,
+    "14:00",
+    7,
+    null
+  );
+
+  const pubEvent3 = await ZooEventService.createPublicEvent(
+    EventType.TALK,
+    "Clown Fish Talk",
+    "Find out more about the lifestyles and managements of these sea creatures",
+    "img/species/clownfish.jpg",
+    new Date(),
+    null,
+    (await AnimalService.getAllAnimalsBySpeciesCode("SPE005")).map(animal => animal.animalCode),
+    [1],
+    8
+  );
+
+  const pubEventSession4 = await ZooEventService.createPublicEventSession(
+    pubEvent3.publicEventId,
+    RecurringPattern.MONTHLY,
+    null,
+    22,
+    60,
+    "15:00",
+    7,
     null
   );
 

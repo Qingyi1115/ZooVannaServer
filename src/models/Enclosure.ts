@@ -13,7 +13,7 @@ import {
   HasOneSetAssociationMixin,
   InferAttributes,
   InferCreationAttributes,
-  Model
+  Model,
 } from "Sequelize";
 import { conn } from "../db";
 import { Animal } from "./Animal";
@@ -218,4 +218,3 @@ Enclosure.init(
 );
 
 export { Enclosure };
-

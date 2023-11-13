@@ -83,7 +83,10 @@ export async function updateZone(req: Request, res: Response) {
   }
 
   try {
-    const zone = await AssetFacilityService.updateZone(Number(zoneId), zoneName);
+    const zone = await AssetFacilityService.updateZone(
+      Number(zoneId),
+      zoneName,
+    );
 
     return res.status(200).json({ zone: zone.toJSON() });
   } catch (error: any) {
@@ -129,11 +132,16 @@ export async function createFacility(req: Request, res: Response) {
         .status(403)
         .json({ error: "Access Denied! Operation managers only!" });
     }
-
-    const imageUrl = await handleFileUpload(
-      req,
-      process.env.IMG_URL_ROOT! + "facility", //"D:/capstoneUploads/animalFeed",
-    );
+    let imageUrl;
+    try {
+      imageUrl = await handleFileUpload(
+        req,
+        process.env.IMG_URL_ROOT! + "facility", //"D:/capstoneUploads/animalFeed",
+      );
+    } catch {
+      console.log("No image!")
+      imageUrl = "";
+    }
 
     const { facilityName, isSheltered, facilityDetail, facilityDetailJson } =
       req.body;
@@ -164,7 +172,7 @@ export async function createFacility(req: Request, res: Response) {
       isSheltered,
       facilityDetail,
       JSON.parse(facilityDetailJson),
-      imageUrl
+      imageUrl,
     );
 
     return res.status(200).json({ facility: facility.toJSON() });
@@ -209,7 +217,7 @@ export async function getAllFacility(req: Request, res: Response) {
       }
 
       const result = [];
-      for (const f of facilities) result.push(await f.toFullJson())
+      for (const f of facilities) result.push(await f.toFullJson());
 
       return res.status(200).json({ facilities: result });
     }
@@ -219,18 +227,17 @@ export async function getAllFacility(req: Request, res: Response) {
     for (const inHouse of await (
       await employee.getGeneralStaff()
     ).getMaintainedFacilities()) {
-      facilities.push(await (await inHouse.getFacility()));
+      facilities.push(await await inHouse.getFacility());
     }
     const inHouse = await (
       await employee.getGeneralStaff()
     ).getOperatedFacility();
     if (inHouse) {
-      facilities.push(await (await inHouse.getFacility()));
-
+      facilities.push(await await inHouse.getFacility());
     }
 
     const result = [];
-    for (const f of facilities) result.push(await f.toFullJson())
+    for (const f of facilities) result.push(await f.toFullJson());
 
     return res.status(200).json({ facilities: result });
   } catch (error: any) {
@@ -239,7 +246,35 @@ export async function getAllFacility(req: Request, res: Response) {
   }
 }
 
-export async function getAllFacilityCustomer(req: Request, res: Response) {
+export async function getCrowdLevelOfAllFacility(req: Request, res: Response) {
+  try {
+
+    const { facilityId } = req.params;
+    const facilities = await AssetFacilityService.getAllFacility([], true);
+    const facilitiesData = [];
+    for (const facility of facilities) {
+      const ratio = await AssetFacilityService.crowdLevelRatioByFacilityId(facility.facilityId);
+      facilitiesData.push({
+        facility: facility,
+        crowdLevel: ratio == -1 ? "NO_DATA" : ratio < 0.3 ? "LOW"
+          : ratio < 0.7 ? "MEDIUM" : "HIGH"
+      })
+
+    }
+
+    return res.status(200).json({
+      facilitiesData: facilitiesData
+    });
+  } catch (error: any) {
+    console.log(error);
+    res.status(400).json({ error: error.message });
+  }
+}
+
+export async function getAllFacilityCustomer(
+  req: Request,
+  res: Response,
+) {
   try {
     let { includes } = req.body;
     includes = includes || [];
@@ -271,7 +306,7 @@ export async function crowdLevelByFacilityId(req: Request, res: Response) {
 
     return res.status(200).json({
       crowdLevel: ratio < 0.3 ? "LOW"
-        : ratio < 0.6 ? "MEDIUM" : "HIGH"
+        : ratio < 0.7 ? "MEDIUM" : "HIGH"
     });
   } catch (error: any) {
     console.log(error);
@@ -377,6 +412,33 @@ export async function getFacility(req: Request, res: Response) {
   }
 }
 
+export async function getFacilityCustomer(
+  req: Request,
+  res: Response,
+) {
+  try {
+    let { facilityId } = req.params;
+    let { includes } = req.body;
+    includes = includes || [];
+
+    const _includes: string[] = [];
+    for (const role of ["hubProcessors"]) {
+      if (includes.includes(role)) _includes.push(role);
+    }
+
+    let facility: Facility = await AssetFacilityService.getFacilityById(
+      Number(facilityId),
+      _includes,
+    );
+    return res.status(200).json({ facility: await facility.toFullJson() });
+  } catch (error: any) {
+    console.log(error);
+    res.status(400).json({ error: error.message });
+  }
+}
+
+
+
 export async function getFacilityMaintenanceSuggestions(
   req: Request,
   res: Response,
@@ -396,7 +458,8 @@ export async function getFacilityMaintenanceSuggestions(
       return res
         .status(403)
         .json({ error: "Access Denied! Operation managers only!" });
-    let facilities = await AssetFacilityService.getAllFacilityMaintenanceSuggestions(employee);
+    let facilities =
+      await AssetFacilityService.getAllFacilityMaintenanceSuggestions(employee);
     return res
       .status(200)
       .json({ facilities: facilities?.map((facility) => facility.toJSON()) });
@@ -430,12 +493,16 @@ export async function getFacilityMaintenancePredictionValues(
     let values = undefined;
     for (let i = 4; i > 0; i--) {
       try {
-        values = await AssetFacilityService.getFacilityMaintenanceSuggestions(Number(facilityId), i);
+        values = await AssetFacilityService.getFacilityMaintenanceSuggestions(
+          Number(facilityId),
+          i,
+        );
         break;
       } catch (err: any) {
         console.log(err);
       }
     }
+    if (!values) throw { message: "Unable to obtain values for facilityId" + facilityId }
     return res.status(200).json({ values: values });
   } catch (error: any) {
     console.log("error", error);
@@ -480,6 +547,14 @@ export async function updateFacility(req: Request, res: Response) {
         showOnMap,
       ].every((field) => field === undefined)
     ) {
+      console.log({
+        facilityName,
+        xCoordinate,
+        yCoordinate,
+        facilityDetailJson,
+        isSheltered,
+        showOnMap,
+      })
       return res.status(400).json({ error: "Missing information!" });
     }
 
@@ -527,7 +602,8 @@ export async function updateFacilityImage(req: Request, res: Response) {
 
     const { facilityId } = req.params;
 
-    if (facilityId === undefined || facilityId == "") throw { message: "Missing information!" }
+    if (facilityId === undefined || facilityId == "")
+      throw { message: "Missing information!" };
 
     const imageUrl = await handleFileUpload(
       req,
@@ -570,7 +646,9 @@ export async function getAssignedMaintenanceStaffOfFacility(
       return res.status(400).json({ error: "Missing information!" });
     }
 
-    let staffs = await AssetFacilityService.getMaintenanceStaffsByFacilityId(Number(facilityId));
+    let staffs = await AssetFacilityService.getMaintenanceStaffsByFacilityId(
+      Number(facilityId),
+    );
     console.log("staffs", staffs);
     return res
       .status(200)
@@ -644,10 +722,11 @@ export async function assignMaintenanceStaffToFacility(
       return res.status(400).json({ error: "Missing information!" });
     }
 
-    let inHouse: InHouse = await AssetFacilityService.assignMaintenanceStaffToFacilityById(
-      Number(facilityId),
-      employeeIds,
-    );
+    let inHouse: InHouse =
+      await AssetFacilityService.assignMaintenanceStaffToFacilityById(
+        Number(facilityId),
+        employeeIds,
+      );
 
     return res.status(200).json({ inHouse: await inHouse.toFullJSON() });
   } catch (error: any) {
@@ -681,10 +760,11 @@ export async function removeMaintenanceStaffFromFacility(
       return res.status(400).json({ error: "Missing information!" });
     }
 
-    let inHouse: InHouse = await AssetFacilityService.removeMaintenanceStaffFromFacilityById(
-      Number(facilityId),
-      employeeIds,
-    );
+    let inHouse: InHouse =
+      await AssetFacilityService.removeMaintenanceStaffFromFacilityById(
+        Number(facilityId),
+        employeeIds,
+      );
 
     return res.status(200).json({ inHouse: await inHouse.toFullJSON() });
   } catch (error: any) {
@@ -719,10 +799,11 @@ export async function assignOperationStaffToFacility(
       return res.status(400).json({ error: "Missing information!" });
     }
 
-    let inHouse: InHouse = await AssetFacilityService.assignOperationStaffToFacilityById(
-      Number(facilityId),
-      employeeIds,
-    );
+    let inHouse: InHouse =
+      await AssetFacilityService.assignOperationStaffToFacilityById(
+        Number(facilityId),
+        employeeIds,
+      );
 
     return res.status(200).json({ inHouse: await inHouse.toFullJSON() });
   } catch (error: any) {
@@ -756,10 +837,11 @@ export async function removeOperationStaffFromFacility(
       return res.status(400).json({ error: "Missing information!" });
     }
 
-    let inHouse: InHouse = await AssetFacilityService.removeOperationStaffFromFacilityById(
-      Number(facilityId),
-      employeeIds,
-    );
+    let inHouse: InHouse =
+      await AssetFacilityService.removeOperationStaffFromFacilityById(
+        Number(facilityId),
+        employeeIds,
+      );
 
     return res.status(200).json({ inHouse: await inHouse.toFullJSON() });
   } catch (error: any) {
@@ -778,7 +860,8 @@ export async function getFacilityLogs(req: Request, res: Response) {
       return res.status(400).json({ error: "Missing information!" });
     }
 
-    let facilityLogs: FacilityLog[] = await AssetFacilityService.getFacilityLogs(Number(facilityId));
+    let facilityLogs: FacilityLog[] =
+      await AssetFacilityService.getFacilityLogs(Number(facilityId));
     return res
       .status(200)
       .json({ facilityLogs: facilityLogs?.map((log) => log.toJSON()) });
@@ -826,10 +909,11 @@ export async function getFacilityLogById(
       }
     }
 
-    let facilityLog: FacilityLog = await AssetFacilityService.getFacilityLogById(
-      Number(facilityLogId),
-      _includes,
-    );
+    let facilityLog: FacilityLog =
+      await AssetFacilityService.getFacilityLogById(
+        Number(facilityLogId),
+        _includes,
+      );
 
     return res.status(200).json({ facilityLog: facilityLog.toJSON() });
   } catch (error: any) {
@@ -847,31 +931,27 @@ export async function createCustomerReport(
     // const employee = await EmployeeService.findEmployeeByEmail(email);
 
     const { facilityId } = req.params;
-    let {
-      dateTime,
-      title,
-      remarks,
-      viewed,
-    } = req.body;
+    let { dateTime, title, remarks, viewed } = req.body;
 
-    if (facilityId == "" || [
-      dateTime,
-      title,
-      remarks,
-      viewed,
-    ].includes(undefined)) {
+    if (
+      facilityId == "" ||
+      [dateTime, title, remarks, viewed].includes(undefined)
+    ) {
       return res.status(400).json({ error: "Missing information!" });
     }
 
-    let customerReportLog: CustomerReportLog = await AssetFacilityService.createCustomerReport(
-      Number(facilityId),
-      dateTime,
-      title,
-      remarks,
-      viewed,
-    );
+    let customerReportLog: CustomerReportLog =
+      await AssetFacilityService.createCustomerReport(
+        Number(facilityId),
+        dateTime,
+        title,
+        remarks,
+        viewed,
+      );
 
-    return res.status(200).json({ customerReportLog: customerReportLog.toJSON() });
+    return res
+      .status(200)
+      .json({ customerReportLog: customerReportLog.toJSON() });
   } catch (error: any) {
     console.log(error);
     res.status(400).json({ error: error.message });
@@ -889,9 +969,12 @@ export async function getAllCustomerReports(
     // const { facilityLogId } = req.params;
     // let { includes } = req.body;
 
-    let customerReportLogs: CustomerReportLog[] = await AssetFacilityService.getAllCustomerReports();
+    let customerReportLogs: CustomerReportLog[] =
+      await AssetFacilityService.getAllCustomerReports();
 
-    return res.status(200).json({ customerReportLogs: customerReportLogs.map(log => log.toJSON()) });
+    return res.status(200).json({
+      customerReportLogs: customerReportLogs.map((log) => log.toJSON()),
+    });
   } catch (error: any) {
     console.log(error);
     res.status(400).json({ error: error.message });
@@ -904,16 +987,30 @@ export async function updateCustomerReport(
 ) {
   try {
     const { email } = (req as any).locals.jwtPayload;
-    // const employee = await EmployeeService.findEmployeeByEmail(email);
+    const employee = await EmployeeService.findEmployeeByEmail(email);
 
-    const { facilityLogId } = req.params;
+    if (
+      !employee.superAdmin &&
+      !(
+        (await employee.getGeneralStaff())?.generalStaffType ==
+        GeneralStaffType.ZOO_MAINTENANCE
+      ) &&
+      !(await employee.getPlanningStaff())
+    )
+      return res
+        .status(403)
+        .json({ error: "Access Denied! Operation managers only!" });
+
     let {
       customerReportLogId,
       customerReportLogIds,
       viewed,
     } = req.body;
 
-    if (viewed === undefined || (customerReportLogId === undefined && customerReportLogIds === undefined)) {
+    if (
+      viewed === undefined ||
+      (customerReportLogId === undefined && customerReportLogIds === undefined)
+    ) {
       return res.status(400).json({ error: "Missing information!" });
     }
     if (customerReportLogId) {
@@ -1012,14 +1109,15 @@ export async function createFacilityMaintenanceLog(
       return res.status(400).json({ error: "Missing information!" });
     }
 
-    let maintenanceLog = await AssetFacilityService.createFacilityMaintenanceLog(
-      Number(facilityId),
-      new Date(),
-      title,
-      details,
-      remarks,
-      employee.employeeName,
-    );
+    let maintenanceLog =
+      await AssetFacilityService.createFacilityMaintenanceLog(
+        Number(facilityId),
+        new Date(),
+        title,
+        details,
+        remarks,
+        employee.employeeName,
+      );
     // const generalStaff = await employee.getGeneralStaff();
     // const facilities = await generalStaff?.getMaintainedFacilities() || [];
     // for (const facility of facilities) {
@@ -1047,7 +1145,9 @@ export async function updateFacilityLog(req: Request, res: Response) {
       return res.status(400).json({ error: "Missing information!" });
     }
 
-    const facilityLogFound = await AssetFacilityService.getFacilityLogById(Number(facilityLogId));
+    const facilityLogFound = await AssetFacilityService.getFacilityLogById(
+      Number(facilityLogId),
+    );
 
     const employees = [];
     for (const staff of await facilityLogFound.getGeneralStaffs()) {
@@ -1087,8 +1187,8 @@ export async function deleteFacilityLog(req: Request, res: Response) {
       (await employee.getPlanningStaff())?.plannerType !=
       PlannerType.OPERATIONS_MANAGER &&
       !employee.superAdmin &&
-      (await AssetFacilityService.getFacilityLogById(Number(facilityLogId)))?.staffName !=
-      employee.employeeName
+      (await AssetFacilityService.getFacilityLogById(Number(facilityLogId)))
+        ?.staffName != employee.employeeName
     )
       throw { message: "Only creator of the log can delete!" };
 
@@ -1123,9 +1223,13 @@ export async function getCustomerReportLog(req: Request, res: Response) {
       return res.status(400).json({ error: "Missing information!" });
     }
 
-    const customerReportLog = await AssetFacilityService.getCustomerReportLog(Number(customerReportLogId));
+    const customerReportLog = await AssetFacilityService.getCustomerReportLog(
+      Number(customerReportLogId),
+    );
 
-    return res.status(200).json({ customerReportLog: customerReportLog.toJSON() });
+    return res
+      .status(200)
+      .json({ customerReportLog: customerReportLog.toJSON() });
   } catch (error: any) {
     console.log(error);
     res.status(400).json({ error: error.message });
@@ -1144,20 +1248,34 @@ export async function getAllNonViewedCustomerReportLogs(req: Request, res: Respo
     )
       throw { message: "Access denied!" };
 
-    if (employee.superAdmin || (await employee.getPlanningStaff()).plannerType == PlannerType.OPERATIONS_MANAGER) {
-      const allCustomerReportLog = await AssetFacilityService.getAllNonViewedCustomerReportLogs();
-      return res.status(200).json({ customerReportLogs: allCustomerReportLog.map((log: CustomerReportLog) => log.toJSON()) });
+    if (
+      employee.superAdmin ||
+      (await employee.getPlanningStaff()).plannerType ==
+      PlannerType.OPERATIONS_MANAGER
+    ) {
+      const allCustomerReportLog =
+        await AssetFacilityService.getAllNonViewedCustomerReportLogs();
+      return res.status(200).json({
+        customerReportLogs: allCustomerReportLog.map((log: CustomerReportLog) =>
+          log.toJSON(),
+        ),
+      });
     }
 
     const allCustomerReportLog = [];
-    for (const inHouse of (await (await employee.getGeneralStaff()).getMaintainedFacilities())) {
-      for (const log of (await inHouse.getCustomerReportLogs())) {
+    for (const inHouse of await (
+      await employee.getGeneralStaff()
+    ).getMaintainedFacilities()) {
+      for (const log of await inHouse.getCustomerReportLogs()) {
         allCustomerReportLog.push(log);
       }
     }
 
-    return res.status(200).json({ customerReportLogs: allCustomerReportLog.map((log: CustomerReportLog) => log.toJSON()) });
-
+    return res.status(200).json({
+      customerReportLogs: allCustomerReportLog.map((log: CustomerReportLog) =>
+        log.toJSON(),
+      ),
+    });
   } catch (error: any) {
     console.log(error);
     res.status(400).json({ error: error.message });
@@ -1166,7 +1284,6 @@ export async function getAllNonViewedCustomerReportLogs(req: Request, res: Respo
 
 export async function getAllCustomerReportLogsByFacilityId(req: Request, res: Response) {
   try {
-
     const { email } = (req as any).locals.jwtPayload;
     const employee = await EmployeeService.findEmployeeByEmail(email);
 
@@ -1184,9 +1301,16 @@ export async function getAllCustomerReportLogsByFacilityId(req: Request, res: Re
       return res.status(400).json({ error: "Missing information!" });
     }
 
-    const allCustomerReportLog = await AssetFacilityService.getAllCustomerReportLogsByFacilityId(Number(facilityId));
+    const allCustomerReportLog =
+      await AssetFacilityService.getAllCustomerReportLogsByFacilityId(
+        Number(facilityId),
+      );
 
-    return res.status(200).json({ customerReportLogs: allCustomerReportLog.map((log: CustomerReportLog) => log.toJSON()) });
+    return res.status(200).json({
+      customerReportLogs: allCustomerReportLog.map((log: CustomerReportLog) =>
+        log.toJSON(),
+      ),
+    });
   } catch (error: any) {
     console.log(error);
     res.status(400).json({ error: error.message });
@@ -1211,10 +1335,11 @@ export async function markCustomerReportLogsViewed(req: Request, res: Response) 
       return res.status(400).json({ error: "Missing information!" });
     }
 
-    const customerReportLog = await AssetFacilityService.markCustomerReportLogsViewed(
-      customerReportLogIds,
-      viewed
-    );
+    const customerReportLog =
+      await AssetFacilityService.markCustomerReportLogsViewed(
+        customerReportLogIds,
+        viewed,
+      );
 
     return res.status(200).json({ result: "success" });
   } catch (error: any) {
@@ -1241,7 +1366,9 @@ export async function deleteCustomerReportLog(req: Request, res: Response) {
       return res.status(400).json({ error: "Missing information!" });
     }
 
-    await AssetFacilityService.deleteCustomerReportLog(Number(customerReportLogId));
+    await AssetFacilityService.deleteCustomerReportLog(
+      Number(customerReportLogId),
+    );
 
     return res.status(200).json({ result: "success" });
   } catch (error: any) {
@@ -1260,7 +1387,9 @@ export async function completeRepairTicket(
 
     const { facilityLogId } = req.params;
 
-    const facilityLogFound = await AssetFacilityService.getFacilityLogById(Number(facilityLogId));
+    const facilityLogFound = await AssetFacilityService.getFacilityLogById(
+      Number(facilityLogId),
+    );
 
     const employees = [];
     for (const staff of await facilityLogFound.getGeneralStaffs()) {
@@ -1338,12 +1467,13 @@ export async function addHubToFacility(req: Request, res: Response) {
       return res.status(400).json({ error: "Missing information!" });
     }
 
-    let hubProcessor: HubProcessor = await AssetFacilityService.addHubProcessorByFacilityId(
-      Number(facilityId),
-      processorName,
-    );
+    let hubProcessor: HubProcessor =
+      await AssetFacilityService.addHubProcessorByFacilityId(
+        Number(facilityId),
+        processorName,
+      );
 
-    return res.status(200).json({ facility: hubProcessor.toJSON() });
+    return res.status(200).json({ hubProcessor: hubProcessor.toJSON() });
   } catch (error: any) {
     res.status(400).json({ error: error.message });
   }
@@ -1406,10 +1536,11 @@ export async function getHubProcessor(req: Request, res: Response) {
       if (includes.includes(role)) _includes.push(role);
     }
 
-    let hubProcessor: HubProcessor = await AssetFacilityService.getHubProcessorById(
-      Number(hubProcessorId),
-      _includes,
-    );
+    let hubProcessor: HubProcessor =
+      await AssetFacilityService.getHubProcessorById(
+        Number(hubProcessorId),
+        _includes,
+      );
     return res.status(200).json({ hubProcessor: hubProcessor.toJSON() });
   } catch (error: any) {
     console.log(error);
@@ -1507,7 +1638,9 @@ export async function getSensorReading(req: Request, res: Response) {
     );
     let sensor = await AssetFacilityService.getSensor(Number(sensorId));
 
-    let earliestDate = await AssetFacilityService.getEarliestReadingBySensorId(Number(sensorId));
+    let earliestDate = await AssetFacilityService.getEarliestReadingBySensorId(
+      Number(sensorId),
+    );
 
     return res.status(200).json({
       sensorReadings: sensorReadings?.map((reading) => reading.toJSON()),
@@ -1542,10 +1675,13 @@ export async function updateHub(req: Request, res: Response) {
       return res.status(400).json({ error: "Missing information!" });
     }
 
-    let hubUpdated = await AssetFacilityService.updateHubByHubId(Number(hubProcessorId), {
-      processorName: processorName,
-      radioGroup: radioGroup,
-    });
+    let hubUpdated = await AssetFacilityService.updateHubByHubId(
+      Number(hubProcessorId),
+      {
+        processorName: processorName,
+        radioGroup: radioGroup,
+      },
+    );
 
     return res.status(200).json({ hub: hubUpdated.toJSON() });
   } catch (error: any) {
@@ -1587,7 +1723,10 @@ export async function updateSensor(req: Request, res: Response) {
       data["sensorType"] = sensorType;
     }
 
-    let sensorUpdated = await AssetFacilityService.updateSensorById(Number(sensorId), data);
+    let sensorUpdated = await AssetFacilityService.updateSensorById(
+      Number(sensorId),
+      data,
+    );
 
     return res.status(200).json({ sensor: sensorUpdated.toJSON() });
   } catch (error: any) {
@@ -1714,9 +1853,10 @@ export async function getSensorMaintenanceLog(
       return res.status(400).json({ error: "Missing information!" });
     }
 
-    let maintenanceLog: MaintenanceLog = await AssetFacilityService.getSensorMaintenanceLogById(
-      Number(sensorMaintenanceLogId),
-    );
+    let maintenanceLog: MaintenanceLog =
+      await AssetFacilityService.getSensorMaintenanceLogById(
+        Number(sensorMaintenanceLogId),
+      );
 
     return res.status(200).json({ maintenanceLog: maintenanceLog.toJSON() });
   } catch (error: any) {
@@ -1752,7 +1892,8 @@ export async function getAllSensorMaintenanceLogs(
       return res.status(400).json({ error: "Missing information!" });
     }
 
-    let maintenanceLogs = await AssetFacilityService.getAllSensorMaintenanceLogs(Number(sensorId));
+    let maintenanceLogs =
+      await AssetFacilityService.getAllSensorMaintenanceLogs(Number(sensorId));
 
     return res
       .status(200)
@@ -1784,17 +1925,21 @@ export async function updateSensorMaintenanceLog(
       (await employee.getPlanningStaff()).plannerType !=
       PlannerType.OPERATIONS_MANAGER &&
       !employee.superAdmin &&
-      (await AssetFacilityService.getSensorMaintenanceLogById(Number(sensorMaintenanceLogId)))
-        .staffName != employee.employeeName
+      (
+        await AssetFacilityService.getSensorMaintenanceLogById(
+          Number(sensorMaintenanceLogId),
+        )
+      ).staffName != employee.employeeName
     )
       throw { message: "Only creator of the log can edit!" };
 
-    let maintenanceLog: MaintenanceLog = await AssetFacilityService.updateSensorMaintenanceLog(
-      Number(sensorMaintenanceLogId),
-      title,
-      details,
-      remarks,
-    );
+    let maintenanceLog: MaintenanceLog =
+      await AssetFacilityService.updateSensorMaintenanceLog(
+        Number(sensorMaintenanceLogId),
+        title,
+        details,
+        remarks,
+      );
 
     return res.status(200).json({ maintenanceLog: maintenanceLog.toJSON() });
   } catch (error: any) {
@@ -1820,12 +1965,17 @@ export async function deleteSensorMaintenanceLog(
       (await employee.getPlanningStaff()).plannerType !=
       PlannerType.OPERATIONS_MANAGER &&
       !employee.superAdmin &&
-      (await AssetFacilityService.getSensorMaintenanceLogById(Number(sensorMaintenanceLogId)))
-        .staffName != employee.employeeName
+      (
+        await AssetFacilityService.getSensorMaintenanceLogById(
+          Number(sensorMaintenanceLogId),
+        )
+      ).staffName != employee.employeeName
     )
       throw { message: "Only creator of the log can delete!" };
 
-    await AssetFacilityService.deleteSensorMaintenanceLogById(Number(sensorMaintenanceLogId));
+    await AssetFacilityService.deleteSensorMaintenanceLogById(
+      Number(sensorMaintenanceLogId),
+    );
 
     return res.status(200).json({ result: "success" });
   } catch (error: any) {
@@ -1874,7 +2024,10 @@ export async function initializeHub(req: Request, res: Response) {
 
     let ipaddress = req.socket.remoteAddress || "127.0.0.1";
     ipaddress = ipaddress == "::1" ? "127.0.0.1" : ipaddress.split(":")[3];
-    const token = await AssetFacilityService.initializeHubProcessor(processorName, ipaddress);
+    const token = await AssetFacilityService.initializeHubProcessor(
+      processorName,
+      ipaddress,
+    );
     return res.status(200).json({ token: token });
   } catch (error: any) {
     console.log(error);
@@ -1893,7 +2046,8 @@ export async function pushSensorReadings(
     let ipaddress = req.socket.remoteAddress || "127.0.0.1";
     ipaddress = ipaddress == "::1" ? "127.0.0.1" : ipaddress.split(":")[3];
 
-    const processor: HubProcessor = await AssetFacilityService.findProcessorByName(processorName);
+    const processor: HubProcessor =
+      await AssetFacilityService.findProcessorByName(processorName);
     if (!processor.validatePayload(jsonPayloadString, sha256)) {
       try {
         return res
@@ -1950,7 +2104,8 @@ export async function getSensorMaintenanceSuggestions(
         .status(403)
         .json({ error: "Access Denied! Operation managers only!" });
 
-    let sensors = await AssetFacilityService.getAllSensorMaintenanceSuggestions(employee);
+    let sensors =
+      await AssetFacilityService.getAllSensorMaintenanceSuggestions(employee);
     return res
       .status(200)
       .json({ sensors: sensors?.map((sensor) => sensor.toJSON()) });
@@ -1984,7 +2139,10 @@ export async function getSensorMaintenancePredictionValues(
     let values = undefined;
     for (let i = 4; i > 0; i--) {
       try {
-        values = await AssetFacilityService.getSensorMaintenanceSuggestions(Number(sensorId), i);
+        values = await AssetFacilityService.getSensorMaintenanceSuggestions(
+          Number(sensorId),
+          i,
+        );
         break;
       } catch (err: any) {
         console.log(err);
@@ -2056,10 +2214,11 @@ export async function assignMaintenanceStaffToSensor(
       return res.status(400).json({ error: "Missing information!" });
     }
 
-    let generalStaff: GeneralStaff = await AssetFacilityService.assignMaintenanceStaffToSensorById(
-      Number(sensorId),
-      Number(employeeId),
-    );
+    let generalStaff: GeneralStaff =
+      await AssetFacilityService.assignMaintenanceStaffToSensorById(
+        Number(sensorId),
+        Number(employeeId),
+      );
 
     return res
       .status(200)
@@ -2096,10 +2255,11 @@ export async function removeMaintenanceStaffFromSensor(
       return res.status(400).json({ error: "Missing information!" });
     }
 
-    let generalStaff: GeneralStaff = await AssetFacilityService.removeMaintenanceStaffFromSensorById(
-      Number(sensorId),
-      Number(employeeId),
-    );
+    let generalStaff: GeneralStaff =
+      await AssetFacilityService.removeMaintenanceStaffFromSensorById(
+        Number(sensorId),
+        Number(employeeId),
+      );
 
     return res
       .status(200)
@@ -2369,7 +2529,7 @@ export async function deleteAnimalFeedByName(
   try {
     const animalFeed =
       await AnimalFeedService.deleteAnimalFeedByName(animalFeedName);
-    return res.status(200).json({ animalFeed: animalFeed });
+    return res.status(200).json({ result: "success" });
   } catch (error: any) {
     res.status(400).json({ error: error.message });
   }

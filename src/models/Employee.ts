@@ -45,7 +45,6 @@ class Employee extends Model<
   declare employeeBirthDate: Date;
   declare isAccountManager: boolean;
   declare dateOfResignation: Date | null;
-  declare employeeProfileURL: string | null;
   declare superAdmin: boolean;
 
   declare keeper?: Keeper | null;
@@ -75,14 +74,8 @@ class Employee extends Model<
 
   declare getZooEvents: HasManyGetAssociationsMixin<ZooEvent>;
   declare addZooEvent: HasManyAddAssociationMixin<ZooEvent, number>;
-  declare setZooEvents: HasManySetAssociationsMixin<
-    ZooEvent,
-    number
-  >;
-  declare removeZooEvent: HasManyRemoveAssociationMixin<
-    ZooEvent,
-    number
-  >;
+  declare setZooEvents: HasManySetAssociationsMixin<ZooEvent, number>;
+  declare removeZooEvent: HasManyRemoveAssociationMixin<ZooEvent, number>;
 
   static getTotalEmployees() {
     // Example for static class functions
@@ -218,9 +211,6 @@ Employee.init(
     dateOfResignation: {
       type: DataTypes.DATE,
     },
-    employeeProfileURL: {
-      type: DataTypes.STRING,
-    },
     superAdmin: {
       type: DataTypes.BOOLEAN,
       defaultValue: false,
@@ -237,4 +227,3 @@ Employee.init(
 );
 
 export { Employee };
-

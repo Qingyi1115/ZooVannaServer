@@ -67,6 +67,7 @@ import {
   deleteZone,
   completeRepairTicket,
   getAllFacilityCustomer,
+  getFacilityCustomer,
   createCustomerReport,
   getAllCustomerReports,
   updateCustomerReport,
@@ -77,6 +78,7 @@ import {
   deleteCustomerReportLog,
   getAllCustomerReportLogsByFacilityId,
   crowdLevelByFacilityId,
+  getCrowdLevelOfAllFacility,
 } from "../controllers/assetFacilityController";
 
 const router = express.Router();
@@ -85,6 +87,7 @@ const router = express.Router();
 router.put("/initializeHub", initializeHub);
 router.post("/pushSensorReadings/:processorName", pushSensorReadings);
 router.post("/getAllFacilityCustomer", getAllFacilityCustomer);
+router.post("/getFacilityCustomer/:facilityId", getFacilityCustomer);
 router.get("/crowdLevelByFacilityId/:facilityId", crowdLevelByFacilityId);
 
 // Customer Report
@@ -102,6 +105,7 @@ router.delete("/deleteZone/:zoneId", deleteZone);
 // Facilities
 router.post("/createFacility", createFacility);
 router.post("/getAllFacility", getAllFacility);
+router.get("/getCrowdLevelOfAllFacility", getCrowdLevelOfAllFacility);
 router.get("/getMyOperationFacility", getMyOperationFacility);
 router.get("/getMyMaintainedFacility", getMyMaintainedFacility);
 router.post("/getFacility/:facilityId", getFacility);
@@ -138,9 +142,6 @@ router.delete(
   removeOperationStaffFromFacility,
 );
 
-router.get("/getAllCustomerReportLogs", getAllCustomerReports);
-router.put("/updateCustomerReportLogs", updateCustomerReport);
-
 //Facility Logs
 router.post("/createFacilityLog/:facilityId", createFacilityLog);
 router.post(
@@ -157,9 +158,11 @@ router.get(
 router.delete("/deleteFacilityLog/:facilityLogId", deleteFacilityLog);
 
 // Customer Report
+router.get("/getAllCustomerReportLogs", getAllCustomerReports);
 router.get("/getCustomerReportLog/:customerReportLogId", getCustomerReportLog);
 router.get("/getAllNonViewedCustomerReportLogs", getAllNonViewedCustomerReportLogs);
 router.get("/getAllCustomerReportLogsByFacilityId/:facilityId", getAllCustomerReportLogsByFacilityId);
+router.put("/updateCustomerReportLogs", updateCustomerReport);
 router.put("/markCustomerReportLogsViewed", markCustomerReportLogsViewed);
 router.delete("/deleteCustomerReportLog/:customerReportLogId", deleteCustomerReportLog);
 
@@ -219,7 +222,6 @@ router.put(
 );
 router.put("/updateSensor/:sensorId", updateSensor);
 router.delete("/deleteSensor/:sensorId", deleteSensor);
-
 router.post(
   "/createSensorMaintenanceLog/:sensorId",
   createSensorMaintenanceLog,
@@ -240,10 +242,8 @@ router.delete(
   "/deleteSensorMaintenanceLog/:sensorMaintenanceLogId",
   deleteSensorMaintenanceLog,
 );
-
 router.get(
   "/getAuthorizationForCamera/:sensorId",
   getAuthorizationForCamera,
 );
-
 export default router;

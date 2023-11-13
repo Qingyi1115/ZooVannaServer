@@ -21,9 +21,11 @@ import {
   updateRoleType,
   updateSpecializationType,
   getAllGeneralStaffs,
+  verifyToken,
 } from "../controllers/employeeController";
 import {
   addEnclosureToKeeper,
+  getAllKeepers,
   removeEnclosureFromKeeper,
   // updateKeeperType,
 } from "../controllers/keeperController";
@@ -36,6 +38,7 @@ const router = express.Router();
 // log in
 router.post("/login", login);
 router.put("/resetForgottenPassword/:token", resetForgottenPassword); //Reset from the employee side using email
+router.get("/verifyToken/:token", verifyToken);
 
 router.use(authMiddleware);
 
@@ -65,15 +68,13 @@ router.put(
 
 //Update Employee Role Details
 //Update Keeper Role --> Assign more enclosures or delete the enclosures --> for future use if needed
-router.put(
-  "/getEmployee/:employeeId/addEnclosure",
-  addEnclosureToKeeper,
-);
+router.put("/getEmployee/:employeeId/addEnclosure", addEnclosureToKeeper);
 router.put(
   "/getEmployee/:employeeId/removeEnclosure",
   removeEnclosureFromKeeper,
 );
 
+router.get("/getAllKeepers", getAllKeepers);
 // router.put("getEmployee/:employeeId/updateKeeperType", updateKeeperType);
 // router.put("getEmployee/:employeeId/updateGeneralStaffType", updateGeneralStaffType);
 // router.put("getEmployee/:employeeId/updatePlanningStaffType", updatePlanningStaffType);
