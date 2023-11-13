@@ -22,10 +22,7 @@ export async function login(req: Request, res: Response) {
   }
 }
 
-export async function updateEmployeeAccount(
-  req: Request,
-  res: Response,
-) {
+export async function updateEmployeeAccount(req: Request, res: Response) {
   try {
     const { email } = (req as any).locals.jwtPayload;
     const employee = await EmployeeService.findEmployeeByEmail(email);
@@ -63,10 +60,7 @@ export async function updateEmployeeAccount(
   }
 }
 
-export async function updateEmployeePassword(
-  req: Request,
-  res: Response,
-) {
+export async function updateEmployeePassword(req: Request, res: Response) {
   try {
     const { email } = (req as any).locals.jwtPayload;
     const employee = await EmployeeService.findEmployeeByEmail(email);
@@ -146,8 +140,8 @@ export const createEmployee = async (req: Request, res: Response) => {
       return res.status(400).json({ error: "Missing information!" });
     }
 
-    let [generatedOneTimePassword,
-      newEmployee] = await EmployeeService.createNewEmployee(
+    let [generatedOneTimePassword, newEmployee] =
+      await EmployeeService.createNewEmployee(
         employeeName,
         employeeAddress,
         employeeEmail,
@@ -190,10 +184,7 @@ export async function setAccountManager(req: Request, res: Response) {
   }
 }
 
-export async function unsetAccountManager(
-  req: Request,
-  res: Response,
-) {
+export async function unsetAccountManager(req: Request, res: Response) {
   try {
     const { email } = (req as any).locals.jwtPayload;
     const employee = await EmployeeService.findEmployeeByEmail(email);
@@ -206,7 +197,9 @@ export async function unsetAccountManager(
 
     const { employeeId } = req.params;
 
-    let result = await EmployeeService.unsetAsAccountManager(Number(employeeId));
+    let result = await EmployeeService.unsetAsAccountManager(
+      Number(employeeId),
+    );
 
     return res.status(200).json({ employee: result });
   } catch (error: any) {
@@ -235,10 +228,12 @@ export async function getAllEmployees(req: Request, res: Response) {
       _includes.push({
         association: "keeper",
         required: false,
-        include: [{
-          association: "zooEvents",
-          required: false
-        }]
+        include: [
+          {
+            association: "zooEvents",
+            required: false,
+          },
+        ],
       });
     }
 
@@ -250,10 +245,7 @@ export async function getAllEmployees(req: Request, res: Response) {
   }
 }
 
-export async function getAllGeneralStaffs(
-  req: Request,
-  res: Response,
-) {
+export async function getAllGeneralStaffs(req: Request, res: Response) {
   try {
     const { email } = (req as any).locals.jwtPayload;
     const employee = await EmployeeService.findEmployeeByEmail(email);
@@ -261,9 +253,9 @@ export async function getAllGeneralStaffs(
     if (
       !employee.isAccountManager &&
       (await employee.getPlanningStaff())?.plannerType !=
-      PlannerType.OPERATIONS_MANAGER &&
+        PlannerType.OPERATIONS_MANAGER &&
       (await employee.getGeneralStaff())?.generalStaffType !=
-      GeneralStaffType.ZOO_MAINTENANCE
+        GeneralStaffType.ZOO_MAINTENANCE
     ) {
       return res.status(403).json({ error: "Access Denied!" });
     }
@@ -278,7 +270,8 @@ export async function getAllGeneralStaffs(
       if (includes.includes(role)) _includes.push(role);
     }
 
-    let generalStaffs: GeneralStaff[] = await EmployeeService.getAllGeneralStaffs(_includes);
+    let generalStaffs: GeneralStaff[] =
+      await EmployeeService.getAllGeneralStaffs(_includes);
     for (const staff of generalStaffs) {
       let opFacility = await staff.getOperatedFacility();
       if (opFacility) {
@@ -345,10 +338,7 @@ export async function resetPassword(req: Request, res: Response) {
   }
 }
 
-export async function disableEmployeeAccount(
-  req: Request,
-  res: Response,
-) {
+export async function disableEmployeeAccount(req: Request, res: Response) {
   try {
     const { email } = (req as any).locals.jwtPayload;
     const employee = await EmployeeService.findEmployeeByEmail(email);
@@ -372,10 +362,7 @@ export async function disableEmployeeAccount(
   }
 }
 
-export async function resetForgottenPassword(
-  req: Request,
-  res: Response,
-) {
+export async function resetForgottenPassword(req: Request, res: Response) {
   try {
     const { token, password } = req.body;
 
@@ -459,19 +446,20 @@ export async function updateRoleType(req: Request, res: Response) {
     const { employeeId } = req.params;
     const result = req.body;
 
-    await EmployeeService.updateRoleType(Number(employeeId), result.role, result.roleType);
+    await EmployeeService.updateRoleType(
+      Number(employeeId),
+      result.role,
+      result.roleType,
+    );
     return res
       .status(200)
       .json({ message: `The ${result.role} roleType has been updated` });
   } catch (error: any) {
     return res.status(400).json({ error: error.message });
   }
-};
+}
 
-export async function updateSpecializationType(
-  req: Request,
-  res: Response,
-) {
+export async function updateSpecializationType(req: Request, res: Response) {
   try {
     const { email } = (req as any).locals.jwtPayload;
     const employee = await EmployeeService.findEmployeeByEmail(email);
@@ -496,7 +484,18 @@ export async function updateSpecializationType(
   } catch (error: any) {
     return res.status(400).json({ error: error.message });
   }
-};
+}
+
+export async function verifyToken(req: Request, res: Response) {
+  try {
+    const { token } = req.params;
+    console.log(token);
+    const result = await EmployeeService.verifyToken(token);
+    return res.status(200).json({ result: result });
+  } catch (error: any) {
+    return res.status(400).json({ error: error.message });
+  }
+}
 
 // export async function updateGeneralStaffType(req: Request, res: Response) {
 //   try {

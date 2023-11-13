@@ -21,6 +21,7 @@ import {
   updateRoleType,
   updateSpecializationType,
   getAllGeneralStaffs,
+  verifyToken,
 } from "../controllers/employeeController";
 import {
   addEnclosureToKeeper,
@@ -37,6 +38,7 @@ const router = express.Router();
 // log in
 router.post("/login", login);
 router.put("/resetForgottenPassword/:token", resetForgottenPassword); //Reset from the employee side using email
+router.get("/verifyToken/:token", verifyToken);
 
 router.use(authMiddleware);
 
@@ -66,10 +68,7 @@ router.put(
 
 //Update Employee Role Details
 //Update Keeper Role --> Assign more enclosures or delete the enclosures --> for future use if needed
-router.put(
-  "/getEmployee/:employeeId/addEnclosure",
-  addEnclosureToKeeper,
-);
+router.put("/getEmployee/:employeeId/addEnclosure", addEnclosureToKeeper);
 router.put(
   "/getEmployee/:employeeId/removeEnclosure",
   removeEnclosureFromKeeper,

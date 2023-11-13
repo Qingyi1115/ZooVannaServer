@@ -21,7 +21,7 @@ class PlanningStaff extends Model<
 > {
   declare plannerType: PlannerType;
   declare specialization: Specialization;
-  declare isDisabled: boolean; 
+  declare isDisabled: boolean;
 
   declare employee?: Employee;
   declare zooEvents?: ZooEvent[];
@@ -45,8 +45,9 @@ class PlanningStaff extends Model<
   }
 
   public updateSpecialization(specialization: string) {
-    if(specialization === "AMPHIBIAN") {
-      this.specialization = Specialization.AMPHIBIAN; Specialization.REPTILE
+    if (specialization === "AMPHIBIAN") {
+      this.specialization = Specialization.AMPHIBIAN;
+      Specialization.REPTILE;
     } else if (specialization === "BIRD") {
       this.specialization = Specialization.BIRD;
     } else if (specialization === "FISH") {
@@ -59,8 +60,8 @@ class PlanningStaff extends Model<
     this.save();
   }
 
-  public updatePlanningStaffType(roleType: string) { 
-    if(roleType === "CURATOR") {
+  public updatePlanningStaffType(roleType: string) {
+    if (roleType === "CURATOR") {
       this.plannerType = PlannerType.CURATOR;
     } else if (roleType === "CUSTOMER_OPERATIONS") {
       this.plannerType = PlannerType.CUSTOMER_OPERATIONS;
@@ -70,6 +71,9 @@ class PlanningStaff extends Model<
       this.plannerType = PlannerType.OPERATIONS_MANAGER;
     } else if (roleType === "SALES") {
       this.plannerType = PlannerType.SALES;
+    } else if (roleType === "NUTRITIONIST") {
+      console.log("here " + roleType);
+      this.plannerType = PlannerType.NUTRITIONIST;
     }
     this.save();
   }
@@ -99,10 +103,15 @@ class PlanningStaff extends Model<
     this.save();
   }
 
+  public setNutritionist() {
+    this.plannerType = PlannerType.NUTRITIONIST;
+    this.save();
+  }
+
   public toJSON() {
     return {
       ...this.get(),
-    }
+    };
   }
 }
 
@@ -135,4 +144,3 @@ PlanningStaff.init(
 );
 
 export { PlanningStaff };
-
