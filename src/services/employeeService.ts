@@ -473,8 +473,6 @@ export async function verifyToken(token: string) {
     where: { token: token },
   });
 
-  console.log("here " + result);
-
   if (result) {
     if (result.expiresAt.getTime() > Date.now()) {
       return true;

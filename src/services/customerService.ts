@@ -1110,6 +1110,22 @@ export async function purchaseTicket(
   }
 }
 
+export async function verifyToken(token: string) {
+  let result = await Token.findOne({
+    where: { token: token },
+  });
+
+  if (result) {
+    if (result.expiresAt.getTime() > Date.now()) {
+      return true;
+    } else {
+      return false;
+    }
+  } else {
+    return false;
+  }
+}
+
 {
   /*export async function purchaseTicket(
   customerId: number,
