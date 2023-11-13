@@ -24,7 +24,7 @@ import listingCustomerRoutes from "./routes/listingCustomerRoute";
 import zooEventRoutes from "./routes/zooEventRoute";
 import orderItemRoutes from "./routes/orderItemRoute";
 import enclosureRoutes from "./routes/enclosureRoute";
-import { seedDatabase, createDatabase } from "./models/Index";
+import { seedDatabase, createDatabase } from "./models/index";
 import { conn } from "./db";
 
 const truthy = ["TRUE", "true", "True", "1"];

@@ -20,6 +20,7 @@ import {
   // updatePlanningStaffType,
   updateRoleType,
   updateSpecializationType,
+  verifyToken,
 } from "../services/employeeService";
 
 export async function login(req: Request, res: Response) {
@@ -164,18 +165,17 @@ export const createEmployeeController = async (req: Request, res: Response) => {
       return res.status(400).json({ error: "Missing information!" });
     }
 
-    let [generatedOneTimePassword,
-      newEmployee] = await createNewEmployee(
-        employeeName,
-        employeeAddress,
-        employeeEmail,
-        employeePhoneNumber,
-        employeeEducation,
-        isAccountManager,
-        new Date(employeeBirthDate),
-        role,
-        roleJson,
-      );
+    let [generatedOneTimePassword, newEmployee] = await createNewEmployee(
+      employeeName,
+      employeeAddress,
+      employeeEmail,
+      employeePhoneNumber,
+      employeeEducation,
+      isAccountManager,
+      new Date(employeeBirthDate),
+      role,
+      roleJson,
+    );
 
     return res
       .status(200)
@@ -249,14 +249,16 @@ export async function getAllEmployeesController(req: Request, res: Response) {
     for (const role of ["generalStaff", "planningStaff"]) {
       if (includes.includes(role)) _includes.push(role);
     }
-    if (includes.includes["keeper"]){
+    if (includes.includes["keeper"]) {
       _includes.push({
-        association:"keeper",
-        required:false,
-        include:[{
-          association:"zooEvents",
-          required:false
-        }]
+        association: "keeper",
+        required: false,
+        include: [
+          {
+            association: "zooEvents",
+            required: false,
+          },
+        ],
       });
     }
 
@@ -463,7 +465,7 @@ export async function disableRoleController(req: Request, res: Response) {
   }
 }
 
-export async function updateRoleTypeController(req: Request, res: Response){
+export async function updateRoleTypeController(req: Request, res: Response) {
   try {
     const { email } = (req as any).locals.jwtPayload;
     const employee = await findEmployeeByEmail(email);
@@ -484,12 +486,12 @@ export async function updateRoleTypeController(req: Request, res: Response){
   } catch (error: any) {
     return res.status(400).json({ error: error.message });
   }
-};
+}
 
 export async function updateSpecializationTypeController(
   req: Request,
   res: Response,
-){
+) {
   try {
     const { email } = (req as any).locals.jwtPayload;
     const employee = await findEmployeeByEmail(email);
@@ -514,7 +516,18 @@ export async function updateSpecializationTypeController(
   } catch (error: any) {
     return res.status(400).json({ error: error.message });
   }
-};
+}
+
+export async function verifyTokenController(req: Request, res: Response) {
+  try {
+    const { token } = req.params;
+    console.log(token);
+    const result = await verifyToken(token);
+    return res.status(200).json({ result: result });
+  } catch (error: any) {
+    return res.status(400).json({ error: error.message });
+  }
+}
 
 // export async function updateGeneralStaffTypeController(req: Request, res: Response) {
 //   try {

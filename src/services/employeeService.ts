@@ -301,15 +301,16 @@ export async function getEmployee(
 export async function getKeeperByEmployeeId(
   employeeId: number,
 ): Promise<Keeper> {
-
   let employee = await getEmployee(employeeId);
 
   if (employee) {
     return employee.getKeeper({
-      include: [{
-        association: "employee",
-        required: true
-      }]
+      include: [
+        {
+          association: "employee",
+          required: true,
+        },
+      ],
     });
   }
   throw {
@@ -464,6 +465,24 @@ export async function disableRole(
     }
   } else {
     throw { message: "Employee does not exist" };
+  }
+}
+
+export async function verifyToken(token: string) {
+  let result = await Token.findOne({
+    where: { token: token },
+  });
+
+  console.log("here " + result);
+
+  if (result) {
+    if (result.expiresAt.getTime() > Date.now()) {
+      return true;
+    } else {
+      return false;
+    }
+  } else {
+    return false;
   }
 }
 

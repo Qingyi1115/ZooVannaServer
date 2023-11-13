@@ -21,6 +21,7 @@ import {
   updateRoleTypeController,
   updateSpecializationTypeController,
   getAllGeneralStaffsController,
+  verifyTokenController,
 } from "../controllers/employeeController";
 import {
   addEnclosureToKeeperController,
@@ -36,6 +37,7 @@ const router = express.Router();
 // log in
 router.post("/login", login);
 router.put("/resetForgottenPassword/:token", resetForgottenPasswordController); //Reset from the employee side using email
+router.get("/verifyToken/:token", verifyTokenController);
 
 router.use(authMiddleware);
 
