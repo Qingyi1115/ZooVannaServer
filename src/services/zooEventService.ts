@@ -1308,7 +1308,6 @@ export async function createPublicEventSession(
       time: time,
       daysInAdvanceNotification: daysInAdvanceNotification
     };
-    console.log("data", data, " oneDate, ", oneDate);
     const newPublicEventSession = await PublicEventSession.create(data);
 
     await newPublicEventSession.setPublicEvent(publicEvent);
