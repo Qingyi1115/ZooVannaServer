@@ -432,7 +432,7 @@ export async function disableRole(req: Request, res: Response) {
   }
 }
 
-export async function updateRoleTypeController(req: Request, res: Response) {
+export async function updateRoleType(req: Request, res: Response) {
   try {
     const { email } = (req as any).locals.jwtPayload;
     const employee = await EmployeeService.findEmployeeByEmail(email);
@@ -486,7 +486,7 @@ export async function updateSpecializationType(req: Request, res: Response) {
   }
 }
 
-export async function verifyTokenController(req: Request, res: Response) {
+export async function verifyToken(req: Request, res: Response) {
   try {
     const { token } = req.params;
     console.log(token);

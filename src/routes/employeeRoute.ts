@@ -3,27 +3,6 @@ import express from "express";
 // Controller functions
 import {
   login,
-<<<<<<< HEAD
-  createEmployeeController,
-  getEmployeeController,
-  setAccountManagerController,
-  getAllEmployeesController,
-  resetPasswordController,
-  disableEmployeeAccountController,
-  resetForgottenPasswordController,
-  unsetAccountManagerController,
-  enableRoleController,
-  disableRoleController,
-  // updateGeneralStaffTypeController,
-  // updatePlanningStaffTypeController,
-  updateEmployeeAccountController,
-  updateEmployeePasswordController,
-  getSelfController,
-  updateRoleTypeController,
-  updateSpecializationTypeController,
-  getAllGeneralStaffsController,
-  verifyTokenController,
-=======
   createEmployee,
   getEmployee,
   setAccountManager,
@@ -42,7 +21,7 @@ import {
   updateRoleType,
   updateSpecializationType,
   getAllGeneralStaffs,
->>>>>>> 104530642510e2be543f6f9911286435f4206337
+  verifyToken,
 } from "../controllers/employeeController";
 import {
   addEnclosureToKeeper,
@@ -58,12 +37,8 @@ const router = express.Router();
 
 // log in
 router.post("/login", login);
-<<<<<<< HEAD
-router.put("/resetForgottenPassword/:token", resetForgottenPasswordController); //Reset from the employee side using email
-router.get("/verifyToken/:token", verifyTokenController);
-=======
 router.put("/resetForgottenPassword/:token", resetForgottenPassword); //Reset from the employee side using email
->>>>>>> 104530642510e2be543f6f9911286435f4206337
+router.get("/verifyToken/:token", verifyToken);
 
 router.use(authMiddleware);
 
@@ -93,10 +68,7 @@ router.put(
 
 //Update Employee Role Details
 //Update Keeper Role --> Assign more enclosures or delete the enclosures --> for future use if needed
-router.put(
-  "/getEmployee/:employeeId/addEnclosure",
-  addEnclosureToKeeper,
-);
+router.put("/getEmployee/:employeeId/addEnclosure", addEnclosureToKeeper);
 router.put(
   "/getEmployee/:employeeId/removeEnclosure",
   removeEnclosureFromKeeper,
