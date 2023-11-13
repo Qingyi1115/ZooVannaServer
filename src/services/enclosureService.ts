@@ -6,13 +6,11 @@ import * as SpeciesService from "./speciesService";
 import * as AssetFacilityService from "./assetFacilityService";
 import { Facility } from "../models/Facility";
 
-import { writeFile } from 'fs/promises';
+import { writeFile } from "fs/promises";
 
 export async function getAllEnclosures() {
   try {
-    const allEnclosures = await Enclosure.findAll(
-      { include: [Facility] }
-    );
+    const allEnclosures = await Enclosure.findAll({ include: [Facility] });
     return allEnclosures;
   } catch (error: any) {
     throw validationErrorHandler(error);
@@ -31,13 +29,19 @@ export async function getEnclosureById(enclosureId: number) {
 
 // need to update to create facility too
 export async function createNewEnclosure(
-  facilityId: number,
   name: string,
   remark: string,
   length: number,
   width: number,
   height: number,
   enclosureStatus: string,
+  facilityName: string,
+  xCoordinate: number,
+  yCoordinate: number,
+  isSheltered: boolean,
+  facilityDetail: string,
+  facilityDetailJson: any,
+  imageUrl: string,
 ) {
   let newEnclosure = {
     name: name,
@@ -49,12 +53,36 @@ export async function createNewEnclosure(
   } as any;
 
   try {
-    let enclousre = await Enclosure.create(newEnclosure);
-    enclousre.setFacility(
-      await AssetFacilityService.getFacilityById(facilityId),
-    );
+    // console.log("==heree----");
+    // let newFacility = await AssetFacilityService.createNewFacility(
+    //   facilityName,
+    //   xCoordinate,
+    //   yCoordinate,
+    //   isSheltered,
+    //   facilityDetail,
+    //   facilityDetailJson,
+    //   imageUrl,
+    // );
 
-    return enclousre;
+    let facility = {
+      facilityName: facilityName,
+      isSheltered: isSheltered,
+      xCoordinate: xCoordinate,
+      yCoordinate: yCoordinate,
+      facilityDetail: facilityDetail,
+      facilityDetailJson: facilityDetailJson,
+      imageUrl: imageUrl,
+    } as any;
+    let newFacility = await Facility.create(facility, {});
+
+    if (newFacility) {
+      let enclousre = await Enclosure.create(newEnclosure);
+      enclousre.setFacility(newFacility);
+
+      return enclousre;
+    } else {
+      throw new Error("Failed to create facility!");
+    }
   } catch (error: any) {
     throw validationErrorHandler(error);
   }
@@ -106,13 +134,18 @@ export async function updateEnclosureStatus(
 
 // need to update to delete facility too
 export async function deleteEnclosure(enclosureId: number) {
+  let enclosure = await getEnclosureById(enclosureId);
+  let facilityToDelete = enclosure.getFacility();
+
   let result = await Enclosure.destroy({
     where: { enclosureId: enclosureId },
   });
 
-  //delete facility also HEREE!!!!!!!!!
-
   if (result) {
+    await Facility.destroy({
+      where: { facilityId: (await facilityToDelete).facilityId },
+    });
+
     return result;
   }
   throw new Error("Invalid Enclosure ID!");
@@ -171,7 +204,10 @@ export async function removeAnimalFromEnclosure(
   }
 }
 
-export async function getSpeciesCompatibilityInEnclosure(enclosureId: number, speciesCode: string) {
+export async function getSpeciesCompatibilityInEnclosure(
+  enclosureId: number,
+  speciesCode: string,
+) {
   // let result: Animal[] = [];
 
   try {
@@ -179,27 +215,30 @@ export async function getSpeciesCompatibilityInEnclosure(enclosureId: number, sp
 
     const speciesCodeSet = new Set<string>();
 
-    allAnimalsOfEnclosure.forEach(animal => {
+    allAnimalsOfEnclosure.forEach((animal) => {
       if (animal.species && animal.species.speciesCode) {
         speciesCodeSet.add(animal.species.speciesCode);
       }
     });
 
-    let isCompatible = true
+    let isCompatible = true;
     for (const curSpeciesCode of speciesCodeSet) {
-      console.log("test")
-      console.log(speciesCode)
-      console.log(curSpeciesCode)
-      console.log(await SpeciesService.checkIsCompatible(speciesCode, curSpeciesCode))
-      console.log("-------")
+      console.log("test");
+      console.log(speciesCode);
+      console.log(curSpeciesCode);
+      console.log(
+        await SpeciesService.checkIsCompatible(speciesCode, curSpeciesCode),
+      );
+      console.log("-------");
       if (curSpeciesCode != speciesCode) {
-        if (!(await SpeciesService.checkIsCompatible(speciesCode, curSpeciesCode))) {
+        if (
+          !(await SpeciesService.checkIsCompatible(speciesCode, curSpeciesCode))
+        ) {
           isCompatible = false;
         }
       }
-
     }
-    return isCompatible
+    return isCompatible;
   } catch (error: any) {
     throw validationErrorHandler(error);
   }
@@ -221,11 +260,13 @@ export async function updateDesignDiagram(
 
     await writeFile(filePath, designDiagramJson);
     if (enclosure.designDiagramJsonUrl == null) {
-      await Enclosure.update({ designDiagramJsonUrl: filePath }, {
-        where: { enclosureId: enclosureId },
-      });
+      await Enclosure.update(
+        { designDiagramJsonUrl: filePath },
+        {
+          where: { enclosureId: enclosureId },
+        },
+      );
     }
-
   } catch (error: any) {
     throw validationErrorHandler(error);
   }

@@ -174,11 +174,20 @@ export const createDatabase = async (options: any) => {
   Facility.hasOne(InHouse, addCascadeOptions({ foreignKey: "facilityId" }));
   InHouse.belongsTo(Facility, addCascadeOptions({ foreignKey: "facilityId" }));
 
-  Facility.hasOne(Enclosure, addCascadeOptions({ foreignKey: "facilityId" }));
-  Enclosure.belongsTo(
-    Facility,
-    addCascadeOptions({ foreignKey: "facilityId" }),
-  );
+  // Facility.hasOne(Enclosure, addCascadeOptions({ foreignKey: "facilityId" }));
+  // Enclosure.belongsTo(
+  //   Facility,
+  //   addCascadeOptions({ foreignKey: "facilityId" }),
+  // );
+  Facility.hasOne(Enclosure, {
+    foreignKey: "facilityId",
+    onDelete: "CASCADE",
+  });
+
+  Enclosure.belongsTo(Facility, {
+    foreignKey: "facilityId",
+    onDelete: "CASCADE",
+  });
 
   InHouse.belongsToMany(GeneralStaff, {
     foreignKey: "maintainedFacilityId",
@@ -3310,7 +3319,6 @@ export const enrichmentItemSeed = async () => {
   console.log(Feeder.toJSON());
 };
 
-
 export const enclosureSeed = async () => {
   let enclosure1Template = {
     facilityId: 1,
@@ -3320,7 +3328,7 @@ export const enclosureSeed = async () => {
     width: 400,
     height: 20,
     enclosureStatus: "CONSTRUCTING",
-    designDiagramJsonUrl: "enclosureDiagramJson/Panda Enclosure 01.json"
+    designDiagramJsonUrl: "enclosureDiagramJson/Panda Enclosure 01.json",
   } as any;
   await Enclosure.create(enclosure1Template);
 
@@ -3335,9 +3343,25 @@ export const enclosureSeed = async () => {
   } as any;
   await Enclosure.create(enclosure2Template);
 
+  await EnclosureService.createNewEnclosure(
+    "Panda Enclosure 03",
+    "NA",
+    300,
+    500,
+    25,
+    "ACTIVE",
+    "Enclosure 3",
+    103.78221130371094,
+    1.29178547859192,
+    false,
+    "",
+    "",
+    "img/facility/Directory.png",
+  );
+
   // assign animals to enclosure
-  await EnclosureService.assignAnimalToEnclosure(1, "ANM00001")
-  await EnclosureService.assignAnimalToEnclosure(1, "ANM00002")
+  await EnclosureService.assignAnimalToEnclosure(1, "ANM00001");
+  await EnclosureService.assignAnimalToEnclosure(1, "ANM00002");
 };
 
 export const facilityAssetsSeed = async () => {
@@ -3799,9 +3823,9 @@ export const facilityAssetsSeed = async () => {
   ]) {
     _day = new Date(
       _day.getTime() -
-      days * 1000 * 60 * 60 * 24 +
-      Math.random() * 1000 * 60 * 60 * 24 * 4 -
-      1000 * 60 * 60 * 24 * 2,
+        days * 1000 * 60 * 60 * 24 +
+        Math.random() * 1000 * 60 * 60 * 24 * 4 -
+        1000 * 60 * 60 * 24 * 2,
     );
     sensor.addMaintenanceLog(
       await MaintenanceLog.create({
@@ -3952,7 +3976,6 @@ export const facilityAssetsSeed = async () => {
 };
 
 export const publicEventSeed = async () => {
-
   const pubEvent = await ZooEventService.createPublicEvent(
     EventType.CUSTOMER_FEEDING,
     "Homo sapiens feeding",
@@ -3962,7 +3985,7 @@ export const publicEventSeed = async () => {
     new Date(Date.now() + 60 * DAY_IN_MILLISECONDS),
     [],
     [1],
-    8
+    8,
   );
 
   const pubEventSession = await ZooEventService.createPublicEventSession(
@@ -3973,7 +3996,7 @@ export const publicEventSeed = async () => {
     60,
     "16:00",
     30,
-    new Date(Date.now() + DAY_IN_MILLISECONDS * 5)
+    new Date(Date.now() + DAY_IN_MILLISECONDS * 5),
   );
 
   const pubEvent2 = await ZooEventService.createPublicEvent(
@@ -3983,9 +4006,11 @@ export const publicEventSeed = async () => {
     "img/animal/ANM00001.jpg",
     new Date(),
     new Date(Date.now() + 90 * DAY_IN_MILLISECONDS),
-    (await AnimalService.getAllAnimalsBySpeciesCode("SPE001")).map(animal => animal.animalCode),
+    (await AnimalService.getAllAnimalsBySpeciesCode("SPE001")).map(
+      (animal) => animal.animalCode,
+    ),
     [1],
-    8
+    8,
   );
 
   const pubEventSession2 = await ZooEventService.createPublicEventSession(
@@ -3996,7 +4021,7 @@ export const publicEventSeed = async () => {
     60,
     "16:00",
     7,
-    null
+    null,
   );
 
   const pubEventSession3 = await ZooEventService.createPublicEventSession(
@@ -4007,7 +4032,7 @@ export const publicEventSeed = async () => {
     60,
     "14:00",
     7,
-    null
+    null,
   );
 
   const pubEvent3 = await ZooEventService.createPublicEvent(
@@ -4017,9 +4042,11 @@ export const publicEventSeed = async () => {
     "img/species/clownfish.jpg",
     new Date(),
     null,
-    (await AnimalService.getAllAnimalsBySpeciesCode("SPE005")).map(animal => animal.animalCode),
+    (await AnimalService.getAllAnimalsBySpeciesCode("SPE005")).map(
+      (animal) => animal.animalCode,
+    ),
     [1],
-    8
+    8,
   );
 
   const pubEventSession4 = await ZooEventService.createPublicEventSession(
@@ -4030,9 +4057,6 @@ export const publicEventSeed = async () => {
     60,
     "15:00",
     7,
-    null
+    null,
   );
-
-
-
 };

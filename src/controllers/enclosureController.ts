@@ -36,8 +36,22 @@ export async function createNewEnclosure(req: Request, res: Response) {
     //   req,
     //   process.env.IMG_URL_ROOT! + "species", //"D:/capstoneUploads/species",
     // );
-    const { facilityId, name, remark, length, width, height, enclosureStatus } =
-      req.body;
+    const {
+      facilityId,
+      name,
+      remark,
+      length,
+      width,
+      height,
+      enclosureStatus,
+      facilityName,
+      xCoordinate,
+      yCoordinate,
+      isSheltered,
+      facilityDetail,
+      facilityDetailJson,
+      imageUrl,
+    } = req.body;
 
     if (
       [
@@ -48,6 +62,13 @@ export async function createNewEnclosure(req: Request, res: Response) {
         width,
         height,
         enclosureStatus,
+        facilityName,
+        xCoordinate,
+        yCoordinate,
+        isSheltered,
+        facilityDetail,
+        facilityDetailJson,
+        imageUrl,
       ].includes(undefined)
     ) {
       console.log("Missing field(s): ", {
@@ -58,19 +79,32 @@ export async function createNewEnclosure(req: Request, res: Response) {
         width,
         height,
         enclosureStatus,
+        facilityName,
+        xCoordinate,
+        yCoordinate,
+        isSheltered,
+        facilityDetail,
+        facilityDetailJson,
+        imageUrl,
       });
       return res.status(400).json({ error: "Missing information!" });
     }
 
     // have to pass in req for image uploading
     let enclosure = await EnclosureService.createNewEnclosure(
-      facilityId,
       name,
       remark,
       length,
       width,
       height,
       enclosureStatus,
+      facilityName,
+      xCoordinate,
+      yCoordinate,
+      isSheltered,
+      facilityDetail,
+      facilityDetailJson,
+      imageUrl,
     );
 
     return res.status(200).json({ enclosure });
@@ -259,7 +293,10 @@ export async function removeAnimalFromEnclosure(req: Request, res: Response) {
 }
 
 // getSpeciesCompatibilityInEnclosure
-export async function getSpeciesCompatibilityInEnclosure(req: Request, res: Response) {
+export async function getSpeciesCompatibilityInEnclosure(
+  req: Request,
+  res: Response,
+) {
   try {
     const { speciesCode, enclosureId } = req.params;
 
@@ -272,10 +309,11 @@ export async function getSpeciesCompatibilityInEnclosure(req: Request, res: Resp
     }
 
     // have to pass in req for image uploading
-    let isCompatible = await EnclosureService.getSpeciesCompatibilityInEnclosure(
-      Number(enclosureId),
-      speciesCode,
-    );
+    let isCompatible =
+      await EnclosureService.getSpeciesCompatibilityInEnclosure(
+        Number(enclosureId),
+        speciesCode,
+      );
 
     return res.status(200).json({ isCompatible });
   } catch (error: any) {
@@ -307,7 +345,7 @@ export async function updateDesignDiagram(req: Request, res: Response) {
       designDiagramJson,
     );
 
-    return res.status(200).json('Successfully saved diagram!');
+    return res.status(200).json("Successfully saved diagram!");
   } catch (error: any) {
     res.status(400).json({ error: error.message });
   }
