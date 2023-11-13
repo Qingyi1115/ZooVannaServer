@@ -44,6 +44,7 @@ app.use(cookieParser());
 app.use(bodyParser.json());
 app.use("/img", express.static("img"));
 app.use("/pdf", express.static("pdf"));
+app.use("/enclosureDiagramJson", express.static("enclosureDiagramJson"));
 
 const server = http.createServer(app);
 

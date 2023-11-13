@@ -1,6 +1,7 @@
 import { CreationOptional } from "Sequelize";
 import { Employee } from "../models/Employee";
 import { Enclosure } from "../models/Enclosure";
+import { Keeper } from "../models/Keeper";
 
 //might need to change implementation
 export async function updateDetails(
@@ -66,6 +67,15 @@ export async function removeEnclosure(employeeId: number, enclosureId: number) {
     throw { message: "Enclosure does not exist" };
   }
   throw { message: "Employee does not exist" };
+}
+
+export async function getAllKeepers() {
+  return Keeper.findAll({
+    include: {
+      association: "employee",
+      required: true
+    }
+  })
 }
 
 export async function updateKeeperType(employeeId: number, roleType: string) {

@@ -597,6 +597,7 @@ export async function crowdLevelRatioByFacilityId(
     }
 
     const total = readings.length
+    console.log("Number of reading from cameras : " + total);
     if (!total) return 0;
 
     const average = readings.reduce((r1, r2) => r1 + r2) / total

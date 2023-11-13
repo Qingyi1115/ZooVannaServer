@@ -1,21 +1,17 @@
 import express from "express";
 import {
-  createNewListingController,
-  disableListingController,
-  editListingDetailsController,
-  enableListingController,
-  getAllListingsController,
-  getListingController,
-  getLocalListingController,
-  getForeignerListingController,
+  getAllListings,
+  getListing,
+  getLocalListing,
+  getForeignerListing,
 } from "../controllers/listingController";
 
 const router = express.Router();
 
-router.get("/getListing/:listingId", getListingController);
-router.get("/getAllListings", getAllListingsController);
-router.get("/getLocalListings", getLocalListingController);
+router.get("/getListing/:listingId", getListing);
+router.get("/getAllListings", getAllListings);
+router.get("/getLocalListings", getLocalListing);
 //,
-router.get("/getForeignerListings", getForeignerListingController);
+router.get("/getForeignerListings", getForeignerListing);
 
 export default router;
