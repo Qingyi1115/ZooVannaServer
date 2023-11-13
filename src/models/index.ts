@@ -3972,7 +3972,7 @@ export const publicEventSeed = async () => {
     null,
     60,
     "16:00",
-    1,
+    30,
     new Date(Date.now() + DAY_IN_MILLISECONDS * 5)
   );
 
@@ -3995,7 +3995,7 @@ export const publicEventSeed = async () => {
     null,
     60,
     "16:00",
-    1,
+    7,
     null
   );
 
@@ -4006,7 +4006,7 @@ export const publicEventSeed = async () => {
     null,
     60,
     "14:00",
-    1,
+    7,
     null
   );
 
@@ -4029,7 +4029,7 @@ export const publicEventSeed = async () => {
     22,
     60,
     "15:00",
-    1,
+    7,
     null
   );
 
