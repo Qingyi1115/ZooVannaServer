@@ -1506,6 +1506,37 @@ export async function getAuthorizationForCameraById(
   }
 }
 
+export async function getAuthorizationForCameraByFacilityId(
+  facilityId: number,
+  userId: string,
+) {
+  try {
+    const facility = await getFacilityById(facilityId);
+    const data = [];
+    const currentDT = Date.now().toString();
+    for (const hub of (await facility.getHubProcessors())) {
+      for (const sensor of (await hub.getSensors())) {
+        if (sensor.sensorType == SensorType.CAMERA) {
+          data.push({
+            sensorName: sensor.sensorName,
+            userId: userId,
+            hubId: hub.hubProcessorId.toString(),
+            date: currentDT,
+            ipAddressName: hub.ipAddressName,
+            signature: hash(
+              userId + hub.hubProcessorId.toString() + currentDT + hub.hubSecret,
+            ),
+          })
+        }
+      }
+    }
+
+    return data;
+  } catch (error: any) {
+    throw validationErrorHandler(error);
+  }
+}
+
 export async function getMaintenanceStaffsByFacilityId(facilityId: number) {
   try {
     const facility = await getFacilityById(facilityId);

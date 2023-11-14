@@ -40,7 +40,7 @@ router.put("/updateZooEventSingle/:zooEventId", updateZooEventSingle);
 router.put("/updateZooEventIncludeFuture/:zooEventId", updateZooEventIncludeFuture);
 router.put("/assignZooEventKeeper", assignZooEventKeeper);
 router.put("/removeKeeperfromZooEvent", removeKeeperfromZooEvent);
-router.get("/autoAssignKeeperToZooEvent", autoAssignKeeperToZooEvent);
+router.post("/autoAssignKeeperToZooEvent", autoAssignKeeperToZooEvent);
 router.delete("/deleteZooEvent/:zooEventId", deleteZooEvent);
 router.get("/getKeepersForZooEvent/:zooEventId", getKeepersForZooEvent);
 

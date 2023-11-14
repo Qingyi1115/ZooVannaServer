@@ -311,9 +311,14 @@ export async function autoAssignKeeperToZooEvent(req: Request, res: Response) {
         .status(403)
         .json({ error: "Access Denied! Planning Staff only!" });
 
+    const { endDate } = req.body;
 
+    if (endDate === undefined) {
+      console.log({ endDate });
+      return res.status(400).json({ error: "Missing information!" })
+    }
 
-    return res.status(200).json({ zooEvents: await ZooEventService.autoAssignKeeperToZooEvent() });
+    return res.status(200).json({ zooEvents: await ZooEventService.autoAssignKeeperToZooEvent(new Date(endDate)) });
   } catch (error: any) {
     console.log("error", error);
     res.status(400).json({ error: error.message });

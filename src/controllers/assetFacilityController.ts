@@ -2309,6 +2309,46 @@ export async function getAuthorizationForCamera(
   }
 }
 
+export async function getAuthorizationForCameraByFacilityId(
+  req: Request,
+  res: Response,
+) {
+  try {
+    const { email } = (req as any).locals.jwtPayload;
+    const employee = await EmployeeService.findEmployeeByEmail(email);
+
+    if (
+      !employee.superAdmin &&
+      !(
+        (await employee.getPlanningStaff())?.plannerType ==
+        PlannerType.OPERATIONS_MANAGER
+      )
+    )
+      return res
+        .status(403)
+        .json({ error: "Access Denied! Operation managers only!" });
+
+    const { facilityId } = req.params;
+
+    if (facilityId == "") {
+      return res.status(400).json({ error: "Missing information!" });
+    }
+
+    return res
+      .status(200)
+      .json(
+        {
+          data: await AssetFacilityService.getAuthorizationForCameraByFacilityId(
+            Number(facilityId),
+            String(employee.employeeId),
+          ),
+        })
+  } catch (error: any) {
+    console.log(error);
+    res.status(400).json({ error: error.message });
+  }
+}
+
 export async function createNewAnimalFeed(
   req: Request,
   res: Response,
