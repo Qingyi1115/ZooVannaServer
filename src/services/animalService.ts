@@ -1108,6 +1108,7 @@ export async function assignAnimalsToActivity(
     for (const ze of await animalActivity.getZooEvents()) {
       if (compareDates(ze.eventStartDateTime, new Date()) >= 0) {
         promises.push(ze.setAnimals(animals));
+        promises.push(ze.setEnclosure(await animals[0].getEnclosure()));
       }
     }
     for (const p of promises) await p;
