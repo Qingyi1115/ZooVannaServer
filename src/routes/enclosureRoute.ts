@@ -3,7 +3,7 @@ import express from "express";
 import { authMiddleware } from "../middlewares/authMiddleware";
 import {
   getAllEnclosures,
-  getEnclosuresById,
+  getEnclosureById,
   createNewEnclosure,
   updateEnclosure,
   updateEnclosureStatus,
@@ -21,7 +21,7 @@ router.use(authMiddleware);
 
 //species basic
 router.get("/getAllEnclosures", getAllEnclosures);
-router.get("/getEnclosuresById/:enclosureId", getEnclosuresById);
+router.get("/getEnclosureById/:enclosureId", getEnclosureById);
 router.post("/createNewEnclosure", createNewEnclosure);
 router.put("/updateEnclosure", updateEnclosure);
 router.put("/updateEnclosureStatus", updateEnclosureStatus);
