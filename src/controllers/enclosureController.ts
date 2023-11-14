@@ -350,3 +350,26 @@ export async function updateDesignDiagram(req: Request, res: Response) {
     res.status(400).json({ error: error.message });
   }
 }
+
+export async function assignKeepersToEnclosure(req: Request, res: Response) {
+  const { enclosureId, employeeIds } = req.body;
+
+  if ([enclosureId, employeeIds].includes(undefined)) {
+    console.log("Missing field(s): ", {
+      enclosureId,
+      employeeIds,
+    });
+    return res.status(400).json({ error: "Missing information!" });
+  }
+
+  try {
+    await EnclosureService.assignKeepersToEnclosure(
+      enclosureId,
+      employeeIds.map((employeeId: string) => Number(employeeId)),
+    );
+    return res.status(200).json({ result: "success" });
+  } catch (error: any) {
+    console.log("error", error);
+    res.status(400).json({ error: error.message });
+  }
+}
