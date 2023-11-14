@@ -17,12 +17,14 @@ import {
 } from "Sequelize";
 import { conn } from "../db";
 import { Animal } from "./Animal";
-import { BarrierType } from "./BarrierType";
+// import { BarrierType } from "./BarrierType";
 import { EnclosureStatus } from "./Enumerated";
 import { Facility } from "./Facility";
 import { Keeper } from "./Keeper";
 import { Plantation } from "./Plantation";
 import { ZooEvent } from "./ZooEvent";
+import { EnclosureBarrier } from "./EnclosureBarrier";
+import { AccessPoint } from "./AccessPoint";
 
 class Enclosure extends Model<
   InferAttributes<Enclosure>,
@@ -35,6 +37,7 @@ class Enclosure extends Model<
   declare width: number;
   declare height: number;
   declare enclosureStatus: EnclosureStatus;
+  declare standOffBarrierDist: number | null;
   declare designDiagramJsonUrl: string;
 
   // Terrain Distribution
@@ -44,22 +47,27 @@ class Enclosure extends Model<
   declare sandPercent: number | null;
   declare snowPercent: number | null;
   declare soilPercent: number | null;
-  declare landArea?: number | null;
-  declare waterArea?: number | null;
-  declare plantationCoveragePercent?: number | null;
-  declare acceptableTempMin?: number | null;
-  declare acceptableTempMax?: number | null;
-  declare acceptableHumidityMin?: number | null;
-  declare acceptableHumidityMax?: number | null;
+
+  declare landArea: number | null;
+  declare waterArea: number | null;
+  declare plantationCoveragePercent: number | null;
+
+  // Climate Design
+  declare acceptableTempMin: number | null;
+  declare acceptableTempMax: number | null;
+  declare acceptableHumidityMin: number | null;
+  declare acceptableHumidityMax: number | null;
 
   // FK
   // declare terrainDistribution?: TerrainDistribution;
   declare animals?: Animal[];
-  declare barrierType?: BarrierType;
-  declare plantation?: Plantation; // to make into a list, plantations
+  // declare barrierType?: BarrierType;
+  declare plantations?: Plantation[]; // to make into a list, plantations
   declare zooEvents?: ZooEvent[];
   declare facility?: Facility;
   declare Keeper?: Keeper[];
+  declare enclosureBarrier?: EnclosureBarrier;
+  declare accessPoints?: AccessPoint[];
 
   // declare getTerrainDistribution: BelongsToManyGetAssociationsMixin<TerrainDistribution>;
   // declare setTerrainDistribution: BelongsToSetAssociationMixin<
@@ -72,8 +80,15 @@ class Enclosure extends Model<
   declare setAnimals: HasManySetAssociationsMixin<Animal, number>;
   declare removeAnimal: HasManyRemoveAssociationMixin<Animal, number>;
 
-  declare getPlantation: HasOneGetAssociationMixin<Plantation>;
-  declare setPlantation: HasOneSetAssociationMixin<Plantation, number>;
+  declare getPlantations: HasManyGetAssociationsMixin<Plantation>;
+  declare addPlantation: HasManyAddAssociationMixin<Plantation, number>;
+  declare setPlantations: HasManySetAssociationsMixin<Plantation, number>;
+  declare removePlantation: HasManyRemoveAssociationMixin<Plantation, number>;
+
+  declare getAccessPoints: HasManyGetAssociationsMixin<AccessPoint>;
+  declare addAccessPoint: HasManyAddAssociationMixin<AccessPoint, number>;
+  declare setAccessPoints: HasManySetAssociationsMixin<AccessPoint, number>;
+  declare removeAccessPoint: HasManyRemoveAssociationMixin<AccessPoint, number>;
 
   declare getZooEvents: HasManyGetAssociationsMixin<ZooEvent>;
   declare addZooEvent: HasManyAddAssociationMixin<ZooEvent, number>;
@@ -87,6 +102,12 @@ class Enclosure extends Model<
   declare addKeeper: BelongsToManyAddAssociationMixin<Keeper, number>;
   declare setKeepers: BelongsToManySetAssociationsMixin<Keeper, number>;
   declare removeKeeper: BelongsToManyRemoveAssociationMixin<Keeper, number>;
+
+  declare getEnclosureBarrier: HasOneGetAssociationMixin<EnclosureBarrier>;
+  declare setEnclosureBarrier: HasOneSetAssociationMixin<
+    EnclosureBarrier,
+    number
+  >;
 
   public toJSON() {
     return {
@@ -127,6 +148,10 @@ Enclosure.init(
       values: Object.values(EnclosureStatus),
       allowNull: false,
     },
+    standOffBarrierDist: {
+      type: DataTypes.DOUBLE,
+      allowNull: true,
+    },
     designDiagramJsonUrl: {
       type: DataTypes.STRING,
       allowNull: true,
@@ -157,22 +182,16 @@ Enclosure.init(
     },
 
     landArea: {
-      type: DataTypes.VIRTUAL,
-      get() {
-        return null;
-      },
+      type: DataTypes.DOUBLE,
+      allowNull: true,
     },
     waterArea: {
-      type: DataTypes.VIRTUAL,
-      get() {
-        return null;
-      },
+      type: DataTypes.DOUBLE,
+      allowNull: true,
     },
     plantationCoveragePercent: {
-      type: DataTypes.VIRTUAL,
-      get() {
-        return null;
-      },
+      type: DataTypes.DOUBLE,
+      allowNull: true,
     },
     // standoffBarrierDist: {
     //   type: DataTypes.DOUBLE,
@@ -183,28 +202,20 @@ Enclosure.init(
     //   allowNull: false,
     // },
     acceptableTempMin: {
-      type: DataTypes.VIRTUAL,
-      get() {
-        return null;
-      },
+      type: DataTypes.DOUBLE,
+      allowNull: true,
     },
     acceptableTempMax: {
-      type: DataTypes.VIRTUAL,
-      get() {
-        return null;
-      },
+      type: DataTypes.DOUBLE,
+      allowNull: true,
     },
     acceptableHumidityMin: {
-      type: DataTypes.VIRTUAL,
-      get() {
-        return null;
-      },
+      type: DataTypes.INTEGER,
+      allowNull: true,
     },
     acceptableHumidityMax: {
-      type: DataTypes.VIRTUAL,
-      get() {
-        return null;
-      },
+      type: DataTypes.INTEGER,
+      allowNull: true,
     },
   },
   {

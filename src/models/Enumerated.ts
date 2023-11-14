@@ -582,6 +582,29 @@ enum FacilityLogType {
   OPERATION_LOG = "OPERATION_LOG",
 }
 
+enum BarrierType {
+  CONCRETE = "CONCRETE",
+  GLASS = "GLASS",
+  ONE_WAY_GLASS = "ONE_WAY_GLASS",
+  WOOD_LOGS = "WOOD_LOGS",
+  STEEL_MESH = "STEEL_MESH",
+  BRICK = "BRICK",
+  GABION = "GABION",
+  CORRUGATED = "CORRUGATED",
+  CHAIN_LINK = "CHAIN_LINK",
+  ELECTRIC = "ELECTRIC",
+  HEDGE = "HEDGE",
+}
+
+enum AccessPointType {
+  STAFF_ENTRANCE = "STAFF_ENTRANCE",
+  VISITOR_ENTRANCE = "VISITOR_ENTRANCE",
+  ANIMAL_ENTRANCE = "ANIMAL_ENTRANCE",
+  REGULAR_EXIT = "REGULAR_EXIT",
+  STAFF_ONLY_EXIT = "STAFF_ONLY_EXIT",
+  EMERGENCY_EXIT = "EMERGENCY_EXIT",
+}
+
 export {
   KeeperType,
   PlannerType,
@@ -622,4 +645,6 @@ export {
   RepeatPattern,
   Reaction,
   FacilityLogType,
+  BarrierType,
+  AccessPointType,
 };

@@ -16,7 +16,6 @@ import { AnimalFeed } from "./AnimalFeed";
 import { AnimalFeedingLog } from "./AnimalFeedingLog";
 import { AnimalObservationLog } from "./AnimalObservationLog";
 import { AnimalWeight } from "./AnimalWeight";
-import { BarrierType } from "./BarrierType";
 import { Compatibility } from "./Compatibility";
 import { Customer } from "./Customer";
 import { CustomerOrder } from "./CustomerOrder";
@@ -83,6 +82,8 @@ import { SpeciesEnclosureNeed } from "./SpeciesEnclosureNeed";
 import { ThirdParty } from "./ThirdParty";
 import { Zone } from "./Zone";
 import { ZooEvent } from "./ZooEvent";
+import { EnclosureBarrier } from "./EnclosureBarrier";
+import { AccessPoint } from "./AccessPoint";
 
 function addCascadeOptions(options: object) {
   return { ...options, onDelete: "CASCADE", onUpdate: "CASCADE" };
@@ -441,32 +442,46 @@ export const createDatabase = async (options: any) => {
   Enclosure.hasMany(Animal, addCascadeOptions({ foreignKey: "enclosureId" }));
   Animal.belongsTo(Enclosure, addCascadeOptions({ foreignKey: "enclosureId" }));
 
+  // Enclosure.hasOne(
+  //   BarrierType,
+  //   addCascadeOptions({ foreignKey: "enclosureId" }),
+  // );
+  // BarrierType.belongsTo(
+  //   Enclosure,
+  //   addCascadeOptions({ foreignKey: "enclosureId" }),
+  // );
+
   Enclosure.hasOne(
-    BarrierType,
+    EnclosureBarrier,
     addCascadeOptions({ foreignKey: "enclosureId" }),
   );
-  BarrierType.belongsTo(
+  EnclosureBarrier.belongsTo(
     Enclosure,
     addCascadeOptions({ foreignKey: "enclosureId" }),
   );
 
-  Enclosure.hasOne(
-    BarrierType,
-    addCascadeOptions({ foreignKey: "enclosureId" }),
-  );
-  BarrierType.belongsTo(
-    Enclosure,
-    addCascadeOptions({ foreignKey: "enclosureId" }),
-  );
+  Enclosure.belongsToMany(Plantation, {
+    foreignKey: "enclosureId",
+    through: "enclosure_plantation",
+    as: "plantations",
+  });
 
-  Enclosure.hasOne(
-    Plantation,
-    addCascadeOptions({ foreignKey: "enclosureId" }),
-  );
-  Plantation.belongsTo(
-    Enclosure,
-    addCascadeOptions({ foreignKey: "enclosureId" }),
-  );
+  // Plantation.belongsToMany(Enclosure, {
+  //   foreignKey: "plantationId",
+  //   through: "enclosure_plantation",
+  //   as: "enclosures",
+  // });
+
+  Enclosure.belongsToMany(AccessPoint, {
+    foreignKey: "enclosureId",
+    through: "enclosure_accessPoint",
+    as: "accessPoints",
+  });
+  AccessPoint.belongsToMany(Enclosure, {
+    foreignKey: "accessPointId",
+    through: "enclosure_accessPoint",
+    as: "enclosures",
+  });
 
   PlanningStaff.hasMany(
     ZooEvent,
@@ -3400,6 +3415,7 @@ export const enclosureSeed = async () => {
     width: 400,
     height: 20,
     enclosureStatus: "CONSTRUCTING",
+    standOffBarrierDist: 5,
     designDiagramJsonUrl: "enclosureDiagramJson/Panda Enclosure 01.json",
   } as any;
   await Enclosure.create(enclosure1Template);
@@ -3412,6 +3428,7 @@ export const enclosureSeed = async () => {
     width: 500,
     height: 25,
     enclosureStatus: "ACTIVE",
+    standOffBarrierDist: 3,
   } as any;
   await Enclosure.create(enclosure2Template);
 
@@ -3422,6 +3439,7 @@ export const enclosureSeed = async () => {
     500,
     25,
     "ACTIVE",
+    3,
     "Enclosure 3",
     103.78221130371094,
     1.29178547859192,
@@ -3434,6 +3452,24 @@ export const enclosureSeed = async () => {
   // assign animals to enclosure
   await EnclosureService.assignAnimalToEnclosure(1, "ANM00001");
   await EnclosureService.assignAnimalToEnclosure(1, "ANM00002");
+
+  let planation1Template = {
+    name: "Tree 1",
+    biome: "TEMPERATE",
+  } as any;
+  await Plantation.create(planation1Template);
+
+  let planation2Template = {
+    name: "Tree 2",
+    biome: "TEMPERATE",
+  } as any;
+  await Plantation.create(planation1Template);
+
+  let planation3Template = {
+    name: "Tree 3",
+    biome: "GRASSLAND",
+  } as any;
+  await Plantation.create(planation1Template);
 };
 
 export const facilityAssetsSeed = async () => {
@@ -3895,9 +3931,9 @@ export const facilityAssetsSeed = async () => {
   ]) {
     _day = new Date(
       _day.getTime() -
-      days * 1000 * 60 * 60 * 24 +
-      Math.random() * 1000 * 60 * 60 * 24 * 4 -
-      1000 * 60 * 60 * 24 * 2,
+        days * 1000 * 60 * 60 * 24 +
+        Math.random() * 1000 * 60 * 60 * 24 * 4 -
+        1000 * 60 * 60 * 24 * 2,
     );
     sensor.addMaintenanceLog(
       await MaintenanceLog.create({

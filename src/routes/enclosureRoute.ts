@@ -15,6 +15,15 @@ import {
   updateDesignDiagram,
   assignKeepersToEnclosure,
   removeKeepersFromEnclosure,
+  updateEnclosureTerrainDistribution,
+  deleteEnclosureTerrainDistribution,
+  getEnclosureTerrainDistributionRecommendation,
+  updateEnclosureClimateDesign,
+  deleteEnclosureClimateDesign,
+  getClimateDesignRecommendation,
+  getAllPlantations,
+  addPlantationToEnclosure,
+  removePlantationFromEnclosure,
 } from "../controllers/enclosureController";
 
 const router = express.Router();
@@ -42,5 +51,33 @@ router.put("/updateDesignDiagram/:enclosureId", updateDesignDiagram);
 
 router.put("/assignKeepersToEnclosure/", assignKeepersToEnclosure);
 router.put("/removeKeepersFromEnclosure/", removeKeepersFromEnclosure);
+
+router.put(
+  "/updateEnclosureTerrainDistribution",
+  updateEnclosureTerrainDistribution,
+);
+router.put(
+  "/deleteEnclosureTerrainDistribution/:enclosureId",
+  deleteEnclosureTerrainDistribution,
+);
+router.get(
+  "/getEnclosureTerrainDistributionRecommendation/:enclosureId",
+  getEnclosureTerrainDistributionRecommendation,
+);
+
+router.put("/updateEnclosureClimateDesign", updateEnclosureClimateDesign);
+router.put(
+  "/deleteEnclosureClimateDesign/:enclosureId",
+  deleteEnclosureClimateDesign,
+);
+router.get(
+  "/getClimateDesignRecommendation/:enclosureId",
+  getClimateDesignRecommendation,
+);
+
+//Plantation
+router.get("/getAllPlantations", getAllPlantations);
+router.put("/addPlantationToEnclosure", addPlantationToEnclosure);
+router.put("/removePlantationFromEnclosure", removePlantationFromEnclosure);
 
 export default router;
