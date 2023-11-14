@@ -1,4 +1,5 @@
 import { Animal } from "../models/Animal";
+import { Op } from "Sequelize";
 import { validationErrorHandler } from "../helpers/errorHandler";
 import { Enclosure } from "../models/Enclosure";
 import * as AnimalService from "./animalService";
@@ -7,6 +8,8 @@ import * as AssetFacilityService from "./assetFacilityService";
 import { Facility } from "../models/Facility";
 
 import { writeFile } from "fs/promises";
+import { Keeper } from "../models/Keeper";
+import { Employee } from "../models/Employee";
 
 export async function getAllEnclosures() {
   try {
@@ -27,7 +30,6 @@ export async function getEnclosureById(enclosureId: number) {
   throw new Error("Invalid Enclosure ID!");
 }
 
-// need to update to create facility too
 export async function createNewEnclosure(
   name: string,
   remark: string,
@@ -132,7 +134,6 @@ export async function updateEnclosureStatus(
   }
 }
 
-// need to update to delete facility too
 export async function deleteEnclosure(enclosureId: number) {
   let enclosure = await getEnclosureById(enclosureId);
   let facilityToDelete = enclosure.getFacility();
@@ -267,6 +268,87 @@ export async function updateDesignDiagram(
         },
       );
     }
+  } catch (error: any) {
+    throw validationErrorHandler(error);
+  }
+}
+
+export async function assignKeepersToEnclosure(
+  enclosureId: number,
+  employeeIds: number[],
+) {
+  try {
+    let enclosure = await getEnclosureById(enclosureId);
+
+    const employees = await Employee.findAll({
+      where: {
+        employeeId: {
+          [Op.or]: employeeIds,
+        },
+      },
+    });
+
+    for (const empId of employeeIds) {
+      if (!employees.find((e) => e.employeeId == empId))
+        throw { mesage: "Unable to find Keeper with employee Id " + empId };
+    }
+
+    const keepers = [];
+    for (const emp of employees) {
+      const keeper = await emp.getKeeper();
+      if (!keeper)
+        throw {
+          message: "Keeper does not exist on employee :" + emp.employeeName,
+        };
+      keepers.push(keeper);
+    }
+
+    const promises = [];
+    for (const keeper of keepers) {
+      promises.push(keeper.addEnclosure(enclosure));
+    }
+
+    for (const p of promises) await p;
+  } catch (error: any) {
+    throw validationErrorHandler(error);
+  }
+}
+
+export async function removeKeepersFromEnclosure(
+  enclosureId: number,
+  employeeIds: number[],
+) {
+  try {
+    let enclosure = await getEnclosureById(enclosureId);
+
+    const employees = await Employee.findAll({
+      where: {
+        employeeId: {
+          [Op.or]: employeeIds,
+        },
+      },
+    });
+
+    for (const empId of employeeIds) {
+      if (!employees.find((e) => e.employeeId == empId))
+        throw { mesage: "Unable to find Keeper with employee Id " + empId };
+    }
+
+    const keepers = [];
+    for (const emp of employees) {
+      const keeper = await emp.getKeeper();
+      if (!keeper)
+        throw {
+          message: "Keeper does not exist on employee :" + emp.employeeName,
+        };
+      keepers.push(keeper);
+    }
+
+    const promises = [];
+    for (const keeper of keepers) {
+      promises.push(keeper.removeEnclosure(enclosure));
+    }
+    for (const p of promises) await p;
   } catch (error: any) {
     throw validationErrorHandler(error);
   }
