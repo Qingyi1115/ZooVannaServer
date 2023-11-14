@@ -468,6 +468,7 @@ export async function createAnimalActivityZooEvent(
     await AnimalService.getAnimalActivityById(animalActivityId);
   const imageURL = (await (await animalActivity.getAnimals())[0]?.getSpecies())
     ?.imageUrl;
+
   try {
     const newZooEvent = await ZooEvent.create({
       eventName: animalActivity.title,
@@ -486,8 +487,8 @@ export async function createAnimalActivityZooEvent(
       imageUrl: imageURL,
     });
 
-    newZooEvent.setAnimals(await animalActivity.getAnimals());
-    newZooEvent.setEnclosure(
+    await newZooEvent.setAnimals(await animalActivity.getAnimals());
+    await newZooEvent.setEnclosure(
       await (await animalActivity.getAnimals())[0]?.getEnclosure(),
     );
 
@@ -1337,7 +1338,9 @@ function doesEventClash(ze1: ZooEvent, ze2: ZooEvent) {
   );
 }
 
-export async function autoAssignKeeperToZooEvent() {
+export async function autoAssignKeeperToZooEvent(
+  endDate: Date
+) {
   try {
     console.log("autoAssignKeeperToZooEvent");
 
@@ -1346,7 +1349,7 @@ export async function autoAssignKeeperToZooEvent() {
         eventStartDateTime: {
           [Op.between]: [
             new Date(),
-            new Date(Date.now() + DAY_IN_MILLISECONDS * 90),
+            endDate,
           ],
         },
       },

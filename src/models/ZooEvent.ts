@@ -158,5 +158,43 @@ ZooEvent.init(
   },
 );
 
+ZooEvent.addHook("afterFind", async (findResult) => {
+  if (!Array.isArray(findResult)) findResult = [findResult as any];
+  for (const instance of findResult) {
+    if (!(await instance.getEnclosure())) {
+      const animal = (await instance.getAnimals())[0];
+      if (animal) {
+        await instance.setEnclosure((await animal.getEnclosure()));
+        continue;
+      }
+
+      const animalActivity = await instance.getAnimalActivity();
+      if (animalActivity) {
+        const animal = (await animalActivity.getAnimals())[0];
+        if (!animal) continue;
+        await instance.setEnclosure((await animal.getEnclosure()));
+        continue;
+      }
+
+      const feedingPlanSessionDetail = await instance.getFeedingPlanSessionDetail();
+      if (feedingPlanSessionDetail) {
+        const animal = (await (await feedingPlanSessionDetail.getFeedingPlan())?.getAnimals())[0];
+        if (!animal) continue;
+        await instance.setEnclosure(((await animal.getEnclosure())));
+        continue;
+      }
+
+      const publicEventSession = await instance.getPublicEventSession();
+      if (publicEventSession) {
+        const animal = (await (await publicEventSession.getPublicEvent())?.getAnimals())[0];
+        if (!animal) continue;
+        await instance.setEnclosure(((await animal.getEnclosure())));
+        continue;
+      }
+    }
+  }
+});
+
+
 export { ZooEvent };
 

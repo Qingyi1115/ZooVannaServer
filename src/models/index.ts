@@ -841,6 +841,78 @@ export const employeeSeed = async () => {
           isDisabled: false,
         },
       },
+      {
+        employeeName: "keeper4",
+        employeeAddress: "Singapore Kent Ridge LT16",
+        employeeEmail: "keeper4@gmail.com",
+        employeePhoneNumber: "9134",
+        employeePasswordHash: Employee.getHash("keeper4_password", "NaH"),
+        employeeSalt: "NaH",
+        employeeDoorAccessCode: "345578",
+        employeeEducation: "PHD in not existing",
+        employeeBirthDate: new Date("2001-09-02"),
+        isAccountManager: false,
+        // @ts-ignore
+        keeper: {
+          keeperType: KeeperType.KEEPER,
+          specialization: Specialization.AMPHIBIAN,
+          isDisabled: false,
+        },
+      },
+      {
+        employeeName: "keeper5",
+        employeeAddress: "Singapore Kent Ridge LT16",
+        employeeEmail: "keeper5@gmail.com",
+        employeePhoneNumber: "9131",
+        employeePasswordHash: Employee.getHash("keeper5_password", "NaH"),
+        employeeSalt: "NaH",
+        employeeDoorAccessCode: "445678",
+        employeeEducation: "PHD in not existing",
+        employeeBirthDate: new Date("2001-09-02"),
+        isAccountManager: false,
+        // @ts-ignore
+        keeper: {
+          keeperType: KeeperType.KEEPER,
+          specialization: Specialization.AMPHIBIAN,
+          isDisabled: false,
+        },
+      },
+      {
+        employeeName: "keeper6",
+        employeeAddress: "Singapore Kent Ridge LT16",
+        employeeEmail: "keeper6@gmail.com",
+        employeePhoneNumber: "9133",
+        employeePasswordHash: Employee.getHash("keeper6_password", "NaH"),
+        employeeSalt: "NaH",
+        employeeDoorAccessCode: "349678",
+        employeeEducation: "PHD in not existing",
+        employeeBirthDate: new Date("2001-09-02"),
+        isAccountManager: false,
+        // @ts-ignore
+        keeper: {
+          keeperType: KeeperType.KEEPER,
+          specialization: Specialization.AMPHIBIAN,
+          isDisabled: false,
+        },
+      },
+      {
+        employeeName: "keeper7",
+        employeeAddress: "Singapore Kent Ridge LT16",
+        employeeEmail: "keeper7@gmail.com",
+        employeePhoneNumber: "9123",
+        employeePasswordHash: Employee.getHash("keeper7_password", "NaH"),
+        employeeSalt: "NaH",
+        employeeDoorAccessCode: "349698",
+        employeeEducation: "PHD in not existing",
+        employeeBirthDate: new Date("2001-09-02"),
+        isAccountManager: false,
+        // @ts-ignore
+        keeper: {
+          keeperType: KeeperType.KEEPER,
+          specialization: Specialization.AMPHIBIAN,
+          isDisabled: false,
+        },
+      },
     ],
     {
       include: {
@@ -3823,9 +3895,9 @@ export const facilityAssetsSeed = async () => {
   ]) {
     _day = new Date(
       _day.getTime() -
-        days * 1000 * 60 * 60 * 24 +
-        Math.random() * 1000 * 60 * 60 * 24 * 4 -
-        1000 * 60 * 60 * 24 * 2,
+      days * 1000 * 60 * 60 * 24 +
+      Math.random() * 1000 * 60 * 60 * 24 * 4 -
+      1000 * 60 * 60 * 24 * 2,
     );
     sensor.addMaintenanceLog(
       await MaintenanceLog.create({
