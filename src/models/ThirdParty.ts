@@ -26,7 +26,7 @@ class ThirdParty extends Model<
   declare hasAirCon: boolean;
 
   declare facility?: Facility;
-  declare CustomerReportLog?: CustomerReportLog[];
+  declare customerReportLogs?: CustomerReportLog[];
 
   declare getFacility: BelongsToGetAssociationMixin<Facility>;
   declare setFacility: BelongsToSetAssociationMixin<Facility, number>;
