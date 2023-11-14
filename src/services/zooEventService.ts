@@ -468,6 +468,7 @@ export async function createAnimalActivityZooEvent(
     await AnimalService.getAnimalActivityById(animalActivityId);
   const imageURL = (await (await animalActivity.getAnimals())[0]?.getSpecies())
     ?.imageUrl;
+
   try {
     const newZooEvent = await ZooEvent.create({
       eventName: animalActivity.title,
@@ -486,8 +487,8 @@ export async function createAnimalActivityZooEvent(
       imageUrl: imageURL,
     });
 
-    newZooEvent.setAnimals(await animalActivity.getAnimals());
-    newZooEvent.setEnclosure(
+    await newZooEvent.setAnimals(await animalActivity.getAnimals());
+    await newZooEvent.setEnclosure(
       await (await animalActivity.getAnimals())[0]?.getEnclosure(),
     );
 
