@@ -19,15 +19,15 @@ class Plantation extends Model<
   declare name: string;
   declare biome: Biome;
 
-  declare enclosure?: Enclosure;
+  // declare enclosure?: Enclosure;
 
-  declare getEnclosure: BelongsToGetAssociationMixin<Enclosure>;
-  declare setEnclosure: BelongsToSetAssociationMixin<Enclosure, number>;
-  
+  // declare getEnclosure: BelongsToGetAssociationMixin<Enclosure>;
+  // declare setEnclosure: BelongsToSetAssociationMixin<Enclosure, number>;
+
   public toJSON() {
     return {
       ...this.get(),
-    }
+    };
   }
 }
 
@@ -59,4 +59,3 @@ Plantation.init(
 );
 
 export { Plantation };
-
