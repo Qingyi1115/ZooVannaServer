@@ -12,7 +12,8 @@ import {
   getAnimalsOfEnclosure,
   removeAnimalFromEnclosure,
   getSpeciesCompatibilityInEnclosure,
-  updateDesignDiagram
+  updateDesignDiagram,
+  assignKeepersToEnclosure,
 } from "../controllers/enclosureController";
 
 const router = express.Router();
@@ -27,12 +28,17 @@ router.put("/updateEnclosure", updateEnclosure);
 router.put("/updateEnclosureStatus", updateEnclosureStatus);
 router.delete("/deleteEnclosure/:enclosureId", deleteEnclosure);
 
-router.get("/getanimalsofenclosure/:enclosureId", getAnimalsOfEnclosure)
+router.get("/getanimalsofenclosure/:enclosureId", getAnimalsOfEnclosure);
 router.put("/assignAnimalToEnclosure", assignAnimalToEnclosure);
 router.put("/removeAnimalFromEnclosure", removeAnimalFromEnclosure);
 
-router.get("/getSpeciesCompatibilityInEnclosure/:enclosureId/:speciesCode", getSpeciesCompatibilityInEnclosure)
+router.get(
+  "/getSpeciesCompatibilityInEnclosure/:enclosureId/:speciesCode",
+  getSpeciesCompatibilityInEnclosure,
+);
 
-router.put("/updateDesignDiagram/:enclosureId", updateDesignDiagram)
+router.put("/updateDesignDiagram/:enclosureId", updateDesignDiagram);
+
+router.put("/assignKeepersToEnclosure/", assignKeepersToEnclosure);
 
 export default router;
