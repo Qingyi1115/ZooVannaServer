@@ -313,3 +313,43 @@ export async function assignKeepersToEnclosure(
     throw validationErrorHandler(error);
   }
 }
+
+export async function removeKeepersFromEnclosure(
+  enclosureId: number,
+  employeeIds: number[],
+) {
+  try {
+    let enclosure = await getEnclosureById(enclosureId);
+
+    const employees = await Employee.findAll({
+      where: {
+        employeeId: {
+          [Op.or]: employeeIds,
+        },
+      },
+    });
+
+    for (const empId of employeeIds) {
+      if (!employees.find((e) => e.employeeId == empId))
+        throw { mesage: "Unable to find Keeper with employee Id " + empId };
+    }
+
+    const keepers = [];
+    for (const emp of employees) {
+      const keeper = await emp.getKeeper();
+      if (!keeper)
+        throw {
+          message: "Keeper does not exist on employee :" + emp.employeeName,
+        };
+      keepers.push(keeper);
+    }
+
+    const promises = [];
+    for (const keeper of keepers) {
+      promises.push(keeper.removeEnclosure(enclosure));
+    }
+    for (const p of promises) await p;
+  } catch (error: any) {
+    throw validationErrorHandler(error);
+  }
+}

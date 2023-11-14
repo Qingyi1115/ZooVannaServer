@@ -14,6 +14,7 @@ import {
   getSpeciesCompatibilityInEnclosure,
   updateDesignDiagram,
   assignKeepersToEnclosure,
+  removeKeepersFromEnclosure,
 } from "../controllers/enclosureController";
 
 const router = express.Router();
@@ -40,5 +41,6 @@ router.get(
 router.put("/updateDesignDiagram/:enclosureId", updateDesignDiagram);
 
 router.put("/assignKeepersToEnclosure/", assignKeepersToEnclosure);
+router.put("/removeKeepersFromEnclosure/", removeKeepersFromEnclosure);
 
 export default router;
