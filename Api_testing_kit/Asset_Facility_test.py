@@ -364,9 +364,6 @@ def deleteCustomerReportLog_success(customerLogData, useAPI: UseAPI):
     assert "result" in response_json, response_json
     assert res.status_code() == 200, "Status code not 200!" + str(res.status_code())
 
-
-
-
 @getApi
 def deleteFacility_fail(facilityData, useAPI: UseAPI):
     res = useAPI.delete("/api/assetFacility/deleteFacility/{}".format("Fake id"))
@@ -643,7 +640,7 @@ def updateEnrichmentItem_fail(enrichmentItemData, useAPI: UseAPI):
 
 @login_as_marry
 def updateEnrichmentItem_success(enrichmentItemData, useAPI: UseAPI):
-    enrichmentItemData["enrichmentItemName"] = "a push-up bar"
+    enrichmentItemData["enrichmentItemName"] = "a PUSH-up bar"
     res = useAPI.put("/api/assetFacility/updateEnrichmentItem",
                      json=enrichmentItemData)
     response_json = res.json()
@@ -767,6 +764,8 @@ ASSET_API_TEST = [
     (getEnrichmentItem_success, newEnrichmentItem),
     (updateEnrichmentItem_fail, newEnrichmentItem),
     (updateEnrichmentItem_success, newEnrichmentItem),
+    (deleteEnrichmentItem_fail, newEnrichmentItem),
+    (deleteEnrichmentItem_success, newEnrichmentItem),
 
     #  Hubs
     (addHub_fail, newHub, 1),

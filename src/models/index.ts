@@ -16,7 +16,6 @@ import { AnimalFeed } from "./AnimalFeed";
 import { AnimalFeedingLog } from "./AnimalFeedingLog";
 import { AnimalObservationLog } from "./AnimalObservationLog";
 import { AnimalWeight } from "./AnimalWeight";
-import { BarrierType } from "./BarrierType";
 import { Compatibility } from "./Compatibility";
 import { Customer } from "./Customer";
 import { CustomerOrder } from "./CustomerOrder";
@@ -83,6 +82,8 @@ import { SpeciesEnclosureNeed } from "./SpeciesEnclosureNeed";
 import { ThirdParty } from "./ThirdParty";
 import { Zone } from "./Zone";
 import { ZooEvent } from "./ZooEvent";
+import { EnclosureBarrier } from "./EnclosureBarrier";
+import { AccessPoint } from "./AccessPoint";
 
 function addCascadeOptions(options: object) {
   return { ...options, onDelete: "CASCADE", onUpdate: "CASCADE" };
@@ -441,32 +442,46 @@ export const createDatabase = async (options: any) => {
   Enclosure.hasMany(Animal, addCascadeOptions({ foreignKey: "enclosureId" }));
   Animal.belongsTo(Enclosure, addCascadeOptions({ foreignKey: "enclosureId" }));
 
+  // Enclosure.hasOne(
+  //   BarrierType,
+  //   addCascadeOptions({ foreignKey: "enclosureId" }),
+  // );
+  // BarrierType.belongsTo(
+  //   Enclosure,
+  //   addCascadeOptions({ foreignKey: "enclosureId" }),
+  // );
+
   Enclosure.hasOne(
-    BarrierType,
+    EnclosureBarrier,
     addCascadeOptions({ foreignKey: "enclosureId" }),
   );
-  BarrierType.belongsTo(
+  EnclosureBarrier.belongsTo(
     Enclosure,
     addCascadeOptions({ foreignKey: "enclosureId" }),
   );
 
-  Enclosure.hasOne(
-    BarrierType,
-    addCascadeOptions({ foreignKey: "enclosureId" }),
-  );
-  BarrierType.belongsTo(
-    Enclosure,
-    addCascadeOptions({ foreignKey: "enclosureId" }),
-  );
+  Enclosure.belongsToMany(Plantation, {
+    foreignKey: "enclosureId",
+    through: "enclosure_plantation",
+    as: "plantations",
+  });
 
-  Enclosure.hasOne(
-    Plantation,
-    addCascadeOptions({ foreignKey: "enclosureId" }),
-  );
-  Plantation.belongsTo(
-    Enclosure,
-    addCascadeOptions({ foreignKey: "enclosureId" }),
-  );
+  // Plantation.belongsToMany(Enclosure, {
+  //   foreignKey: "plantationId",
+  //   through: "enclosure_plantation",
+  //   as: "enclosures",
+  // });
+
+  Enclosure.belongsToMany(AccessPoint, {
+    foreignKey: "enclosureId",
+    through: "enclosure_accessPoint",
+    as: "accessPoints",
+  });
+  AccessPoint.belongsToMany(Enclosure, {
+    foreignKey: "accessPointId",
+    through: "enclosure_accessPoint",
+    as: "enclosures",
+  });
 
   PlanningStaff.hasMany(
     ZooEvent,
@@ -3400,6 +3415,7 @@ export const enclosureSeed = async () => {
     width: 400,
     height: 20,
     enclosureStatus: "CONSTRUCTING",
+    standOffBarrierDist: 5,
     designDiagramJsonUrl: "enclosureDiagramJson/Panda Enclosure 01.json",
   } as any;
   await Enclosure.create(enclosure1Template);
@@ -3412,6 +3428,7 @@ export const enclosureSeed = async () => {
     width: 500,
     height: 25,
     enclosureStatus: "ACTIVE",
+    standOffBarrierDist: 3,
   } as any;
   await Enclosure.create(enclosure2Template);
 
@@ -3422,6 +3439,7 @@ export const enclosureSeed = async () => {
     500,
     25,
     "ACTIVE",
+    3,
     "Enclosure 3",
     103.78221130371094,
     1.29178547859192,
@@ -3434,6 +3452,24 @@ export const enclosureSeed = async () => {
   // assign animals to enclosure
   await EnclosureService.assignAnimalToEnclosure(1, "ANM00001");
   await EnclosureService.assignAnimalToEnclosure(1, "ANM00002");
+
+  let planation1Template = {
+    name: "Tree 1",
+    biome: "TEMPERATE",
+  } as any;
+  await Plantation.create(planation1Template);
+
+  let planation2Template = {
+    name: "Tree 2",
+    biome: "TEMPERATE",
+  } as any;
+  await Plantation.create(planation1Template);
+
+  let planation3Template = {
+    name: "Tree 3",
+    biome: "GRASSLAND",
+  } as any;
+  await Plantation.create(planation1Template);
 };
 
 export const facilityAssetsSeed = async () => {
@@ -3847,6 +3883,14 @@ export const facilityAssetsSeed = async () => {
           sensorName: "Camera",
           sensorType: SensorType.CAMERA,
         },
+        {
+          sensorName: "Cameraa",
+          sensorType: SensorType.CAMERA,
+        },
+        {
+          sensorName: "Cameraaa",
+          sensorType: SensorType.CAMERA,
+        },
       ],
     } as any,
     {
@@ -3895,9 +3939,9 @@ export const facilityAssetsSeed = async () => {
   ]) {
     _day = new Date(
       _day.getTime() -
-      days * 1000 * 60 * 60 * 24 +
-      Math.random() * 1000 * 60 * 60 * 24 * 4 -
-      1000 * 60 * 60 * 24 * 2,
+        days * 1000 * 60 * 60 * 24 +
+        Math.random() * 1000 * 60 * 60 * 24 * 4 -
+        1000 * 60 * 60 * 24 * 2,
     );
     sensor.addMaintenanceLog(
       await MaintenanceLog.create({
@@ -4000,6 +4044,60 @@ export const facilityAssetsSeed = async () => {
   }
   sensor.save();
 
+  sensor = sensors[5];
+  _day = new Date(Date.now());
+  // [1, 5, 2, 4, 8, 5, 7, 11, 8, 10, 14, 11, 13, 17]
+  for (const days of [0, 17, 13, 11, 14, 10, 8, 11, 7, 5, 8, 4, 2, 5, 1]) {
+    _day = new Date(_day.getTime() - days * 1000 * 60 * 60 * 24);
+    sensor.addMaintenanceLog(
+      await MaintenanceLog.create({
+        dateTime: _day,
+        title: "Maintenance 2" + _day.toDateString(),
+        details: "Bla bla bla...",
+        remarks: "not uncommon",
+        staffName: "maint1",
+      }),
+    );
+  }
+  sensor.dateOfLastMaintained = _day;
+
+  for (let i = 1; i < 50; i++) {
+    sensor.addSensorReading(
+      await SensorReading.create({
+        readingDate: new Date(Date.now() - 1000 * 60 * i),
+        value: Math.random() * 15 + 3 + i,
+      }),
+    );
+  }
+  sensor.save();
+
+  sensor = sensors[6];
+  _day = new Date(Date.now());
+  // [1, 5, 2, 4, 8, 5, 7, 11, 8, 10, 14, 11, 13, 17]
+  for (const days of [0, 17, 13, 11, 14, 10, 8, 11, 7, 5, 8, 4, 2, 5, 1]) {
+    _day = new Date(_day.getTime() - days * 1000 * 60 * 60 * 24);
+    sensor.addMaintenanceLog(
+      await MaintenanceLog.create({
+        dateTime: _day,
+        title: "Maintenance 2" + _day.toDateString(),
+        details: "Bla bla bla...",
+        remarks: "not uncommon",
+        staffName: "maint1",
+      }),
+    );
+  }
+  sensor.dateOfLastMaintained = _day;
+
+  for (let i = 1; i < 50; i++) {
+    sensor.addSensorReading(
+      await SensorReading.create({
+        readingDate: new Date(Date.now() - 1000 * 60 * i),
+        value: Math.random() * 15 + 3 + i,
+      }),
+    );
+  }
+  sensor.save();
+
   // let hub2 = await HubProcessor.create(
   //   {
   //     processorName: "tramCam2",
@@ -4048,13 +4146,16 @@ export const facilityAssetsSeed = async () => {
 };
 
 export const publicEventSeed = async () => {
+  const today = new Date(Date.now());
+  today.setHours(0, 0, 0);
+
   const pubEvent = await ZooEventService.createPublicEvent(
     EventType.CUSTOMER_FEEDING,
     "Homo sapiens feeding",
     "do not feed them fast food",
     "img/species/elephant.jpg",
-    new Date(),
-    new Date(Date.now() + 60 * DAY_IN_MILLISECONDS),
+    today,
+    new Date(today.getTime() + 60 * DAY_IN_MILLISECONDS),
     [],
     [1],
     8,
@@ -4068,7 +4169,7 @@ export const publicEventSeed = async () => {
     60,
     "16:00",
     30,
-    new Date(Date.now() + DAY_IN_MILLISECONDS * 5),
+    new Date(today.getTime() + DAY_IN_MILLISECONDS * 5),
   );
 
   const pubEvent2 = await ZooEventService.createPublicEvent(
@@ -4076,8 +4177,8 @@ export const publicEventSeed = async () => {
     "Pandas dance",
     "Watch our ambassador put on a show",
     "img/animal/ANM00001.jpg",
-    new Date(),
-    new Date(Date.now() + 90 * DAY_IN_MILLISECONDS),
+    today,
+    new Date(today.getTime() + 90 * DAY_IN_MILLISECONDS),
     (await AnimalService.getAllAnimalsBySpeciesCode("SPE001")).map(
       (animal) => animal.animalCode,
     ),
@@ -4112,7 +4213,7 @@ export const publicEventSeed = async () => {
     "Clown Fish Talk",
     "Find out more about the lifestyles and managements of these sea creatures",
     "img/species/clownfish.jpg",
-    new Date(),
+    today,
     null,
     (await AnimalService.getAllAnimalsBySpeciesCode("SPE005")).map(
       (animal) => animal.animalCode,

@@ -1,5 +1,5 @@
 from Annotations import UseAPI
-from JsonData import new_species, new_physiological_reference_norms, new_diet_need
+from JsonData import new_species, new_species2,  new_physiological_reference_norms, new_diet_need
 from Annotations import login_as_marry, login_as_junior_keeper
 import random, string
 
@@ -25,12 +25,13 @@ def createNewSpecies_fail(species_dat, useAPI: UseAPI):
 def createNewSpecies_success(species_dat, useAPI: UseAPI):
     res = useAPI.post("/api/species/createNewSpecies",
                       json=species_dat,
-                      file="test".encode()
                       )
     response_json = res.json()
     assert "species" in response_json, response_json
     assert res.status_code() == 200, "Status code not 200!"
-    species_dat["speciesId"] = response_json["speciesId"]
+    print("response_json",response_json)
+    species_dat["speciesId"] = response_json["species"]["speciesId"]
+    species_dat["speciesCode"] = response_json["species"]["speciesCode"]
     
 @login_as_marry
 def getSpecies_fail(speciesCode, useAPI: UseAPI):
@@ -65,17 +66,17 @@ def updateSpecies_success(species_dat, speciesCode, useAPI: UseAPI):
     assert res.status_code() == 200, "Status code not 200!"
 
 @login_as_marry
-def deleteSpecies_fail(speciesCode, useAPI: UseAPI):
-    res = useAPI.get("/api/species/deleteSpecies/{}".format())
+def deleteSpecies_fail(speciesData, useAPI: UseAPI):
+    res = useAPI.delete("/api/species/deleteSpecies/{}".format("Fake code"))
     response_json = res.json()
-    assert "customer" in response_json, response_json
+    assert "error" in response_json, response_json
     assert res.status_code() == 200, "Status code not 200!"
 
 @login_as_marry
-def deleteSpecies_success(speciesCode, useAPI: UseAPI):
-    res = useAPI.get("/api/species/deleteSpecies/{}".format())
+def deleteSpecies_success(speciesData, useAPI: UseAPI):
+    res = useAPI.delete("/api/species/deleteSpecies/{}".format(speciesData["speciesCode"]))
     response_json = res.json()
-    assert "customer" in response_json, response_json
+    assert "result" in response_json, response_json
     assert res.status_code() == 200, "Status code not 200!"
 
 @login_as_marry
@@ -382,10 +383,10 @@ SPECIES_API_TESTS = [
     # (createNewSpecies_success, new_species),
     (getSpecies_fail, "SPE003"),
     (getSpecies_success, "SPE003"),
-    (updateSpecies_fail, new_species, "SPE003"),
-    (updateSpecies_success, new_species, "SPE003"),
-    # (deleteSpecies_fail, "SPE003",),
-    # (deleteSpecies_success, "SPE003",),
+    (updateSpecies_fail, new_species2, "SPE003"),
+    (updateSpecies_success, new_species2, "SPE003"),
+    # (deleteSpecies_fail, new_species,),
+    # (deleteSpecies_success, new_species,),
     (updateSpeciesEdu_fail, "SPE003"),
     (updateSpeciesEdu_success, "SPE003"),
     (getSpeciesEduDescBySpeciesCode_fail, "SPE003"),

@@ -9,55 +9,42 @@ import {
 } from "Sequelize";
 import { conn } from "../db";
 import { Enclosure } from "./Enclosure";
+import { AccessPointType } from "./Enumerated";
 
-class BarrierType extends Model<
-  InferAttributes<BarrierType>,
-  InferCreationAttributes<BarrierType>
+class AccessPoint extends Model<
+  InferAttributes<AccessPoint>,
+  InferCreationAttributes<AccessPoint>
 > {
-  declare barrierTypeId: CreationOptional<number>;
-  declare barrierMaterialName: string;
-  declare barrierTransparency: number;
-  declare climbable: boolean;
-  declare watertight: boolean;
-  declare remarks: string;
+  declare accessPointId: CreationOptional<number>;
+  declare name: string;
+  declare type: AccessPointType;
 
   declare enclosure?: Enclosure;
 
   declare getEnclosure: BelongsToGetAssociationMixin<Enclosure>;
   declare setEnclosure: BelongsToSetAssociationMixin<Enclosure, number>;
-  
+
   public toJSON() {
     return {
-      ...this.get()
-    }
+      ...this.get(),
+    };
   }
 }
 
-BarrierType.init(
+AccessPoint.init(
   {
-    barrierTypeId: {
+    accessPointId: {
       type: DataTypes.BIGINT,
       autoIncrement: true,
       primaryKey: true,
     },
-    barrierMaterialName: {
+    name: {
       type: DataTypes.STRING,
       allowNull: false,
     },
-    barrierTransparency: {
-      type: DataTypes.DOUBLE,
-      allowNull: false,
-    },
-    climbable: {
-      type: DataTypes.BOOLEAN,
-      allowNull: false,
-    },
-    watertight: {
-      type: DataTypes.BOOLEAN,
-      allowNull: false,
-    },
-    remarks: {
-      type: DataTypes.STRING,
+    type: {
+      type: DataTypes.ENUM,
+      values: Object.values(AccessPointType),
       allowNull: false,
     },
   },
@@ -67,9 +54,8 @@ BarrierType.init(
     createdAt: true,
     updatedAt: "updateTimestamp",
     sequelize: conn, // We need to pass the connection instance
-    modelName: "barrierType", // We need to choose the model name
+    modelName: "accessPoint", // We need to choose the model name
   },
 );
 
-export { BarrierType };
-
+export { AccessPoint };

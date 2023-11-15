@@ -153,6 +153,7 @@ export async function getAllFacilityMaintenanceSuggestions(employee: Employee) {
       const allFacilities = await getAllFacility(
         [{
           association: "inHouse",
+          required:true,
           include: [{
             association: "facilityLogs",
             required: false,
@@ -314,9 +315,7 @@ export async function assignMaintenanceStaffToFacilityById(
   employeeIds: number[],
 ): Promise<InHouse> {
   try {
-    const facility = await Facility.findOne({
-      where: { facilityId: facilityId },
-    });
+    const facility = await getFacilityById(facilityId);
     if (!facility)
       throw { message: "Unable to find facilityId: " + facilityId };
     const inHouse = await facility.getFacilityDetail();
@@ -356,9 +355,7 @@ export async function removeMaintenanceStaffFromFacilityById(
   employeeIds: number[],
 ): Promise<InHouse> {
   try {
-    const facility = await Facility.findOne({
-      where: { facilityId: facilityId },
-    });
+    const facility = await getFacilityById(facilityId);
     if (!facility)
       throw { message: "Unable to find facilityId: " + facilityId };
     const inHouse = await facility.getInHouse();
@@ -389,11 +386,7 @@ export async function assignOperationStaffToFacilityById(
   employeeIds: number[],
 ): Promise<InHouse> {
   try {
-    const facility = await Facility.findOne({
-      where: { facilityId: facilityId },
-    });
-    if (!facility)
-      throw { message: "Unable to find facilityId: " + facilityId };
+    const facility = await getFacilityById(facilityId);
     const inHouse = await facility.getInHouse();
     if (!inHouse) throw { message: "Facility is not In House!" };
 
@@ -428,10 +421,8 @@ export async function removeOperationStaffFromFacilityById(
   employeeIds: number[],
 ): Promise<InHouse> {
   try {
-    const facility = await Facility.findOne({
-      where: { facilityId: facilityId },
-    });
-    if (!facility) throw { message: "Unable to find facilityId: " + facility };
+    const facility = await getFacilityById(facilityId);
+    
     const inHouse = await facility.getInHouse();
     if (!inHouse) throw { message: "Facility is not In House!" };
 
@@ -494,10 +485,8 @@ export async function createFacilityLog(
   employeeIds: number[],
 ): Promise<FacilityLog> {
   try {
-    const facility = await Facility.findOne({
-      where: { facilityId: facilityId },
-    });
-    if (!facility) throw { message: "Unable to find facilityId: " + facility };
+    const facility = await getFacilityById(facilityId);
+    
     const thirdParty = await facility.getFacilityDetail();
     if (facility.facilityDetail != "inHouse")
       throw { message: "Not an in-house facility!" };
@@ -532,11 +521,7 @@ export async function addHubProcessorByFacilityId(
   includes: string[] = [],
 ): Promise<HubProcessor> {
   try {
-    const facility = await Facility.findOne({
-      where: { facilityId: facilityId },
-      include: includes,
-    });
-    if (!facility) throw { message: "Unable to find facilityId " + facilityId };
+    const facility = await getFacilityById(facilityId);
 
     const newHub = await HubProcessor.create({
       processorName: processorName,
@@ -555,12 +540,18 @@ export async function getAllFacility(
   facilityDetail: boolean,
 ): Promise<Facility[]> {
   try {
-    const allFacilities = await Facility.findAll({ include: includes });
+    
+    let allFacilities = [];
+    for (const fac of await Facility.findAll({ include: includes })){
+      if (await fac.getEnclosure()) continue;
+      allFacilities.push(fac);
+    }
 
     if (facilityDetail) {
-      for (const facility of allFacilities)
+      for (const facility of allFacilities){
         (facility as any).dataValues["facilityDetailJson"] =
           await facility.getFacilityDetail();
+      }
     }
 
     return allFacilities;
@@ -609,12 +600,7 @@ export async function crowdLevelRatioByFacilityId(
 
 export async function deleteFacilityById(facilityId: number): Promise<void> {
   try {
-    const facility = await Facility.findOne({
-      where: { facilityId: facilityId },
-    });
-
-    if (!facility)
-      throw { message: "Unable to find facilityId: " + facilityId };
+    const facility = await getFacilityById(facilityId);
 
     return facility.destroy();
   } catch (error: any) {
@@ -966,11 +952,8 @@ export async function createFacilityMaintenanceLog(
   staffName: string,
 ): Promise<FacilityLog> {
   try {
-    const facility = await Facility.findOne({
-      where: { facilityId: facilityId },
-    });
-    if (!facility)
-      throw { message: "Unable to find facilityId: " + facilityId };
+    const facility = await getFacilityById(facilityId);
+    
     const inHouse: InHouse = await facility.getFacilityDetail();
     if (!inHouse) throw { message: "Not a in-house facility!" };
 

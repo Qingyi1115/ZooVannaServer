@@ -185,13 +185,11 @@ export async function updateSpeciesEduDesc(
   educationalDescription: string,
   educationalFunFact: string,
 ) {
-
   try {
     let species = await getSpeciesByCode(speciesCode, []);
     species.educationalDescription = educationalDescription;
     species.educationalFunFact = educationalFunFact;
     return species.save();
-
   } catch (error: any) {
     throw validationErrorHandler(error);
   }

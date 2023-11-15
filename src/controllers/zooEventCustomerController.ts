@@ -106,3 +106,108 @@ export async function getPublishedPublicZooEvent(req: Request, res: Response) {
     res.status(400).json({ error: error.message });
   }
 }
+
+export async function getAllPublicEvents(req: Request, res: Response) {
+  try {
+    const publicEvents = await ZooEventCustomerService.getAllPublicEvents([
+      {
+        association: "animals",
+        required: false,
+        include: [
+          {
+            association: "species",
+            required: true,
+          },
+        ],
+      },
+      {
+        association: "keepers",
+        required: false,
+        include: [
+          {
+            association: "employee",
+            required: true,
+          },
+        ],
+      },
+      {
+        association: "inHouse",
+        required: false,
+        include: [
+          {
+            association: "facility",
+            required: true,
+          },
+        ],
+      },
+      {
+        association: "publicEventSessions",
+        required: false,
+      },
+    ]);
+
+    console.log(publicEvents);
+    return res
+      .status(200)
+      .json({ result: publicEvents.map((e) => e.toJSON()) });
+  } catch (error: any) {
+    console.log(error);
+    res.status(400).json({ error: error.message });
+  }
+}
+
+export async function getPublicEventById(req: Request, res: Response) {
+  try {
+    const { publicEventId } = req.params;
+    if ([publicEventId].includes("")) {
+      console.log("Missing field(s): ", {
+        publicEventId,
+      });
+      return res.status(400).json({ error: "Missing information!" });
+    }
+
+    const publicEvent = await ZooEventCustomerService.getPublicEventById(
+      Number(publicEventId),
+      [
+        {
+          association: "animals",
+          required: false,
+          include: [
+            {
+              association: "species",
+              required: true,
+            },
+          ],
+        },
+        {
+          association: "keepers",
+          required: false,
+          include: [
+            {
+              association: "employee",
+              required: true,
+            },
+          ],
+        },
+        {
+          association: "inHouse",
+          required: false,
+          include: [
+            {
+              association: "facility",
+              required: true,
+            },
+          ],
+        },
+        {
+          association: "publicEventSessions",
+          required: false,
+        },
+      ],
+    );
+    return res.status(200).json({ result: publicEvent.toJSON() });
+  } catch (error: any) {
+    console.log(error);
+    res.status(400).json({ error: error.message });
+  }
+}
