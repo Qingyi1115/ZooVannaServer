@@ -186,6 +186,31 @@ new_species = {
     "ageToElder": 3.5,
 }
 
+new_species2 = {
+    "commonName": "NUS Stu2",
+    "scientificName": "Homo sapiens2",
+    "aliasName": "Students from hell2",
+    "conservationStatus": "CRITICALLY_ENDANGERED",
+    "domain": "Eukarya",
+    "kingdom": 'Animalia',
+    "phylum": "Chordata",
+    "speciesClass": "Mammalia",
+    "order": "Carnivora",
+    'family': "Ursidae",
+    'genus': "Ailuropoda",
+    "nativeContinent": "ASIA",
+    "nativeBiomes": 'Temperate',
+    "groupSexualDynamic": "POLYANDROUS",
+    "habitatOrExhibit": "Singapore",
+    "generalDietPreference": "Air",
+    "imageUrl": "",
+    'lifeExpectancyYears': 4,
+    "ageToJuvenile": 1,
+    "ageToAdolescent": 2,
+    "ageToAdult": 3,
+    "ageToElder": 3.5,
+}
+
 new_physiological_reference_norms = {
   "minSizeMaleCm": 180,
   "maxSizeMaleCm": 180,
