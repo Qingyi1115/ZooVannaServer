@@ -3847,6 +3847,14 @@ export const facilityAssetsSeed = async () => {
           sensorName: "Camera",
           sensorType: SensorType.CAMERA,
         },
+        {
+          sensorName: "Cameraa",
+          sensorType: SensorType.CAMERA,
+        },
+        {
+          sensorName: "Cameraaa",
+          sensorType: SensorType.CAMERA,
+        },
       ],
     } as any,
     {
@@ -3991,6 +3999,60 @@ export const facilityAssetsSeed = async () => {
   sensor.dateOfLastMaintained = _day;
 
   for (let i = 1; i < 100; i++) {
+    sensor.addSensorReading(
+      await SensorReading.create({
+        readingDate: new Date(Date.now() - 1000 * 60 * i),
+        value: Math.random() * 15 + 3 + i,
+      }),
+    );
+  }
+  sensor.save();
+
+  sensor = sensors[5];
+  _day = new Date(Date.now());
+  // [1, 5, 2, 4, 8, 5, 7, 11, 8, 10, 14, 11, 13, 17]
+  for (const days of [0, 17, 13, 11, 14, 10, 8, 11, 7, 5, 8, 4, 2, 5, 1]) {
+    _day = new Date(_day.getTime() - days * 1000 * 60 * 60 * 24);
+    sensor.addMaintenanceLog(
+      await MaintenanceLog.create({
+        dateTime: _day,
+        title: "Maintenance 2" + _day.toDateString(),
+        details: "Bla bla bla...",
+        remarks: "not uncommon",
+        staffName: "maint1",
+      }),
+    );
+  }
+  sensor.dateOfLastMaintained = _day;
+
+  for (let i = 1; i < 50; i++) {
+    sensor.addSensorReading(
+      await SensorReading.create({
+        readingDate: new Date(Date.now() - 1000 * 60 * i),
+        value: Math.random() * 15 + 3 + i,
+      }),
+    );
+  }
+  sensor.save();
+
+  sensor = sensors[6];
+  _day = new Date(Date.now());
+  // [1, 5, 2, 4, 8, 5, 7, 11, 8, 10, 14, 11, 13, 17]
+  for (const days of [0, 17, 13, 11, 14, 10, 8, 11, 7, 5, 8, 4, 2, 5, 1]) {
+    _day = new Date(_day.getTime() - days * 1000 * 60 * 60 * 24);
+    sensor.addMaintenanceLog(
+      await MaintenanceLog.create({
+        dateTime: _day,
+        title: "Maintenance 2" + _day.toDateString(),
+        details: "Bla bla bla...",
+        remarks: "not uncommon",
+        staffName: "maint1",
+      }),
+    );
+  }
+  sensor.dateOfLastMaintained = _day;
+
+  for (let i = 1; i < 50; i++) {
     sensor.addSensorReading(
       await SensorReading.create({
         readingDate: new Date(Date.now() - 1000 * 60 * i),
