@@ -311,9 +311,14 @@ export async function autoAssignKeeperToZooEvent(req: Request, res: Response) {
         .status(403)
         .json({ error: "Access Denied! Planning Staff only!" });
 
+    const { endDate } = req.body;
 
+    if (endDate === undefined) {
+      console.log({ endDate });
+      return res.status(400).json({ error: "Missing information!" })
+    }
 
-    return res.status(200).json({ zooEvents: await ZooEventService.autoAssignKeeperToZooEvent() });
+    return res.status(200).json({ zooEvents: await ZooEventService.autoAssignKeeperToZooEvent(new Date(endDate)) });
   } catch (error: any) {
     console.log("error", error);
     res.status(400).json({ error: error.message });
@@ -687,6 +692,78 @@ export async function updatePublicEventById(req: Request, res: Response) {
       keeperEmployeeIds,
       inHouseId,
     );
+    return res.status(200).json({ result: "success" });
+  } catch (error: any) {
+    console.log(error);
+    res.status(400).json({ error: error.message });
+  }
+}
+
+export async function enablePublicEventById(req: Request, res: Response) {
+  try {
+
+    // Check authentication
+    const { email } = (req as any).locals.jwtPayload;
+    const employee = await findEmployeeByEmail(email);
+    // const planningStaff = await employee.getPlanningStaff();
+
+    if (
+      !employee.superAdmin &&
+      !(await employee.getPlanningStaff())
+    )
+      return res
+        .status(403)
+        .json({ error: "Access Denied! Planning Staff only!" });
+
+    const { publicEventId } = req.params;
+
+    if (
+      publicEventId == "" || publicEventId === undefined
+    ) {
+      console.log("Missing field(s): ", {
+        publicEventId,
+      });
+      return res.status(400).json({ error: "Missing information!" });
+    }
+
+    await ZooEventService.enablePublicEventById(Number(publicEventId));
+
+    return res.status(200).json({ result: "success" });
+  } catch (error: any) {
+    console.log(error);
+    res.status(400).json({ error: error.message });
+  }
+}
+
+export async function disablePublicEventById(req: Request, res: Response) {
+  try {
+
+    // Check authentication
+    const { email } = (req as any).locals.jwtPayload;
+    const employee = await findEmployeeByEmail(email);
+    // const planningStaff = await employee.getPlanningStaff();
+
+    if (
+      !employee.superAdmin &&
+      !(await employee.getPlanningStaff())
+    )
+      return res
+        .status(403)
+        .json({ error: "Access Denied! Planning Staff only!" });
+
+    const { publicEventId } = req.params;
+
+    if (
+      publicEventId == "" || publicEventId === undefined
+    ) {
+      console.log("Missing field(s): ", {
+        publicEventId,
+      });
+      return res.status(400).json({ error: "Missing information!" });
+    }
+
+    await ZooEventService.disablePublicEventById(Number(publicEventId));
+
     return res.status(200).json({ result: "success" });
   } catch (error: any) {
     console.log(error);

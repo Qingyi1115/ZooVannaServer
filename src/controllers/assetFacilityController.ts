@@ -246,6 +246,31 @@ export async function getAllFacility(req: Request, res: Response) {
   }
 }
 
+export async function getCrowdLevelOfAllFacility(req: Request, res: Response) {
+  try {
+
+    const { facilityId } = req.params;
+    const facilities = await AssetFacilityService.getAllFacility([], true);
+    const facilitiesData = [];
+    for (const facility of facilities) {
+      const ratio = await AssetFacilityService.crowdLevelRatioByFacilityId(facility.facilityId);
+      facilitiesData.push({
+        facility: facility,
+        crowdLevel: ratio == -1 ? "NO_DATA" : ratio < 0.3 ? "LOW"
+          : ratio < 0.7 ? "MEDIUM" : "HIGH"
+      })
+
+    }
+
+    return res.status(200).json({
+      facilitiesData: facilitiesData
+    });
+  } catch (error: any) {
+    console.log(error);
+    res.status(400).json({ error: error.message });
+  }
+}
+
 export async function getAllFacilityCustomer(
   req: Request,
   res: Response,
@@ -281,7 +306,7 @@ export async function crowdLevelByFacilityId(req: Request, res: Response) {
 
     return res.status(200).json({
       crowdLevel: ratio < 0.3 ? "LOW"
-        : ratio < 0.6 ? "MEDIUM" : "HIGH"
+        : ratio < 0.7 ? "MEDIUM" : "HIGH"
     });
   } catch (error: any) {
     console.log(error);
@@ -1131,7 +1156,7 @@ export async function updateFacilityLog(req: Request, res: Response) {
 
     if (
       (await employee.getPlanningStaff())?.plannerType !=
-        PlannerType.OPERATIONS_MANAGER &&
+      PlannerType.OPERATIONS_MANAGER &&
       !employee.superAdmin &&
       facilityLogFound.staffName != employee.employeeName &&
       !employees.find((emp) => emp.employeeId == employee.employeeId)
@@ -1160,7 +1185,7 @@ export async function deleteFacilityLog(req: Request, res: Response) {
 
     if (
       (await employee.getPlanningStaff())?.plannerType !=
-        PlannerType.OPERATIONS_MANAGER &&
+      PlannerType.OPERATIONS_MANAGER &&
       !employee.superAdmin &&
       (await AssetFacilityService.getFacilityLogById(Number(facilityLogId)))
         ?.staffName != employee.employeeName
@@ -1189,7 +1214,7 @@ export async function getCustomerReportLog(req: Request, res: Response) {
 
     if (
       (await employee.getPlanningStaff())?.plannerType !=
-        PlannerType.OPERATIONS_MANAGER &&
+      PlannerType.OPERATIONS_MANAGER &&
       !employee.superAdmin
     )
       throw { message: "Access denied!" };
@@ -1218,7 +1243,7 @@ export async function getAllNonViewedCustomerReportLogs(req: Request, res: Respo
 
     if (
       (await employee.getPlanningStaff())?.plannerType !=
-        PlannerType.OPERATIONS_MANAGER &&
+      PlannerType.OPERATIONS_MANAGER &&
       !employee.superAdmin
     )
       throw { message: "Access denied!" };
@@ -1226,7 +1251,7 @@ export async function getAllNonViewedCustomerReportLogs(req: Request, res: Respo
     if (
       employee.superAdmin ||
       (await employee.getPlanningStaff()).plannerType ==
-        PlannerType.OPERATIONS_MANAGER
+      PlannerType.OPERATIONS_MANAGER
     ) {
       const allCustomerReportLog =
         await AssetFacilityService.getAllNonViewedCustomerReportLogs();
@@ -1266,7 +1291,7 @@ export async function getAllCustomerReportLogsByFacilityId(req: Request, res: Re
 
     if (
       (await employee.getPlanningStaff())?.plannerType !=
-        PlannerType.OPERATIONS_MANAGER &&
+      PlannerType.OPERATIONS_MANAGER &&
       !employee.superAdmin
     )
       throw { message: "Access denied!" };
@@ -1301,7 +1326,7 @@ export async function markCustomerReportLogsViewed(req: Request, res: Response) 
 
     if (
       (await employee.getPlanningStaff())?.plannerType !=
-        PlannerType.OPERATIONS_MANAGER &&
+      PlannerType.OPERATIONS_MANAGER &&
       !employee.superAdmin
     )
       throw { message: "Access denied!" };
@@ -1332,7 +1357,7 @@ export async function deleteCustomerReportLog(req: Request, res: Response) {
 
     if (
       (await employee.getPlanningStaff())?.plannerType !=
-        PlannerType.OPERATIONS_MANAGER &&
+      PlannerType.OPERATIONS_MANAGER &&
       !employee.superAdmin
     )
       throw { message: "Access denied!" };
@@ -1373,7 +1398,7 @@ export async function completeRepairTicket(
 
     if (
       (await employee.getPlanningStaff())?.plannerType !=
-        PlannerType.OPERATIONS_MANAGER &&
+      PlannerType.OPERATIONS_MANAGER &&
       !employee.superAdmin &&
       !employees.find((emp) => emp.employeeId == employee.employeeId)
     )
@@ -1898,7 +1923,7 @@ export async function updateSensorMaintenanceLog(
 
     if (
       (await employee.getPlanningStaff()).plannerType !=
-        PlannerType.OPERATIONS_MANAGER &&
+      PlannerType.OPERATIONS_MANAGER &&
       !employee.superAdmin &&
       (
         await AssetFacilityService.getSensorMaintenanceLogById(
@@ -1938,7 +1963,7 @@ export async function deleteSensorMaintenanceLog(
 
     if (
       (await employee.getPlanningStaff()).plannerType !=
-        PlannerType.OPERATIONS_MANAGER &&
+      PlannerType.OPERATIONS_MANAGER &&
       !employee.superAdmin &&
       (
         await AssetFacilityService.getSensorMaintenanceLogById(
@@ -2278,6 +2303,46 @@ export async function getAuthorizationForCamera(
           String(employee.employeeId),
         ),
       );
+  } catch (error: any) {
+    console.log(error);
+    res.status(400).json({ error: error.message });
+  }
+}
+
+export async function getAuthorizationForCameraByFacilityId(
+  req: Request,
+  res: Response,
+) {
+  try {
+    const { email } = (req as any).locals.jwtPayload;
+    const employee = await EmployeeService.findEmployeeByEmail(email);
+
+    if (
+      !employee.superAdmin &&
+      !(
+        (await employee.getPlanningStaff())?.plannerType ==
+        PlannerType.OPERATIONS_MANAGER
+      )
+    )
+      return res
+        .status(403)
+        .json({ error: "Access Denied! Operation managers only!" });
+
+    const { facilityId } = req.params;
+
+    if (facilityId == "") {
+      return res.status(400).json({ error: "Missing information!" });
+    }
+
+    return res
+      .status(200)
+      .json(
+        {
+          data: await AssetFacilityService.getAuthorizationForCameraByFacilityId(
+            Number(facilityId),
+            String(employee.employeeId),
+          ),
+        })
   } catch (error: any) {
     console.log(error);
     res.status(400).json({ error: error.message });

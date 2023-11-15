@@ -18,6 +18,7 @@ import { GeneralStaff } from "./GeneralStaff";
 import { Keeper } from "./Keeper";
 import { PlanningStaff } from "./PlanningStaff";
 import { ZooEvent } from "./ZooEvent";
+import { Enclosure } from "./Enclosure";
 
 function uppercaseFirst(str: string) {
   return `${str[0].toUpperCase()}${str.substr(1)}`;
@@ -51,6 +52,7 @@ class Employee extends Model<
   declare planningStaff?: PlanningStaff | null;
   declare generalStaff?: GeneralStaff | null;
   declare zooEvents?: ZooEvent[];
+  declare enclosure?: Enclosure[];
 
   declare getKeeper: HasOneGetAssociationMixin<Keeper>;
   declare setKeeper: HasOneSetAssociationMixin<Keeper, number>;
@@ -76,6 +78,11 @@ class Employee extends Model<
   declare addZooEvent: HasManyAddAssociationMixin<ZooEvent, number>;
   declare setZooEvents: HasManySetAssociationsMixin<ZooEvent, number>;
   declare removeZooEvent: HasManyRemoveAssociationMixin<ZooEvent, number>;
+
+  declare getEnclosures: HasManyGetAssociationsMixin<Enclosure>;
+  declare addEnclosure: HasManyAddAssociationMixin<Enclosure, number>;
+  declare setEnclosures: HasManySetAssociationsMixin<Enclosure, number>;
+  declare removeEnclosure: HasManyRemoveAssociationMixin<Enclosure, number>;
 
   static getTotalEmployees() {
     // Example for static class functions

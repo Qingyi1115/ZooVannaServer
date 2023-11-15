@@ -112,16 +112,16 @@ export async function generateMonthlyZooEventForAnimalActivity(
       animalActivity.recurringPattern == RecurringPattern.DAILY
         ? new Date(startDate.getTime() + DAY_IN_MILLISECONDS)
         : animalActivity.recurringPattern == RecurringPattern.WEEKLY
-        ? new Date(startDate.getTime() + DAY_IN_MILLISECONDS * 7)
-        : animalActivity.recurringPattern == RecurringPattern.MONTHLY
-        ? new Date(
-            Date.UTC(
-              startDate.getFullYear(),
-              startDate.getMonth() + 1,
-              Math.min(lastday, animalActivity.dayOfMonth || 1),
-            ),
-          )
-        : startDate;
+          ? new Date(startDate.getTime() + DAY_IN_MILLISECONDS * 7)
+          : animalActivity.recurringPattern == RecurringPattern.MONTHLY
+            ? new Date(
+              Date.UTC(
+                startDate.getFullYear(),
+                startDate.getMonth() + 1,
+                Math.min(lastday, animalActivity.dayOfMonth || 1),
+              ),
+            )
+            : startDate;
   }
 
   if (compareDates(new Date(), animalActivity.endDate) > 0)
@@ -130,14 +130,14 @@ export async function generateMonthlyZooEventForAnimalActivity(
     compareDates(
       new Date(
         Date.now() +
-          DAY_IN_MILLISECONDS * ADVANCE_DAYS_FOR_ZOO_EVENT_GENERATION,
+        DAY_IN_MILLISECONDS * ADVANCE_DAYS_FOR_ZOO_EVENT_GENERATION,
       ),
       animalActivity.endDate,
     ) < 0
       ? new Date(
-          Date.now() +
-            DAY_IN_MILLISECONDS * ADVANCE_DAYS_FOR_ZOO_EVENT_GENERATION,
-        )
+        Date.now() +
+        DAY_IN_MILLISECONDS * ADVANCE_DAYS_FOR_ZOO_EVENT_GENERATION,
+      )
       : animalActivity.endDate;
   lastDate = new Date(
     Date.UTC(lastDate.getFullYear(), lastDate.getMonth(), lastDate.getDate()),
@@ -309,37 +309,37 @@ async function generateMonthlyZooEventForPublicEventSession(
       session.recurringPattern == RecurringPattern.DAILY
         ? new Date(startDate.getTime() + DAY_IN_MILLISECONDS)
         : session.recurringPattern == RecurringPattern.WEEKLY
-        ? new Date(startDate.getTime() + DAY_IN_MILLISECONDS * 7)
-        : session.recurringPattern == RecurringPattern.MONTHLY
-        ? new Date(
-            Date.UTC(
-              startDate.getFullYear(),
-              startDate.getMonth() + 1,
-              Math.min(lastday, session.dayOfMonth || 1),
-            ),
-          )
-        : startDate;
+          ? new Date(startDate.getTime() + DAY_IN_MILLISECONDS * 7)
+          : session.recurringPattern == RecurringPattern.MONTHLY
+            ? new Date(
+              Date.UTC(
+                startDate.getFullYear(),
+                startDate.getMonth() + 1,
+                Math.min(lastday, session.dayOfMonth || 1),
+              ),
+            )
+            : startDate;
   }
 
   if (publicEvent.endDate && compareDates(new Date(), publicEvent.endDate) > 0)
     return;
   let lastDate = !publicEvent.endDate
     ? new Date(
-        Date.now() +
-          DAY_IN_MILLISECONDS * ADVANCE_DAYS_FOR_ZOO_EVENT_GENERATION,
-      )
+      Date.now() +
+      DAY_IN_MILLISECONDS * ADVANCE_DAYS_FOR_ZOO_EVENT_GENERATION,
+    )
     : compareDates(
-        new Date(
-          Date.now() +
-            DAY_IN_MILLISECONDS * ADVANCE_DAYS_FOR_ZOO_EVENT_GENERATION,
-        ),
-        publicEvent.endDate,
-      ) < 0
-    ? new Date(
+      new Date(
         Date.now() +
-          DAY_IN_MILLISECONDS * ADVANCE_DAYS_FOR_ZOO_EVENT_GENERATION,
+        DAY_IN_MILLISECONDS * ADVANCE_DAYS_FOR_ZOO_EVENT_GENERATION,
+      ),
+      publicEvent.endDate,
+    ) < 0
+      ? new Date(
+        Date.now() +
+        DAY_IN_MILLISECONDS * ADVANCE_DAYS_FOR_ZOO_EVENT_GENERATION,
       )
-    : publicEvent.endDate;
+      : publicEvent.endDate;
   lastDate = new Date(
     Date.UTC(lastDate.getFullYear(), lastDate.getMonth(), lastDate.getDate()),
   );
@@ -468,6 +468,7 @@ export async function createAnimalActivityZooEvent(
     await AnimalService.getAnimalActivityById(animalActivityId);
   const imageURL = (await (await animalActivity.getAnimals())[0]?.getSpecies())
     ?.imageUrl;
+
   try {
     const newZooEvent = await ZooEvent.create({
       eventName: animalActivity.title,
@@ -477,7 +478,7 @@ export async function createAnimalActivityZooEvent(
       eventStartDateTime: eventStartDateTime,
       eventNotificationDate: new Date(
         eventStartDateTime.getTime() -
-          HOUR_IN_MILLISECONDS * ANIMAL_ACTIVITY_NOTIFICATION_HOURS,
+        HOUR_IN_MILLISECONDS * ANIMAL_ACTIVITY_NOTIFICATION_HOURS,
       ),
       eventDurationHrs: eventDurationHrs,
       eventTiming: eventTiming,
@@ -486,8 +487,8 @@ export async function createAnimalActivityZooEvent(
       imageUrl: imageURL,
     });
 
-    newZooEvent.setAnimals(await animalActivity.getAnimals());
-    newZooEvent.setEnclosure(
+    await newZooEvent.setAnimals(await animalActivity.getAnimals());
+    await newZooEvent.setEnclosure(
       await (await animalActivity.getAnimals())[0]?.getEnclosure(),
     );
 
@@ -538,14 +539,14 @@ export async function generateMonthlyZooEventForFeedingPlanSession(
     compareDates(
       new Date(
         Date.now() +
-          DAY_IN_MILLISECONDS * ADVANCE_DAYS_FOR_ZOO_EVENT_GENERATION,
+        DAY_IN_MILLISECONDS * ADVANCE_DAYS_FOR_ZOO_EVENT_GENERATION,
       ),
       feedingPlan.endDate,
     ) < 0
       ? new Date(
-          Date.now() +
-            DAY_IN_MILLISECONDS * ADVANCE_DAYS_FOR_ZOO_EVENT_GENERATION,
-        )
+        Date.now() +
+        DAY_IN_MILLISECONDS * ADVANCE_DAYS_FOR_ZOO_EVENT_GENERATION,
+      )
       : feedingPlan.endDate;
   lastDate = new Date(
     Date.UTC(lastDate.getFullYear(), lastDate.getMonth(), lastDate.getDate()),
@@ -641,14 +642,14 @@ export async function createFeedingPlanSessionDetailZooEvent(
         : EventType.EMPLOYEE_FEEDING,
       eventNotificationDate: new Date(
         eventStartDateTime.getTime() -
-          HOUR_IN_MILLISECONDS * ANIMAL_FEEDING_NOTIFICATION_HOURS,
+        HOUR_IN_MILLISECONDS * ANIMAL_FEEDING_NOTIFICATION_HOURS,
       ),
       requiredNumberOfKeeper: requiredNumberOfKeeper,
       eventEndDateTime: eventIsPublic
         ? new Date(
-            eventStartDateTime.getTime() +
-              eventDurationHrs * HOUR_IN_MILLISECONDS,
-          )
+          eventStartDateTime.getTime() +
+          eventDurationHrs * HOUR_IN_MILLISECONDS,
+        )
         : null,
       imageUrl: eventIsPublic ? imageUrl : undefined,
     });
@@ -789,17 +790,17 @@ export async function getKeepersForZooEvent(zooEventId: number) {
       const [zooEventStart, zooEventEnd] = zooEvent.eventIsPublic
         ? [zooEvent.eventStartDateTime, zooEvent.eventEndDateTime]
         : convertEventTimingTypeToDate(
-            zooEvent.eventStartDateTime,
-            zooEvent.eventTiming as EventTimingType,
-          );
+          zooEvent.eventStartDateTime,
+          zooEvent.eventTiming as EventTimingType,
+        );
 
       return !keeper.zooEvents?.find((ze) => {
         const [zeStart, zeEnd] = ze.eventIsPublic
           ? [ze.eventStartDateTime, ze.eventEndDateTime]
           : convertEventTimingTypeToDate(
-              ze.eventStartDateTime,
-              ze.eventTiming as EventTimingType,
-            );
+            ze.eventStartDateTime,
+            ze.eventTiming as EventTimingType,
+          );
         return (
           compareDates(zeStart, zooEventEnd as Date) < 0 &&
           compareDates(zeEnd as Date, zooEventStart) > 0
@@ -879,7 +880,7 @@ export async function updateZooEventIncludeFuture(
           ze.eventNotificationDate = eventNotificationDate;
           ze.eventEndDateTime = new Date(
             ze.eventStartDateTime.getTime() +
-              eventDurationHrs * HOUR_IN_MILLISECONDS,
+            eventDurationHrs * HOUR_IN_MILLISECONDS,
           );
           iKeepMyPromises.push(ze.save());
         }
@@ -1231,18 +1232,18 @@ async function greedyAssign(
   const [zooEventStart, zooEventEnd] = zooEvent.eventIsPublic
     ? [zooEvent.eventStartDateTime, zooEvent.eventEndDateTime]
     : convertEventTimingTypeToDate(
-        zooEvent.eventStartDateTime,
-        zooEvent.eventTiming as EventTimingType,
-      );
+      zooEvent.eventStartDateTime,
+      zooEvent.eventTiming as EventTimingType,
+    );
   // console.log("zooEventStart, zooEventEnd", zooEventStart, zooEventEnd);
 
   const eventClashed = zooEvents.filter((ze) => {
     const [zeStart, zeEnd] = ze.eventIsPublic
       ? [ze.eventStartDateTime, ze.eventEndDateTime]
       : convertEventTimingTypeToDate(
-          ze.eventStartDateTime,
-          ze.eventTiming as EventTimingType,
-        );
+        ze.eventStartDateTime,
+        ze.eventTiming as EventTimingType,
+      );
     return (
       compareDates(zeStart, zooEventEnd as Date) < 0 &&
       compareDates(zeEnd as Date, zooEventStart) > 0
@@ -1322,22 +1323,24 @@ function doesEventClash(ze1: ZooEvent, ze2: ZooEvent) {
   const [ze1Start, ze1End] = ze1.eventIsPublic
     ? [ze1.eventStartDateTime, ze1.eventEndDateTime]
     : convertEventTimingTypeToDate(
-        ze1.eventStartDateTime,
-        ze1.eventTiming as EventTimingType,
-      );
+      ze1.eventStartDateTime,
+      ze1.eventTiming as EventTimingType,
+    );
   const [ze2Start, ze2End] = ze2.eventIsPublic
     ? [ze2.eventStartDateTime, ze2.eventEndDateTime]
     : convertEventTimingTypeToDate(
-        ze2.eventStartDateTime,
-        ze2.eventTiming as EventTimingType,
-      );
+      ze2.eventStartDateTime,
+      ze2.eventTiming as EventTimingType,
+    );
   return (
     compareDates(ze1Start, ze2End as Date) < 0 &&
     compareDates(ze1End as Date, ze2Start) > 0
   );
 }
 
-export async function autoAssignKeeperToZooEvent() {
+export async function autoAssignKeeperToZooEvent(
+  endDate: Date
+) {
   try {
     console.log("autoAssignKeeperToZooEvent");
 
@@ -1346,7 +1349,7 @@ export async function autoAssignKeeperToZooEvent() {
         eventStartDateTime: {
           [Op.between]: [
             new Date(),
-            new Date(Date.now() + DAY_IN_MILLISECONDS * 90),
+            endDate,
           ],
         },
       },
@@ -1414,9 +1417,9 @@ export async function autoAssignKeeperToZooEvent() {
         const [zooEventStart, zooEventEnd] = zooEvent.eventIsPublic
           ? [zooEvent.eventStartDateTime, zooEvent.eventEndDateTime]
           : convertEventTimingTypeToDate(
-              zooEvent.eventStartDateTime,
-              zooEvent.eventTiming as EventTimingType,
-            );
+            zooEvent.eventStartDateTime,
+            zooEvent.eventTiming as EventTimingType,
+          );
         // console.log("zooEventStart, zooEventEnd", zooEventStart, zooEventEnd);
 
         for (let index = 0; index < keepers.length; index++) {
@@ -1542,6 +1545,7 @@ export async function createPublicEvent(
       imageUrl: imageUrl,
       startDate: startDate,
       endDate: endDate,
+      isDisabled: false
     });
 
     await newPublicEvent.setAnimals(animals);
@@ -1610,12 +1614,30 @@ export async function updatePublicEventById(
       publicEvent.imageUrl = imageUrl;
     }
 
+    const zooEvents = [];
+    const promises = [];
+
+    if (animalCodes || keeperEmployeeIds || inHouseId) {
+      for (const session of (await publicEvent.getPublicEventSessions())) {
+        for (const ze of (await session.getZooEvents())) {
+          if (compareDates(ze.eventStartDateTime, new Date()) >= 0) {
+            zooEvents.push(ze);
+          }
+        }
+      }
+    }
+
+
     if (animalCodes) {
       const animals = [];
       for (const code of animalCodes) {
         animals.push(await AnimalService.getAnimalByAnimalCode(code));
       }
       await publicEvent.setAnimals(animals);
+      for (const ze of zooEvents) {
+        ze.setAnimals(animals);
+        promises.push(ze.save());
+      }
     }
 
     if (keeperEmployeeIds) {
@@ -1624,15 +1646,66 @@ export async function updatePublicEventById(
         keepers.push(await EmployeeService.getKeeperByEmployeeId(id));
       }
       await publicEvent.setKeepers(keepers);
+      for (const ze of zooEvents) {
+        ze.setKeepers(keepers);
+        promises.push(ze.save());
+      }
     }
 
     if (inHouseId) {
       const inHouse =
         await AssetFacilityService.getInHouseByFacilityId(inHouseId);
       await publicEvent.setInHouse(inHouse);
+      for (const ze of zooEvents) {
+        ze.setInHouse(inHouse);
+        promises.push(ze.save());
+      }
     }
 
+    for (const p of promises) await p;
     return publicEvent.save();
+  } catch (error: any) {
+    throw validationErrorHandler(error);
+  }
+}
+
+export async function enablePublicEventById(
+  publicEventId: number
+) {
+  try {
+    const publicEvent = await getPublicEventById(publicEventId, []);
+
+    publicEvent.isDisabled = false;
+    await publicEvent.save();
+
+    for (const session of (await publicEvent.getPublicEventSessions())) {
+      await generateMonthlyZooEventForPublicEventSession(session);
+    }
+  } catch (error: any) {
+    throw validationErrorHandler(error);
+  }
+}
+
+export async function disablePublicEventById(
+  publicEventId: number
+) {
+  try {
+    const publicEvent = await getPublicEventById(publicEventId, []);
+
+    publicEvent.isDisabled = true;
+    const promises = []
+    promises.push(publicEvent.save());
+    for (const session of (await publicEvent.getPublicEventSessions())) {
+      if (session.recurringPattern == RecurringPattern.NON_RECURRING) {
+        promises.push(session.destroy());
+      } else {
+        for (const ze of (await session.getZooEvents())) {
+          promises.push(ze.destroy());
+        }
+      }
+    }
+
+    for (const p of promises) await p;
   } catch (error: any) {
     throw validationErrorHandler(error);
   }

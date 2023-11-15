@@ -93,21 +93,6 @@ class Facility extends Model<
       }
       let thirdParty = await this.getThirdParty({
         include: [{
-          association: "maintenanceStaffs",
-          required: false,
-          include: [{
-            association: "employee",
-          }]
-        }, {
-          association: "operationStaffs",
-          required: false,
-          include: [{
-            association: "employee",
-          }]
-        }, {
-          association: "facilityLogs",
-          required: false
-        }, {
           association: "customerReportLogs",
           required: false
         }]
@@ -116,13 +101,28 @@ class Facility extends Model<
         this.facilityDetail = "thirdParty";
         return thirdParty;
       }
+
+      let enclosure = await this.getEnclosure({
+        include: [{
+          association: "barrierType",
+          required: false
+        },{
+          association: "plantation",
+          required: false
+        }]
+      });
+      if (enclosure) {
+        this.facilityDetail = "enclosure";
+        return enclosure;
+      }
+
       let animalClinic = await this.getAnimalClinic();
       if (animalClinic) {
         this.facilityDetail = "animalClinic";
         return animalClinic;
       }
     }
-    const mixinMethodName = `get${uppercaseFirst(this.facilityDetail ?? "")}`;
+    const mixinMethodName = `get${uppercaseFirst(this.facilityDetail || "")}`;
     return (this as any)[mixinMethodName]();
   }
 

@@ -16,7 +16,6 @@ import { AnimalFeed } from "./AnimalFeed";
 import { AnimalFeedingLog } from "./AnimalFeedingLog";
 import { AnimalObservationLog } from "./AnimalObservationLog";
 import { AnimalWeight } from "./AnimalWeight";
-import { BarrierType } from "./BarrierType";
 import { Compatibility } from "./Compatibility";
 import { Customer } from "./Customer";
 import { CustomerOrder } from "./CustomerOrder";
@@ -83,6 +82,8 @@ import { SpeciesEnclosureNeed } from "./SpeciesEnclosureNeed";
 import { ThirdParty } from "./ThirdParty";
 import { Zone } from "./Zone";
 import { ZooEvent } from "./ZooEvent";
+import { EnclosureBarrier } from "./EnclosureBarrier";
+import { AccessPoint } from "./AccessPoint";
 
 function addCascadeOptions(options: object) {
   return { ...options, onDelete: "CASCADE", onUpdate: "CASCADE" };
@@ -174,11 +175,20 @@ export const createDatabase = async (options: any) => {
   Facility.hasOne(InHouse, addCascadeOptions({ foreignKey: "facilityId" }));
   InHouse.belongsTo(Facility, addCascadeOptions({ foreignKey: "facilityId" }));
 
-  Facility.hasOne(Enclosure, addCascadeOptions({ foreignKey: "facilityId" }));
-  Enclosure.belongsTo(
-    Facility,
-    addCascadeOptions({ foreignKey: "facilityId" }),
-  );
+  // Facility.hasOne(Enclosure, addCascadeOptions({ foreignKey: "facilityId" }));
+  // Enclosure.belongsTo(
+  //   Facility,
+  //   addCascadeOptions({ foreignKey: "facilityId" }),
+  // );
+  Facility.hasOne(Enclosure, {
+    foreignKey: "facilityId",
+    onDelete: "CASCADE",
+  });
+
+  Enclosure.belongsTo(Facility, {
+    foreignKey: "facilityId",
+    onDelete: "CASCADE",
+  });
 
   InHouse.belongsToMany(GeneralStaff, {
     foreignKey: "maintainedFacilityId",
@@ -432,32 +442,46 @@ export const createDatabase = async (options: any) => {
   Enclosure.hasMany(Animal, addCascadeOptions({ foreignKey: "enclosureId" }));
   Animal.belongsTo(Enclosure, addCascadeOptions({ foreignKey: "enclosureId" }));
 
+  // Enclosure.hasOne(
+  //   BarrierType,
+  //   addCascadeOptions({ foreignKey: "enclosureId" }),
+  // );
+  // BarrierType.belongsTo(
+  //   Enclosure,
+  //   addCascadeOptions({ foreignKey: "enclosureId" }),
+  // );
+
   Enclosure.hasOne(
-    BarrierType,
+    EnclosureBarrier,
     addCascadeOptions({ foreignKey: "enclosureId" }),
   );
-  BarrierType.belongsTo(
+  EnclosureBarrier.belongsTo(
     Enclosure,
     addCascadeOptions({ foreignKey: "enclosureId" }),
   );
 
-  Enclosure.hasOne(
-    BarrierType,
-    addCascadeOptions({ foreignKey: "enclosureId" }),
-  );
-  BarrierType.belongsTo(
-    Enclosure,
-    addCascadeOptions({ foreignKey: "enclosureId" }),
-  );
+  Enclosure.belongsToMany(Plantation, {
+    foreignKey: "enclosureId",
+    through: "enclosure_plantation",
+    as: "plantations",
+  });
 
-  Enclosure.hasOne(
-    Plantation,
-    addCascadeOptions({ foreignKey: "enclosureId" }),
-  );
-  Plantation.belongsTo(
-    Enclosure,
-    addCascadeOptions({ foreignKey: "enclosureId" }),
-  );
+  // Plantation.belongsToMany(Enclosure, {
+  //   foreignKey: "plantationId",
+  //   through: "enclosure_plantation",
+  //   as: "enclosures",
+  // });
+
+  Enclosure.belongsToMany(AccessPoint, {
+    foreignKey: "enclosureId",
+    through: "enclosure_accessPoint",
+    as: "accessPoints",
+  });
+  AccessPoint.belongsToMany(Enclosure, {
+    foreignKey: "accessPointId",
+    through: "enclosure_accessPoint",
+    as: "enclosures",
+  });
 
   PlanningStaff.hasMany(
     ZooEvent,
@@ -823,6 +847,78 @@ export const employeeSeed = async () => {
         employeeSalt: "NaH",
         employeeDoorAccessCode: "345678",
         employeeEducation: "PHD in not breathing",
+        employeeBirthDate: new Date("2001-09-02"),
+        isAccountManager: false,
+        // @ts-ignore
+        keeper: {
+          keeperType: KeeperType.KEEPER,
+          specialization: Specialization.AMPHIBIAN,
+          isDisabled: false,
+        },
+      },
+      {
+        employeeName: "keeper4",
+        employeeAddress: "Singapore Kent Ridge LT16",
+        employeeEmail: "keeper4@gmail.com",
+        employeePhoneNumber: "9134",
+        employeePasswordHash: Employee.getHash("keeper4_password", "NaH"),
+        employeeSalt: "NaH",
+        employeeDoorAccessCode: "345578",
+        employeeEducation: "PHD in not existing",
+        employeeBirthDate: new Date("2001-09-02"),
+        isAccountManager: false,
+        // @ts-ignore
+        keeper: {
+          keeperType: KeeperType.KEEPER,
+          specialization: Specialization.AMPHIBIAN,
+          isDisabled: false,
+        },
+      },
+      {
+        employeeName: "keeper5",
+        employeeAddress: "Singapore Kent Ridge LT16",
+        employeeEmail: "keeper5@gmail.com",
+        employeePhoneNumber: "9131",
+        employeePasswordHash: Employee.getHash("keeper5_password", "NaH"),
+        employeeSalt: "NaH",
+        employeeDoorAccessCode: "445678",
+        employeeEducation: "PHD in not existing",
+        employeeBirthDate: new Date("2001-09-02"),
+        isAccountManager: false,
+        // @ts-ignore
+        keeper: {
+          keeperType: KeeperType.KEEPER,
+          specialization: Specialization.AMPHIBIAN,
+          isDisabled: false,
+        },
+      },
+      {
+        employeeName: "keeper6",
+        employeeAddress: "Singapore Kent Ridge LT16",
+        employeeEmail: "keeper6@gmail.com",
+        employeePhoneNumber: "9133",
+        employeePasswordHash: Employee.getHash("keeper6_password", "NaH"),
+        employeeSalt: "NaH",
+        employeeDoorAccessCode: "349678",
+        employeeEducation: "PHD in not existing",
+        employeeBirthDate: new Date("2001-09-02"),
+        isAccountManager: false,
+        // @ts-ignore
+        keeper: {
+          keeperType: KeeperType.KEEPER,
+          specialization: Specialization.AMPHIBIAN,
+          isDisabled: false,
+        },
+      },
+      {
+        employeeName: "keeper7",
+        employeeAddress: "Singapore Kent Ridge LT16",
+        employeeEmail: "keeper7@gmail.com",
+        employeePhoneNumber: "9123",
+        employeePasswordHash: Employee.getHash("keeper7_password", "NaH"),
+        employeeSalt: "NaH",
+        employeeDoorAccessCode: "349698",
+        employeeEducation: "PHD in not existing",
         employeeBirthDate: new Date("2001-09-02"),
         isAccountManager: false,
         // @ts-ignore
@@ -3319,7 +3415,8 @@ export const enclosureSeed = async () => {
     width: 400,
     height: 20,
     enclosureStatus: "CONSTRUCTING",
-    designDiagramJsonUrl: "enclosureDiagramJson/pandaEnclosure1.json",
+    standOffBarrierDist: 5,
+    designDiagramJsonUrl: "enclosureDiagramJson/Panda Enclosure 01.json",
   } as any;
   await Enclosure.create(enclosure1Template);
 
@@ -3331,12 +3428,48 @@ export const enclosureSeed = async () => {
     width: 500,
     height: 25,
     enclosureStatus: "ACTIVE",
+    standOffBarrierDist: 3,
   } as any;
   await Enclosure.create(enclosure2Template);
+
+  await EnclosureService.createNewEnclosure(
+    "Panda Enclosure 03",
+    "NA",
+    300,
+    500,
+    25,
+    "ACTIVE",
+    3,
+    "Enclosure 3",
+    103.78221130371094,
+    1.29178547859192,
+    false,
+    "",
+    "",
+    "img/facility/Directory.png",
+  );
 
   // assign animals to enclosure
   await EnclosureService.assignAnimalToEnclosure(1, "ANM00001");
   await EnclosureService.assignAnimalToEnclosure(1, "ANM00002");
+
+  let planation1Template = {
+    name: "Tree 1",
+    biome: "TEMPERATE",
+  } as any;
+  await Plantation.create(planation1Template);
+
+  let planation2Template = {
+    name: "Tree 2",
+    biome: "TEMPERATE",
+  } as any;
+  await Plantation.create(planation1Template);
+
+  let planation3Template = {
+    name: "Tree 3",
+    biome: "GRASSLAND",
+  } as any;
+  await Plantation.create(planation1Template);
 };
 
 export const facilityAssetsSeed = async () => {
@@ -3709,7 +3842,7 @@ export const facilityAssetsSeed = async () => {
       //@ts-ignore
       inHouse: {
         isPaid: true,
-        maxAccommodationSize: 15,
+        maxAccommodationSize: 40,
         hasAirCon: true,
         facilityType: FacilityType.TRAMSTOP,
       },
@@ -3748,6 +3881,14 @@ export const facilityAssetsSeed = async () => {
         },
         {
           sensorName: "Camera",
+          sensorType: SensorType.CAMERA,
+        },
+        {
+          sensorName: "Cameraa",
+          sensorType: SensorType.CAMERA,
+        },
+        {
+          sensorName: "Cameraaa",
           sensorType: SensorType.CAMERA,
         },
       ],
@@ -3894,6 +4035,60 @@ export const facilityAssetsSeed = async () => {
   sensor.dateOfLastMaintained = _day;
 
   for (let i = 1; i < 100; i++) {
+    sensor.addSensorReading(
+      await SensorReading.create({
+        readingDate: new Date(Date.now() - 1000 * 60 * i),
+        value: Math.random() * 15 + 3 + i,
+      }),
+    );
+  }
+  sensor.save();
+
+  sensor = sensors[5];
+  _day = new Date(Date.now());
+  // [1, 5, 2, 4, 8, 5, 7, 11, 8, 10, 14, 11, 13, 17]
+  for (const days of [0, 17, 13, 11, 14, 10, 8, 11, 7, 5, 8, 4, 2, 5, 1]) {
+    _day = new Date(_day.getTime() - days * 1000 * 60 * 60 * 24);
+    sensor.addMaintenanceLog(
+      await MaintenanceLog.create({
+        dateTime: _day,
+        title: "Maintenance 2" + _day.toDateString(),
+        details: "Bla bla bla...",
+        remarks: "not uncommon",
+        staffName: "maint1",
+      }),
+    );
+  }
+  sensor.dateOfLastMaintained = _day;
+
+  for (let i = 1; i < 50; i++) {
+    sensor.addSensorReading(
+      await SensorReading.create({
+        readingDate: new Date(Date.now() - 1000 * 60 * i),
+        value: Math.random() * 15 + 3 + i,
+      }),
+    );
+  }
+  sensor.save();
+
+  sensor = sensors[6];
+  _day = new Date(Date.now());
+  // [1, 5, 2, 4, 8, 5, 7, 11, 8, 10, 14, 11, 13, 17]
+  for (const days of [0, 17, 13, 11, 14, 10, 8, 11, 7, 5, 8, 4, 2, 5, 1]) {
+    _day = new Date(_day.getTime() - days * 1000 * 60 * 60 * 24);
+    sensor.addMaintenanceLog(
+      await MaintenanceLog.create({
+        dateTime: _day,
+        title: "Maintenance 2" + _day.toDateString(),
+        details: "Bla bla bla...",
+        remarks: "not uncommon",
+        staffName: "maint1",
+      }),
+    );
+  }
+  sensor.dateOfLastMaintained = _day;
+
+  for (let i = 1; i < 50; i++) {
     sensor.addSensorReading(
       await SensorReading.create({
         readingDate: new Date(Date.now() - 1000 * 60 * i),

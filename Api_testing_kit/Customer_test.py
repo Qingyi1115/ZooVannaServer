@@ -63,20 +63,20 @@ def sendForgetPasswordLink_success(mock_data, useAPI: UseAPI):
 
 @getApi
 def sendEmailVerification_fail(mock_data, useAPI: UseAPI):
+    res = useAPI.get("/api/customer/sendEmailVerification/{}".format("does-not-exist@email.com"), 
+                      json={})
+    response_json = res.json()
+    assert "message" in response_json, response_json
+    assert res.status_code() == 200, "Status code not 200!"
+    
+@getApi
+def sendEmailVerification_success(mock_data, useAPI: UseAPI):
     res = useAPI.get("/api/customer/sendEmailVerification/{}".format(mock_data["email"]), 
                       json={})
     response_json = res.json()
     # Email has alreadly been used
     assert "error" in response_json, response_json
     assert res.status_code() == 400, "Status code not 400!"
-
-@getApi
-def sendEmailVerification_success(mock_data, useAPI: UseAPI):
-    res = useAPI.get("/api/customer/sendEmailVerification/{}".format("does-not-exist@email.com"), 
-                      json={})
-    response_json = res.json()
-    assert "message" in response_json, response_json
-    assert res.status_code() == 200, "Status code not 200!"
 
 @getApi
 def createTicket_fail(customer_dat, order_dat, payment_dat,  useAPI: UseAPI):
