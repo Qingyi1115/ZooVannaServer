@@ -71,7 +71,6 @@ export async function createNewCustomer(
   lastName: string,
   contactNo: string,
   birthday: Date,
-  address: string,
   nationality: Country,
   token: string,
 ) {
@@ -93,7 +92,6 @@ export async function createNewCustomer(
         email: email,
         contactNo: contactNo,
         birthday: birthday,
-        address: address,
         nationality: nationality,
       };
       try {
@@ -170,7 +168,6 @@ export async function updateCustomer(
   email: string,
   contactNo: string,
   birthday: Date,
-  address: string,
   nationality: Country,
 ) {
   let updatedCustomer = {
@@ -180,7 +177,6 @@ export async function updateCustomer(
     email: email,
     contactNo: contactNo,
     birthday: birthday,
-    address: address,
     nationality: nationality,
   } as any;
 

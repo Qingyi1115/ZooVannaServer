@@ -159,7 +159,7 @@ export async function findEmployeeByEmail(employeeEmail: string) {
   if (result) {
     return result;
   }
-  throw { message: "Invalid email!" };
+  throw { message: "Invalid email employee!" };
 }
 
 export async function findEmployeeById(
