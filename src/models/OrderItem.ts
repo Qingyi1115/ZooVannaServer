@@ -17,7 +17,7 @@ class OrderItem extends Model<
 > {
   declare orderItemId: CreationOptional<number>;
   declare verificationCode: string;
-  declare isRedeemed: boolean;
+  declare isRedeemed: number;
   declare timeRedeemed: Date | null;
 
   declare listing?: Listing;
@@ -28,12 +28,17 @@ class OrderItem extends Model<
 
   declare getCustomerOrder: BelongsToGetAssociationMixin<CustomerOrder>;
   declare setCustomerOrder: BelongsToSetAssociationMixin<CustomerOrder, number>;
-  
+
   public toJSON() {
     return {
       ...this.get(),
-      timeRedeemed:this.timeRedeemed?.getTime(),
-    }
+      timeRedeemed: this.timeRedeemed?.getTime(),
+    };
+  }
+
+  public addIsRedeemed() {
+    this.isRedeemed++;
+    this.save();
   }
 }
 
@@ -49,7 +54,7 @@ OrderItem.init(
       allowNull: false,
     },
     isRedeemed: {
-      type: DataTypes.BOOLEAN,
+      type: DataTypes.INTEGER,
       allowNull: false,
     },
     timeRedeemed: {
@@ -67,4 +72,3 @@ OrderItem.init(
 );
 
 export { OrderItem };
-

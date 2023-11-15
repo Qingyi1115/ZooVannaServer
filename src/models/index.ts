@@ -3310,7 +3310,6 @@ export const enrichmentItemSeed = async () => {
   console.log(Feeder.toJSON());
 };
 
-
 export const enclosureSeed = async () => {
   let enclosure1Template = {
     facilityId: 1,
@@ -3320,7 +3319,7 @@ export const enclosureSeed = async () => {
     width: 400,
     height: 20,
     enclosureStatus: "CONSTRUCTING",
-    designDiagramJsonUrl: "enclosureDiagramJson/pandaEnclosure1.json"
+    designDiagramJsonUrl: "enclosureDiagramJson/pandaEnclosure1.json",
   } as any;
   await Enclosure.create(enclosure1Template);
 
@@ -3336,8 +3335,8 @@ export const enclosureSeed = async () => {
   await Enclosure.create(enclosure2Template);
 
   // assign animals to enclosure
-  await EnclosureService.assignAnimalToEnclosure(1, "ANM00001")
-  await EnclosureService.assignAnimalToEnclosure(1, "ANM00002")
+  await EnclosureService.assignAnimalToEnclosure(1, "ANM00001");
+  await EnclosureService.assignAnimalToEnclosure(1, "ANM00002");
 };
 
 export const facilityAssetsSeed = async () => {
@@ -3799,9 +3798,9 @@ export const facilityAssetsSeed = async () => {
   ]) {
     _day = new Date(
       _day.getTime() -
-      days * 1000 * 60 * 60 * 24 +
-      Math.random() * 1000 * 60 * 60 * 24 * 4 -
-      1000 * 60 * 60 * 24 * 2,
+        days * 1000 * 60 * 60 * 24 +
+        Math.random() * 1000 * 60 * 60 * 24 * 4 -
+        1000 * 60 * 60 * 24 * 2,
     );
     sensor.addMaintenanceLog(
       await MaintenanceLog.create({
@@ -3952,17 +3951,19 @@ export const facilityAssetsSeed = async () => {
 };
 
 export const publicEventSeed = async () => {
+  const today = new Date(Date.now());
+  today.setHours(0, 0, 0);
 
   const pubEvent = await ZooEventService.createPublicEvent(
     EventType.CUSTOMER_FEEDING,
     "Homo sapiens feeding",
     "do not feed them fast food",
     "img/species/elephant.jpg",
-    new Date(),
-    new Date(Date.now() + 60 * DAY_IN_MILLISECONDS),
+    today,
+    new Date(today.getTime() + 60 * DAY_IN_MILLISECONDS),
     [],
     [1],
-    8
+    8,
   );
 
   const pubEventSession = await ZooEventService.createPublicEventSession(
@@ -3973,7 +3974,7 @@ export const publicEventSeed = async () => {
     60,
     "16:00",
     30,
-    new Date(Date.now() + DAY_IN_MILLISECONDS * 5)
+    new Date(today.getTime() + DAY_IN_MILLISECONDS * 5),
   );
 
   const pubEvent2 = await ZooEventService.createPublicEvent(
@@ -3981,11 +3982,13 @@ export const publicEventSeed = async () => {
     "Pandas dance",
     "Watch our ambassador put on a show",
     "img/animal/ANM00001.jpg",
-    new Date(),
-    new Date(Date.now() + 90 * DAY_IN_MILLISECONDS),
-    (await AnimalService.getAllAnimalsBySpeciesCode("SPE001")).map(animal => animal.animalCode),
+    today,
+    new Date(today.getTime() + 90 * DAY_IN_MILLISECONDS),
+    (await AnimalService.getAllAnimalsBySpeciesCode("SPE001")).map(
+      (animal) => animal.animalCode,
+    ),
     [1],
-    8
+    8,
   );
 
   const pubEventSession2 = await ZooEventService.createPublicEventSession(
@@ -3996,7 +3999,7 @@ export const publicEventSeed = async () => {
     60,
     "16:00",
     7,
-    null
+    null,
   );
 
   const pubEventSession3 = await ZooEventService.createPublicEventSession(
@@ -4007,7 +4010,7 @@ export const publicEventSeed = async () => {
     60,
     "14:00",
     7,
-    null
+    null,
   );
 
   const pubEvent3 = await ZooEventService.createPublicEvent(
@@ -4015,11 +4018,13 @@ export const publicEventSeed = async () => {
     "Clown Fish Talk",
     "Find out more about the lifestyles and managements of these sea creatures",
     "img/species/clownfish.jpg",
-    new Date(),
+    today,
     null,
-    (await AnimalService.getAllAnimalsBySpeciesCode("SPE005")).map(animal => animal.animalCode),
+    (await AnimalService.getAllAnimalsBySpeciesCode("SPE005")).map(
+      (animal) => animal.animalCode,
+    ),
     [1],
-    8
+    8,
   );
 
   const pubEventSession4 = await ZooEventService.createPublicEventSession(
@@ -4030,9 +4035,6 @@ export const publicEventSeed = async () => {
     60,
     "15:00",
     7,
-    null
+    null,
   );
-
-
-
 };

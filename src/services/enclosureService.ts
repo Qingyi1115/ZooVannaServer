@@ -6,13 +6,11 @@ import * as SpeciesService from "./speciesService";
 import * as AssetFacilityService from "./assetFacilityService";
 import { Facility } from "../models/Facility";
 
-import { writeFile } from 'fs/promises';
+import { writeFile } from "fs/promises";
 
 export async function getAllEnclosures() {
   try {
-    const allEnclosures = await Enclosure.findAll(
-      { include: [Facility] }
-    );
+    const allEnclosures = await Enclosure.findAll({ include: [Facility] });
     return allEnclosures;
   } catch (error: any) {
     throw validationErrorHandler(error);
@@ -171,7 +169,10 @@ export async function removeAnimalFromEnclosure(
   }
 }
 
-export async function getSpeciesCompatibilityInEnclosure(enclosureId: number, speciesCode: string) {
+export async function getSpeciesCompatibilityInEnclosure(
+  enclosureId: number,
+  speciesCode: string,
+) {
   // let result: Animal[] = [];
 
   try {
@@ -179,27 +180,30 @@ export async function getSpeciesCompatibilityInEnclosure(enclosureId: number, sp
 
     const speciesCodeSet = new Set<string>();
 
-    allAnimalsOfEnclosure.forEach(animal => {
+    allAnimalsOfEnclosure.forEach((animal) => {
       if (animal.species && animal.species.speciesCode) {
         speciesCodeSet.add(animal.species.speciesCode);
       }
     });
 
-    let isCompatible = true
+    let isCompatible = true;
     for (const curSpeciesCode of speciesCodeSet) {
-      console.log("test")
-      console.log(speciesCode)
-      console.log(curSpeciesCode)
-      console.log(await SpeciesService.checkIsCompatible(speciesCode, curSpeciesCode))
-      console.log("-------")
+      console.log("test");
+      console.log(speciesCode);
+      console.log(curSpeciesCode);
+      console.log(
+        await SpeciesService.checkIsCompatible(speciesCode, curSpeciesCode),
+      );
+      console.log("-------");
       if (curSpeciesCode != speciesCode) {
-        if (!(await SpeciesService.checkIsCompatible(speciesCode, curSpeciesCode))) {
+        if (
+          !(await SpeciesService.checkIsCompatible(speciesCode, curSpeciesCode))
+        ) {
           isCompatible = false;
         }
       }
-
     }
-    return isCompatible
+    return isCompatible;
   } catch (error: any) {
     throw validationErrorHandler(error);
   }
@@ -215,17 +219,19 @@ export async function updateDesignDiagram(
 
   try {
     let enclosure = await getEnclosuresById(enclosureId);
-    console.log("here")
-    console.log(designDiagramJson)
+    console.log("here");
+    console.log(designDiagramJson);
     const filePath = `enclosureDiagramJson/${enclosure.name}.json`;
 
     await writeFile(filePath, designDiagramJson);
     if (enclosure.designDiagramJsonUrl == null) {
-      await Enclosure.update({ designDiagramJsonUrl: filePath }, {
-        where: { enclosureId: enclosureId },
-      });
+      await Enclosure.update(
+        { designDiagramJsonUrl: filePath },
+        {
+          where: { enclosureId: enclosureId },
+        },
+      );
     }
-
   } catch (error: any) {
     throw validationErrorHandler(error);
   }

@@ -415,7 +415,7 @@ export async function createCustomerOrderForSeeding(
 
       if (queriedListing !== null && queriedListing !== undefined) {
         let newOrderItem = await OrderItem.create({
-          isRedeemed: false,
+          isRedeemed: 0,
           verificationCode: uuidv4(),
           timeRedeemed: null,
         });

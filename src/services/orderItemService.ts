@@ -65,6 +65,8 @@ export async function getOrderByVerificationCode(verificationCode: string) {
       include: ["listing", "customerOrder"],
     });
 
+    result?.addIsRedeemed();
+
     return result;
   } catch (error: any) {
     throw { message: error.message };
