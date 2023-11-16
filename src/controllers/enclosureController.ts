@@ -1,4 +1,5 @@
 import { Request, Response } from "express";
+import { handleFileUpload } from "../helpers/multerProcessFile";
 import * as EnclosureService from "../services/enclosureService";
 
 export async function getAllEnclosures(req: Request, res: Response) {
@@ -32,10 +33,10 @@ export async function getEnclosureById(req: Request, res: Response) {
 
 export async function createNewEnclosure(req: Request, res: Response) {
   try {
-    // const imageUrl = await handleFileUpload(
-    //   req,
-    //   process.env.IMG_URL_ROOT! + "species", //"D:/capstoneUploads/species",
-    // );
+    const imageUrl = await handleFileUpload(
+      req,
+      process.env.IMG_URL_ROOT! + "enclosure", //"D:/capstoneUploads/enclosure",
+    );
     const {
       name,
       remark,
@@ -46,7 +47,6 @@ export async function createNewEnclosure(req: Request, res: Response) {
       standOffBarrierDist,
       facilityName,
       isSheltered,
-      imageUrl,
     } = req.body;
 
     if (
