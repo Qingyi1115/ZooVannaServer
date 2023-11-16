@@ -33,6 +33,7 @@ import {
   Continent,
   Country,
   DayOfWeek,
+  EnclosureStatus,
   EventTimingType,
   EventType,
   FacilityLogType,
@@ -3418,7 +3419,23 @@ export const enclosureSeed = async () => {
     standOffBarrierDist: 5,
     designDiagramJsonUrl: "enclosureDiagramJson/Panda Enclosure 01.json",
   } as any;
-  await Enclosure.create(enclosure1Template);
+  let enclosure = await Enclosure.create(enclosure1Template);
+  await EnclosureService.updateEnclosureTerrainDistribution(
+    enclosure.enclosureId,
+    15,
+    20,
+    12,
+    50,
+    0,
+    0
+  );
+  await EnclosureService.updateEnclosureClimateDesign(
+    enclosure.enclosureId,
+    15,
+    25,
+    35,
+    45,
+  );
 
   let enclosure2Template = {
     facilityId: 2,
@@ -3430,9 +3447,25 @@ export const enclosureSeed = async () => {
     enclosureStatus: "ACTIVE",
     standOffBarrierDist: 3,
   } as any;
-  await Enclosure.create(enclosure2Template);
+  enclosure = await Enclosure.create(enclosure2Template);
+  await EnclosureService.updateEnclosureTerrainDistribution(
+    enclosure.enclosureId,
+    30,
+    50,
+    5,
+    5,
+    5,
+    5
+  );
+  await EnclosureService.updateEnclosureClimateDesign(
+    enclosure.enclosureId,
+    15,
+    25,
+    35,
+    45,
+  );
 
-  await EnclosureService.createNewEnclosure(
+  enclosure = await EnclosureService.createNewEnclosure(
     "Panda Enclosure 03",
     "NA",
     300,
@@ -3441,10 +3474,24 @@ export const enclosureSeed = async () => {
     "ACTIVE",
     3,
     "Enclosure 3",
-    103.78221130371094,
-    1.29178547859192,
     false,
     "img/facility/Directory.png",
+  );
+  await EnclosureService.updateEnclosureTerrainDistribution(
+    enclosure.enclosureId,
+    0,
+    0,
+    15,
+    0,
+    75,
+    10
+  );
+  await EnclosureService.updateEnclosureClimateDesign(
+    enclosure.enclosureId,
+    15,
+    25,
+    35,
+    45,
   );
 
   // assign animals to enclosure

@@ -37,7 +37,6 @@ export async function createNewEnclosure(req: Request, res: Response) {
     //   process.env.IMG_URL_ROOT! + "species", //"D:/capstoneUploads/species",
     // );
     const {
-      facilityId,
       name,
       remark,
       length,
@@ -46,15 +45,12 @@ export async function createNewEnclosure(req: Request, res: Response) {
       enclosureStatus,
       standOffBarrierDist,
       facilityName,
-      xCoordinate,
-      yCoordinate,
       isSheltered,
       imageUrl,
     } = req.body;
 
     if (
       [
-        facilityId,
         name,
         remark,
         length,
@@ -63,14 +59,11 @@ export async function createNewEnclosure(req: Request, res: Response) {
         enclosureStatus,
         standOffBarrierDist,
         facilityName,
-        xCoordinate,
-        yCoordinate,
         isSheltered,
         imageUrl,
       ].includes(undefined)
     ) {
       console.log("Missing field(s): ", {
-        facilityId,
         name,
         remark,
         length,
@@ -79,8 +72,6 @@ export async function createNewEnclosure(req: Request, res: Response) {
         enclosureStatus,
         standOffBarrierDist,
         facilityName,
-        xCoordinate,
-        yCoordinate,
         isSheltered,
         imageUrl,
       });
@@ -97,8 +88,6 @@ export async function createNewEnclosure(req: Request, res: Response) {
       enclosureStatus,
       standOffBarrierDist,
       facilityName,
-      xCoordinate,
-      yCoordinate,
       isSheltered,
       imageUrl,
     );

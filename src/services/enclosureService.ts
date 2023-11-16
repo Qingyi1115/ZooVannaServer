@@ -70,8 +70,6 @@ export async function createNewEnclosure(
   enclosureStatus: string,
   standOffBarrierDist: number,
   facilityName: string,
-  xCoordinate: number,
-  yCoordinate: number,
   isSheltered: boolean,
   imageUrl: string,
 ) {
@@ -89,8 +87,6 @@ export async function createNewEnclosure(
     let facility = {
       facilityName: facilityName,
       isSheltered: isSheltered,
-      xCoordinate: xCoordinate,
-      yCoordinate: yCoordinate,
       imageUrl: imageUrl,
     } as any;
 
