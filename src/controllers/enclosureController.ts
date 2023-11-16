@@ -49,8 +49,6 @@ export async function createNewEnclosure(req: Request, res: Response) {
       xCoordinate,
       yCoordinate,
       isSheltered,
-      facilityDetail,
-      facilityDetailJson,
       imageUrl,
     } = req.body;
 
@@ -68,8 +66,6 @@ export async function createNewEnclosure(req: Request, res: Response) {
         xCoordinate,
         yCoordinate,
         isSheltered,
-        facilityDetail,
-        facilityDetailJson,
         imageUrl,
       ].includes(undefined)
     ) {
@@ -86,8 +82,6 @@ export async function createNewEnclosure(req: Request, res: Response) {
         xCoordinate,
         yCoordinate,
         isSheltered,
-        facilityDetail,
-        facilityDetailJson,
         imageUrl,
       });
       return res.status(400).json({ error: "Missing information!" });
@@ -106,8 +100,6 @@ export async function createNewEnclosure(req: Request, res: Response) {
       xCoordinate,
       yCoordinate,
       isSheltered,
-      facilityDetail,
-      facilityDetailJson,
       imageUrl,
     );
 

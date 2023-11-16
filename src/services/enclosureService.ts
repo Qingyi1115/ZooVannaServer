@@ -73,8 +73,6 @@ export async function createNewEnclosure(
   xCoordinate: number,
   yCoordinate: number,
   isSheltered: boolean,
-  facilityDetail: string,
-  facilityDetailJson: any,
   imageUrl: string,
 ) {
   let newEnclosure = {
@@ -93,20 +91,14 @@ export async function createNewEnclosure(
       isSheltered: isSheltered,
       xCoordinate: xCoordinate,
       yCoordinate: yCoordinate,
-      facilityDetail: facilityDetail,
-      facilityDetailJson: facilityDetailJson,
       imageUrl: imageUrl,
     } as any;
-    let newFacility = await Facility.create(facility, {});
 
-    if (newFacility) {
-      let enclousre = await Enclosure.create(newEnclosure);
-      enclousre.setFacility(newFacility);
+    let newFacility = await Facility.create(facility);
+    let enclousre = await Enclosure.create(newEnclosure);
+    await enclousre.setFacility(newFacility);
 
-      return enclousre;
-    } else {
-      throw new Error("Failed to create facility!");
-    }
+    return enclousre;
   } catch (error: any) {
     throw validationErrorHandler(error);
   }
