@@ -3444,8 +3444,6 @@ export const enclosureSeed = async () => {
     103.78221130371094,
     1.29178547859192,
     false,
-    "",
-    "",
     "img/facility/Directory.png",
   );
 
