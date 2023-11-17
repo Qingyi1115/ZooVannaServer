@@ -1,4 +1,8 @@
 import {
+  BelongsToManyAddAssociationMixin,
+  BelongsToManyGetAssociationsMixin,
+  BelongsToManyRemoveAssociationMixin,
+  BelongsToManySetAssociationsMixin,
   CreationOptional,
   DataTypes,
   HasManyAddAssociationMixin,
@@ -11,6 +15,7 @@ import {
 } from "Sequelize";
 import { conn } from "../db";
 import { AnimalActivity } from "./AnimalActivity";
+import { Enclosure } from "./Enclosure";
 
 class EnrichmentItem extends Model<
   InferAttributes<EnrichmentItem>,
@@ -22,6 +27,7 @@ class EnrichmentItem extends Model<
 
   //-- FK
   declare animalActivities?: AnimalActivity[];
+  declare enclosures?: Enclosure[];
 
   declare getAnimalActivities: HasManyGetAssociationsMixin<AnimalActivity>;
   declare addAnimalActivity: HasManyAddAssociationMixin<AnimalActivity, number>;
@@ -33,6 +39,11 @@ class EnrichmentItem extends Model<
     AnimalActivity,
     number
   >;
+
+  declare getEnclosures: BelongsToManyGetAssociationsMixin<Enclosure>;
+  declare addEnclosure: BelongsToManyAddAssociationMixin<Enclosure, number>;
+  declare setEnclosures: BelongsToManySetAssociationsMixin<Enclosure, number>;
+  declare removeEnclosure: BelongsToManyRemoveAssociationMixin<Enclosure, number>;
 
   public toJSON() {
     return {

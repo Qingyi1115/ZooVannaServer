@@ -105,20 +105,14 @@ class Enclosure extends Model<
   declare setKeepers: BelongsToManySetAssociationsMixin<Keeper, number>;
   declare removeKeeper: BelongsToManyRemoveAssociationMixin<Keeper, number>;
 
+  declare getEnrichmentItems: BelongsToManyGetAssociationsMixin<EnrichmentItem>;
+  declare addEnrichmentItem: BelongsToManyAddAssociationMixin<EnrichmentItem, number>;
+  declare setEnrichmentItems: BelongsToManySetAssociationsMixin<EnrichmentItem, number>;
+  declare removeEnrichmentItem: BelongsToManyRemoveAssociationMixin<EnrichmentItem, number>;
+
   declare getEnclosureBarrier: HasOneGetAssociationMixin<EnclosureBarrier>;
   declare setEnclosureBarrier: HasOneSetAssociationMixin<
     EnclosureBarrier,
-    number
-  >;
-
-  declare getEnrichmentItems: HasManyGetAssociationsMixin<EnrichmentItem>;
-  declare addEnrichmentItem: HasManyAddAssociationMixin<EnrichmentItem, number>;
-  declare setAEnrichmentItems: HasManySetAssociationsMixin<
-    EnrichmentItem,
-    number
-  >;
-  declare removeEnrichmentItem: HasManyRemoveAssociationMixin<
-    EnrichmentItem,
     number
   >;
 
