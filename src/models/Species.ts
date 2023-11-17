@@ -14,7 +14,7 @@ import {
   InferAttributes,
   InferCreationAttributes,
   Model,
-  Op
+  Op,
 } from "Sequelize";
 import { conn } from "../db";
 import { Animal } from "./Animal";
@@ -23,7 +23,7 @@ import { Customer } from "./Customer";
 import {
   ConservationStatus,
   Continent,
-  GroupSexualDynamic
+  GroupSexualDynamic,
 } from "./Enumerated";
 import { FeedingPlan } from "./FeedingPlan";
 import { PhysiologicalReferenceNorms } from "./PhysiologicalReferenceNorms";
@@ -300,4 +300,3 @@ Species.init(
 );
 
 export { Species };
-

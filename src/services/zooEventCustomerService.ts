@@ -47,8 +47,12 @@ export async function getAllPublicEvents(include: any[] = []) {
     return await PublicEvent.findAll({
       include: include,
       where: {
-        startDate: { [Op.gte]: today },
+        [Op.or]: [
+          { endDate: { [Op.gte]: today } }, // End date is greater than or equal to today
+          { endDate: null }, // Or end date is null
+        ],
       },
+      order: [["startDate", "ASC"]],
     });
   } catch (error: any) {
     throw validationErrorHandler(error);
