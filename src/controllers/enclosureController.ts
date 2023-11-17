@@ -1,4 +1,5 @@
 import { Request, Response } from "express";
+import { handleFileUpload } from "../helpers/multerProcessFile";
 import * as EnclosureService from "../services/enclosureService";
 
 export async function getAllEnclosures(req: Request, res: Response) {
@@ -32,12 +33,11 @@ export async function getEnclosureById(req: Request, res: Response) {
 
 export async function createNewEnclosure(req: Request, res: Response) {
   try {
-    // const imageUrl = await handleFileUpload(
-    //   req,
-    //   process.env.IMG_URL_ROOT! + "species", //"D:/capstoneUploads/species",
-    // );
+    const imageUrl = await handleFileUpload(
+      req,
+      process.env.IMG_URL_ROOT! + "enclosure", //"D:/capstoneUploads/enclosure",
+    );
     const {
-      facilityId,
       name,
       remark,
       length,
@@ -46,17 +46,11 @@ export async function createNewEnclosure(req: Request, res: Response) {
       enclosureStatus,
       standOffBarrierDist,
       facilityName,
-      xCoordinate,
-      yCoordinate,
       isSheltered,
-      facilityDetail,
-      facilityDetailJson,
-      imageUrl,
     } = req.body;
 
     if (
       [
-        facilityId,
         name,
         remark,
         length,
@@ -65,16 +59,11 @@ export async function createNewEnclosure(req: Request, res: Response) {
         enclosureStatus,
         standOffBarrierDist,
         facilityName,
-        xCoordinate,
-        yCoordinate,
         isSheltered,
-        facilityDetail,
-        facilityDetailJson,
         imageUrl,
       ].includes(undefined)
     ) {
       console.log("Missing field(s): ", {
-        facilityId,
         name,
         remark,
         length,
@@ -83,11 +72,7 @@ export async function createNewEnclosure(req: Request, res: Response) {
         enclosureStatus,
         standOffBarrierDist,
         facilityName,
-        xCoordinate,
-        yCoordinate,
         isSheltered,
-        facilityDetail,
-        facilityDetailJson,
         imageUrl,
       });
       return res.status(400).json({ error: "Missing information!" });
@@ -103,11 +88,7 @@ export async function createNewEnclosure(req: Request, res: Response) {
       enclosureStatus,
       standOffBarrierDist,
       facilityName,
-      xCoordinate,
-      yCoordinate,
       isSheltered,
-      facilityDetail,
-      facilityDetailJson,
       imageUrl,
     );
 

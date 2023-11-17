@@ -9,7 +9,7 @@ import {
   HasOneSetAssociationMixin,
   InferAttributes,
   InferCreationAttributes,
-  Model
+  Model,
 } from "Sequelize";
 import { conn } from "../db";
 import { uppercaseFirst } from "../helpers/others";
@@ -19,6 +19,7 @@ import { HubProcessor } from "./HubProcessor";
 import { InHouse } from "./InHouse";
 import { ThirdParty } from "./ThirdParty";
 import { Zone } from "./Zone";
+import { ItineraryItem } from "./ItineraryItem";
 
 class Facility extends Model<
   InferAttributes<Facility>,
@@ -40,12 +41,21 @@ class Facility extends Model<
   declare thirdParty?: ThirdParty;
   declare animalClinic?: AnimalClinic;
   declare enclosure?: Enclosure;
+  declare itineraryItem?: ItineraryItem;
 
   declare getHubProcessors: HasManyGetAssociationsMixin<HubProcessor>;
   declare addHubProcessor: HasManyAddAssociationMixin<HubProcessor, number>;
   declare setHubProcessors: HasManySetAssociationsMixin<HubProcessor, number>;
   declare removeHubProcessor: HasManyRemoveAssociationMixin<
     HubProcessor,
+    number
+  >;
+
+  declare getItineraryItems: HasManyGetAssociationsMixin<ItineraryItem>;
+  declare addItineraryItem: HasManyAddAssociationMixin<ItineraryItem, number>;
+  declare setItineraryItems: HasManySetAssociationsMixin<ItineraryItem, number>;
+  declare removeItineraryItem: HasManyRemoveAssociationMixin<
+    ItineraryItem,
     number
   >;
 
@@ -67,35 +77,46 @@ class Facility extends Model<
   public async getFacilityDetail() {
     if (true) {
       let inHouse = await this.getInHouse({
-        include: [{
-          association: "maintenanceStaffs",
-          required: false,
-          include: [{
-            association: "employee",
-          }]
-        }, {
-          association: "operationStaffs",
-          required: false,
-          include: [{
-            association: "employee",
-          }]
-        }, {
-          association: "facilityLogs",
-          required: false
-        }, {
-          association: "customerReportLogs",
-          required: false
-        }]
+        include: [
+          {
+            association: "maintenanceStaffs",
+            required: false,
+            include: [
+              {
+                association: "employee",
+              },
+            ],
+          },
+          {
+            association: "operationStaffs",
+            required: false,
+            include: [
+              {
+                association: "employee",
+              },
+            ],
+          },
+          {
+            association: "facilityLogs",
+            required: false,
+          },
+          {
+            association: "customerReportLogs",
+            required: false,
+          },
+        ],
       });
       if (inHouse) {
         this.facilityDetail = "inHouse";
         return inHouse;
       }
       let thirdParty = await this.getThirdParty({
-        include: [{
-          association: "customerReportLogs",
-          required: false
-        }]
+        include: [
+          {
+            association: "customerReportLogs",
+            required: false,
+          },
+        ],
       });
       if (thirdParty) {
         this.facilityDetail = "thirdParty";
@@ -103,13 +124,16 @@ class Facility extends Model<
       }
 
       let enclosure = await this.getEnclosure({
-        include: [{
-          association: "barrierType",
-          required: false
-        },{
-          association: "plantation",
-          required: false
-        }]
+        include: [
+          {
+            association: "barrierType",
+            required: false,
+          },
+          {
+            association: "plantation",
+            required: false,
+          },
+        ],
       });
       if (enclosure) {
         this.facilityDetail = "enclosure";
@@ -188,4 +212,3 @@ Facility.init(
 );
 
 export { Facility };
-

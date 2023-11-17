@@ -1,6 +1,8 @@
 import { Request, Response } from "express";
 import { handleFileUpload } from "../helpers/multerProcessFile";
 import * as SpeciesService from "../services/speciesService";
+import { Species } from "models/Species";
+import { Facility } from "models/Facility";
 
 export async function getAllSpecies(req: Request, res: Response) {
   const { includes = "" } = req.body;
@@ -31,9 +33,12 @@ export async function getSpeciesByCode(req: Request, res: Response) {
     "speciesDietNeed",
     "speciesEnclosureNeed",
     "physiologicalReferenceNorms",
+    "customers",
   ]) {
     if (includes.includes(role)) _includes.push(role);
   }
+
+  _includes.push("customers");
 
   if (speciesCode == undefined) {
     console.log("Missing field(s): ", {
@@ -61,7 +66,7 @@ export async function createSpecies(req: Request, res: Response) {
     // if (!((await employee.getPlanningStaff())?.plannerType == PlannerType.OPERATIONS_MANAGER)) {
     //     return res.status(403).json({error: "Access Denied! Operation managers only!"});
     // }
-    console.log("req", req, req.file, req.files)
+    console.log("req", req, req.file, req.files);
     const imageUrl = await handleFileUpload(
       req,
       process.env.IMG_URL_ROOT! + "species", //"D:/capstoneUploads/species",
@@ -294,7 +299,7 @@ export async function updateSpecies(req: Request, res: Response) {
       ageToElder,
     );
 
-    return res.status(200).json({ result:"success" });
+    return res.status(200).json({ result: "success" });
   } catch (error: any) {
     res.status(400).json({ error: error.message });
   }
@@ -368,7 +373,7 @@ export async function updateSpeciesEduDesc(req: Request, res: Response) {
       educationalFunFact,
     );
 
-    return res.status(200).json({ result:"success" });
+    return res.status(200).json({ result: "success" });
   } catch (error: any) {
     res.status(400).json({ error: error.message });
   }
@@ -875,7 +880,7 @@ export async function updatePhysiologicalReferenceNorms(
         growthStage,
       );
 
-    return res.status(200).json({ result :"success" });
+    return res.status(200).json({ result: "success" });
   } catch (error: any) {
     res.status(400).json({ error: error.message });
   }
@@ -899,7 +904,7 @@ export async function deletePhysiologicalReferenceNorms(
       await SpeciesService.deletePhysiologicalReferenceNorms(
         physiologicalRefId,
       );
-    return res.status(200).json({result: "success"});
+    return res.status(200).json({ result: "success" });
   } catch (error: any) {
     res.status(400).json({ error: error.message });
   }
@@ -1054,7 +1059,7 @@ export async function updateDietNeed(req: Request, res: Response) {
       growthStage,
     );
 
-    return res.status(200).json({ result:"success" });
+    return res.status(200).json({ result: "success" });
   } catch (error: any) {
     res.status(400).json({ error: error.message });
   }
@@ -1072,7 +1077,7 @@ export async function deleteDietNeed(req: Request, res: Response) {
 
   try {
     const dietNeed = await SpeciesService.deleteDietNeed(speciesDietNeedId);
-    return res.status(200).json({result:"success"});
+    return res.status(200).json({ result: "success" });
   } catch (error: any) {
     res.status(400).json({ error: error.message });
   }
@@ -1096,7 +1101,7 @@ export async function createCompatibility(req: Request, res: Response) {
       speciesCode2,
     );
 
-    return res.status(200).json({ result:"success" });
+    return res.status(200).json({ result: "success" });
   } catch (error: any) {
     res.status(400).json({ error: error.message });
   }
@@ -1147,8 +1152,127 @@ export async function deleteCompatibility(req: Request, res: Response) {
       speciesCode1,
       speciesCode2,
     );
-    return res.status(200).json({result:"success"});
+    return res.status(200).json({ result: "success" });
   } catch (error: any) {
     res.status(400).json({ error: error.message });
+  }
+}
+
+export async function findIsLoved(req: Request, res: Response) {
+  try {
+    console.log("here");
+    const { email } = (req as any).locals.jwtPayload;
+    const { speciesCode } = req.params;
+    console.log("here");
+    if (email && speciesCode) {
+      const result = await SpeciesService.findIsLoved(speciesCode, email);
+      console.log("here is the result" + result);
+      return res.status(200).json({ result: result });
+    } else {
+      return res.status(400).json({ error: "Missing Information" });
+    }
+  } catch (error: any) {
+    return res.status(400).json({ error: error.message });
+  }
+}
+
+export async function setCustomerWithSpecies(req: Request, res: Response) {
+  try {
+    const { email } = (req as any).locals.jwtPayload;
+    const { speciesCode } = req.params;
+
+    if (email && speciesCode) {
+      const result = await SpeciesService.setCustomerWithSpecies(
+        speciesCode,
+        email,
+      );
+
+      return res.status(200).json({ result: result.toJSON() });
+    } else {
+      return res.status(400).json({ error: "Missing Information" });
+    }
+  } catch (error: any) {
+    return res.status(400).json({ error: error.message });
+  }
+}
+
+export async function unSetCustomerWithSpecies(req: Request, res: Response) {
+  try {
+    const { email } = (req as any).locals.jwtPayload;
+    const { speciesCode } = req.params;
+
+    if (email && speciesCode) {
+      const result = await SpeciesService.unSetCustomerWithSpecies(
+        speciesCode,
+        email,
+      );
+
+      return res.status(200).json({ result: result.toJSON() });
+    } else {
+      return res.status(400).json({ error: "Missing Information" });
+    }
+  } catch (error: any) {
+    return res.status(400).json({ error: error.message });
+  }
+}
+
+export async function getSpeciesLovedByCustomer(req: Request, res: Response) {
+  try {
+    const { email } = (req as any).locals.jwtPayload;
+
+    if (email) {
+      const result = await SpeciesService.getSpeciesLovedByCustomer(email);
+
+      return res
+        .status(200)
+        .json({ result: result?.map((_result: Species) => _result.toJSON()) });
+    } else {
+      return res.status(400).json({ error: "Missing Information" });
+    }
+  } catch (error: any) {
+    return res.status(400).json({ error: error.message });
+  }
+}
+
+export async function getSpeciesNotLovedByCustomer(
+  req: Request,
+  res: Response,
+) {
+  try {
+    const { email } = (req as any).locals.jwtPayload;
+
+    if (email) {
+      const result = await SpeciesService.getSpeciesNotLovedByCustomer(email);
+
+      return res
+        .status(200)
+        .json({ result: result?.map((_result: Species) => _result.toJSON()) });
+    } else {
+      return res.status(400).json({ error: "Missing Information" });
+    }
+  } catch (error: any) {
+    return res.status(400).json({ error: error.message });
+  }
+}
+
+export async function getFacilityForSpeciesLovedByCustomer(
+  req: Request,
+  res: Response,
+) {
+  try {
+    const { email } = (req as any).locals.jwtPayload;
+
+    if (email) {
+      const result =
+        await SpeciesService.getFacilityForSpeciesLovedByCustomer(email);
+
+      return res
+        .status(200)
+        .json({ result: result?.map((_result: Facility) => _result.toJSON()) });
+    } else {
+      return res.status(400).json({ error: "Missing Information" });
+    }
+  } catch (error: any) {
+    return res.status(400).json({ error: error.message });
   }
 }

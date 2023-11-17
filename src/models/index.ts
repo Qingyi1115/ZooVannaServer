@@ -33,6 +33,7 @@ import {
   Continent,
   Country,
   DayOfWeek,
+  EnclosureStatus,
   EventTimingType,
   EventType,
   FacilityLogType,
@@ -84,6 +85,8 @@ import { Zone } from "./Zone";
 import { ZooEvent } from "./ZooEvent";
 import { EnclosureBarrier } from "./EnclosureBarrier";
 import { AccessPoint } from "./AccessPoint";
+import { Itinerary } from "./Itinerary";
+import { ItineraryItem } from "./ItineraryItem";
 
 function addCascadeOptions(options: object) {
   return { ...options, onDelete: "CASCADE", onUpdate: "CASCADE" };
@@ -346,14 +349,50 @@ export const createDatabase = async (options: any) => {
 
   Species.belongsToMany(Customer, {
     foreignKey: "speciesId",
-    through: "customerFravouriteSpecies",
+    through: "customerFavouriteSpecies",
     as: "customers",
   });
   Customer.belongsToMany(Species, {
     foreignKey: "customerId",
-    through: "customerFravouriteSpecies",
+    through: "customerFavouriteSpecies",
     as: "species",
   });
+
+  Employee.hasMany(ZooEvent, addCascadeOptions({ foreignKey: "employeeId" }));
+  ZooEvent.belongsTo(Employee, addCascadeOptions({ foreignKey: "employeeId" }));
+
+  Customer.hasMany(Itinerary, addCascadeOptions({ foreignKey: "customerId" }));
+  Itinerary.belongsTo(
+    Customer,
+    addCascadeOptions({ foreignKey: "customerId" }),
+  );
+
+  Itinerary.hasMany(
+    ItineraryItem,
+    addCascadeOptions({ foreignKey: "itineraryId" }),
+  );
+  ItineraryItem.belongsTo(
+    Itinerary,
+    addCascadeOptions({ foreignKey: "itineraryId" }),
+  );
+
+  Enclosure.hasMany(
+    ItineraryItem,
+    addCascadeOptions({ foreignKey: "enclosureId" }),
+  );
+  ItineraryItem.belongsTo(
+    Enclosure,
+    addCascadeOptions({ foreignKey: "enclosureId" }),
+  );
+
+  Facility.hasMany(
+    ItineraryItem,
+    addCascadeOptions({ foreignKey: "facilityId" }),
+  );
+  ItineraryItem.belongsTo(
+    Facility,
+    addCascadeOptions({ foreignKey: "facilityId" }),
+  );
 
   Animal.belongsToMany(AnimalObservationLog, {
     foreignKey: "animalId",
@@ -3418,7 +3457,23 @@ export const enclosureSeed = async () => {
     standOffBarrierDist: 5,
     designDiagramJsonUrl: "enclosureDiagramJson/Panda Enclosure 01.json",
   } as any;
-  await Enclosure.create(enclosure1Template);
+  let enclosure = await Enclosure.create(enclosure1Template);
+  await EnclosureService.updateEnclosureTerrainDistribution(
+    enclosure.enclosureId,
+    15,
+    20,
+    12,
+    50,
+    0,
+    0
+  );
+  await EnclosureService.updateEnclosureClimateDesign(
+    enclosure.enclosureId,
+    15,
+    25,
+    35,
+    45,
+  );
 
   let enclosure2Template = {
     facilityId: 2,
@@ -3430,9 +3485,25 @@ export const enclosureSeed = async () => {
     enclosureStatus: "ACTIVE",
     standOffBarrierDist: 3,
   } as any;
-  await Enclosure.create(enclosure2Template);
+  enclosure = await Enclosure.create(enclosure2Template);
+  await EnclosureService.updateEnclosureTerrainDistribution(
+    enclosure.enclosureId,
+    30,
+    50,
+    5,
+    5,
+    5,
+    5
+  );
+  await EnclosureService.updateEnclosureClimateDesign(
+    enclosure.enclosureId,
+    15,
+    25,
+    35,
+    45,
+  );
 
-  await EnclosureService.createNewEnclosure(
+  enclosure = await EnclosureService.createNewEnclosure(
     "Panda Enclosure 03",
     "NA",
     300,
@@ -3441,12 +3512,24 @@ export const enclosureSeed = async () => {
     "ACTIVE",
     3,
     "Enclosure 3",
-    103.78221130371094,
-    1.29178547859192,
     false,
-    "",
-    "",
     "img/facility/Directory.png",
+  );
+  await EnclosureService.updateEnclosureTerrainDistribution(
+    enclosure.enclosureId,
+    0,
+    0,
+    15,
+    0,
+    75,
+    10
+  );
+  await EnclosureService.updateEnclosureClimateDesign(
+    enclosure.enclosureId,
+    15,
+    25,
+    35,
+    45,
   );
 
   // assign animals to enclosure
