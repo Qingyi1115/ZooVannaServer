@@ -25,6 +25,19 @@ import {
   addPlantationToEnclosure,
   removePlantationFromEnclosure,
   getEnvironmentSensorsData,
+  createNewEnclosureBarrier,
+  getEnclosureBarrier,
+  updateEnclosureBarrier,
+  deleteEnclosureBarrier,
+  getEnclosureAccessPoints,
+  getEnclosureAccessPointById,
+  createNewEnclosureAccessPoint,
+  updateEnclosureAccessPoint,
+  deleteEnclosureAccessPoint,
+  getAllPlantationsByEnclosureId,
+  getEnclosureEnrichmentItems,
+  removeEnrichmentItemFromEnclosure,
+  addEnrichmentItemToEnclosure,
 } from "../controllers/enclosureController";
 
 const router = express.Router();
@@ -77,10 +90,51 @@ router.get(
 );
 
 //Plantation
+router.get(
+  "/getAllPlantationsByEnclosureId/:enclosureId",
+  getAllPlantationsByEnclosureId,
+);
 router.get("/getAllPlantations", getAllPlantations);
 router.put("/addPlantationToEnclosure", addPlantationToEnclosure);
 router.put("/removePlantationFromEnclosure", removePlantationFromEnclosure);
 
 //Sensors
-router.get("/getEnvironmentSensorsData/:enclosureId", getEnvironmentSensorsData);
+router.get(
+  "/getEnvironmentSensorsData/:enclosureId",
+  getEnvironmentSensorsData,
+);
+
+// barrier
+router.get("/getEnclosureBarrier/:enclosureId", getEnclosureBarrier);
+router.put("/createNewEnclosureBarrier", createNewEnclosureBarrier);
+router.put("/updateEnclosureBarrier", updateEnclosureBarrier);
+router.delete(
+  "/deleteEnclosureBarrier/:enclosureBarrierId",
+  deleteEnclosureBarrier,
+);
+
+// access point
+router.get("/getEnclosureAccessPoints/:enclosureId", getEnclosureAccessPoints);
+router.get(
+  "/getEnclosureAccessPointById/:accessPointId",
+  getEnclosureAccessPointById,
+);
+router.put("/createNewEnclosureAccessPoint", createNewEnclosureAccessPoint);
+router.put("/updateEnclosureAccessPoint", updateEnclosureAccessPoint);
+router.delete(
+  "/deleteEnclosureAccessPoint/:accessPointId",
+  deleteEnclosureAccessPoint,
+);
+
+// enrichment items
+router.get(
+  "/getEnclosureEnrichmentItems/:enclosureId",
+  getEnclosureEnrichmentItems,
+);
+router.put("/addEnrichmentItemToEnclosure", addEnrichmentItemToEnclosure);
+router.put(
+  "/removeEnrichmentItemFromEnclosure",
+  removeEnrichmentItemFromEnclosure,
+);
+
 export default router;
