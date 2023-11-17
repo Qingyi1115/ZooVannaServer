@@ -55,6 +55,11 @@ export async function getEnclosureById(enclosureId: number) {
         as: "accessPoints",
         required: false,
       },
+      {
+        model: EnrichmentItem,
+        as: "enrichmentItems",
+        required: false,
+      },
     ],
   });
   if (enclosure) {
@@ -592,6 +597,7 @@ export async function getEnvironmentSensorsData(enclosureId: number) {
       );
     }
     return sensors;
+
   } catch (error: any) {
     throw validationErrorHandler(error);
   }

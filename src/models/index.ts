@@ -385,6 +385,17 @@ export const createDatabase = async (options: any) => {
     addCascadeOptions({ foreignKey: "enclosureId" }),
   );
 
+  Enclosure.belongsToMany(EnrichmentItem, {
+    foreignKey: "speciesId",
+    through: "enclosure_enrichmentItem",
+    as: "enrichmentItems",
+  });
+  EnrichmentItem.belongsToMany(Enclosure, {
+    foreignKey: "customerId",
+    through: "enclosure_enrichmentItem",
+    as: "enclosures",
+  });
+
   Facility.hasMany(
     ItineraryItem,
     addCascadeOptions({ foreignKey: "facilityId" }),
@@ -3517,8 +3528,7 @@ export const enclosureSeed = async () => {
     enclosure1Template.standOffBarrierDist,
     enclosure1Template.facilityName,
     enclosure1Template.isSheltered,
-    enclosure1Template.imageUrl,
-  );
+    enclosure1Template.imageUrl)
   let panda_hub = await AssetFacility.addHubProcessorByFacilityId(
     enclosure1Object.newFacility.facilityId,
     "Da Bambo Hub",
@@ -3545,7 +3555,7 @@ export const enclosureSeed = async () => {
   pandaSensor = await AssetFacility.addSensorByHubProcessorId(
     panda_hub.hubProcessorId,
     SensorType.LIGHT,
-    "The panda detector",
+    "The panda detector"
   );
 
   for (let i = 1; i < 50; i++) {
