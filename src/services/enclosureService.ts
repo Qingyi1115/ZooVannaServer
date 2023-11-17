@@ -94,7 +94,7 @@ export async function createNewEnclosure(
     let enclousre = await Enclosure.create(newEnclosure);
     await enclousre.setFacility(newFacility);
 
-    return enclousre;
+    return { newEnclosure: enclousre, newFacility: newFacility };
   } catch (error: any) {
     throw validationErrorHandler(error);
   }
