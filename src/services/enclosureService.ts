@@ -45,6 +45,11 @@ export async function getEnclosureById(enclosureId: number) {
         model: Keeper,
         as: "keepers",
         required: false,
+        include: [{
+          model: Employee,
+          required: true,
+          as: "employee"
+        }]
       },
       {
         model: EnclosureBarrier,
@@ -332,10 +337,11 @@ export async function assignKeepersToEnclosure(
 
     const promises = [];
     for (const keeper of keepers) {
-      promises.push(keeper.addEnclosure(enclosure));
+      promises.push(enclosure.addKeeper(keeper));
     }
 
     for (const p of promises) await p;
+
   } catch (error: any) {
     throw validationErrorHandler(error);
   }
