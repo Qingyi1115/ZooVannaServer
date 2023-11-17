@@ -505,6 +505,12 @@ export const createDatabase = async (options: any) => {
     as: "plantations",
   });
 
+  Enclosure.belongsToMany(EnrichmentItem, {
+    foreignKey: "enclosureId",
+    through: "enclosure_enrichmentItem",
+    as: "enclosureEnrichmentItems",
+  });
+
   // Plantation.belongsToMany(Enclosure, {
   //   foreignKey: "plantationId",
   //   through: "enclosure_plantation",
@@ -3499,9 +3505,10 @@ export const enclosureSeed = async () => {
     standOffBarrierDist: 5,
     facilityName: "Panda Paradise",
     isSheltered: false,
-    imageUrl: "img/facility/EnclosurePandaParadise.png"
+    imageUrl: "img/facility/EnclosurePandaParadise.png",
   } as any;
-  let enclosure1Object = await EnclosureService.createNewEnclosure(enclosure1Template.name,
+  let enclosure1Object = await EnclosureService.createNewEnclosure(
+    enclosure1Template.name,
     enclosure1Template.remark,
     enclosure1Template.length,
     enclosure1Template.width,
@@ -3510,46 +3517,47 @@ export const enclosureSeed = async () => {
     enclosure1Template.standOffBarrierDist,
     enclosure1Template.facilityName,
     enclosure1Template.isSheltered,
-    enclosure1Template.imageUrl)
-    let panda_hub = await AssetFacility.addHubProcessorByFacilityId(
-      enclosure1Object.newFacility.facilityId,
-      "Da Bambo Hub",
+    enclosure1Template.imageUrl,
+  );
+  let panda_hub = await AssetFacility.addHubProcessorByFacilityId(
+    enclosure1Object.newFacility.facilityId,
+    "Da Bambo Hub",
+  );
+  panda_hub.lastDataUpdate = new Date();
+  panda_hub.hubStatus = HubStatus.CONNECTED;
+  await panda_hub.save();
+
+  let pandaSensor = await AssetFacility.addSensorByHubProcessorId(
+    panda_hub.hubProcessorId,
+    SensorType.TEMPERATURE,
+    "The pandaStat",
+  );
+
+  for (let i = 1; i < 50; i++) {
+    pandaSensor.addSensorReading(
+      await SensorReading.create({
+        readingDate: new Date(Date.now() - 1000 * 60 * i),
+        value: Math.random() * 15 + 3 + i,
+      }),
     );
-    panda_hub.lastDataUpdate = new Date();
-    panda_hub.hubStatus = HubStatus.CONNECTED;
-    await panda_hub.save();
-  
-    let pandaSensor = await AssetFacility.addSensorByHubProcessorId(
-      panda_hub.hubProcessorId,
-      SensorType.TEMPERATURE,
-      "The pandaStat"
-    )
-    
-    for (let i = 1; i < 50; i++) {
-      pandaSensor.addSensorReading(
-        await SensorReading.create({
-          readingDate: new Date(Date.now() - 1000 * 60 * i),
-          value: Math.random() * 15 + 3 + i,
-        }),
-      );
-    }
-  
-    pandaSensor = await AssetFacility.addSensorByHubProcessorId(
-      panda_hub.hubProcessorId,
-      SensorType.LIGHT,
-      "The panda detector"
-    )
-    
-    for (let i = 1; i < 50; i++) {
-      pandaSensor.addSensorReading(
-        await SensorReading.create({
-          readingDate: new Date(Date.now() - 1000 * 60 * i),
-          value: Math.random() * 15 + 3 + i,
-        }),
-      );
-    }
-    pandaSensor.save();
-  
+  }
+
+  pandaSensor = await AssetFacility.addSensorByHubProcessorId(
+    panda_hub.hubProcessorId,
+    SensorType.LIGHT,
+    "The panda detector",
+  );
+
+  for (let i = 1; i < 50; i++) {
+    pandaSensor.addSensorReading(
+      await SensorReading.create({
+        readingDate: new Date(Date.now() - 1000 * 60 * i),
+        value: Math.random() * 15 + 3 + i,
+      }),
+    );
+  }
+  pandaSensor.save();
+
   await Enclosure.update(
     { designDiagramJsonUrl: "enclosureDiagramJson/Panda Paradise.json" },
     {
@@ -3558,7 +3566,7 @@ export const enclosureSeed = async () => {
   );
   // set x y coordinate
   await Facility.update(
-    { xCoordinate: 103.7797, yCoordinate: 1.2929, },
+    { xCoordinate: 103.7797, yCoordinate: 1.2929 },
     {
       where: { facilityId: enclosure1Object.newFacility.facilityId },
     },
@@ -3570,7 +3578,7 @@ export const enclosureSeed = async () => {
     12,
     50,
     0,
-    0
+    0,
   );
   await EnclosureService.updateEnclosureClimateDesign(
     enclosure1Object.newEnclosure.enclosureId,
@@ -3579,8 +3587,6 @@ export const enclosureSeed = async () => {
     35,
     45,
   );
-
-
 
   let enclosure2Template = {
     name: "Capybara Cove",
@@ -3592,7 +3598,7 @@ export const enclosureSeed = async () => {
     standOffBarrierDist: 3,
     facilityName: "Capybara Cove",
     isSheltered: false,
-    imageUrl: "img/facility/EnclosureCapybaraCove.png"
+    imageUrl: "img/facility/EnclosureCapybaraCove.png",
   } as any;
   let enclosure2Object = await EnclosureService.createNewEnclosure(
     enclosure2Template.name,
@@ -3604,7 +3610,8 @@ export const enclosureSeed = async () => {
     enclosure2Template.standOffBarrierDist,
     enclosure2Template.facilityName,
     enclosure2Template.isSheltered,
-    enclosure2Template.imageUrl)
+    enclosure2Template.imageUrl,
+  );
   await Enclosure.update(
     { designDiagramJsonUrl: "enclosureDiagramJson/Capybara Cove.json" },
     {
@@ -3613,7 +3620,7 @@ export const enclosureSeed = async () => {
   );
   // set x y coordinate
   await Facility.update(
-    { xCoordinate: 103.7761, yCoordinate: 1.2970, },
+    { xCoordinate: 103.7761, yCoordinate: 1.297 },
     {
       where: { facilityId: enclosure2Object.newFacility.facilityId },
     },
@@ -3625,7 +3632,7 @@ export const enclosureSeed = async () => {
     5,
     5,
     5,
-    5
+    5,
   );
   await EnclosureService.updateEnclosureClimateDesign(
     enclosure2Object.newEnclosure.enclosureId,
@@ -3634,7 +3641,6 @@ export const enclosureSeed = async () => {
     35,
     45,
   );
-
 
   let enclosure3Template = {
     name: "Rustic Red Retreat",
@@ -3646,7 +3652,7 @@ export const enclosureSeed = async () => {
     standOffBarrierDist: 3,
     facilityName: "Rustic Red Retreat",
     isSheltered: false,
-    imageUrl: "img/facility/EnclosureRusticRedRetreat.png"
+    imageUrl: "img/facility/EnclosureRusticRedRetreat.png",
   } as any;
   let enclosure3Object = await EnclosureService.createNewEnclosure(
     enclosure3Template.name,
@@ -3658,7 +3664,7 @@ export const enclosureSeed = async () => {
     enclosure3Template.standOffBarrierDist,
     enclosure3Template.facilityName,
     enclosure3Template.isSheltered,
-    enclosure3Template.imageUrl
+    enclosure3Template.imageUrl,
   );
   await Enclosure.update(
     { designDiagramJsonUrl: "enclosureDiagramJson/Rustic Red Retreat.json" },
@@ -3668,7 +3674,7 @@ export const enclosureSeed = async () => {
   );
   // set x y coordinate
   await Facility.update(
-    { xCoordinate: 103.7746, yCoordinate: 1.2970, },
+    { xCoordinate: 103.7746, yCoordinate: 1.297 },
     {
       where: { facilityId: enclosure3Object.newFacility.facilityId },
     },
@@ -3680,7 +3686,7 @@ export const enclosureSeed = async () => {
     15,
     0,
     75,
-    10
+    10,
   );
   await EnclosureService.updateEnclosureClimateDesign(
     enclosure3Object.newEnclosure.enclosureId,
@@ -3690,11 +3696,90 @@ export const enclosureSeed = async () => {
     45,
   );
 
+  let enclosure4Template = {
+    name: "Ivory Oasis",
+    remark: "NA",
+    length: 300,
+    width: 500,
+    height: 25,
+    enclosureStatus: "ACTIVE",
+    standOffBarrierDist: 3,
+    facilityName: "Rustic Red Retreat",
+    isSheltered: false,
+    imageUrl: "img/facility/EnclosureIvoryOasis.png",
+  } as any;
+  let enclosure4Object = await EnclosureService.createNewEnclosure(
+    enclosure4Template.name,
+    enclosure4Template.remark,
+    enclosure4Template.length,
+    enclosure4Template.width,
+    enclosure4Template.height,
+    enclosure4Template.enclosureStatus,
+    enclosure4Template.standOffBarrierDist,
+    enclosure4Template.facilityName,
+    enclosure4Template.isSheltered,
+    enclosure4Template.imageUrl,
+  );
+  await Enclosure.update(
+    { designDiagramJsonUrl: "enclosureDiagramJson/Ivory Oasis.json" },
+    {
+      where: { enclosureId: enclosure4Object.newEnclosure.enclosureId },
+    },
+  );
+  // set x y coordinate
+  await Facility.update(
+    { xCoordinate: 103.7760, yCoordinate: 1.2931 },
+    {
+      where: { facilityId: enclosure4Object.newFacility.facilityId },
+    },
+  );
+
+  let enclosure5Template = {
+    name: "Nemo's Nook",
+    remark: "NA",
+    length: 300,
+    width: 500,
+    height: 25,
+    enclosureStatus: "ACTIVE",
+    standOffBarrierDist: 3,
+    facilityName: "Rustic Red Retreat",
+    isSheltered: false,
+    imageUrl: "img/facility/EnclosureNemosNook.png",
+  } as any;
+  let enclosure5Object = await EnclosureService.createNewEnclosure(
+    enclosure5Template.name,
+    enclosure5Template.remark,
+    enclosure5Template.length,
+    enclosure5Template.width,
+    enclosure5Template.height,
+    enclosure5Template.enclosureStatus,
+    enclosure5Template.standOffBarrierDist,
+    enclosure5Template.facilityName,
+    enclosure5Template.isSheltered,
+    enclosure5Template.imageUrl,
+  );
+  await Enclosure.update(
+    { designDiagramJsonUrl: "enclosureDiagramJson/Nemo's Nook.json" },
+    {
+      where: { enclosureId: enclosure5Object.newEnclosure.enclosureId },
+    },
+  );
+  // set x y coordinate
+  await Facility.update(
+    { xCoordinate: 103.7818, yCoordinate: 1.2987 },
+    {
+      where: { facilityId: enclosure5Object.newFacility.facilityId },
+    },
+  );
+
   // assign animals to enclosure
   await EnclosureService.assignAnimalToEnclosure(1, "ANM00001");
   await EnclosureService.assignAnimalToEnclosure(1, "ANM00002");
   await EnclosureService.assignAnimalToEnclosure(2, "ANM00016");
   await EnclosureService.assignAnimalToEnclosure(3, "ANM00015");
+  await EnclosureService.assignAnimalToEnclosure(4, "ANM00013");
+  await EnclosureService.assignAnimalToEnclosure(4, "ANM00014");
+  await EnclosureService.assignAnimalToEnclosure(5, "ANM00011");
 
   let planation1Template = {
     name: "Tree 1",

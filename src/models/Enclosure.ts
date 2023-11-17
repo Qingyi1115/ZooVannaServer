@@ -25,6 +25,7 @@ import { Plantation } from "./Plantation";
 import { ZooEvent } from "./ZooEvent";
 import { EnclosureBarrier } from "./EnclosureBarrier";
 import { AccessPoint } from "./AccessPoint";
+import { EnrichmentItem } from "./EnrichmentItem";
 
 class Enclosure extends Model<
   InferAttributes<Enclosure>,
@@ -68,6 +69,7 @@ class Enclosure extends Model<
   declare Keeper?: Keeper[];
   declare enclosureBarrier?: EnclosureBarrier;
   declare accessPoints?: AccessPoint[];
+  declare enrichmentItems?: EnrichmentItem[];
 
   // declare getTerrainDistribution: BelongsToManyGetAssociationsMixin<TerrainDistribution>;
   // declare setTerrainDistribution: BelongsToSetAssociationMixin<
@@ -106,6 +108,17 @@ class Enclosure extends Model<
   declare getEnclosureBarrier: HasOneGetAssociationMixin<EnclosureBarrier>;
   declare setEnclosureBarrier: HasOneSetAssociationMixin<
     EnclosureBarrier,
+    number
+  >;
+
+  declare getEnrichmentItems: HasManyGetAssociationsMixin<EnrichmentItem>;
+  declare addEnrichmentItem: HasManyAddAssociationMixin<EnrichmentItem, number>;
+  declare setAEnrichmentItems: HasManySetAssociationsMixin<
+    EnrichmentItem,
+    number
+  >;
+  declare removeEnrichmentItem: HasManyRemoveAssociationMixin<
+    EnrichmentItem,
     number
   >;
 

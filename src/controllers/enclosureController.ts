@@ -313,7 +313,8 @@ export async function getSpeciesCompatibilityInEnclosure(
 export async function updateDesignDiagram(req: Request, res: Response) {
   try {
     const { enclosureId } = req.params;
-    const { designDiagramJson } = req.body;
+    const { designDiagramJson, landArea, waterArea, plantationCoveragePercen } =
+      req.body;
     if (enclosureId == undefined) {
       console.log("Missing field(s): ", {
         enclosureId,
@@ -321,9 +322,19 @@ export async function updateDesignDiagram(req: Request, res: Response) {
       return res.status(400).json({ error: "Missing information!" });
     }
 
-    if ([designDiagramJson].includes(undefined)) {
+    if (
+      [
+        designDiagramJson,
+        landArea,
+        waterArea,
+        plantationCoveragePercen,
+      ].includes(undefined)
+    ) {
       console.log("Missing field(s): ", {
         designDiagramJson,
+        landArea,
+        waterArea,
+        plantationCoveragePercen,
       });
       return res.status(400).json({ error: "Missing information!" });
     }
@@ -332,6 +343,9 @@ export async function updateDesignDiagram(req: Request, res: Response) {
     await EnclosureService.updateDesignDiagram(
       Number(enclosureId),
       designDiagramJson,
+      Number(landArea),
+      Number(waterArea),
+      Number(plantationCoveragePercen),
     );
 
     return res.status(200).json("Successfully saved diagram!");
@@ -600,6 +614,30 @@ export async function getAllPlantations(req: Request, res: Response) {
   }
 }
 
+export async function getAllPlantationsByEnclosureId(
+  req: Request,
+  res: Response,
+) {
+  const { enclosureId } = req.params;
+
+  if (enclosureId == undefined) {
+    console.log("Missing field(s): ", {
+      enclosureId,
+    });
+    return res.status(400).json({ error: "Missing information!" });
+  }
+
+  try {
+    const enclosurePlanatations =
+      await EnclosureService.getAllPlantationsByEnclosureId(
+        Number(enclosureId),
+      );
+    return res.status(200).json(enclosurePlanatations);
+  } catch (error: any) {
+    res.status(400).json({ error: error.message });
+  }
+}
+
 export async function addPlantationToEnclosure(req: Request, res: Response) {
   try {
     const { enclosureId, plantationId } = req.body;
@@ -650,14 +688,11 @@ export async function removePlantationFromEnclosure(
   }
 }
 
-export async function getEnvironmentSensorsData(
-  req: Request,
-  res: Response,
-) {
+export async function getEnvironmentSensorsData(req: Request, res: Response) {
   try {
     const { enclosureId } = req.params;
 
-    if ([enclosureId ].includes("")) {
+    if ([enclosureId].includes("")) {
       console.log("Missing field(s): ", {
         enclosureId,
       });
@@ -675,4 +710,301 @@ export async function getEnvironmentSensorsData(
   }
 }
 
+export async function getEnclosureBarrier(req: Request, res: Response) {
+  const { enclosureId } = req.params;
 
+  if (enclosureId == undefined) {
+    console.log("Missing field(s): ", {
+      enclosureId,
+    });
+    return res.status(400).json({ error: "Missing information!" });
+  }
+
+  try {
+    const enclosureBarrier = await EnclosureService.getEnclosureBarrier(
+      Number(enclosureId),
+    );
+    return res.status(200).json(enclosureBarrier);
+  } catch (error: any) {
+    res.status(400).json({ error: error.message });
+  }
+}
+
+export async function createNewEnclosureBarrier(req: Request, res: Response) {
+  try {
+    let { enclosureId, wallName, barrierType, remarks } = req.body;
+
+    if ([enclosureId, wallName, barrierType, remarks].includes(undefined)) {
+      console.log("Missing field(s): ", {
+        enclosureId,
+        wallName,
+        barrierType,
+        remarks,
+      });
+      return res.status(400).json({ error: "Missing information!" });
+    }
+
+    let enclosureBarrier = await EnclosureService.createNewEnclosureBarrier(
+      Number(enclosureId),
+      wallName,
+      barrierType,
+      remarks,
+    );
+
+    return res
+      .status(200)
+      .json({ enclosureBarrier: enclosureBarrier.toJSON() });
+  } catch (error: any) {
+    res.status(400).json({ error: error.message });
+  }
+}
+
+export async function updateEnclosureBarrier(req: Request, res: Response) {
+  try {
+    const { enclosureBarrierId, wallName, barrierType, remarks } = req.body;
+
+    if (
+      [enclosureBarrierId, wallName, barrierType, remarks].includes(undefined)
+    ) {
+      console.log("Missing field(s): ", {
+        enclosureBarrierId,
+        wallName,
+        barrierType,
+        remarks,
+      });
+      return res.status(400).json({ error: "Missing information!" });
+    }
+
+    // have to pass in req for image uploading
+    let updatedEnclosureBarrier = await EnclosureService.updateEnclosureBarrier(
+      Number(enclosureBarrierId),
+      wallName,
+      barrierType,
+      remarks,
+    );
+
+    return res.status(200).json({ updatedEnclosureBarrier });
+  } catch (error: any) {
+    console.log("error", error);
+    res.status(400).json({ error: error.message });
+  }
+}
+
+export async function deleteEnclosureBarrier(req: Request, res: Response) {
+  try {
+    const { enclosureBarrierId } = req.params;
+
+    if (enclosureBarrierId == undefined) {
+      console.log("Missing field(s): ", {
+        enclosureBarrierId,
+      });
+      return res.status(400).json({ error: "Missing information!" });
+    }
+
+    // have to pass in req for image uploading
+    let enclosureBarrierToDelete =
+      await EnclosureService.deleteEnclosureBarrier(Number(enclosureBarrierId));
+
+    return res.status(200).json({ enclosureBarrierToDelete });
+  } catch (error: any) {
+    res.status(400).json({ error: error.message });
+  }
+}
+
+export async function getEnclosureAccessPoints(req: Request, res: Response) {
+  const { enclosureId } = req.params;
+
+  if (enclosureId == undefined) {
+    console.log("Missing field(s): ", {
+      enclosureId,
+    });
+    return res.status(400).json({ error: "Missing information!" });
+  }
+
+  try {
+    const enclosureAccessPoints =
+      await EnclosureService.getEnclosureAccessPoints(Number(enclosureId));
+    return res.status(200).json(enclosureAccessPoints);
+  } catch (error: any) {
+    res.status(400).json({ error: error.message });
+  }
+}
+
+export async function getEnclosureAccessPointById(req: Request, res: Response) {
+  const { accessPointId } = req.params;
+
+  if (accessPointId == undefined) {
+    console.log("Missing field(s): ", {
+      accessPointId,
+    });
+    return res.status(400).json({ error: "Missing information!" });
+  }
+
+  try {
+    const enclosureAccessPoints =
+      await EnclosureService.getEnclosureAccessPointById(Number(accessPointId));
+    return res.status(200).json(enclosureAccessPoints);
+  } catch (error: any) {
+    res.status(400).json({ error: error.message });
+  }
+}
+
+export async function createNewEnclosureAccessPoint(
+  req: Request,
+  res: Response,
+) {
+  try {
+    let { enclosureId, name, type } = req.body;
+
+    if ([enclosureId, name, type].includes(undefined)) {
+      console.log("Missing field(s): ", {
+        enclosureId,
+        name,
+        type,
+      });
+      return res.status(400).json({ error: "Missing information!" });
+    }
+
+    let enclosureAccessPoint =
+      await EnclosureService.createNewEnclosureAccessPoint(
+        Number(enclosureId),
+        name,
+        type,
+      );
+
+    return res
+      .status(200)
+      .json({ enclosureAccessPoint: enclosureAccessPoint.toJSON() });
+  } catch (error: any) {
+    res.status(400).json({ error: error.message });
+  }
+}
+
+export async function updateEnclosureAccessPoint(req: Request, res: Response) {
+  try {
+    const { accessPointId, name, type } = req.body;
+
+    if ([accessPointId, name, type].includes(undefined)) {
+      console.log("Missing field(s): ", {
+        accessPointId,
+        name,
+        type,
+      });
+      return res.status(400).json({ error: "Missing information!" });
+    }
+
+    // have to pass in req for image uploading
+    let updatedAccessPoint = await EnclosureService.updateEnclosureAccessPoint(
+      Number(accessPointId),
+      name,
+      type,
+    );
+
+    return res.status(200).json({ updatedAccessPoint });
+  } catch (error: any) {
+    console.log("error", error);
+    res.status(400).json({ error: error.message });
+  }
+}
+
+export async function deleteEnclosureAccessPoint(req: Request, res: Response) {
+  try {
+    const { accessPointId } = req.params;
+
+    if (accessPointId == undefined) {
+      console.log("Missing field(s): ", {
+        accessPointId,
+      });
+      return res.status(400).json({ error: "Missing information!" });
+    }
+
+    // have to pass in req for image uploading
+    let accessPointToDelete = await EnclosureService.deleteEnclosureAccessPoint(
+      Number(accessPointId),
+    );
+
+    return res.status(200).json({ accessPointToDelete });
+  } catch (error: any) {
+    res.status(400).json({ error: error.message });
+  }
+}
+
+export async function getEnclosureEnrichmentItems(req: Request, res: Response) {
+  const { enclosureId } = req.params;
+
+  if (enclosureId == undefined) {
+    console.log("Missing field(s): ", {
+      enclosureId,
+    });
+    return res.status(400).json({ error: "Missing information!" });
+  }
+
+  try {
+    const enclosureItems = await EnclosureService.getEnclosureEnrichmentItems(
+      Number(enclosureId),
+    );
+    return res.status(200).json(enclosureItems);
+  } catch (error: any) {
+    res.status(400).json({ error: error.message });
+  }
+}
+
+export async function addEnrichmentItemToEnclosure(
+  req: Request,
+  res: Response,
+) {
+  try {
+    const { enclosureId, enrichmentItemId } = req.body;
+
+    if ([enclosureId, enrichmentItemId].includes(undefined)) {
+      console.log("Missing field(s): ", {
+        enclosureId,
+        enrichmentItemId,
+      });
+      return res.status(400).json({ error: "Missing information!" });
+    }
+
+    let result = await EnclosureService.addEnrichmentItemToEnclosure(
+      Number(enclosureId),
+      Number(enrichmentItemId),
+    );
+
+    return res.status(200).json({ result });
+  } catch (error: any) {
+    res.status(400).json({ error: error.message });
+  }
+}
+
+export async function removeEnrichmentItemFromEnclosure(
+  req: Request,
+  res: Response,
+) {
+  try {
+    const { enclosureId, enrichmentItemId } = req.body;
+
+    if ([enclosureId, enrichmentItemId].includes(undefined)) {
+      console.log("Missing field(s): ", {
+        enclosureId,
+        enrichmentItemId,
+      });
+      return res.status(400).json({ error: "Missing information!" });
+    }
+
+    let result = await EnclosureService.removeEnrichmentItemFromEnclosure(
+      Number(enclosureId),
+      Number(enrichmentItemId),
+    );
+
+    return res.status(200).json({ result });
+  } catch (error: any) {
+    res.status(400).json({ error: error.message });
+  }
+}
+
+// + getEnclosureEnrichmentItems(enclosureId: number): Promise<any>
+
+// + addEnrichmentItemToEnclosure(enclosureId: number, enrichmenItemId: number): Promise<any>
+//         - Similar to assignAnimalToEnclosure, but with EnrichmentItem entity instead
+
+// + removeEnrichmentItemFromEnclosure(enclosureId: number, enrichmenItemId: number): Promise<any>
+//         - Similar to removeAnimalFromEnclosure, but with EnrichmentItem entity instead
