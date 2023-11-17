@@ -886,9 +886,9 @@ export async function getFacilityLogById(
       return res.status(400).json({ error: "Missing information!" });
     }
 
+    // Removed
     const _includes: any[] = [];
-    for (const role of ["inHouse", "generalStaffs"]) {
-      if (includes.includes(role)) {
+    for (const role of ["inHouse", "generalStaffs", "thirdParty", "enclosure"]) {
         if (role == "inHouse") {
           _includes.push({
             association: role,
@@ -906,7 +906,6 @@ export async function getFacilityLogById(
             required: false,
           });
         }
-      }
     }
 
     let facilityLog: FacilityLog =

@@ -126,11 +126,11 @@ class Facility extends Model<
       let enclosure = await this.getEnclosure({
         include: [
           {
-            association: "barrierType",
+            association: "enclosureBarrier",
             required: false,
           },
           {
-            association: "plantation",
+            association: "plantations",
             required: false,
           },
         ],

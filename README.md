@@ -18,6 +18,7 @@
         SECRET_KEY=anything_works
         EMAIL_USERNAME=zoovannaserver@gmail.com
         EMAIL_PASSWORD=qfiy zmgb ycoa bylw
+        IMG_URL_ROOT="img/"
 
     Other optional env are (with their default values if not stated):
 

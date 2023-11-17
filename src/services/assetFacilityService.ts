@@ -517,8 +517,7 @@ export async function createFacilityLog(
 
 export async function addHubProcessorByFacilityId(
   facilityId: number,
-  processorName: string,
-  includes: string[] = [],
+  processorName: string
 ): Promise<HubProcessor> {
   try {
     const facility = await getFacilityById(facilityId);
@@ -684,10 +683,10 @@ export async function getSensor(sensorId: number) {
     const sensor = await Sensor.findAll({
       where: { sensorId: sensorId },
       include: [
-        {
-          association: "sensorReadings",
-          required: false,
-        },
+        // {
+        //   association: "sensorReadings",
+        //   required: false,
+        // },
         {
           association: "maintenanceLogs",
           required: false,
@@ -702,6 +701,16 @@ export async function getSensor(sensorId: number) {
           include: [{
             association: "facility",
             required: true,
+            include:[{
+              association: "enclosure",
+              required: false,
+            },{
+              association: "inHouse",
+              required: false,
+            },{
+              association: "thirdParty",
+              required: false,
+            },]
           }]
         }],
     });

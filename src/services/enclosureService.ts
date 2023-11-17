@@ -4,7 +4,6 @@ import { validationErrorHandler } from "../helpers/errorHandler";
 import { Enclosure } from "../models/Enclosure";
 import * as AnimalService from "./animalService";
 import * as SpeciesService from "./speciesService";
-import * as AssetFacilityService from "./assetFacilityService";
 import { Facility } from "../models/Facility";
 
 import { writeFile } from "fs/promises";
@@ -13,6 +12,7 @@ import { Employee } from "../models/Employee";
 import { Plantation } from "../models/Plantation";
 import { EnclosureBarrier } from "../models/EnclosureBarrier";
 import { AccessPoint } from "../models/AccessPoint";
+import { MINUTES_IN_MILLISECONDS } from "../helpers/staticValues";
 
 export async function getAllEnclosures() {
   try {
@@ -94,7 +94,7 @@ export async function createNewEnclosure(
     let enclousre = await Enclosure.create(newEnclosure);
     await enclousre.setFacility(newFacility);
 
-    return enclousre;
+    return { newEnclosure: enclousre, newFacility: newFacility };
   } catch (error: any) {
     throw validationErrorHandler(error);
   }
@@ -538,3 +538,35 @@ export async function removePlantationFromEnclosure(
     throw validationErrorHandler(error);
   }
 }
+
+export async function getEnvironmentSensorsData(
+  enclosureId: number,
+) {
+  try {
+    let enclosure = await getEnclosureById(enclosureId);
+
+    const facility = await  enclosure.getFacility();
+    const sensors = [];
+
+    for (const hub of await facility.getHubProcessors() ){
+      sensors.push(...await hub.getSensors({
+        include:[{
+          association : "sensorReadings",
+          required: false,
+          where:{
+            readingDate: {
+              [Op.lt]: new Date(),
+              [Op.gt]: new Date(Date.now() - 15 * MINUTES_IN_MILLISECONDS),
+            },
+          },
+        }]
+      }))
+    }
+    return sensors;
+    
+  } catch (error: any) {
+    throw validationErrorHandler(error);
+  }
+}
+
+
