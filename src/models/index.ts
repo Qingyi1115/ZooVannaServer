@@ -3704,7 +3704,7 @@ export const enclosureSeed = async () => {
     height: 25,
     enclosureStatus: "ACTIVE",
     standOffBarrierDist: 3,
-    facilityName: "Rustic Red Retreat",
+    facilityName: "Ivory Oasis",
     isSheltered: false,
     imageUrl: "img/facility/EnclosureIvoryOasis.png",
   } as any;
@@ -3742,7 +3742,7 @@ export const enclosureSeed = async () => {
     height: 25,
     enclosureStatus: "ACTIVE",
     standOffBarrierDist: 3,
-    facilityName: "Rustic Red Retreat",
+    facilityName: "Nemo's Nook",
     isSheltered: false,
     imageUrl: "img/facility/EnclosureNemosNook.png",
   } as any;
