@@ -517,8 +517,7 @@ export async function createFacilityLog(
 
 export async function addHubProcessorByFacilityId(
   facilityId: number,
-  processorName: string,
-  includes: string[] = [],
+  processorName: string
 ): Promise<HubProcessor> {
   try {
     const facility = await getFacilityById(facilityId);
