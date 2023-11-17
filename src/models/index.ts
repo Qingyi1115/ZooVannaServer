@@ -2045,7 +2045,7 @@ export const animalSeed = async () => {
     null,
     null,
     null,
-    "NORMAL",
+    "RELEASED",
     "img/animal/ANM00012.jpg",
   );
 
@@ -2089,6 +2089,48 @@ export const animalSeed = async () => {
     null,
     "NORMAL",
     "img/animal/elephantDumbo.jpg",
+  );
+
+  let redPanda1Template = await AnimalService.createNewAnimal(
+    "SPE003",
+    false,
+    "Ruby",
+    AnimalSex.FEMALE,
+    new Date("2013-06-04"),
+    "Singapore",
+    IdentifierType.RFID_TAG,
+    "343263467",
+    AcquisitionMethod.INHOUSE_CAPTIVE_BRED,
+    new Date("2015-06-04"),
+    "N.A.",
+    "Big ears, bruise on back",
+    "Docile",
+    null,
+    null,
+    null,
+    "NORMAL",
+    "img/animal/redPandaRuby.jpg",
+  );
+
+  let capybara1Template = await AnimalService.createNewAnimal(
+    "SPE002",
+    false,
+    "Peanut",
+    AnimalSex.FEMALE,
+    new Date("2020-06-04"),
+    "Singapore",
+    IdentifierType.RFID_TAG,
+    "265443",
+    AcquisitionMethod.INHOUSE_CAPTIVE_BRED,
+    new Date("2015-06-04"),
+    "N.A.",
+    "Cute",
+    "Docile",
+    null,
+    null,
+    null,
+    "NORMAL",
+    "img/animal/capybaraPeanut.jpg",
   );
 
   // -- add lineage
@@ -3470,7 +3512,7 @@ export const enclosureSeed = async () => {
     enclosure1Template.isSheltered,
     enclosure1Template.imageUrl)
   await Enclosure.update(
-    { designDiagramJsonUrl: "enclosureDiagramJson/PandaParadise.json" },
+    { designDiagramJsonUrl: "enclosureDiagramJson/Panda Paradise.json" },
     {
       where: { enclosureId: enclosure1Object.newEnclosure.enclosureId },
     },
@@ -3525,7 +3567,7 @@ export const enclosureSeed = async () => {
     enclosure2Template.isSheltered,
     enclosure2Template.imageUrl)
   await Enclosure.update(
-    { designDiagramJsonUrl: "enclosureDiagramJson/CapybaraCove.json" },
+    { designDiagramJsonUrl: "enclosureDiagramJson/Capybara Cove.json" },
     {
       where: { enclosureId: enclosure2Object.newEnclosure.enclosureId },
     },
@@ -3580,7 +3622,7 @@ export const enclosureSeed = async () => {
     enclosure3Template.imageUrl
   );
   await Enclosure.update(
-    { designDiagramJsonUrl: "enclosureDiagramJson/RusticRedRetreat.json" },
+    { designDiagramJsonUrl: "enclosureDiagramJson/Rustic Red Retreat.json" },
     {
       where: { enclosureId: enclosure3Object.newEnclosure.enclosureId },
     },
@@ -3612,6 +3654,8 @@ export const enclosureSeed = async () => {
   // assign animals to enclosure
   await EnclosureService.assignAnimalToEnclosure(1, "ANM00001");
   await EnclosureService.assignAnimalToEnclosure(1, "ANM00002");
+  await EnclosureService.assignAnimalToEnclosure(2, "ANM00016");
+  await EnclosureService.assignAnimalToEnclosure(3, "ANM00015");
 
   let planation1Template = {
     name: "Tree 1",
