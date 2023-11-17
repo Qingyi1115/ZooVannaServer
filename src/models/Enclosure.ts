@@ -116,17 +116,6 @@ class Enclosure extends Model<
     number
   >;
 
-  declare getEnrichmentItems: HasManyGetAssociationsMixin<EnrichmentItem>;
-  declare addEnrichmentItem: HasManyAddAssociationMixin<EnrichmentItem, number>;
-  declare setAEnrichmentItems: HasManySetAssociationsMixin<
-    EnrichmentItem,
-    number
-  >;
-  declare removeEnrichmentItem: HasManyRemoveAssociationMixin<
-    EnrichmentItem,
-    number
-  >;
-
   public toJSON() {
     return {
       ...this.get(),
