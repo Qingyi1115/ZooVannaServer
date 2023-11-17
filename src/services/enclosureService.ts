@@ -15,6 +15,8 @@ import { EnclosureBarrier } from "../models/EnclosureBarrier";
 import { AccessPoint } from "../models/AccessPoint";
 import { MINUTES_IN_MILLISECONDS } from "../helpers/staticValues";
 import { EnrichmentItem } from "../models/EnrichmentItem";
+import { Species } from "../models/Species";
+import { SpeciesEnclosureNeed } from "../models/SpeciesEnclosureNeed";
 
 export async function getAllEnclosures() {
   try {
@@ -428,13 +430,34 @@ export async function getEnclosureTerrainDistributionRecommendation(
 ) {
   let enclosure = await Enclosure.findOne({
     where: { enclosureId: enclosureId },
+    include: [
+      {
+        model: Animal, // Self-reference to represent parent-child relationships
+        as: "animals",
+        required: false,
+        include: [
+          {
+            model: Species,
+            as: "species",
+            include: [
+              {
+                model: SpeciesEnclosureNeed,
+                as: "enclosureNeeds",
+                required: false,
+              },
+            ],
+          },
+        ],
+      },
+    ],
   });
-  if (enclosure) {
+  if (enclosure && enclosure.animals && enclosure.animals[0].species) {
     // - Get all animals of enclosure, then get species list (see getSpeciesCompatibilityInEnclosure service method)
     // - Get all speciesEnclosureNeeds
     // - Do some maths idk, or apply some rules
     // - Return list of recommended terrainDistribution, min and max for each longGrass, shortGrass,...
-    //-- add code here
+    // - Oh actually, can include the minLandAreaRecommended and minWaterAreaRecommended also, like the max of all landAreaRequired (same for water)
+    // -- add code here
     //
     //return enclosure;
   }
@@ -520,7 +543,10 @@ export async function getAllPlantations() {
 export async function getAllPlantationsByEnclosureId(enclosureId: number) {
   let result = await Enclosure.findOne({
     where: { enclosureId: enclosureId },
-    include: Plantation, //eager fetch here
+    include: {
+      model: Plantation,
+      required: false, // Include only if they exist
+    },
   });
 
   if (result) {
@@ -602,7 +628,10 @@ export async function getEnvironmentSensorsData(enclosureId: number) {
 export async function getEnclosureBarrier(enclosureId: number) {
   let result = await Enclosure.findOne({
     where: { enclosureId: enclosureId },
-    include: EnclosureBarrier, //eager fetch here
+    include: {
+      model: EnclosureBarrier,
+      required: false, // Include only if they exist
+    },
   });
 
   if (result) {
@@ -675,7 +704,10 @@ export async function deleteEnclosureBarrier(enclosureBarrierId: number) {
 export async function getEnclosureAccessPoints(enclosureId: number) {
   let result = await Enclosure.findOne({
     where: { enclosureId: enclosureId },
-    include: AccessPoint, //eager fetch here
+    include: {
+      model: AccessPoint,
+      required: false, // Include only if they exist
+    },
   });
 
   if (result) {
@@ -755,7 +787,10 @@ export async function deleteEnclosureAccessPoint(accessPointId: number) {
 export async function getEnclosureEnrichmentItems(enclosureId: number) {
   let result = await Enclosure.findOne({
     where: { enclosureId: enclosureId },
-    include: EnrichmentItem, //eager fetch here
+    include: {
+      model: EnrichmentItem,
+      required: false, // Include only if they exist
+    }, //eager fetch here
   });
 
   if (result) {
