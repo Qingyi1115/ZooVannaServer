@@ -649,3 +649,30 @@ export async function removePlantationFromEnclosure(
     res.status(400).json({ error: error.message });
   }
 }
+
+export async function getEnvironmentSensorsData(
+  req: Request,
+  res: Response,
+) {
+  try {
+    const { enclosureId } = req.params;
+
+    if ([enclosureId ].includes("")) {
+      console.log("Missing field(s): ", {
+        enclosureId,
+      });
+      return res.status(400).json({ error: "Missing information!" });
+    }
+
+    // have to pass in req for image uploading
+    let environmentData = await EnclosureService.getEnvironmentSensorsData(
+      Number(enclosureId),
+    );
+
+    return res.status(200).json({ environmentData: environmentData });
+  } catch (error: any) {
+    res.status(400).json({ error: error.message });
+  }
+}
+
+

@@ -3511,6 +3511,45 @@ export const enclosureSeed = async () => {
     enclosure1Template.facilityName,
     enclosure1Template.isSheltered,
     enclosure1Template.imageUrl)
+    let panda_hub = await AssetFacility.addHubProcessorByFacilityId(
+      enclosure1Object.newFacility.facilityId,
+      "Da Bambo Hub",
+    );
+    panda_hub.lastDataUpdate = new Date();
+    panda_hub.hubStatus = HubStatus.CONNECTED;
+    await panda_hub.save();
+  
+    let pandaSensor = await AssetFacility.addSensorByHubProcessorId(
+      panda_hub.hubProcessorId,
+      SensorType.TEMPERATURE,
+      "The pandaStat"
+    )
+    
+    for (let i = 1; i < 50; i++) {
+      pandaSensor.addSensorReading(
+        await SensorReading.create({
+          readingDate: new Date(Date.now() - 1000 * 60 * i),
+          value: Math.random() * 15 + 3 + i,
+        }),
+      );
+    }
+  
+    pandaSensor = await AssetFacility.addSensorByHubProcessorId(
+      panda_hub.hubProcessorId,
+      SensorType.LIGHT,
+      "The panda detector"
+    )
+    
+    for (let i = 1; i < 50; i++) {
+      pandaSensor.addSensorReading(
+        await SensorReading.create({
+          readingDate: new Date(Date.now() - 1000 * 60 * i),
+          value: Math.random() * 15 + 3 + i,
+        }),
+      );
+    }
+    pandaSensor.save();
+  
   await Enclosure.update(
     { designDiagramJsonUrl: "enclosureDiagramJson/Panda Paradise.json" },
     {
