@@ -386,12 +386,12 @@ export const createDatabase = async (options: any) => {
   );
 
   Enclosure.belongsToMany(EnrichmentItem, {
-    foreignKey: "speciesId",
+    foreignKey: "enclosureId",
     through: "enclosure_enrichmentItem",
     as: "enrichmentItems",
   });
   EnrichmentItem.belongsToMany(Enclosure, {
-    foreignKey: "customerId",
+    foreignKey: "enrichmentItemId",
     through: "enclosure_enrichmentItem",
     as: "enclosures",
   });
@@ -743,7 +743,8 @@ export const seedDatabase = async () => {
     await customerSeed();
     await publicEventSeed();
   } catch (err) {
-    console.log("error", err)
+    console.log("error", err);
+    throw err;
   }
 };
 
