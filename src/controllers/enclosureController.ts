@@ -313,7 +313,8 @@ export async function getSpeciesCompatibilityInEnclosure(
 export async function updateDesignDiagram(req: Request, res: Response) {
   try {
     const { enclosureId } = req.params;
-    const { designDiagramJson } = req.body;
+    const { designDiagramJson, landArea, waterArea, plantationCoveragePercen } =
+      req.body;
     if (enclosureId == undefined) {
       console.log("Missing field(s): ", {
         enclosureId,
@@ -321,9 +322,19 @@ export async function updateDesignDiagram(req: Request, res: Response) {
       return res.status(400).json({ error: "Missing information!" });
     }
 
-    if ([designDiagramJson].includes(undefined)) {
+    if (
+      [
+        designDiagramJson,
+        landArea,
+        waterArea,
+        plantationCoveragePercen,
+      ].includes(undefined)
+    ) {
       console.log("Missing field(s): ", {
         designDiagramJson,
+        landArea,
+        waterArea,
+        plantationCoveragePercen,
       });
       return res.status(400).json({ error: "Missing information!" });
     }
@@ -332,6 +343,9 @@ export async function updateDesignDiagram(req: Request, res: Response) {
     await EnclosureService.updateDesignDiagram(
       Number(enclosureId),
       designDiagramJson,
+      Number(landArea),
+      Number(waterArea),
+      Number(plantationCoveragePercen),
     );
 
     return res.status(200).json("Successfully saved diagram!");
