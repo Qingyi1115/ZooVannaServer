@@ -29,6 +29,12 @@ import {
   getSpeciesEduDescBySpeciesCode,
   updateSpeciesFoodRemark,
   getSpeciesFoodRemarkBySpeciesCode,
+  findIsLoved,
+  setCustomerWithSpecies,
+  unSetCustomerWithSpecies,
+  getSpeciesLovedByCustomer,
+  getSpeciesNotLovedByCustomer,
+  getFacilityForSpeciesLovedByCustomer,
 } from "../controllers/speciesController";
 
 const router = express.Router();
@@ -122,6 +128,17 @@ router.post("/createCompatibility", createCompatibility);
 router.delete(
   "/deleteCompatibility/:speciesCode1/:speciesCode2",
   deleteCompatibility,
+);
+
+//species customer favourite
+router.get("/isThisLovedByCustomer/:speciesCode", findIsLoved);
+router.put("/setCustomer/:speciesCode", setCustomerWithSpecies);
+router.put("/unSetCustomer/:speciesCode", unSetCustomerWithSpecies);
+router.get("/getSpeciesLovedByCustomer", getSpeciesLovedByCustomer);
+router.get("/getSpeciesNotLovedByCustomer", getSpeciesNotLovedByCustomer);
+router.get(
+  "/getFacilityForSpeciesLovedByCustomer",
+  getFacilityForSpeciesLovedByCustomer,
 );
 
 export default router;

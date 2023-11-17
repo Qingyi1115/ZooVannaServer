@@ -84,6 +84,8 @@ import { Zone } from "./Zone";
 import { ZooEvent } from "./ZooEvent";
 import { EnclosureBarrier } from "./EnclosureBarrier";
 import { AccessPoint } from "./AccessPoint";
+import { Itinerary } from "./Itinerary";
+import { ItineraryItem } from "./ItineraryItem";
 
 function addCascadeOptions(options: object) {
   return { ...options, onDelete: "CASCADE", onUpdate: "CASCADE" };
@@ -346,14 +348,50 @@ export const createDatabase = async (options: any) => {
 
   Species.belongsToMany(Customer, {
     foreignKey: "speciesId",
-    through: "customerFravouriteSpecies",
+    through: "customerFavouriteSpecies",
     as: "customers",
   });
   Customer.belongsToMany(Species, {
     foreignKey: "customerId",
-    through: "customerFravouriteSpecies",
+    through: "customerFavouriteSpecies",
     as: "species",
   });
+
+  Employee.hasMany(ZooEvent, addCascadeOptions({ foreignKey: "employeeId" }));
+  ZooEvent.belongsTo(Employee, addCascadeOptions({ foreignKey: "employeeId" }));
+
+  Customer.hasMany(Itinerary, addCascadeOptions({ foreignKey: "customerId" }));
+  Itinerary.belongsTo(
+    Customer,
+    addCascadeOptions({ foreignKey: "customerId" }),
+  );
+
+  Itinerary.hasMany(
+    ItineraryItem,
+    addCascadeOptions({ foreignKey: "itineraryId" }),
+  );
+  ItineraryItem.belongsTo(
+    Itinerary,
+    addCascadeOptions({ foreignKey: "itineraryId" }),
+  );
+
+  Enclosure.hasMany(
+    ItineraryItem,
+    addCascadeOptions({ foreignKey: "enclosureId" }),
+  );
+  ItineraryItem.belongsTo(
+    Enclosure,
+    addCascadeOptions({ foreignKey: "enclosureId" }),
+  );
+
+  Facility.hasMany(
+    ItineraryItem,
+    addCascadeOptions({ foreignKey: "facilityId" }),
+  );
+  ItineraryItem.belongsTo(
+    Facility,
+    addCascadeOptions({ foreignKey: "facilityId" }),
+  );
 
   Animal.belongsToMany(AnimalObservationLog, {
     foreignKey: "animalId",

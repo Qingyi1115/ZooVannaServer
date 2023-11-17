@@ -6,6 +6,9 @@ import { PhysiologicalReferenceNorms } from "../models/PhysiologicalReferenceNor
 import { Species } from "../models/Species";
 import { SpeciesDietNeed } from "../models/SpeciesDietNeed";
 import { SpeciesEnclosureNeed } from "../models/SpeciesEnclosureNeed";
+import * as CustomerService from "../services/customerService";
+import { Customer } from "../models/Customer";
+import { Facility } from "models/Facility";
 
 export async function getAllSpecies(includes: string[]) {
   try {
@@ -775,4 +778,192 @@ export async function deleteCompatibility(
     }
   }
   throw new Error("Invalid Species Code(s)!");
+}
+
+export async function findIsLoved(speciesCode: string, email: string) {
+  try {
+    const species = await getSpeciesByCode(speciesCode, ["customers"]);
+
+    if (species) {
+      const customer = await CustomerService.findCustomerByEmail(email);
+      console.log("is it here?");
+      console.log(customer);
+      if (customer) {
+        const result = species.customers?.find(
+          (speciesCustomer) =>
+            speciesCustomer.customerId === customer.customerId,
+        );
+
+        if (result) {
+          return true;
+        } else {
+          return false;
+        }
+      } else {
+        throw new Error("Invalid Customer!");
+      }
+    } else {
+      throw new Error("Invalid Species Code!");
+    }
+  } catch (error: any) {
+    console.log("here???");
+    console.log("the error message is " + error.message);
+    throw { error: error.message };
+  }
+}
+
+export async function getSpeciesLovedByCustomer(email: string) {
+  try {
+    let species = await Species.findAll({ include: ["customers", "animals"] });
+
+    const customer = await CustomerService.findCustomerByEmail(email);
+    let result: Species[] = [];
+    if (species && customer) {
+      for (let _species of species) {
+        if (await findIsLoved(_species.speciesCode, email)) {
+          for (let _animal of await _species.getAnimals()) {
+            _animal.getEnclosure();
+          }
+          result.push(_species);
+        }
+      }
+
+      console.log("this one " + result);
+      return result;
+    } else {
+      throw new Error("Missing information!");
+    }
+  } catch (error: any) {
+    console.log("here???");
+    console.log("the error message is " + error.message);
+    throw { error: error.message };
+  }
+}
+
+export async function getSpeciesNotLovedByCustomer(email: string) {
+  try {
+    let species = await Species.findAll({ include: "customers" });
+
+    const customer = await CustomerService.findCustomerByEmail(email);
+    let result: Species[] = [];
+    if (species && customer) {
+      for (let _species of species) {
+        if (!(await findIsLoved(_species.speciesCode, email))) {
+          result.push(_species);
+        }
+      }
+
+      console.log("this one " + result);
+      return result;
+    } else {
+      throw new Error("Missing information!");
+    }
+  } catch (error: any) {
+    console.log("here???");
+    console.log("the error message is " + error.message);
+    throw { error: error.message };
+  }
+}
+
+export async function getFacilityForSpeciesLovedByCustomer(email: string) {
+  try {
+    const species: Species[] = await getSpeciesLovedByCustomer(email);
+    const placesMap: Map<number, Facility> = new Map(); // Using a Map to prevent duplicate facilities
+
+    if (species) {
+      await Promise.all(
+        species.map(async (_species) => {
+          const animals = await _species.getAnimals();
+          await Promise.all(
+            animals.map(async (_animal) => {
+              const enclosure = await _animal.getEnclosure();
+              if (enclosure) {
+                const facility = await enclosure.getFacility();
+                if (facility && !placesMap.has(facility.facilityId)) {
+                  placesMap.set(facility.facilityId, facility);
+                }
+              }
+            }),
+          );
+        }),
+      );
+    }
+
+    const places: Facility[] = Array.from(placesMap.values());
+    return places;
+  } catch (error: any) {
+    throw { error: error.message };
+  }
+}
+
+export async function setCustomerWithSpecies(
+  speciesCode: string,
+  email: string,
+) {
+  try {
+    const species = await getSpeciesByCode(speciesCode, []);
+
+    if (species) {
+      const customer = await CustomerService.findCustomerByEmail(email);
+      if (email) {
+        await species.addCustomer(customer);
+        await customer.addSpecies(species);
+
+        console.log("setting customer with species");
+
+        await species.save();
+        await customer.save();
+
+        console.log("customer with species " + species.customers);
+        console.log(await species.getCustomers());
+
+        setTimeout(async () => {
+          const updatedSpecies = await Species.findByPk(species.speciesId, {
+            include: "customers",
+          });
+          if (updatedSpecies) {
+            console.log("Customer with species: ", updatedSpecies.customers);
+          }
+        }, 100);
+
+        return species;
+      } else {
+        throw new Error("Invalid Customer!");
+      }
+    } else {
+      throw new Error("Invalid Species Code!");
+    }
+  } catch (error: any) {
+    throw { error: error.message };
+  }
+}
+
+export async function unSetCustomerWithSpecies(
+  speciesCode: string,
+  email: string,
+) {
+  try {
+    const species = await getSpeciesByCode(speciesCode, []);
+
+    if (species) {
+      const customer = await CustomerService.findCustomerByEmail(email);
+      if (email) {
+        await species.removeCustomer(customer);
+        await customer.removeSpecies(species);
+
+        species.save();
+        customer.save();
+
+        await species.getCustomers();
+
+        return species;
+      } else {
+        throw new Error("Invalid Customer!");
+      }
+    } else {
+      throw new Error("Invalid Species Code!");
+    }
+  } catch (error: any) {
+    throw { error: error.message };
+  }
 }
