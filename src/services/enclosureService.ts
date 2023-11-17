@@ -262,6 +262,9 @@ export async function getSpeciesCompatibilityInEnclosure(
 export async function updateDesignDiagram(
   enclosureId: number,
   designDiagramJson: string,
+  landArea: number,
+  waterArea: number,
+  plantationCoveragePercent: number,
 ) {
   // let updatedEnclosureStatus = {
   //   enclosureStatus: enclosureStatus,
@@ -276,7 +279,12 @@ export async function updateDesignDiagram(
     await writeFile(filePath, designDiagramJson);
     if (enclosure.designDiagramJsonUrl == null) {
       await Enclosure.update(
-        { designDiagramJsonUrl: filePath },
+        {
+          designDiagramJsonUrl: filePath,
+          landArea: landArea,
+          waterArea: waterArea,
+          plantationCoveragePercent: plantationCoveragePercent,
+        },
         {
           where: { enclosureId: enclosureId },
         },
