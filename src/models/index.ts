@@ -731,16 +731,20 @@ export const createDatabase = async (options: any) => {
 
 export const seedDatabase = async () => {
   // Fake data goes here
-  await employeeSeed();
-  await animalFeedSeed();
-  await enrichmentItemSeed();
-  await facilityAssetsSeed();
-  await speciesSeed();
-  await animalSeed();
-  await enclosureSeed();
-  await promotionSeed();
-  await customerSeed();
-  await publicEventSeed();
+  try {
+    await employeeSeed();
+    await animalFeedSeed();
+    await enrichmentItemSeed();
+    await facilityAssetsSeed();
+    await speciesSeed();
+    await animalSeed();
+    await enclosureSeed();
+    await promotionSeed();
+    await customerSeed();
+    await publicEventSeed();
+  } catch (err) {
+    console.log("error", err)
+  }
 };
 
 export const promotionSeed = async () => {
