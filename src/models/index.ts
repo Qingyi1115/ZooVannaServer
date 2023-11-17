@@ -3696,11 +3696,90 @@ export const enclosureSeed = async () => {
     45,
   );
 
+  let enclosure4Template = {
+    name: "Ivory Oasis",
+    remark: "NA",
+    length: 300,
+    width: 500,
+    height: 25,
+    enclosureStatus: "ACTIVE",
+    standOffBarrierDist: 3,
+    facilityName: "Rustic Red Retreat",
+    isSheltered: false,
+    imageUrl: "img/facility/EnclosureIvoryOasis.png",
+  } as any;
+  let enclosure4Object = await EnclosureService.createNewEnclosure(
+    enclosure4Template.name,
+    enclosure4Template.remark,
+    enclosure4Template.length,
+    enclosure4Template.width,
+    enclosure4Template.height,
+    enclosure4Template.enclosureStatus,
+    enclosure4Template.standOffBarrierDist,
+    enclosure4Template.facilityName,
+    enclosure4Template.isSheltered,
+    enclosure4Template.imageUrl,
+  );
+  await Enclosure.update(
+    { designDiagramJsonUrl: "enclosureDiagramJson/Ivory Oasis.json" },
+    {
+      where: { enclosureId: enclosure4Object.newEnclosure.enclosureId },
+    },
+  );
+  // set x y coordinate
+  await Facility.update(
+    { xCoordinate: 103.7760, yCoordinate: 1.2931 },
+    {
+      where: { facilityId: enclosure4Object.newFacility.facilityId },
+    },
+  );
+
+  let enclosure5Template = {
+    name: "Nemo's Nook",
+    remark: "NA",
+    length: 300,
+    width: 500,
+    height: 25,
+    enclosureStatus: "ACTIVE",
+    standOffBarrierDist: 3,
+    facilityName: "Rustic Red Retreat",
+    isSheltered: false,
+    imageUrl: "img/facility/EnclosureNemosNook.png",
+  } as any;
+  let enclosure5Object = await EnclosureService.createNewEnclosure(
+    enclosure5Template.name,
+    enclosure5Template.remark,
+    enclosure5Template.length,
+    enclosure5Template.width,
+    enclosure5Template.height,
+    enclosure5Template.enclosureStatus,
+    enclosure5Template.standOffBarrierDist,
+    enclosure5Template.facilityName,
+    enclosure5Template.isSheltered,
+    enclosure5Template.imageUrl,
+  );
+  await Enclosure.update(
+    { designDiagramJsonUrl: "enclosureDiagramJson/Nemo's Nook.json" },
+    {
+      where: { enclosureId: enclosure5Object.newEnclosure.enclosureId },
+    },
+  );
+  // set x y coordinate
+  await Facility.update(
+    { xCoordinate: 103.7818, yCoordinate: 1.2987 },
+    {
+      where: { facilityId: enclosure5Object.newFacility.facilityId },
+    },
+  );
+
   // assign animals to enclosure
   await EnclosureService.assignAnimalToEnclosure(1, "ANM00001");
   await EnclosureService.assignAnimalToEnclosure(1, "ANM00002");
   await EnclosureService.assignAnimalToEnclosure(2, "ANM00016");
   await EnclosureService.assignAnimalToEnclosure(3, "ANM00015");
+  await EnclosureService.assignAnimalToEnclosure(4, "ANM00013");
+  await EnclosureService.assignAnimalToEnclosure(4, "ANM00014");
+  await EnclosureService.assignAnimalToEnclosure(5, "ANM00011");
 
   let planation1Template = {
     name: "Tree 1",
@@ -4188,9 +4267,9 @@ export const facilityAssetsSeed = async () => {
   ]) {
     _day = new Date(
       _day.getTime() -
-        days * 1000 * 60 * 60 * 24 +
-        Math.random() * 1000 * 60 * 60 * 24 * 4 -
-        1000 * 60 * 60 * 24 * 2,
+      days * 1000 * 60 * 60 * 24 +
+      Math.random() * 1000 * 60 * 60 * 24 * 4 -
+      1000 * 60 * 60 * 24 * 2,
     );
     sensor.addMaintenanceLog(
       await MaintenanceLog.create({
