@@ -733,6 +733,16 @@ export async function getZooEventById(zooEventId: number) {
           association: "enclosure",
           required: false,
         },
+        {
+          association: "publicEventSession",
+          required: false,
+          include: [
+            {
+              association: "publicEvent",
+              required: false,
+            },
+          ],
+        },
       ],
     });
 
@@ -1332,10 +1342,12 @@ function doesEventClash(ze1: ZooEvent, ze2: ZooEvent) {
       ze2.eventStartDateTime,
       ze2.eventTiming as EventTimingType,
     );
-  return (
+  const doesEventClashResult = (
     compareDates(ze1Start, ze2End as Date) < 0 &&
     compareDates(ze1End as Date, ze2Start) > 0
   );
+  console.log("doesEventClashResult", doesEventClashResult);
+  return doesEventClashResult;
 }
 
 export async function autoAssignKeeperToZooEvent(
@@ -1411,7 +1423,7 @@ export async function autoAssignKeeperToZooEvent(
     shuffleArray(keepers);
     for (const zooEvent of zooEvents) {
       while (
-        (await zooEvent.getKeepers()).length > zooEvent.requiredNumberOfKeeper
+        (await zooEvent.getKeepers()).length < zooEvent.requiredNumberOfKeeper
       ) {
         let notFound = false;
         const [zooEventStart, zooEventEnd] = zooEvent.eventIsPublic
@@ -1420,7 +1432,6 @@ export async function autoAssignKeeperToZooEvent(
             zooEvent.eventStartDateTime,
             zooEvent.eventTiming as EventTimingType,
           );
-        // console.log("zooEventStart, zooEventEnd", zooEventStart, zooEventEnd);
 
         for (let index = 0; index < keepers.length; index++) {
           const keeper = keepers[index];

@@ -895,6 +895,7 @@ export async function updateAnimalActivity(
 
     animalActivity.activityType = activityType;
     animalActivity.details = details;
+    animalActivity.requiredNumberOfKeeper = requiredNumberOfKeeper;
     let zooEvents = await animalActivity.getZooEvents();
 
     if (animalActivity.title != title) {
