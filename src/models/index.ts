@@ -1873,8 +1873,8 @@ export const speciesSeed = async () => {
     ageToElder: 12,
     // foodRemark: "Food remark...",
   } as any;
-let lion = await Species.create(lionTemplate);
-console.log(lion.toJSON());
+  let lion = await Species.create(lionTemplate);
+  console.log(lion.toJSON());
 
   let penguinTemplate = {
     speciesCode: await Species.getNextSpeciesCode(),
@@ -1906,8 +1906,8 @@ console.log(lion.toJSON());
     ageToElder: 15,
     // foodRemark: "Food remark...",
   } as any;
-let penguin = await Species.create(penguinTemplate);
-console.log(penguin.toJSON());
+  let penguin = await Species.create(penguinTemplate);
+  console.log(penguin.toJSON());
 
   let orangutanTemplate = {
     speciesCode: await Species.getNextSpeciesCode(),
@@ -1939,10 +1939,10 @@ console.log(penguin.toJSON());
     ageToElder: 30,
     // foodRemark: "Food remark...",
   } as any;
-let orangutan = await Species.create(orangutanTemplate);
-console.log(orangutan.toJSON());
+  let orangutan = await Species.create(orangutanTemplate);
+  console.log(orangutan.toJSON());
 
-let giraffeTemplate = {
+  let giraffeTemplate = {
     speciesCode: await Species.getNextSpeciesCode(),
     commonName: "Giraffe",
     scientificName: "Giraffa camelopardalis",
@@ -1972,10 +1972,10 @@ let giraffeTemplate = {
     ageToElder: 20,
     // foodRemark: "Food remark...",
   } as any;
-let giraffe = await Species.create(giraffeTemplate);
-console.log(giraffe.toJSON());
+  let giraffe = await Species.create(giraffeTemplate);
+  console.log(giraffe.toJSON());
 
-  
+
   let compatibility1 = await SpeciesService.createCompatibility(
     "SPE001",
     "SPE002",
@@ -3750,7 +3750,7 @@ export const enclosureSeed = async () => {
   pandaSensor.save();
 
   await Enclosure.update(
-    { designDiagramJsonUrl: "enclosureDiagramJson/Panda Paradise.json" },
+    { designDiagramJsonUrl: "enclosureDiagramJson/Panda Paradise.json", landArea: 931.41, waterArea: 35.63, plantationCoveragePercent: 23.2 },
     {
       where: { enclosureId: enclosure1Object.newEnclosure.enclosureId },
     },
