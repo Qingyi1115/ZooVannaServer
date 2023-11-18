@@ -1747,6 +1747,14 @@ export async function disablePublicEventById(
 export async function deletePublicEventById(publicEventId: number) {
   try {
     const publicEvent = await getPublicEventById(publicEventId, []);
+    for (const session of (await publicEvent.getPublicEventSessions())) {
+      const promises = [];
+      for (const ev of (await session.getZooEvents())) {
+        promises.push(ev.destroy());
+      }
+      for (const p of promises) await p;
+      await session.destroy();
+    }
     return publicEvent.destroy();
   } catch (error: any) {
     throw validationErrorHandler(error);
