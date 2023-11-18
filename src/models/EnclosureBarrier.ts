@@ -18,7 +18,7 @@ class EnclosureBarrier extends Model<
   declare enclosureBarrierId: CreationOptional<number>;
   declare wallName: string;
   declare barrierType: BarrierType;
-  declare remarks: boolean;
+  declare remarks: string;
 
   declare enclosure?: Enclosure;
 
