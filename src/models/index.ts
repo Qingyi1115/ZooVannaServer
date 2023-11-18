@@ -1978,7 +1978,7 @@ export const speciesSeed = async () => {
   let giraffeEnclosureNeeds = await SpeciesService.createEnclosureNeeds(
     "SPE009",
     10,
-    200,
+    300,
     10,
     20,
     20,
