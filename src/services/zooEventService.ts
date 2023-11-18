@@ -1629,6 +1629,7 @@ export async function updatePublicEventById(
     if (imageUrl) {
       publicEvent.imageUrl = imageUrl;
     }
+    await publicEvent.save();
 
     const zooEvents = [];
     const promises = [];
@@ -1849,16 +1850,17 @@ export async function updatePublicEventSessionById(
       [],
     );
 
+    const promises = [];
+    for (const ze of await publicEventsession.getZooEvents()) {
+        promises.push(ze.destroy());
+    }
+    for (const p of promises) await p;
+
     if (publicEventsession.recurringPattern != recurringPattern) {
       publicEventsession.recurringPattern = recurringPattern;
       publicEventsession.dayOfWeek = dayOfWeek;
       publicEventsession.dayOfMonth = dayOfMonth;
 
-      const promises = [];
-      for (const ze of await publicEventsession.getZooEvents()) {
-          promises.push(ze.destroy());
-      }
-      for (const p of promises) await p;
     }
     publicEventsession.durationInMinutes = durationInMinutes;
     publicEventsession.time = time;
@@ -1877,6 +1879,11 @@ export async function deletePublicEventSessionById(
   try {
     const publicEventSession =
       await getPublicEventSessionById(publicEventSessionId);
+    const promises = [];
+    for (const ev of (await publicEventSession.getZooEvents()) ) {
+      promises.push(ev.destroy());
+    }
+    for (const p of promises) await p;
     return publicEventSession.destroy();
   } catch (error: any) {
     throw validationErrorHandler(error);
