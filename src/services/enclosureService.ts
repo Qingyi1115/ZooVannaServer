@@ -295,19 +295,19 @@ export async function updateDesignDiagram(
     console.log("plantationCoveragePercent" + plantationCoveragePercent)
 
     await writeFile(filePath, designDiagramJson);
-    if (enclosure.designDiagramJsonUrl != null) {
-      await Enclosure.update(
-        {
-          designDiagramJsonUrl: filePath,
-          landArea: landArea,
-          waterArea: waterArea,
-          plantationCoveragePercent: plantationCoveragePercent,
-        },
-        {
-          where: { enclosureId: enclosureId },
-        },
-      );
-    }
+    // if (enclosure.designDiagramJsonUrl == null) {
+    await Enclosure.update(
+      {
+        designDiagramJsonUrl: filePath,
+        landArea: landArea,
+        waterArea: waterArea,
+        plantationCoveragePercent: plantationCoveragePercent,
+      },
+      {
+        where: { enclosureId: enclosureId },
+      },
+    );
+    // }
   } catch (error: any) {
     throw validationErrorHandler(error);
   }
