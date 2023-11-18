@@ -461,7 +461,8 @@ export async function getEnclosureTerrainDistributionRecommendation(
     soilPercentMin: number;
     soilPercentMax: number;
   };
-  const reco: Recommends = {
+  // const reco: Recommends = {
+  let reco: Recommends = {
     minLandAreaRequired: Number.MIN_SAFE_INTEGER,
     minWaterAreaRequired: Number.MIN_SAFE_INTEGER,
     acceptableTempMin: Number.MIN_SAFE_INTEGER,
@@ -498,7 +499,7 @@ export async function getEnclosureTerrainDistributionRecommendation(
             include: [
               {
                 model: SpeciesEnclosureNeed,
-                as: "enclosureNeeds",
+                as: "speciesEnclosureNeed",
                 required: false,
               },
             ],
@@ -520,84 +521,169 @@ export async function getEnclosureTerrainDistributionRecommendation(
       }); // ensure all have enclosure requiemnt, else no data
 
       for (let s of species) {
-        s.speciesEnclosureNeed!.minLandAreaRequired = Math.max(
+        console.log(s.commonName)
+        console.log("here!")
+        console.log(s.speciesEnclosureNeed!.minLandAreaRequired)
+        console.log(reco.minLandAreaRequired)
+        // s.speciesEnclosureNeed!.minLandAreaRequired = Math.max(
+        //   s.speciesEnclosureNeed!.minLandAreaRequired,
+        //   reco.minLandAreaRequired,
+        // );
+        // s.speciesEnclosureNeed!.minWaterAreaRequired = Math.max(
+        //   s.speciesEnclosureNeed!.minWaterAreaRequired,
+        //   reco.minWaterAreaRequired,
+        // );
+        // s.speciesEnclosureNeed!.acceptableTempMin = Math.max(
+        //   s.speciesEnclosureNeed!.acceptableTempMin,
+        //   reco.acceptableTempMin,
+        // );
+        // s.speciesEnclosureNeed!.acceptableTempMax = Math.min(
+        //   s.speciesEnclosureNeed!.acceptableTempMax,
+        //   reco.acceptableTempMax,
+        // );
+        // s.speciesEnclosureNeed!.acceptableHumidityMin = Math.max(
+        //   s.speciesEnclosureNeed!.acceptableHumidityMin,
+        //   reco.acceptableHumidityMin,
+        // );
+        // s.speciesEnclosureNeed!.acceptableHumidityMax = Math.min(
+        //   s.speciesEnclosureNeed!.acceptableHumidityMax,
+        //   reco.acceptableHumidityMax,
+        // );
+        // s.speciesEnclosureNeed!.plantationCoveragePercentMin = Math.max(
+        //   s.speciesEnclosureNeed!.plantationCoveragePercentMin,
+        //   reco.plantationCoveragePercentMin,
+        // );
+        // s.speciesEnclosureNeed!.plantationCoveragePercentMax = Math.min(
+        //   s.speciesEnclosureNeed!.plantationCoveragePercentMax,
+        //   reco.plantationCoveragePercentMax,
+        // );
+        // s.speciesEnclosureNeed!.longGrassPercentMin = Math.max(
+        //   s.speciesEnclosureNeed!.longGrassPercentMin,
+        //   reco.longGrassPercentMin,
+        // );
+        // s.speciesEnclosureNeed!.longGrassPercentMax = Math.min(
+        //   s.speciesEnclosureNeed!.longGrassPercentMax,
+        //   reco.longGrassPercentMax,
+        // );
+        // s.speciesEnclosureNeed!.shortGrassPercentMin = Math.max(
+        //   s.speciesEnclosureNeed!.shortGrassPercentMin,
+        //   reco.shortGrassPercentMin,
+        // );
+        // s.speciesEnclosureNeed!.shortGrassPercentMax = Math.min(
+        //   s.speciesEnclosureNeed!.shortGrassPercentMax,
+        //   reco.shortGrassPercentMax,
+        // );
+        // s.speciesEnclosureNeed!.rockPercentMin = Math.max(
+        //   s.speciesEnclosureNeed!.rockPercentMin,
+        //   reco.rockPercentMin,
+        // );
+        // s.speciesEnclosureNeed!.rockPercentMax = Math.min(
+        //   s.speciesEnclosureNeed!.rockPercentMax,
+        //   reco.rockPercentMax,
+        // );
+        // s.speciesEnclosureNeed!.sandPercentMin = Math.max(
+        //   s.speciesEnclosureNeed!.sandPercentMin,
+        //   reco.sandPercentMin,
+        // );
+        // s.speciesEnclosureNeed!.sandPercentMax = Math.min(
+        //   s.speciesEnclosureNeed!.sandPercentMax,
+        //   reco.sandPercentMax,
+        // );
+        // s.speciesEnclosureNeed!.snowPercentMin = Math.max(
+        //   s.speciesEnclosureNeed!.snowPercentMin,
+        //   reco.snowPercentMin,
+        // );
+        // s.speciesEnclosureNeed!.snowPercentMax = Math.min(
+        //   s.speciesEnclosureNeed!.snowPercentMax,
+        //   reco.snowPercentMax,
+        // );
+
+        // s.speciesEnclosureNeed!.soilPercentMin = Math.max(
+        //   s.speciesEnclosureNeed!.soilPercentMin,
+        //   reco.soilPercentMin,
+        // );
+        // s.speciesEnclosureNeed!.soilPercentMax = Math.min(
+        //   s.speciesEnclosureNeed!.soilPercentMax,
+        //   reco.soilPercentMax,
+        // );
+        reco.minLandAreaRequired = Math.max(
           s.speciesEnclosureNeed!.minLandAreaRequired,
           reco.minLandAreaRequired,
         );
-        s.speciesEnclosureNeed!.minWaterAreaRequired = Math.max(
+        reco.minWaterAreaRequired = Math.max(
           s.speciesEnclosureNeed!.minWaterAreaRequired,
           reco.minWaterAreaRequired,
         );
-        s.speciesEnclosureNeed!.acceptableTempMin = Math.max(
+        reco.acceptableTempMin = Math.max(
           s.speciesEnclosureNeed!.acceptableTempMin,
           reco.acceptableTempMin,
         );
-        s.speciesEnclosureNeed!.acceptableTempMax = Math.min(
+        reco.acceptableTempMax = Math.min(
           s.speciesEnclosureNeed!.acceptableTempMax,
           reco.acceptableTempMax,
         );
-        s.speciesEnclosureNeed!.acceptableHumidityMin = Math.max(
+        reco.acceptableHumidityMin = Math.max(
           s.speciesEnclosureNeed!.acceptableHumidityMin,
           reco.acceptableHumidityMin,
         );
-        s.speciesEnclosureNeed!.acceptableHumidityMax = Math.min(
+        reco.acceptableHumidityMax = Math.min(
           s.speciesEnclosureNeed!.acceptableHumidityMax,
           reco.acceptableHumidityMax,
         );
-        s.speciesEnclosureNeed!.plantationCoveragePercentMin = Math.max(
+        reco.plantationCoveragePercentMin = Math.max(
           s.speciesEnclosureNeed!.plantationCoveragePercentMin,
           reco.plantationCoveragePercentMin,
         );
-        s.speciesEnclosureNeed!.plantationCoveragePercentMax = Math.min(
+        reco.plantationCoveragePercentMax = Math.min(
           s.speciesEnclosureNeed!.plantationCoveragePercentMax,
           reco.plantationCoveragePercentMax,
         );
-        s.speciesEnclosureNeed!.longGrassPercentMin = Math.max(
+        reco.longGrassPercentMin = Math.max(
           s.speciesEnclosureNeed!.longGrassPercentMin,
           reco.longGrassPercentMin,
         );
-        s.speciesEnclosureNeed!.longGrassPercentMax = Math.min(
+        reco.longGrassPercentMax = Math.min(
           s.speciesEnclosureNeed!.longGrassPercentMax,
           reco.longGrassPercentMax,
         );
-        s.speciesEnclosureNeed!.shortGrassPercentMin = Math.max(
+        reco.shortGrassPercentMin = Math.max(
           s.speciesEnclosureNeed!.shortGrassPercentMin,
           reco.shortGrassPercentMin,
         );
-        s.speciesEnclosureNeed!.shortGrassPercentMax = Math.min(
+        reco.shortGrassPercentMax = Math.min(
           s.speciesEnclosureNeed!.shortGrassPercentMax,
           reco.shortGrassPercentMax,
         );
-        s.speciesEnclosureNeed!.rockPercentMin = Math.max(
+        reco.rockPercentMin = Math.max(
           s.speciesEnclosureNeed!.rockPercentMin,
           reco.rockPercentMin,
         );
-        s.speciesEnclosureNeed!.rockPercentMax = Math.min(
+        reco.rockPercentMax = Math.min(
           s.speciesEnclosureNeed!.rockPercentMax,
           reco.rockPercentMax,
         );
-        s.speciesEnclosureNeed!.sandPercentMin = Math.max(
+        reco.sandPercentMin = Math.max(
           s.speciesEnclosureNeed!.sandPercentMin,
           reco.sandPercentMin,
         );
-        s.speciesEnclosureNeed!.sandPercentMax = Math.min(
+        reco.sandPercentMax = Math.min(
           s.speciesEnclosureNeed!.sandPercentMax,
           reco.sandPercentMax,
         );
-        s.speciesEnclosureNeed!.snowPercentMin = Math.max(
+        reco.snowPercentMin = Math.max(
           s.speciesEnclosureNeed!.snowPercentMin,
           reco.snowPercentMin,
         );
-        s.speciesEnclosureNeed!.snowPercentMax = Math.min(
+        reco.snowPercentMax = Math.min(
           s.speciesEnclosureNeed!.snowPercentMax,
           reco.snowPercentMax,
         );
 
-        s.speciesEnclosureNeed!.soilPercentMin = Math.max(
+        reco.soilPercentMin = Math.max(
           s.speciesEnclosureNeed!.soilPercentMin,
           reco.soilPercentMin,
         );
-        s.speciesEnclosureNeed!.soilPercentMax = Math.min(
+        reco.soilPercentMax = Math.min(
           s.speciesEnclosureNeed!.soilPercentMax,
           reco.soilPercentMax,
         );
