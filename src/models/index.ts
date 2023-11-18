@@ -4175,7 +4175,7 @@ export const enclosureSeed = async () => {
   standOffBarrierDist: 4,
   facilityName: "Savanna Kingdom",
   isSheltered: true,
-  imageUrl: "img/facility/lionEnclosure.jpg",
+  imageUrl: "img/facility/lionEnclosure.webp",
 } as any;
 let enclosure6Object = await EnclosureService.createNewEnclosure(
   enclosure6Template.name,
