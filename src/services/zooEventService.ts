@@ -742,7 +742,10 @@ export async function getZooEventById(zooEventId: number) {
               required: false,
             },
           ],
-        },
+        }, {
+          association: "employee",
+          required: false,
+        }
       ],
     });
 
@@ -1145,8 +1148,10 @@ export async function getAllZooEvents(
               required: false,
             },
           ],
-        },
-        {
+        }, {
+          association: "employee",
+          required:false
+        }, {
           association: "keepers",
           required: false,
           include: [
