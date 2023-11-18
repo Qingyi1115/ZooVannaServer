@@ -2688,7 +2688,7 @@ export const animalSeed = async () => {
     ["ANM00001", "ANM00002", "ANM00003", "ANM00004"],
     "General Summer Feeding Plan...",
     new Date("2023-10-18"),
-    new Date(Date.now() + DAY_IN_MILLISECONDS * 21),
+    new Date("2023-10-18"),
     [
       {
         dayOfTheWeek: DayOfWeek.MONDAY,
@@ -4165,6 +4165,158 @@ export const enclosureSeed = async () => {
       where: { facilityId: enclosure5Object.newFacility.facilityId },
     },
   );
+
+  let enclosure6Template = {
+  name: "Savanna Kingdom",
+  remark: "African Savanna-themed enclosure for lions.",
+  length: 400,
+  width: 600,
+  height: 30,
+  enclosureStatus: "ACTIVE",
+  standOffBarrierDist: 4,
+  facilityName: "Savanna Kingdom",
+  isSheltered: true,
+  imageUrl: "img/facility/lionEnclosure.webp",
+} as any;
+let enclosure6Object = await EnclosureService.createNewEnclosure(
+  enclosure6Template.name,
+  enclosure6Template.remark,
+  enclosure6Template.length,
+  enclosure6Template.width,
+  enclosure6Template.height,
+  enclosure6Template.enclosureStatus,
+  enclosure6Template.standOffBarrierDist,
+  enclosure6Template.facilityName,
+  enclosure6Template.isSheltered,
+  enclosure6Template.imageUrl,
+);
+await Enclosure.update(
+  { designDiagramJsonUrl: "enclosureDiagramJson/Savanna Kingdom.json" },
+  {
+    where: { enclosureId: enclosure6Object.newEnclosure.enclosureId },
+  }
+);
+// set x y coordinate
+await Facility.update(
+  { xCoordinate: 103.7818, yCoordinate: 1.2987 },
+  {
+    where: { facilityId: enclosure6Object.newFacility.facilityId },
+  }
+);
+
+let enclosure7Template = {
+  name: "Antarctic Oasis",
+  remark: "Antarctic-themed enclosure for penguins.",
+  length: 200,
+  width: 400,
+  height: 15,
+  enclosureStatus: "ACTIVE",
+  standOffBarrierDist: 2,
+  facilityName: "Antarctic Oasis",
+  isSheltered: true,
+  imageUrl: "img/facility/penguinEnclosure.jpg",
+} as any;
+let enclosure7Object = await EnclosureService.createNewEnclosure(
+  enclosure7Template.name,
+  enclosure7Template.remark,
+  enclosure7Template.length,
+  enclosure7Template.width,
+  enclosure7Template.height,
+  enclosure7Template.enclosureStatus,
+  enclosure7Template.standOffBarrierDist,
+  enclosure7Template.facilityName,
+  enclosure7Template.isSheltered,
+  enclosure7Template.imageUrl,
+);
+await Enclosure.update(
+  { designDiagramJsonUrl: "enclosureDiagramJson/Antarctic Oasis.json" },
+  {
+    where: { enclosureId: enclosure7Object.newEnclosure.enclosureId },
+  }
+);
+// set x y coordinate
+await Facility.update(
+  { xCoordinate: 103.7818, yCoordinate: 1.2987 },
+  {
+    where: { facilityId: enclosure7Object.newFacility.facilityId },
+  }
+  );
+  
+  let enclosure8Template = {
+  name: "Rainforest Haven",
+  remark: "Borneo Rainforest-themed enclosure for orangutans.",
+  length: 300,
+  width: 500,
+  height: 20,
+  enclosureStatus: "ACTIVE",
+  standOffBarrierDist: 3,
+  facilityName: "Rainforest Haven",
+  isSheltered: true,
+  imageUrl: "img/facility/orangutanEnclosure.jpg",
+} as any;
+let enclosure8Object = await EnclosureService.createNewEnclosure(
+  enclosure8Template.name,
+  enclosure8Template.remark,
+  enclosure8Template.length,
+  enclosure8Template.width,
+  enclosure8Template.height,
+  enclosure8Template.enclosureStatus,
+  enclosure8Template.standOffBarrierDist,
+  enclosure8Template.facilityName,
+  enclosure8Template.isSheltered,
+  enclosure8Template.imageUrl,
+);
+await Enclosure.update(
+  { designDiagramJsonUrl: "enclosureDiagramJson/Rainforest Haven.json" },
+  {
+    where: { enclosureId: enclosure8Object.newEnclosure.enclosureId },
+  }
+);
+// set x y coordinate
+await Facility.update(
+  { xCoordinate: 103.7818, yCoordinate: 1.2987 },
+  {
+    where: { facilityId: enclosure8Object.newFacility.facilityId },
+  }
+);
+
+let enclosure9Template = {
+  name: "Savanna Heights",
+  remark: "African Savanna-themed enclosure for giraffes.",
+  length: 500,
+  width: 800,
+  height: 35,
+  enclosureStatus: "ACTIVE",
+  standOffBarrierDist: 5,
+  facilityName: "Savanna Heights",
+  isSheltered: true,
+  imageUrl: "img/facility/giraffeEnclosure.jpg",
+} as any;
+let enclosure9Object = await EnclosureService.createNewEnclosure(
+  enclosure9Template.name,
+  enclosure9Template.remark,
+  enclosure9Template.length,
+  enclosure9Template.width,
+  enclosure9Template.height,
+  enclosure9Template.enclosureStatus,
+  enclosure9Template.standOffBarrierDist,
+  enclosure9Template.facilityName,
+  enclosure9Template.isSheltered,
+  enclosure9Template.imageUrl,
+);
+await Enclosure.update(
+  { designDiagramJsonUrl: "enclosureDiagramJson/Savanna Heights.json" },
+  {
+    where: { enclosureId: enclosure9Object.newEnclosure.enclosureId },
+  }
+);
+// set x y coordinate
+await Facility.update(
+  { xCoordinate: 103.7818, yCoordinate: 1.2987 },
+  {
+    where: { facilityId: enclosure9Object.newFacility.facilityId },
+  }
+);
 
   // assign animals to enclosure
   await EnclosureService.assignAnimalToEnclosure(1, "ANM00001");
