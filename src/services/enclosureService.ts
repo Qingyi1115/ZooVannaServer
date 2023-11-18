@@ -290,8 +290,12 @@ export async function updateDesignDiagram(
     // console.log(designDiagramJson)
     const filePath = `enclosureDiagramJson/${enclosure.name}.json`;
 
+    console.log("landArea" + landArea)
+    console.log("waterArea" + waterArea)
+    console.log("plantationCoveragePercent" + plantationCoveragePercent)
+
     await writeFile(filePath, designDiagramJson);
-    if (enclosure.designDiagramJsonUrl == null) {
+    if (enclosure.designDiagramJsonUrl != null) {
       await Enclosure.update(
         {
           designDiagramJsonUrl: filePath,

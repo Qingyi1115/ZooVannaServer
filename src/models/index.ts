@@ -3552,9 +3552,9 @@ export const enclosureSeed = async () => {
     // facilityId: 1,
     name: "Panda Paradise",
     remark: "NA",
-    length: 200,
-    width: 400,
-    height: 20,
+    length: 40,
+    width: 50,
+    height: 10,
     enclosureStatus: "CONSTRUCTING",
     standOffBarrierDist: 5,
     facilityName: "Panda Paradise",
@@ -3836,184 +3836,184 @@ export const enclosureSeed = async () => {
   await EnclosureService.assignAnimalToEnclosure(5, "ANM00011");
 
   let plantation1Template = {
-  name: "African Daisy",
-  biome: "TEMPERATE",
-} as any;
-await Plantation.create(plantation1Template);
+    name: "African Daisy",
+    biome: "TEMPERATE",
+  } as any;
+  await Plantation.create(plantation1Template);
 
-let plantation2Template = {
-  name: "Baobab Tree",
-  biome: "TROPICAL",
-} as any;
-await Plantation.create(plantation2Template);
+  let plantation2Template = {
+    name: "Baobab Tree",
+    biome: "TROPICAL",
+  } as any;
+  await Plantation.create(plantation2Template);
 
-let plantation3Template = {
-  name: "Cactus",
-  biome: "DESERT",
-} as any;
-await Plantation.create(plantation3Template);
+  let plantation3Template = {
+    name: "Cactus",
+    biome: "DESERT",
+  } as any;
+  await Plantation.create(plantation3Template);
 
-let plantation4Template = {
-  name: "Douglas Fir Pine",
-  biome: "TAIGA",
-} as any;
-await Plantation.create(plantation4Template);
+  let plantation4Template = {
+    name: "Douglas Fir Pine",
+    biome: "TAIGA",
+  } as any;
+  await Plantation.create(plantation4Template);
 
-let plantation5Template = {
-  name: "Fern Tree",
-  biome: "AQUATIC",
-} as any;
-await Plantation.create(plantation5Template);
+  let plantation5Template = {
+    name: "Fern Tree",
+    biome: "AQUATIC",
+  } as any;
+  await Plantation.create(plantation5Template);
 
-let plantation6Template = {
-  name: "Goldenrod",
-  biome: "GRASSLAND",
-} as any;
-await Plantation.create(plantation6Template);
+  let plantation6Template = {
+    name: "Goldenrod",
+    biome: "GRASSLAND",
+  } as any;
+  await Plantation.create(plantation6Template);
 
-let plantation7Template = {
-  name: "Himalayan Pine",
-  biome: "TEMPERATE",
-} as any;
-await Plantation.create(plantation7Template);
+  let plantation7Template = {
+    name: "Himalayan Pine",
+    biome: "TEMPERATE",
+  } as any;
+  await Plantation.create(plantation7Template);
 
-let plantation8Template = {
-  name: "Ivy",
-  biome: "TUNDRA",
-} as any;
-await Plantation.create(plantation8Template);
+  let plantation8Template = {
+    name: "Ivy",
+    biome: "TUNDRA",
+  } as any;
+  await Plantation.create(plantation8Template);
 
-let plantation9Template = {
-  name: "Joshua Tree",
-  biome: "DESERT",
-} as any;
-await Plantation.create(plantation9Template);
+  let plantation9Template = {
+    name: "Joshua Tree",
+    biome: "DESERT",
+  } as any;
+  await Plantation.create(plantation9Template);
 
-let plantation10Template = {
-  name: "Kapok Tree",
-  biome: "TROPICAL",
-} as any;
-await Plantation.create(plantation10Template);
+  let plantation10Template = {
+    name: "Kapok Tree",
+    biome: "TROPICAL",
+  } as any;
+  await Plantation.create(plantation10Template);
 
-let plantation11Template = {
-  name: "Lobster Claw",
-  biome: "TROPICAL",
-} as any;
-await Plantation.create(plantation11Template);
+  let plantation11Template = {
+    name: "Lobster Claw",
+    biome: "TROPICAL",
+  } as any;
+  await Plantation.create(plantation11Template);
 
-let plantation12Template = {
-  name: "Mangrove Apple",
-  biome: "AQUATIC",
-} as any;
-await Plantation.create(plantation12Template);
+  let plantation12Template = {
+    name: "Mangrove Apple",
+    biome: "AQUATIC",
+  } as any;
+  await Plantation.create(plantation12Template);
 
-let plantation13Template = {
-  name: "Nettle",
-  biome: "TEMPERATE",
-} as any;
-await Plantation.create(plantation13Template);
+  let plantation13Template = {
+    name: "Nettle",
+    biome: "TEMPERATE",
+  } as any;
+  await Plantation.create(plantation13Template);
 
-let plantation14Template = {
-  name: "Olive Tree",
-  biome: "TUNDRA",
-} as any;
-await Plantation.create(plantation14Template);
+  let plantation14Template = {
+    name: "Olive Tree",
+    biome: "TUNDRA",
+  } as any;
+  await Plantation.create(plantation14Template);
 
-let plantation15Template = {
-  name: "Papyrus Sedge",
-  biome: "AQUATIC",
-} as any;
-await Plantation.create(plantation15Template);
+  let plantation15Template = {
+    name: "Papyrus Sedge",
+    biome: "AQUATIC",
+  } as any;
+  await Plantation.create(plantation15Template);
 
-let plantation16Template = {
-  name: "Quaking Aspen Tree",
-  biome: "TAIGA",
-} as any;
-await Plantation.create(plantation16Template);
+  let plantation16Template = {
+    name: "Quaking Aspen Tree",
+    biome: "TAIGA",
+  } as any;
+  await Plantation.create(plantation16Template);
 
-let plantation17Template = {
-  name: "Rainbow Eucalyptus Tree",
-  biome: "TROPICAL",
-} as any;
-await Plantation.create(plantation17Template);
+  let plantation17Template = {
+    name: "Rainbow Eucalyptus Tree",
+    biome: "TROPICAL",
+  } as any;
+  await Plantation.create(plantation17Template);
 
-let plantation18Template = {
-  name: "Saguaro Cactus",
-  biome: "DESERT",
-} as any;
-await Plantation.create(plantation18Template);
+  let plantation18Template = {
+    name: "Saguaro Cactus",
+    biome: "DESERT",
+  } as any;
+  await Plantation.create(plantation18Template);
 
-let plantation19Template = {
-  name: "Tundra Moss",
-  biome: "TUNDRA",
-} as any;
-await Plantation.create(plantation19Template);
+  let plantation19Template = {
+    name: "Tundra Moss",
+    biome: "TUNDRA",
+  } as any;
+  await Plantation.create(plantation19Template);
 
-let plantation20Template = {
-  name: "Umbrella Thorn Acacia",
-  biome: "GRASSLAND",
-} as any;
-await Plantation.create(plantation20Template);
+  let plantation20Template = {
+    name: "Umbrella Thorn Acacia",
+    biome: "GRASSLAND",
+  } as any;
+  await Plantation.create(plantation20Template);
 
-let plantation21Template = {
-  name: "Variegated Ivy",
-  biome: "TEMPERATE",
-} as any;
-await Plantation.create(plantation21Template);
+  let plantation21Template = {
+    name: "Variegated Ivy",
+    biome: "TEMPERATE",
+  } as any;
+  await Plantation.create(plantation21Template);
 
-let plantation22Template = {
-  name: "Water Hyacinth",
-  biome: "AQUATIC",
-} as any;
-await Plantation.create(plantation22Template);
+  let plantation22Template = {
+    name: "Water Hyacinth",
+    biome: "AQUATIC",
+  } as any;
+  await Plantation.create(plantation22Template);
 
-let plantation23Template = {
-  name: "Xerophyte",
-  biome: "DESERT",
-} as any;
-await Plantation.create(plantation23Template);
+  let plantation23Template = {
+    name: "Xerophyte",
+    biome: "DESERT",
+  } as any;
+  await Plantation.create(plantation23Template);
 
-let plantation24Template = {
-  name: "Yellow Poplar",
-  biome: "TEMPERATE",
-} as any;
-await Plantation.create(plantation24Template);
+  let plantation24Template = {
+    name: "Yellow Poplar",
+    biome: "TEMPERATE",
+  } as any;
+  await Plantation.create(plantation24Template);
 
-let plantation25Template = {
-  name: "Zebra Grass",
-  biome: "GRASSLAND",
-} as any;
-await Plantation.create(plantation25Template);
+  let plantation25Template = {
+    name: "Zebra Grass",
+    biome: "GRASSLAND",
+  } as any;
+  await Plantation.create(plantation25Template);
 
-let plantation26Template = {
-  name: "Quiver Tree",
-  biome: "DESERT",
-} as any;
-await Plantation.create(plantation26Template);
+  let plantation26Template = {
+    name: "Quiver Tree",
+    biome: "DESERT",
+  } as any;
+  await Plantation.create(plantation26Template);
 
-let plantation27Template = {
-  name: "Siberian Peashrub",
-  biome: "TAIGA",
-} as any;
-await Plantation.create(plantation27Template);
+  let plantation27Template = {
+    name: "Siberian Peashrub",
+    biome: "TAIGA",
+  } as any;
+  await Plantation.create(plantation27Template);
 
-let plantation28Template = {
-  name: "Sugar Maple Tree",
-  biome: "TEMPERATE",
-} as any;
-await Plantation.create(plantation28Template);
+  let plantation28Template = {
+    name: "Sugar Maple Tree",
+    biome: "TEMPERATE",
+  } as any;
+  await Plantation.create(plantation28Template);
 
-let plantation29Template = {
-  name: "Blue Lotus Plant",
-  biome: "AQUATIC",
-} as any;
-await Plantation.create(plantation29Template);
+  let plantation29Template = {
+    name: "Blue Lotus Plant",
+    biome: "AQUATIC",
+  } as any;
+  await Plantation.create(plantation29Template);
 
-let plantation30Template = {
-  name: "Red Oat Grass",
-  biome: "GRASSLAND",
-} as any;
-await Plantation.create(plantation30Template);
+  let plantation30Template = {
+    name: "Red Oat Grass",
+    biome: "GRASSLAND",
+  } as any;
+  await Plantation.create(plantation30Template);
 
 };
 
@@ -4520,9 +4520,9 @@ export const facilityAssetsSeed = async () => {
   ]) {
     _day = new Date(
       _day.getTime() -
-        days * 1000 * 60 * 60 * 24 +
-        Math.random() * 1000 * 60 * 60 * 24 * 4 -
-        1000 * 60 * 60 * 24 * 2,
+      days * 1000 * 60 * 60 * 24 +
+      Math.random() * 1000 * 60 * 60 * 24 * 4 -
+      1000 * 60 * 60 * 24 * 2,
     );
     sensor.addMaintenanceLog(
       await MaintenanceLog.create({
