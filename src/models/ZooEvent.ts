@@ -121,7 +121,7 @@ ZooEvent.init(
       type: DataTypes.DATE,
     },
     eventDurationHrs: {
-      type: DataTypes.INTEGER,
+      type: DataTypes.DECIMAL,
     },
     eventTiming: {
       type: DataTypes.ENUM,
@@ -161,10 +161,20 @@ ZooEvent.init(
 ZooEvent.addHook("afterFind", async (findResult) => {
   if (!Array.isArray(findResult)) findResult = [findResult as any];
   for (const instance of findResult) {
+    let setImage = false;
+    if (instance.eventIsPublic && !instance.imageUrl) {
+      setImage = true;
+    }
+
     if (!(await instance.getEnclosure())) {
       const animal = (await instance.getAnimals())[0];
       if (animal) {
         await instance.setEnclosure((await animal.getEnclosure()));
+        
+        if (setImage) {
+          instance.imageUrl = (await (animal as Animal).getSpecies()).imageUrl;
+          instance.save();
+        }
         continue;
       }
 
@@ -172,6 +182,11 @@ ZooEvent.addHook("afterFind", async (findResult) => {
       if (animalActivity) {
         const animal = (await animalActivity.getAnimals())[0];
         if (!animal) continue;
+        
+        if (setImage) {
+          instance.imageUrl = (await (animal as Animal).getSpecies()).imageUrl;
+          instance.save();
+        }
         await instance.setEnclosure((await animal.getEnclosure()));
         continue;
       }
@@ -180,6 +195,11 @@ ZooEvent.addHook("afterFind", async (findResult) => {
       if (feedingPlanSessionDetail) {
         const animal = (await (await feedingPlanSessionDetail.getFeedingPlan())?.getAnimals())[0];
         if (!animal) continue;
+        
+        if (setImage) {
+          instance.imageUrl = (await (animal as Animal).getSpecies()).imageUrl;
+          instance.save();
+        }
         await instance.setEnclosure(((await animal.getEnclosure())));
         continue;
       }
@@ -188,6 +208,11 @@ ZooEvent.addHook("afterFind", async (findResult) => {
       if (publicEventSession) {
         const animal = (await (await publicEventSession.getPublicEvent())?.getAnimals())[0];
         if (!animal) continue;
+        
+        if (setImage) {
+          instance.imageUrl = (await (animal as Animal).getSpecies()).imageUrl;
+          instance.save();
+        }
         await instance.setEnclosure(((await animal.getEnclosure())));
         continue;
       }

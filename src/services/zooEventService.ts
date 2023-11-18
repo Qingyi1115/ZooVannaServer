@@ -583,7 +583,7 @@ export async function generateMonthlyZooEventForFeedingPlanSession(
       return createFeedingPlanSessionDetailZooEvent(
         feedingPlanSessionDetail.feedingPlanSessionDetailId,
         date,
-        feedingPlanSessionDetail.durationInMinutes,
+        feedingPlanSessionDetail.durationInMinutes / 60,
         feedingPlanSessionDetail.eventTimingType,
         feedingPlan.feedingPlanDesc,
         feedingPlanSessionDetail.isPublic,
@@ -867,7 +867,7 @@ export async function updateZooEventIncludeFuture(
   zooEvent.eventIsPublic = eventIsPublic;
   zooEvent.eventType = eventType;
   zooEvent.requiredNumberOfKeeper = requiredNumberOfKeeper;
-  const originalStartDateTime = zooEvent.eventStartDateTime;
+  const originalStartDateTime = new Date(zooEvent.eventStartDateTime.getTime());
   const deltaStartDateTime =
     eventStartDateTime - zooEvent.eventStartDateTime.getTime();
   const iKeepMyPromises: Promise<any>[] = [];
