@@ -156,6 +156,60 @@ export async function getAllPublicEvents(req: Request, res: Response) {
   }
 }
 
+export async function getAllUniquePublicZooEventsToday(
+  req: Request,
+  res: Response,
+) {
+  try {
+    console.log("inside controller");
+    const publicEvents =
+      await ZooEventCustomerService.getAllUniquePublicZooEventsToday([
+        {
+          association: "animals",
+          required: false,
+          include: [
+            {
+              association: "species",
+              required: true,
+            },
+          ],
+        },
+        {
+          association: "keepers",
+          required: false,
+          include: [
+            {
+              association: "employee",
+              required: true,
+            },
+          ],
+        },
+        {
+          association: "inHouse",
+          required: false,
+          include: [
+            {
+              association: "facility",
+              required: true,
+            },
+          ],
+        },
+        {
+          association: "publicEventSessions",
+          required: false,
+        },
+      ]);
+
+    console.log(publicEvents);
+    return res
+      .status(200)
+      .json({ result: publicEvents.map((e) => e.toJSON()) });
+  } catch (error: any) {
+    console.log(error);
+    res.status(400).json({ error: error.message });
+  }
+}
+
 export async function getPublicEventById(req: Request, res: Response) {
   try {
     const { publicEventId } = req.params;

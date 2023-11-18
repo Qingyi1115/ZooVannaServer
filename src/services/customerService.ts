@@ -71,7 +71,6 @@ export async function createNewCustomer(
   lastName: string,
   contactNo: string,
   birthday: Date,
-  address: string,
   nationality: Country,
   token: string,
 ) {
@@ -93,7 +92,6 @@ export async function createNewCustomer(
         email: email,
         contactNo: contactNo,
         birthday: birthday,
-        address: address,
         nationality: nationality,
       };
       try {
@@ -114,6 +112,8 @@ export async function createNewCustomer(
 }
 
 export async function findCustomerByEmail(email: string) {
+  console.log("by email");
+  console.log(email);
   let result = await Customer.findOne({
     where: { email: email },
   });
@@ -127,13 +127,15 @@ export async function findCustomerByEmail(email: string) {
 
 //might have an error for param type, might be CreationOptional<number>
 export async function findCustomerByCustomerId(customerId: number) {
+  console.log("by id");
+  console.log(customerId);
   let result = await Customer.findOne({
     where: { customerId: customerId },
   });
   if (result) {
     return result;
   }
-  throw { message: "Invalid email!" };
+  throw { message: "Invalid customer ID!" };
 }
 
 export async function customerLogin(
@@ -166,7 +168,6 @@ export async function updateCustomer(
   email: string,
   contactNo: string,
   birthday: Date,
-  address: string,
   nationality: Country,
 ) {
   let updatedCustomer = {
@@ -176,7 +177,6 @@ export async function updateCustomer(
     email: email,
     contactNo: contactNo,
     birthday: birthday,
-    address: address,
     nationality: nationality,
   } as any;
 

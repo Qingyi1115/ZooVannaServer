@@ -6,6 +6,7 @@ import {
   getPublishedPublicZooEvent,
   getAllPublicEvents,
   getPublicEventById,
+  getAllUniquePublicZooEventsToday,
 } from "../controllers/zooEventCustomerController";
 
 const router = express.Router();
@@ -17,6 +18,12 @@ router.get(
 );
 router.get("/getAllPublicEvents", getAllPublicEvents);
 router.get("/getPublicEventById/:publicEventId", getPublicEventById);
+
+router.get(
+  "/getAllUniquePublicZooEventsToday",
+  getAllUniquePublicZooEventsToday,
+);
+
 router.use(authMiddleware);
 
 // Public Events
