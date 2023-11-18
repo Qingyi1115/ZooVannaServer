@@ -87,6 +87,7 @@ import { EnclosureBarrier } from "./EnclosureBarrier";
 import { AccessPoint } from "./AccessPoint";
 import { Itinerary } from "./Itinerary";
 import { ItineraryItem } from "./ItineraryItem";
+import { Announcement } from "./Announcement";
 
 function addCascadeOptions(options: object) {
   return { ...options, onDelete: "CASCADE", onUpdate: "CASCADE" };
@@ -742,6 +743,7 @@ export const seedDatabase = async () => {
     await promotionSeed();
     await customerSeed();
     await publicEventSeed();
+    await announcementSeed();
   } catch (err) {
     console.log("error", err);
     throw err;
@@ -796,7 +798,7 @@ export const promotionSeed = async () => {
     description:
       "Tired of WFH? Enjoy 20% off admission tickets to celebrate the end of circuit breaker. \n\n Terms and conditions: \nValid for minimum purchase of S$100 \n Valid for purchase date from 20 July 2021 to 20 August 2023",
     publishDate: new Date("2023-07-07"),
-    startDate: new Date("202-07-20"),
+    startDate: new Date("2020-07-20"),
     endDate: new Date("2024-08-20"),
     percentage: 20,
     minimumSpending: 200,
@@ -804,6 +806,43 @@ export const promotionSeed = async () => {
     maxRedeemNum: 1000,
     currentRedeemNum: 1000,
     imageUrl: "img/promotion/elephant.jpg",
+  });
+};
+
+export const announcementSeed = async () => {
+  let announcement1 = await Announcement.create({
+    title: "Habitat Renovation Underway",
+    content:
+      "Our habitat renovation will be in progress from November 1, 2023, to January 31, 2024. During this time, certain areas may be temporarily closed as we enhance our animals' living spaces.",
+    isPublished: true,
+    scheduledStartPublish: new Date("2023-10-10"),
+    scheduledEndPublish: new Date("2024-01-31"),
+  });
+
+  let announcement2 = await Announcement.create({
+    title: "Temporary Closure of 'African Savannah' Exhibit",
+    content:
+      "The 'African Savannah' exhibit will be temporarily closed for maintenance and improvements from December 15, 2023, to January 15, 2024.",
+    isPublished: true,
+    scheduledStartPublish: new Date("2023-12-01"),
+    scheduledEndPublish: new Date("2024-01-15"),
+  });
+
+  let announcement3 = await Announcement.create({
+    title: "Walkway Repairs in Progress",
+    content:
+      "We are currently repairing and upgrading certain walkways throughout the zoo. These improvements are scheduled from November 1, 2023, to November 5, 2023. We apologize for any inconvenience during this period.",
+    isPublished: true,
+    scheduledStartPublish: new Date("2023-10-01"),
+    scheduledEndPublish: new Date("2023-11-05"),
+  });
+
+  let announcement4 = await Announcement.create({
+    title: "Test Announcement",
+    content: "This is a test announcement. Do not publish.",
+    isPublished: false,
+    scheduledStartPublish: new Date("2023-10-10"),
+    scheduledEndPublish: new Date("2023-11-31"),
   });
 };
 
@@ -3533,7 +3572,8 @@ export const enclosureSeed = async () => {
     enclosure1Template.standOffBarrierDist,
     enclosure1Template.facilityName,
     enclosure1Template.isSheltered,
-    enclosure1Template.imageUrl)
+    enclosure1Template.imageUrl,
+  );
   let panda_hub = await AssetFacility.addHubProcessorByFacilityId(
     enclosure1Object.newFacility.facilityId,
     "Da Bambo Hub",
@@ -3560,7 +3600,7 @@ export const enclosureSeed = async () => {
   pandaSensor = await AssetFacility.addSensorByHubProcessorId(
     panda_hub.hubProcessorId,
     SensorType.LIGHT,
-    "The panda detector"
+    "The panda detector",
   );
 
   for (let i = 1; i < 50; i++) {
@@ -3743,7 +3783,7 @@ export const enclosureSeed = async () => {
   );
   // set x y coordinate
   await Facility.update(
-    { xCoordinate: 103.7760, yCoordinate: 1.2931 },
+    { xCoordinate: 103.776, yCoordinate: 1.2931 },
     {
       where: { facilityId: enclosure4Object.newFacility.facilityId },
     },
@@ -4494,14 +4534,14 @@ export const publicEventSeed = async () => {
 
   const pubEvent = await ZooEventService.createPublicEvent(
     EventType.CUSTOMER_FEEDING,
-    "Homo sapiens feeding",
-    "do not feed them fast food",
-    "img/species/elephant.jpg",
+    "Elephant Feeding",
+    "Join us for an unforgettable encounter with our gentle giants! The Elephant Feeding Experience allows you to get up close and personal with our magnificent elephants as you assist in feeding them their favorite treats!",
+    "img/event/elephant.jpg",
     today,
-    new Date(today.getTime() + 60 * DAY_IN_MILLISECONDS),
+    new Date(today.getTime()),
     [],
     [1],
-    8,
+    5,
   );
 
   const pubEventSession = await ZooEventService.createPublicEventSession(
@@ -4510,18 +4550,18 @@ export const publicEventSeed = async () => {
     null,
     null,
     60,
-    "16:00",
-    30,
-    new Date(today.getTime() + DAY_IN_MILLISECONDS * 5),
+    "23:00",
+    5,
+    new Date(Date.now() + 0.1 * DAY_IN_MILLISECONDS),
   );
 
   const pubEvent2 = await ZooEventService.createPublicEvent(
-    EventType.SHOW,
-    "Pandas dance",
-    "Watch our ambassador put on a show",
-    "img/animal/ANM00001.jpg",
+    EventType.CUSTOMER_FEEDING,
+    "Red Panda Feeding",
+    "Feed our red pandas? Where else can you do this?",
+    "img/event/pandafeeding.jpg",
     today,
-    new Date(today.getTime() + 90 * DAY_IN_MILLISECONDS),
+    new Date(today.getTime() + 60 * DAY_IN_MILLISECONDS),
     (await AnimalService.getAllAnimalsBySpeciesCode("SPE001")).map(
       (animal) => animal.animalCode,
     ),
@@ -4535,7 +4575,7 @@ export const publicEventSeed = async () => {
     DayOfWeek.THURSDAY,
     null,
     60,
-    "16:00",
+    "15:00",
     7,
     null,
   );
@@ -4546,14 +4586,14 @@ export const publicEventSeed = async () => {
     DayOfWeek.FRIDAY,
     null,
     60,
-    "14:00",
+    "12:00",
     7,
     null,
   );
 
   const pubEvent3 = await ZooEventService.createPublicEvent(
     EventType.TALK,
-    "Clown Fish Talk",
+    "Clown Fish Keeper Talk",
     "Find out more about the lifestyles and managements of these sea creatures",
     "img/species/clownfish.jpg",
     today,
@@ -4574,5 +4614,55 @@ export const publicEventSeed = async () => {
     "15:00",
     7,
     null,
+  );
+
+  const pubEvent4 = await ZooEventService.createPublicEvent(
+    EventType.SHOW,
+    "Bird Show",
+    "Watch our aerial ambassadors put on a show",
+    "img/event/animalshow.jpg",
+    today,
+    new Date(today.getTime()),
+    (await AnimalService.getAllAnimalsBySpeciesCode("SPE001")).map(
+      (animal) => animal.animalCode,
+    ),
+    [1],
+    5,
+  );
+
+  const pubEventSession5 = await ZooEventService.createPublicEventSession(
+    pubEvent4.publicEventId,
+    RecurringPattern.NON_RECURRING,
+    null,
+    null,
+    60,
+    "22:00",
+    5,
+    new Date(Date.now() + 0.1 * DAY_IN_MILLISECONDS),
+  );
+
+  const pubEvent5 = await ZooEventService.createPublicEvent(
+    EventType.TALK,
+    "Elephant Keeper Talk",
+    "Find out more about the lifestyles and managements of these majestic creatures",
+    "img/event/keepertalk.jpg",
+    today,
+    null,
+    (await AnimalService.getAllAnimalsBySpeciesCode("SPE001")).map(
+      (animal) => animal.animalCode,
+    ),
+    [1],
+    8,
+  );
+
+  const pubEventSession6 = await ZooEventService.createPublicEventSession(
+    pubEvent5.publicEventId,
+    RecurringPattern.NON_RECURRING,
+    null,
+    null,
+    60,
+    "23:00",
+    5,
+    new Date(Date.now() + 0.1 * DAY_IN_MILLISECONDS),
   );
 };
