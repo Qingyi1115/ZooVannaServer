@@ -195,7 +195,7 @@ export async function getAllUniquePublicZooEventsToday(
           ],
         },
         {
-          association: "publicEventSessions",
+          association: "publicEventSession",
           required: false,
         },
       ]);
