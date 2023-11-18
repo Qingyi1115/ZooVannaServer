@@ -21,6 +21,8 @@ import { ZooEvent } from "./ZooEvent";
 import { Enclosure } from "./Enclosure";
 import { Customer } from "./Customer";
 import { ItineraryItem } from "./ItineraryItem";
+import { Facility } from "./Facility";
+import { Species } from "./Species";
 
 function uppercaseFirst(str: string) {
   return `${str[0].toUpperCase()}${str.substr(1)}`;
@@ -41,14 +43,34 @@ class Itinerary extends Model<
   declare itineraryName: string;
 
   declare customer?: Customer;
+  declare specieses?: Species[];
   declare itineraryItems?: ItineraryItem[];
 
   declare getCustomer: HasOneGetAssociationMixin<Customer>;
   declare setCustomer: HasOneSetAssociationMixin<Customer, number>;
 
+  declare getSpecieses: HasManyGetAssociationsMixin<Species>;
+  declare addSpecies: HasManyAddAssociationMixin<Species, number>;
+  declare setSpecieses: HasManySetAssociationsMixin<Species, number>;
+  declare removeSpecies: HasManyRemoveAssociationMixin<Species, number>;
+
   declare getItineraryItems: HasManyGetAssociationsMixin<ItineraryItem>;
-  declare addItineraryItems: HasManyAddAssociationMixin<ItineraryItem, number>;
+  declare addItineraryItem: HasManyAddAssociationMixin<ItineraryItem, number>;
   declare setItineraryItems: HasManySetAssociationsMixin<ItineraryItem, number>;
+  declare removeItineraryItem: HasManyRemoveAssociationMixin<
+    ItineraryItem,
+    number
+  >;
+
+  public setItineraryName(itineraryName: string) {
+    this.itineraryName = itineraryName;
+    this.save();
+  }
+
+  public setDatePlannedVisit(datePlannedVisit: Date) {
+    this.datePlannedVisit = datePlannedVisit;
+    this.save();
+  }
 
   public toJSON() {
     return {

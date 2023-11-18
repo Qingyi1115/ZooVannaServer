@@ -5,6 +5,8 @@ import {
   HasManyGetAssociationsMixin,
   HasManyRemoveAssociationMixin,
   HasManySetAssociationsMixin,
+  BelongsToGetAssociationMixin,
+  BelongsToSetAssociationMixin,
   HasOneGetAssociationMixin,
   HasOneSetAssociationMixin,
   InferAttributes,
@@ -30,23 +32,19 @@ class ItineraryItem extends Model<
   declare orderNum: number;
 
   declare itinerary?: Itinerary;
-  declare enclosure?: Enclosure;
   declare facility?: Facility;
 
-  declare getItinerary: HasOneGetAssociationMixin<Itinerary>;
-  declare setItinerary: HasOneSetAssociationMixin<Itinerary, number>;
+  declare getItinerary: BelongsToGetAssociationMixin<Itinerary>;
+  declare setItinerary: BelongsToSetAssociationMixin<Itinerary, number>;
 
-  declare getFacility: HasOneGetAssociationMixin<Facility>;
-  declare setFacility: HasOneSetAssociationMixin<Facility, number>;
-
-  declare getEnclosure: HasOneGetAssociationMixin<Enclosure>;
-  declare setEnclosure: HasOneSetAssociationMixin<Enclosure, number>;
+  declare getFacility: BelongsToGetAssociationMixin<Facility>;
+  declare setFacility: BelongsToSetAssociationMixin<Facility, number>;
 
   public toJSON(): any {
     return {
       ...this.get(),
       itinerary: this.itinerary?.toJSON(),
-      enclosure: this.enclosure?.toJSON(),
+      facility: this.facility?.toJSON(),
     };
   }
 
@@ -54,7 +52,7 @@ class ItineraryItem extends Model<
     return {
       ...this.toJSON(),
       itinerary: (await this.getItinerary())?.toJSON(),
-      enclosure: (await this.getEnclosure())?.toJSON(),
+      facility: (await this.getFacility())?.toJSON(),
     };
   }
 }
@@ -72,7 +70,7 @@ ItineraryItem.init(
     createdAt: true,
     updatedAt: "updateTimestamp",
     sequelize: conn, // We need to pass the connection instance
-    modelName: "itineraryitem", // We need to choose the model name
+    modelName: "itineraryItem", // We need to choose the model name
   },
 );
 

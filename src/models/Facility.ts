@@ -20,6 +20,7 @@ import { InHouse } from "./InHouse";
 import { ThirdParty } from "./ThirdParty";
 import { Zone } from "./Zone";
 import { ItineraryItem } from "./ItineraryItem";
+import { Itinerary } from "./Itinerary";
 
 class Facility extends Model<
   InferAttributes<Facility>,
@@ -41,7 +42,7 @@ class Facility extends Model<
   declare thirdParty?: ThirdParty;
   declare animalClinic?: AnimalClinic;
   declare enclosure?: Enclosure;
-  declare itineraryItem?: ItineraryItem;
+  declare itineraryItems?: ItineraryItem[];
 
   declare getHubProcessors: HasManyGetAssociationsMixin<HubProcessor>;
   declare addHubProcessor: HasManyAddAssociationMixin<HubProcessor, number>;
@@ -161,6 +162,7 @@ class Facility extends Model<
       ...this.get(),
       facilityDetailJson: await this.getFacilityDetail(),
       hubProcessors: await this.getHubProcessors(),
+      itineraryItems: await this.getItineraryItems(),
     };
     _json.facilityDetail = this.facilityDetail;
     return _json;

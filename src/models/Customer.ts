@@ -19,6 +19,7 @@ import { CustomerOrder } from "./CustomerOrder";
 import { Country } from "./Enumerated";
 import { Species } from "./Species";
 import { PublicEvent } from "./PublicEvent";
+import { Itinerary } from "./Itinerary";
 
 function hash(string: string): string {
   return crypto.createHash("sha256").update(string).digest("hex");
@@ -45,11 +46,15 @@ class Customer extends Model<
   declare customerOrders?: CustomerOrder[];
   declare species?: Species[];
   declare publicEvents?: PublicEvent[];
+  declare itineraries?: Itinerary[];
 
   declare getCustomerOrders: HasManyGetAssociationsMixin<CustomerOrder>;
   declare addCustomerOrder: HasManyAddAssociationMixin<CustomerOrder, number>;
   declare setCustomerOrders: HasManySetAssociationsMixin<CustomerOrder, number>;
-  declare removeCustomerOrder: HasManyRemoveAssociationMixin<CustomerOrder, number>;
+  declare removeCustomerOrder: HasManyRemoveAssociationMixin<
+    CustomerOrder,
+    number
+  >;
 
   declare getSpecies: BelongsToManyGetAssociationsMixin<Species>;
   declare addSpecies: BelongsToManyAddAssociationMixin<Species, number>;
@@ -60,6 +65,11 @@ class Customer extends Model<
   declare addPublicEvent: HasManyAddAssociationMixin<PublicEvent, number>;
   declare setPublicEvents: HasManySetAssociationsMixin<PublicEvent, number>;
   declare removePublicEvent: HasManyRemoveAssociationMixin<PublicEvent, number>;
+
+  declare getItineraries: HasManyGetAssociationsMixin<Itinerary>;
+  declare addItinerary: HasManyAddAssociationMixin<Itinerary, number>;
+  declare setItineraries: HasManySetAssociationsMixin<Itinerary, number>;
+  declare removeItinerary: HasManyRemoveAssociationMixin<Itinerary, number>;
 
   static getTotalCustomer() {
     // Example for static class functions
@@ -174,4 +184,3 @@ Customer.init(
 );
 
 export { Customer };
-

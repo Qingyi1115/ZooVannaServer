@@ -367,23 +367,17 @@ export const createDatabase = async (options: any) => {
     addCascadeOptions({ foreignKey: "customerId" }),
   );
 
-  Itinerary.hasMany(
-    ItineraryItem,
-    addCascadeOptions({ foreignKey: "itineraryId" }),
-  );
-  ItineraryItem.belongsTo(
-    Itinerary,
-    addCascadeOptions({ foreignKey: "itineraryId" }),
-  );
+  Itinerary.belongsToMany(Species, {
+    foreignKey: "itineraryId",
+    through: "itinerary_species",
+    as: "specieses",
+  });
 
-  Enclosure.hasMany(
-    ItineraryItem,
-    addCascadeOptions({ foreignKey: "enclosureId" }),
-  );
-  ItineraryItem.belongsTo(
-    Enclosure,
-    addCascadeOptions({ foreignKey: "enclosureId" }),
-  );
+  Species.belongsToMany(Itinerary, {
+    foreignKey: "speciesId",
+    through: "itinerary_species",
+    as: "itineraries",
+  });
 
   Enclosure.belongsToMany(EnrichmentItem, {
     foreignKey: "enclosureId",
@@ -403,6 +397,16 @@ export const createDatabase = async (options: any) => {
   ItineraryItem.belongsTo(
     Facility,
     addCascadeOptions({ foreignKey: "facilityId" }),
+  );
+
+  Itinerary.hasMany(
+    ItineraryItem,
+    addCascadeOptions({ foreignKey: "itineraryId" }),
+  );
+
+  ItineraryItem.belongsTo(
+    Itinerary,
+    addCascadeOptions({ foreignKey: "itineraryId" }),
   );
 
   Animal.belongsToMany(AnimalObservationLog, {
@@ -3533,7 +3537,8 @@ export const enclosureSeed = async () => {
     enclosure1Template.standOffBarrierDist,
     enclosure1Template.facilityName,
     enclosure1Template.isSheltered,
-    enclosure1Template.imageUrl)
+    enclosure1Template.imageUrl,
+  );
   let panda_hub = await AssetFacility.addHubProcessorByFacilityId(
     enclosure1Object.newFacility.facilityId,
     "Da Bambo Hub",
@@ -3560,7 +3565,7 @@ export const enclosureSeed = async () => {
   pandaSensor = await AssetFacility.addSensorByHubProcessorId(
     panda_hub.hubProcessorId,
     SensorType.LIGHT,
-    "The panda detector"
+    "The panda detector",
   );
 
   for (let i = 1; i < 50; i++) {
@@ -3743,7 +3748,7 @@ export const enclosureSeed = async () => {
   );
   // set x y coordinate
   await Facility.update(
-    { xCoordinate: 103.7760, yCoordinate: 1.2931 },
+    { xCoordinate: 103.776, yCoordinate: 1.2931 },
     {
       where: { facilityId: enclosure4Object.newFacility.facilityId },
     },

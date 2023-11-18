@@ -116,6 +116,7 @@ export async function findCustomerByEmail(email: string) {
   console.log(email);
   let result = await Customer.findOne({
     where: { email: email },
+    include: ["itineraries"],
   });
 
   if (result) {
