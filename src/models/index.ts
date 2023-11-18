@@ -2687,7 +2687,7 @@ export const animalSeed = async () => {
     ["ANM00001", "ANM00002", "ANM00003", "ANM00004"],
     "General Summer Feeding Plan...",
     new Date("2023-10-18"),
-    new Date(Date.now() + DAY_IN_MILLISECONDS * 21),
+    new Date("2023-10-18"),
     [
       {
         dayOfTheWeek: DayOfWeek.MONDAY,

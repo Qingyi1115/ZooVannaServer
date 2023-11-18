@@ -1335,13 +1335,13 @@ function shuffleArray(array: any[]) {
 }
 
 function doesEventClash(ze1: ZooEvent, ze2: ZooEvent) {
-  const [ze1Start, ze1End] = ze1.eventIsPublic
+  const [ze1Start, ze1End] = ze1.eventIsPublic || ze1.eventType == EventType.EMPLOYEE_ABSENCE
     ? [ze1.eventStartDateTime, ze1.eventEndDateTime]
     : convertEventTimingTypeToDate(
       ze1.eventStartDateTime,
       ze1.eventTiming as EventTimingType,
     );
-  const [ze2Start, ze2End] = ze2.eventIsPublic
+  const [ze2Start, ze2End] = ze2.eventIsPublic || ze1.eventType == EventType.EMPLOYEE_ABSENCE
     ? [ze2.eventStartDateTime, ze2.eventEndDateTime]
     : convertEventTimingTypeToDate(
       ze2.eventStartDateTime,
@@ -1351,7 +1351,6 @@ function doesEventClash(ze1: ZooEvent, ze2: ZooEvent) {
     compareDates(ze1Start, ze2End as Date) < 0 &&
     compareDates(ze1End as Date, ze2Start) > 0
   );
-  console.log("doesEventClashResult", doesEventClashResult);
   return doesEventClashResult;
 }
 
@@ -1403,7 +1402,7 @@ export async function autoAssignKeeperToZooEvent(
           where: {
             eventStartDateTime: {
               [Op.between]: [
-                new Date(),
+                new Date(Date.now() - DAY_IN_MILLISECONDS * 1),
                 new Date(Date.now() + DAY_IN_MILLISECONDS * 90),
               ],
             },
@@ -1431,12 +1430,6 @@ export async function autoAssignKeeperToZooEvent(
         (await zooEvent.getKeepers()).length < zooEvent.requiredNumberOfKeeper
       ) {
         let notFound = false;
-        const [zooEventStart, zooEventEnd] = zooEvent.eventIsPublic
-          ? [zooEvent.eventStartDateTime, zooEvent.eventEndDateTime]
-          : convertEventTimingTypeToDate(
-            zooEvent.eventStartDateTime,
-            zooEvent.eventTiming as EventTimingType,
-          );
 
         for (let index = 0; index < keepers.length; index++) {
           const keeper = keepers[index];
@@ -1447,8 +1440,21 @@ export async function autoAssignKeeperToZooEvent(
             ) &&
             !(await keeper.getZooEvents()).find((ze) =>
               doesEventClash(ze, zooEvent),
-            )
+            ) && 
+            !((await (await keeper.getEmployee()).getZooEvents({
+              where: {
+                eventStartDateTime: {
+                  [Op.between]: [
+                    new Date(Date.now() - DAY_IN_MILLISECONDS * 1),
+                    new Date(Date.now() + DAY_IN_MILLISECONDS * 90),
+                  ],
+                },
+              },
+            })).find((ze) =>
+            doesEventClash(ze, zooEvent)))
           ) {
+            // console.log("keeper", keeper.employee?.employeeName, zooEvent.zooEventId, zooEvent.eventStartDateTime, (await keeper.getZooEvents()),
+            // ((await (await keeper.getEmployee()).getZooEvents())));
             const selKeeper = keepers.splice(index, 1)[0];
             await selKeeper.addZooEvent(zooEvent);
             keepers.push(selKeeper);
@@ -1492,7 +1498,7 @@ export async function createEmployeeAbsence(
           requiredNumberOfKeeper: 0,
           eventDurationHrs: 24 * DAY_IN_MILLISECONDS,
           eventTiming: null,
-          eventEndDateTime: esdt,
+          eventEndDateTime: new Date(esdt.getTime() + DAY_IN_MILLISECONDS),
         }),
       );
     }
