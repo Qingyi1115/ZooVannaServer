@@ -4,6 +4,7 @@ import { validationErrorHandler } from "../helpers/errorHandler";
 import { Enclosure } from "../models/Enclosure";
 import * as AnimalService from "./animalService";
 import * as SpeciesService from "./speciesService";
+import * as EnrichmentItemService from "./enrichmentItemService";
 import { Facility } from "../models/Facility";
 
 import { writeFile } from "fs/promises";
@@ -13,6 +14,9 @@ import { Plantation } from "../models/Plantation";
 import { EnclosureBarrier } from "../models/EnclosureBarrier";
 import { AccessPoint } from "../models/AccessPoint";
 import { MINUTES_IN_MILLISECONDS } from "../helpers/staticValues";
+import { EnrichmentItem } from "../models/EnrichmentItem";
+import { Species } from "../models/Species";
+import { SpeciesEnclosureNeed } from "../models/SpeciesEnclosureNeed";
 
 export async function getAllEnclosures() {
   try {
@@ -43,6 +47,11 @@ export async function getEnclosureById(enclosureId: number) {
         model: Keeper,
         as: "keepers",
         required: false,
+        include: [{
+          model: Employee,
+          required: true,
+          as: "employee"
+        }]
       },
       {
         model: EnclosureBarrier,
@@ -51,6 +60,11 @@ export async function getEnclosureById(enclosureId: number) {
       {
         model: AccessPoint,
         as: "accessPoints",
+        required: false,
+      },
+      {
+        model: EnrichmentItem,
+        as: "enrichmentItems",
         required: false,
       },
     ],
@@ -260,6 +274,9 @@ export async function getSpeciesCompatibilityInEnclosure(
 export async function updateDesignDiagram(
   enclosureId: number,
   designDiagramJson: string,
+  landArea: number,
+  waterArea: number,
+  plantationCoveragePercent: number,
 ) {
   // let updatedEnclosureStatus = {
   //   enclosureStatus: enclosureStatus,
@@ -274,7 +291,12 @@ export async function updateDesignDiagram(
     await writeFile(filePath, designDiagramJson);
     if (enclosure.designDiagramJsonUrl == null) {
       await Enclosure.update(
-        { designDiagramJsonUrl: filePath },
+        {
+          designDiagramJsonUrl: filePath,
+          landArea: landArea,
+          waterArea: waterArea,
+          plantationCoveragePercent: plantationCoveragePercent,
+        },
         {
           where: { enclosureId: enclosureId },
         },
@@ -317,10 +339,11 @@ export async function assignKeepersToEnclosure(
 
     const promises = [];
     for (const keeper of keepers) {
-      promises.push(keeper.addEnclosure(enclosure));
+      promises.push(enclosure.addKeeper(keeper));
     }
 
     for (const p of promises) await p;
+
   } catch (error: any) {
     throw validationErrorHandler(error);
   }
@@ -418,13 +441,34 @@ export async function getEnclosureTerrainDistributionRecommendation(
 ) {
   let enclosure = await Enclosure.findOne({
     where: { enclosureId: enclosureId },
+    include: [
+      {
+        model: Animal, // Self-reference to represent parent-child relationships
+        as: "animals",
+        required: false,
+        include: [
+          {
+            model: Species,
+            as: "species",
+            include: [
+              {
+                model: SpeciesEnclosureNeed,
+                as: "enclosureNeeds",
+                required: false,
+              },
+            ],
+          },
+        ],
+      },
+    ],
   });
-  if (enclosure) {
+  if (enclosure && enclosure.animals && enclosure.animals[0].species) {
     // - Get all animals of enclosure, then get species list (see getSpeciesCompatibilityInEnclosure service method)
     // - Get all speciesEnclosureNeeds
     // - Do some maths idk, or apply some rules
     // - Return list of recommended terrainDistribution, min and max for each longGrass, shortGrass,...
-    //-- add code here
+    // - Oh actually, can include the minLandAreaRecommended and minWaterAreaRecommended also, like the max of all landAreaRequired (same for water)
+    // -- add code here
     //
     //return enclosure;
   }
@@ -507,6 +551,26 @@ export async function getAllPlantations() {
   }
 }
 
+export async function getAllPlantationsByEnclosureId(enclosureId: number) {
+  let result = await Enclosure.findOne({
+    where: { enclosureId: enclosureId },
+    include: {
+      model: Plantation,
+      required: false, // Include only if they exist
+    },
+  });
+
+  if (result) {
+    let plantations = await result.plantations;
+    if (plantations) {
+      return plantations;
+    } else {
+      throw new Error("This Enclosure Has No Plantations!");
+    }
+  }
+  throw new Error("Invalid Plantation!");
+}
+
 export async function addPlantationToEnclosure(
   enclosureId: number,
   plantationId: number,
@@ -539,34 +603,249 @@ export async function removePlantationFromEnclosure(
   }
 }
 
-export async function getEnvironmentSensorsData(
-  enclosureId: number,
-) {
+export async function getEnvironmentSensorsData(enclosureId: number) {
   try {
     let enclosure = await getEnclosureById(enclosureId);
 
-    const facility = await  enclosure.getFacility();
+    const facility = await enclosure.getFacility();
     const sensors = [];
 
-    for (const hub of await facility.getHubProcessors() ){
-      sensors.push(...await hub.getSensors({
-        include:[{
-          association : "sensorReadings",
-          required: false,
-          where:{
-            readingDate: {
-              [Op.lt]: new Date(),
-              [Op.gt]: new Date(Date.now() - 15 * MINUTES_IN_MILLISECONDS),
+    for (const hub of await facility.getHubProcessors()) {
+      sensors.push(
+        ...(await hub.getSensors({
+          include: [
+            {
+              association: "sensorReadings",
+              required: false,
+              where: {
+                readingDate: {
+                  [Op.lt]: new Date(),
+                  [Op.gt]: new Date(Date.now() - 15 * MINUTES_IN_MILLISECONDS),
+                },
+              },
             },
-          },
-        }]
-      }))
+          ],
+        })),
+      );
     }
     return sensors;
-    
+
   } catch (error: any) {
     throw validationErrorHandler(error);
   }
 }
 
+// encloure ---
 
+export async function getEnclosureBarrier(enclosureId: number) {
+  let result = await Enclosure.findOne({
+    where: { enclosureId: enclosureId },
+    include: {
+      model: EnclosureBarrier,
+      required: false, // Include only if they exist
+    },
+  });
+
+  if (result) {
+    let enclosureBarrier = await result.enclosureBarrier;
+    if (enclosureBarrier) {
+      return enclosureBarrier;
+    } else {
+      throw new Error("This Enclosure Has No Barrier Data!");
+    }
+  }
+  throw new Error("Invalid Enclousre Code!");
+}
+
+export async function createNewEnclosureBarrier(
+  enclosureId: number,
+  wallName: string,
+  barrierType: string,
+  remarks: string,
+) {
+  let newBarrier = {
+    wallName: wallName,
+    barrierType: barrierType,
+    remarks: remarks,
+  } as any;
+
+  try {
+    let newBarrierEntry = await EnclosureBarrier.create(newBarrier);
+
+    newBarrierEntry.setEnclosure(await getEnclosureById(enclosureId));
+
+    return newBarrierEntry;
+  } catch (error: any) {
+    console.log(error);
+    throw validationErrorHandler(error);
+  }
+}
+
+export async function updateEnclosureBarrier(
+  enclosureBarrierId: number,
+  wallName: string,
+  barrierType: string,
+  remarks: string,
+) {
+  let updatedEnclosureBarrier = {
+    wallName: wallName,
+    barrierType: barrierType,
+    remarks: remarks,
+  } as any;
+
+  try {
+    return await EnclosureBarrier.update(updatedEnclosureBarrier, {
+      where: { enclosureBarrierId: enclosureBarrierId },
+    });
+  } catch (error: any) {
+    throw validationErrorHandler(error);
+  }
+}
+
+export async function deleteEnclosureBarrier(enclosureBarrierId: number) {
+  let result = await EnclosureBarrier.destroy({
+    where: { enclosureBarrierId: enclosureBarrierId },
+  });
+  if (result) {
+    return result;
+  }
+  throw new Error("Invalid Enclosure Barrier Id!");
+}
+
+// -- access point
+export async function getEnclosureAccessPoints(enclosureId: number) {
+  let result = await Enclosure.findOne({
+    where: { enclosureId: enclosureId },
+    include: {
+      model: AccessPoint,
+      required: false, // Include only if they exist
+    },
+  });
+
+  if (result) {
+    let accessPoints = await result.accessPoints;
+    if (accessPoints) {
+      return accessPoints;
+    } else {
+      throw new Error("This Enclosure Has No Access Point!");
+    }
+  }
+  throw new Error("Invalid Enclousre Code!");
+}
+
+export async function getEnclosureAccessPointById(accessPointId: number) {
+  let result = await AccessPoint.findOne({
+    where: { accessPointId: accessPointId },
+  });
+
+  if (result) {
+    return result;
+  }
+  throw new Error("Invalid Access Point Code!");
+}
+
+export async function createNewEnclosureAccessPoint(
+  enclosureId: number,
+  name: string,
+  type: string,
+) {
+  let newAccessPoint = {
+    name: name,
+    type: type,
+  } as any;
+
+  try {
+    let newAccessPointEntry = await AccessPoint.create(newAccessPoint);
+
+    newAccessPointEntry.setEnclosure(await getEnclosureById(enclosureId));
+
+    return newAccessPointEntry;
+  } catch (error: any) {
+    console.log(error);
+    throw validationErrorHandler(error);
+  }
+}
+
+export async function updateEnclosureAccessPoint(
+  accessPointId: number,
+  name: string,
+  type: string,
+) {
+  let updatedAccessPoint = {
+    name: name,
+    type: type,
+  } as any;
+
+  try {
+    return await AccessPoint.update(updatedAccessPoint, {
+      where: { accessPointId: accessPointId },
+    });
+  } catch (error: any) {
+    throw validationErrorHandler(error);
+  }
+}
+
+export async function deleteEnclosureAccessPoint(accessPointId: number) {
+  let result = await AccessPoint.destroy({
+    where: { accessPointId: accessPointId },
+  });
+  if (result) {
+    return result;
+  }
+  throw new Error("Invalid Access Point Id!");
+}
+
+// -- enclosure enrichment item
+export async function getEnclosureEnrichmentItems(enclosureId: number) {
+  let result = await Enclosure.findOne({
+    where: { enclosureId: enclosureId },
+    include: {
+      model: EnrichmentItem,
+      required: false, // Include only if they exist
+    }, //eager fetch here
+  });
+
+  if (result) {
+    let items = await result.enrichmentItems;
+    if (items) {
+      return items;
+    } else {
+      throw new Error("This Enclosure Has No Enrichment Items!");
+    }
+  }
+  throw new Error("Invalid Enclosure Id!");
+}
+
+export async function addEnrichmentItemToEnclosure(
+  enclosureId: number,
+  enrichmentItemId: number,
+) {
+  try {
+    let enclosure = await getEnclosureById(enclosureId);
+    let item =
+      await EnrichmentItemService.getEnrichmentItemById(enrichmentItemId);
+
+    if (enclosure && item) {
+      enclosure.addEnrichmentItem(item);
+    }
+  } catch (error: any) {
+    throw validationErrorHandler(error);
+  }
+}
+
+export async function removeEnrichmentItemFromEnclosure(
+  enclosureId: number,
+  enrichmentItemId: number,
+) {
+  try {
+    let enclosure = await getEnclosureById(enclosureId);
+    let item =
+      await EnrichmentItemService.getEnrichmentItemById(enrichmentItemId);
+
+    if (enclosure && item) {
+      enclosure.removeEnrichmentItem(item);
+    }
+  } catch (error: any) {
+    throw validationErrorHandler(error);
+  }
+}
