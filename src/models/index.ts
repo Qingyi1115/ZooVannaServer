@@ -3761,7 +3761,7 @@ export const enclosureSeed = async () => {
     standOffBarrierDist: 3,
     facilityName: "Ivory Oasis",
     isSheltered: false,
-    imageUrl: "img/facility/EnclosureIvoryOasis.png",
+    imageUrl: "img/facility/EnclosureElephant.jpg",
   } as any;
   let enclosure4Object = await EnclosureService.createNewEnclosure(
     enclosure4Template.name,
@@ -3799,7 +3799,7 @@ export const enclosureSeed = async () => {
     standOffBarrierDist: 3,
     facilityName: "Nemo's Nook",
     isSheltered: false,
-    imageUrl: "img/facility/EnclosureNemosNook.png",
+    imageUrl: "img/facility/EnclosureNemo.jpg",
   } as any;
   let enclosure5Object = await EnclosureService.createNewEnclosure(
     enclosure5Template.name,
@@ -3966,7 +3966,7 @@ export const facilityAssetsSeed = async () => {
   }
 
   let facility7 = {
-    facilityName: "Amphitheatre",
+    facilityName: "Harvey Norman Amphitheatre",
     isSheltered: true,
     showOnMap: true,
     xCoordinate: 103.77511596679688,
@@ -4020,7 +4020,7 @@ export const facilityAssetsSeed = async () => {
   let f9h: InHouse = await f9.getFacilityDetail();
 
   let facility10 = {
-    facilityName: "Gazebo",
+    facilityName: "Gazebo 1",
     isSheltered: true,
     showOnMap: true,
     xCoordinate: 103.7840576171875,
@@ -4054,6 +4054,42 @@ export const facilityAssetsSeed = async () => {
   } as any;
   let f11 = await Facility.create(facility11, { include: ["inHouse"] });
   let f11h: InHouse = await f11.getFacilityDetail();
+
+  let facility12 = {
+    facilityName: "The Boardwalk Amphitheatre ",
+    isSheltered: true,
+    showOnMap: true,
+    xCoordinate: 103.7702,
+    yCoordinate: 1.2967,
+    imageUrl: "img/facility/Amphi2.jpg",
+    inHouse: {
+      lastMaintained: new Date(),
+      isPaid: false,
+      maxAccommodationSize: 5,
+      hasAirCon: false,
+      facilityType: FacilityType.AMPHITHEATRE,
+    } as any,
+  } as any;
+  let f12 = await Facility.create(facility12, { include: ["inHouse"] });
+  let f12h: InHouse = await f12.getFacilityDetail();
+
+  let facility13 = {
+    facilityName: "Gazebo 2",
+    isSheltered: true,
+    showOnMap: true,
+    xCoordinate: 103.7781,
+    yCoordinate: 1.2976,
+    imageUrl: "img/facility/gazebo2.jpg",
+    inHouse: {
+      lastMaintained: new Date(),
+      isPaid: false,
+      maxAccommodationSize: 5,
+      hasAirCon: false,
+      facilityType: FacilityType.GAZEBO,
+    } as any,
+  } as any;
+  let f13 = await Facility.create(facility13, { include: ["inHouse"] });
+  let f13h: InHouse = await f13.getFacilityDetail();
 
   let toiletTemplate = {
     facilityName: "Toilet",
@@ -4552,7 +4588,7 @@ export const publicEventSeed = async () => {
     10,
     "23:00",
     5,
-    new Date(Date.now() + 0.1 * DAY_IN_MILLISECONDS),
+    new Date(Date.now() + 0.05 * DAY_IN_MILLISECONDS),
   );
 
   const pubEvent2 = await ZooEventService.createPublicEvent(
@@ -4638,7 +4674,7 @@ export const publicEventSeed = async () => {
     10,
     "22:00",
     5,
-    new Date(Date.now() + 0.1 * DAY_IN_MILLISECONDS),
+    new Date(Date.now() + 0.05 * DAY_IN_MILLISECONDS),
   );
 
   const pubEvent5 = await ZooEventService.createPublicEvent(
@@ -4663,6 +4699,98 @@ export const publicEventSeed = async () => {
     10,
     "23:00",
     5,
-    new Date(Date.now() + 0.1 * DAY_IN_MILLISECONDS),
+    new Date(Date.now() + 0.05 * DAY_IN_MILLISECONDS),
+  );
+
+  const pubEvent7 = await ZooEventService.createPublicEvent(
+    EventType.CUSTOMER_FEEDING,
+    "Red Panda Feeding",
+    "Join us for an unforgettable encounter with our gentle giants! The Elephant Feeding Experience allows you to get up close and personal with our magnificent elephants as you assist in feeding them their favorite treats!",
+    "img/event/pandafeeding.jpg",
+    today,
+    new Date(today.getTime()),
+    [],
+    [1],
+    11,
+  );
+
+  const pubEventSession7 = await ZooEventService.createPublicEventSession(
+    pubEvent7.publicEventId,
+    RecurringPattern.NON_RECURRING,
+    null,
+    null,
+    10,
+    "11:00",
+    5,
+    new Date(Date.now() + 0.05 * DAY_IN_MILLISECONDS),
+  );
+
+  const pubEvent8 = await ZooEventService.createPublicEvent(
+    EventType.SHOW,
+    "Capybara Show",
+    "Join us for an unforgettable encounter with our cute big rodents!",
+    "img/event/animalshow3.png",
+    today,
+    new Date(today.getTime()),
+    [],
+    [1],
+    10,
+  );
+
+  const pubEventSession8 = await ZooEventService.createPublicEventSession(
+    pubEvent8.publicEventId,
+    RecurringPattern.NON_RECURRING,
+    null,
+    null,
+    10,
+    "15:00",
+    5,
+    new Date(Date.now() + 0.05 * DAY_IN_MILLISECONDS),
+  );
+
+  const pubEvent10 = await ZooEventService.createPublicEvent(
+    EventType.SHOW,
+    "Seal Show",
+    "Join us for an unforgettable encounter with our slimy adorable seals!",
+    "img/event/animalshow2.jpg",
+    today,
+    new Date(today.getTime()),
+    [],
+    [1],
+    11,
+  );
+
+  const pubEventSession10 = await ZooEventService.createPublicEventSession(
+    pubEvent10.publicEventId,
+    RecurringPattern.NON_RECURRING,
+    null,
+    null,
+    10,
+    "15:00",
+    5,
+    new Date(Date.now() + 0.05 * DAY_IN_MILLISECONDS),
+  );
+
+  const pubEvent11 = await ZooEventService.createPublicEvent(
+    EventType.TALK,
+    "Parrot Keeper Talk",
+    "Join us for an insightful education about parrots and their quirks!",
+    "img/event/keepertalk2.jpg",
+    today,
+    new Date(today.getTime()),
+    [],
+    [1],
+    11,
+  );
+
+  const pubEventSession11 = await ZooEventService.createPublicEventSession(
+    pubEvent11.publicEventId,
+    RecurringPattern.NON_RECURRING,
+    null,
+    null,
+    10,
+    "15:00",
+    5,
+    new Date(Date.now() + 0.05 * DAY_IN_MILLISECONDS),
   );
 };
