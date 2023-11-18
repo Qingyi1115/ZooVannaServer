@@ -87,6 +87,7 @@ import { EnclosureBarrier } from "./EnclosureBarrier";
 import { AccessPoint } from "./AccessPoint";
 import { Itinerary } from "./Itinerary";
 import { ItineraryItem } from "./ItineraryItem";
+import { Announcement } from "./Announcement";
 
 function addCascadeOptions(options: object) {
   return { ...options, onDelete: "CASCADE", onUpdate: "CASCADE" };
@@ -796,7 +797,7 @@ export const promotionSeed = async () => {
     description:
       "Tired of WFH? Enjoy 20% off admission tickets to celebrate the end of circuit breaker. \n\n Terms and conditions: \nValid for minimum purchase of S$100 \n Valid for purchase date from 20 July 2021 to 20 August 2023",
     publishDate: new Date("2023-07-07"),
-    startDate: new Date("202-07-20"),
+    startDate: new Date("2020-07-20"),
     endDate: new Date("2024-08-20"),
     percentage: 20,
     minimumSpending: 200,
@@ -804,6 +805,53 @@ export const promotionSeed = async () => {
     maxRedeemNum: 1000,
     currentRedeemNum: 1000,
     imageUrl: "img/promotion/elephant.jpg",
+  });
+};
+
+title: string;
+declare;
+content: string;
+declare;
+isPublished: boolean;
+declare;
+scheduledStartPublish: Date;
+declare;
+scheduledEndPublish: Date;
+
+export const announcementSeed = async () => {
+  let announcement1 = await Announcement.create({
+    title: "Habitat Renovation Underway",
+    content:
+      "We're excited to share that our habitat renovation will be in progress from November 1, 2023, to January 31, 2024. During this time, certain areas may be temporarily closed as we enhance our animals' living spaces. Thank you for your patience and understanding as we work to make our zoo even better!",
+    isPublished: true,
+    scheduledStartPublish: new Date("2023-10-10"),
+    scheduledEndPublish: new Date("2024-01-31"),
+  });
+
+  let announcement2 = await Announcement.create({
+    title: "Temporary Closure of 'African Savannah' Exhibit",
+    content:
+      "Attention, guests! The 'African Savannah' exhibit will be temporarily closed for maintenance and improvements from December 15, 2023, to January 15, 2024. We're dedicated to enhancing your experience, and we appreciate your understanding as we work to create a more captivating exhibit.",
+    isPublished: true,
+    scheduledStartPublish: new Date("2023-12-01"),
+    scheduledEndPublish: new Date("2024-01-15"),
+  });
+
+  let announcement3 = await Announcement.create({
+    title: "Walkway Repairs in Progress",
+    content:
+      "Please be aware that we are currently repairing and upgrading certain walkways throughout the zoo. These improvements are scheduled from November 1, 2023, to November 5, 2023. We apologize for any inconvenience during this period and thank you for your ongoing support.",
+    isPublished: true,
+    scheduledStartPublish: new Date("2023-10-01"),
+    scheduledEndPublish: new Date("2023-11-05"),
+  });
+
+  let announcement4 = await Announcement.create({
+    title: "Test Announcement",
+    content: "This is a test announcement. Do not publish.",
+    isPublished: false,
+    scheduledStartPublish: new Date("2023-10-10"),
+    scheduledEndPublish: new Date("2023-10-31"),
   });
 };
 
@@ -3533,7 +3581,8 @@ export const enclosureSeed = async () => {
     enclosure1Template.standOffBarrierDist,
     enclosure1Template.facilityName,
     enclosure1Template.isSheltered,
-    enclosure1Template.imageUrl)
+    enclosure1Template.imageUrl,
+  );
   let panda_hub = await AssetFacility.addHubProcessorByFacilityId(
     enclosure1Object.newFacility.facilityId,
     "Da Bambo Hub",
@@ -3560,7 +3609,7 @@ export const enclosureSeed = async () => {
   pandaSensor = await AssetFacility.addSensorByHubProcessorId(
     panda_hub.hubProcessorId,
     SensorType.LIGHT,
-    "The panda detector"
+    "The panda detector",
   );
 
   for (let i = 1; i < 50; i++) {
@@ -3743,7 +3792,7 @@ export const enclosureSeed = async () => {
   );
   // set x y coordinate
   await Facility.update(
-    { xCoordinate: 103.7760, yCoordinate: 1.2931 },
+    { xCoordinate: 103.776, yCoordinate: 1.2931 },
     {
       where: { facilityId: enclosure4Object.newFacility.facilityId },
     },
