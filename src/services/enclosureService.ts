@@ -47,11 +47,13 @@ export async function getEnclosureById(enclosureId: number) {
         model: Keeper,
         as: "keepers",
         required: false,
-        include: [{
-          model: Employee,
-          required: true,
-          as: "employee"
-        }]
+        include: [
+          {
+            model: Employee,
+            required: true,
+            as: "employee",
+          },
+        ],
       },
       {
         model: EnclosureBarrier,
@@ -343,7 +345,6 @@ export async function assignKeepersToEnclosure(
     }
 
     for (const p of promises) await p;
-
   } catch (error: any) {
     throw validationErrorHandler(error);
   }
@@ -439,6 +440,51 @@ export async function deleteEnclosureTerrainDistribution(enclosureId: number) {
 export async function getEnclosureTerrainDistributionRecommendation(
   enclosureId: number,
 ) {
+  type Recommends = {
+    minLandAreaRequired: number;
+    minWaterAreaRequired: number;
+    acceptableTempMin: number;
+    acceptableTempMax: number;
+    acceptableHumidityMin: number;
+    acceptableHumidityMax: number;
+    plantationCoveragePercentMin: number;
+    plantationCoveragePercentMax: number;
+    longGrassPercentMin: number;
+    longGrassPercentMax: number;
+    shortGrassPercentMin: number;
+    shortGrassPercentMax: number;
+    rockPercentMin: number;
+    rockPercentMax: number;
+    sandPercentMin: number;
+    sandPercentMax: number;
+    snowPercentMin: number;
+    snowPercentMax: number;
+    soilPercentMin: number;
+    soilPercentMax: number;
+  };
+  const reco: Recommends = {
+    minLandAreaRequired: Number.MIN_SAFE_INTEGER,
+    minWaterAreaRequired: Number.MIN_SAFE_INTEGER,
+    acceptableTempMin: Number.MIN_SAFE_INTEGER,
+    acceptableTempMax: Number.MAX_SAFE_INTEGER,
+    acceptableHumidityMin: Number.MIN_SAFE_INTEGER,
+    acceptableHumidityMax: Number.MAX_SAFE_INTEGER,
+    plantationCoveragePercentMin: Number.MIN_SAFE_INTEGER,
+    plantationCoveragePercentMax: Number.MAX_SAFE_INTEGER,
+    longGrassPercentMin: Number.MIN_SAFE_INTEGER,
+    longGrassPercentMax: Number.MAX_SAFE_INTEGER,
+    shortGrassPercentMin: Number.MIN_SAFE_INTEGER,
+    shortGrassPercentMax: Number.MAX_SAFE_INTEGER,
+    rockPercentMin: Number.MIN_SAFE_INTEGER,
+    rockPercentMax: Number.MAX_SAFE_INTEGER,
+    sandPercentMin: Number.MIN_SAFE_INTEGER,
+    sandPercentMax: Number.MAX_SAFE_INTEGER,
+    snowPercentMin: Number.MIN_SAFE_INTEGER,
+    snowPercentMax: Number.MAX_SAFE_INTEGER,
+    soilPercentMin: Number.MIN_SAFE_INTEGER,
+    soilPercentMax: Number.MAX_SAFE_INTEGER,
+  };
+
   let enclosure = await Enclosure.findOne({
     where: { enclosureId: enclosureId },
     include: [
@@ -462,15 +508,183 @@ export async function getEnclosureTerrainDistributionRecommendation(
       },
     ],
   });
-  if (enclosure && enclosure.animals && enclosure.animals[0].species) {
-    // - Get all animals of enclosure, then get species list (see getSpeciesCompatibilityInEnclosure service method)
-    // - Get all speciesEnclosureNeeds
-    // - Do some maths idk, or apply some rules
-    // - Return list of recommended terrainDistribution, min and max for each longGrass, shortGrass,...
-    // - Oh actually, can include the minLandAreaRecommended and minWaterAreaRecommended also, like the max of all landAreaRequired (same for water)
-    // -- add code here
-    //
-    //return enclosure;
+
+  if (enclosure) {
+    if (enclosure.animals) {
+      const species = new Set<Species>();
+      enclosure.animals.forEach(async (animal) => {
+        if (animal.species?.speciesEnclosureNeed) {
+          species.add(animal.species);
+        } else {
+          return "No Enclosure Requirement Data Found!";
+        }
+      }); // ensure all have enclosure requiemnt, else no data
+
+      for (let s of species) {
+        s.speciesEnclosureNeed!.minLandAreaRequired = Math.max(
+          s.speciesEnclosureNeed!.minLandAreaRequired,
+          reco.minLandAreaRequired,
+        );
+        s.speciesEnclosureNeed!.minWaterAreaRequired = Math.max(
+          s.speciesEnclosureNeed!.minWaterAreaRequired,
+          reco.minWaterAreaRequired,
+        );
+        s.speciesEnclosureNeed!.acceptableTempMin = Math.max(
+          s.speciesEnclosureNeed!.acceptableTempMin,
+          reco.acceptableTempMin,
+        );
+        s.speciesEnclosureNeed!.acceptableTempMax = Math.min(
+          s.speciesEnclosureNeed!.acceptableTempMax,
+          reco.acceptableTempMax,
+        );
+        s.speciesEnclosureNeed!.acceptableHumidityMin = Math.max(
+          s.speciesEnclosureNeed!.acceptableHumidityMin,
+          reco.acceptableHumidityMin,
+        );
+        s.speciesEnclosureNeed!.acceptableHumidityMax = Math.min(
+          s.speciesEnclosureNeed!.acceptableHumidityMax,
+          reco.acceptableHumidityMax,
+        );
+        s.speciesEnclosureNeed!.plantationCoveragePercentMin = Math.max(
+          s.speciesEnclosureNeed!.plantationCoveragePercentMin,
+          reco.plantationCoveragePercentMin,
+        );
+        s.speciesEnclosureNeed!.plantationCoveragePercentMax = Math.min(
+          s.speciesEnclosureNeed!.plantationCoveragePercentMax,
+          reco.plantationCoveragePercentMax,
+        );
+        s.speciesEnclosureNeed!.longGrassPercentMin = Math.max(
+          s.speciesEnclosureNeed!.longGrassPercentMin,
+          reco.longGrassPercentMin,
+        );
+        s.speciesEnclosureNeed!.longGrassPercentMax = Math.min(
+          s.speciesEnclosureNeed!.longGrassPercentMax,
+          reco.longGrassPercentMax,
+        );
+        s.speciesEnclosureNeed!.shortGrassPercentMin = Math.max(
+          s.speciesEnclosureNeed!.shortGrassPercentMin,
+          reco.shortGrassPercentMin,
+        );
+        s.speciesEnclosureNeed!.shortGrassPercentMax = Math.min(
+          s.speciesEnclosureNeed!.shortGrassPercentMax,
+          reco.shortGrassPercentMax,
+        );
+        s.speciesEnclosureNeed!.rockPercentMin = Math.max(
+          s.speciesEnclosureNeed!.rockPercentMin,
+          reco.rockPercentMin,
+        );
+        s.speciesEnclosureNeed!.rockPercentMax = Math.min(
+          s.speciesEnclosureNeed!.rockPercentMax,
+          reco.rockPercentMax,
+        );
+        s.speciesEnclosureNeed!.sandPercentMin = Math.max(
+          s.speciesEnclosureNeed!.sandPercentMin,
+          reco.sandPercentMin,
+        );
+        s.speciesEnclosureNeed!.sandPercentMax = Math.min(
+          s.speciesEnclosureNeed!.sandPercentMax,
+          reco.sandPercentMax,
+        );
+        s.speciesEnclosureNeed!.snowPercentMin = Math.max(
+          s.speciesEnclosureNeed!.snowPercentMin,
+          reco.snowPercentMin,
+        );
+        s.speciesEnclosureNeed!.snowPercentMax = Math.min(
+          s.speciesEnclosureNeed!.snowPercentMax,
+          reco.snowPercentMax,
+        );
+
+        s.speciesEnclosureNeed!.soilPercentMin = Math.max(
+          s.speciesEnclosureNeed!.soilPercentMin,
+          reco.soilPercentMin,
+        );
+        s.speciesEnclosureNeed!.soilPercentMax = Math.min(
+          s.speciesEnclosureNeed!.soilPercentMax,
+          reco.soilPercentMax,
+        );
+      }
+
+      // if min > max, then convert to string "No suitable range, please review species allocation."
+
+      //return reco (the converted one);
+      return {
+        minLandAreaRequired: reco.minLandAreaRequired,
+        minWaterAreaRequired: reco.minWaterAreaRequired,
+        acceptableTempMin:
+          reco.acceptableTempMax >= reco.acceptableTempMin
+            ? reco.acceptableTempMin
+            : "No suitable range, please review species allocation.",
+        acceptableTempMax:
+          reco.acceptableTempMax >= reco.acceptableTempMin
+            ? reco.acceptableTempMax
+            : "No suitable range, please review species allocation.",
+        acceptableHumidityMin:
+          reco.acceptableHumidityMax >= reco.acceptableHumidityMin
+            ? reco.acceptableHumidityMin
+            : "No suitable range, please review species allocation.",
+        acceptableHumidityMax:
+          reco.acceptableHumidityMax >= reco.acceptableHumidityMin
+            ? reco.acceptableHumidityMax
+            : "No suitable range, please review species allocation.",
+        plantationCoveragePercentMin:
+          reco.plantationCoveragePercentMax >= reco.plantationCoveragePercentMin
+            ? reco.plantationCoveragePercentMin
+            : "No suitable range, please review species allocation.",
+        plantationCoveragePercentMax:
+          reco.plantationCoveragePercentMax >= reco.plantationCoveragePercentMin
+            ? reco.plantationCoveragePercentMax
+            : "No suitable range, please review species allocation.",
+        longGrassPercentMin:
+          reco.longGrassPercentMax >= reco.longGrassPercentMin
+            ? reco.longGrassPercentMin
+            : "No suitable range, please review species allocation.",
+        longGrassPercentMax:
+          reco.longGrassPercentMax >= reco.longGrassPercentMin
+            ? reco.longGrassPercentMax
+            : "No suitable range, please review species allocation.",
+        shortGrassPercentMin:
+          reco.shortGrassPercentMax >= reco.shortGrassPercentMin
+            ? reco.shortGrassPercentMin
+            : "No suitable range, please review species allocation.",
+        shortGrassPercentMax:
+          reco.shortGrassPercentMax >= reco.shortGrassPercentMin
+            ? reco.shortGrassPercentMax
+            : "No suitable range, please review species allocation.",
+        rockPercentMin:
+          reco.rockPercentMax >= reco.rockPercentMin
+            ? reco.rockPercentMin
+            : "No suitable range, please review species allocation.",
+        rockPercentMax:
+          reco.rockPercentMax >= reco.rockPercentMin
+            ? reco.rockPercentMax
+            : "No suitable range, please review species allocation.",
+        sandPercentMin:
+          reco.sandPercentMax >= reco.sandPercentMin
+            ? reco.sandPercentMin
+            : "No suitable range, please review species allocation.",
+        sandPercentMax:
+          reco.sandPercentMax >= reco.sandPercentMin
+            ? reco.sandPercentMax
+            : "No suitable range, please review species allocation.",
+        snowPercentMin:
+          reco.snowPercentMax >= reco.snowPercentMin
+            ? reco.snowPercentMin
+            : "No suitable range, please review species allocation.",
+        snowPercentMax:
+          reco.snowPercentMax >= reco.snowPercentMin
+            ? reco.snowPercentMax
+            : "No suitable range, please review species allocation.",
+        soilPercentMin:
+          reco.soilPercentMax >= reco.soilPercentMin
+            ? reco.soilPercentMin
+            : "No suitable range, please review species allocation.",
+        soilPercentMax:
+          reco.soilPercentMax >= reco.soilPercentMin
+            ? reco.soilPercentMax
+            : "No suitable range, please review species allocation.",
+      };
+    }
+    throw new Error("Enclosure Has No Animal Data!");
   }
   throw new Error("Invalid Enclosure ID!");
 }
@@ -515,22 +729,22 @@ export async function deleteEnclosureClimateDesign(enclosureId: number) {
   }
 }
 
-// ---- QY: WIP ----
-export async function getClimateDesignRecommendation(enclosureId: number) {
-  let enclosure = await Enclosure.findOne({
-    where: { enclosureId: enclosureId },
-  });
-  if (enclosure) {
-    // - Get all animals of enclosure, then get species list (see getSpeciesCompatibilityInEnclosure service method)
-    // - Get all speciesEnclosureNeeds
-    // - Do some maths idk, or apply some rules
-    // - Return list of recommended terrainDistribution, min and max for each longGrass, shortGrass,...
-    //-- add code here
-    //
-    //return enclosure;
-  }
-  throw new Error("Invalid Enclosure ID!");
-}
+// // ---- QY: WIP ----
+// export async function getClimateDesignRecommendation(enclosureId: number) {
+//   let enclosure = await Enclosure.findOne({
+//     where: { enclosureId: enclosureId },
+//   });
+//   if (enclosure) {
+//     // - Get all animals of enclosure, then get species list (see getSpeciesCompatibilityInEnclosure service method)
+//     // - Get all speciesEnclosureNeeds
+//     // - Do some maths idk, or apply some rules
+//     // - Return list of recommended terrainDistribution, min and max for each longGrass, shortGrass,...
+//     //-- add code here
+//     //
+//     //return enclosure;
+//   }
+//   throw new Error("Invalid Enclosure ID!");
+// }
 
 export async function getPlantationById(plantationId: number) {
   let plantation = await Plantation.findOne({
@@ -629,7 +843,6 @@ export async function getEnvironmentSensorsData(enclosureId: number) {
       );
     }
     return sensors;
-
   } catch (error: any) {
     throw validationErrorHandler(error);
   }

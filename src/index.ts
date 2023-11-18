@@ -25,6 +25,7 @@ import zooEventRoutes from "./routes/zooEventRoute";
 import orderItemRoutes from "./routes/orderItemRoute";
 import enclosureRoutes from "./routes/enclosureRoute";
 import zooEventCustomerRoutes from "./routes/zooEventCustomerRoute";
+import itineraryRoutes from "./routes/itineraryRoute";
 import { seedDatabase, createDatabase } from "./models/index";
 import { conn } from "./db";
 
@@ -150,7 +151,8 @@ app.use("/api/announcement", announcementRoutes);
 app.use("/api/customerOrder", customerOrderRoutes);
 app.use("/api/listing", listingRoutes);
 app.use("/api/listingCustomer", listingCustomerRoutes);
-app.use("/api/zooEventCustomer", zooEventCustomerRoutes);
 app.use("/api/zooEvent", zooEventRoutes);
 app.use("/api/orderItem", orderItemRoutes);
 app.use("/api/enclosure", enclosureRoutes);
+app.use("/api/zooEventCustomer", zooEventCustomerRoutes);
+app.use("/api/itinerary", itineraryRoutes);

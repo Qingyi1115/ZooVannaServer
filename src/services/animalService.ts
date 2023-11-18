@@ -12,6 +12,7 @@ import { AnimalActivityLog } from "../models/AnimalActivityLog";
 import { AnimalFeedingLog } from "../models/AnimalFeedingLog";
 import { AnimalObservationLog } from "../models/AnimalObservationLog";
 import { AnimalWeight } from "../models/AnimalWeight";
+import { Enclosure } from "../models/Enclosure";
 import { EnrichmentItem } from "../models/EnrichmentItem";
 import {
   AcquisitionMethod,
@@ -25,6 +26,7 @@ import {
   Reaction,
   RecurringPattern
 } from "../models/Enumerated";
+import { Facility } from "../models/Facility";
 import { FeedingItem } from "../models/FeedingItem";
 import { FeedingPlan } from "../models/FeedingPlan";
 import { FeedingPlanSessionDetail } from "../models/FeedingPlanSessionDetail";
@@ -36,7 +38,6 @@ import { findEmployeeById } from "./employeeService";
 import * as EnrichmentItemService from "./enrichmentItemService";
 import * as SpeciesService from "./speciesService";
 import * as ZooEventService from "./zooEventService";
-import { Enclosure } from "../models/Enclosure";
 
 //-- Animal Basic Info
 export async function getAnimalIdByCode(animalCode: string) {
@@ -119,6 +120,16 @@ export async function getAnimalByAnimalCode(animalCode: string) {
         model: FeedingPlan,
         as: "feedingPlans",
         required: false, // Include only if they exist
+      },
+      {
+        model: Enclosure,
+        as: "enclosure",
+        required: false, // Include only if they exist
+        include: [{
+          model: Facility,
+          required: true,
+          as: "facility"
+        }]
       },
     ],
     attributes: {
