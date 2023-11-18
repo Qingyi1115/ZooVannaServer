@@ -29,6 +29,7 @@ import { FeedingPlan } from "./FeedingPlan";
 import { PhysiologicalReferenceNorms } from "./PhysiologicalReferenceNorms";
 import { SpeciesDietNeed } from "./SpeciesDietNeed";
 import { SpeciesEnclosureNeed } from "./SpeciesEnclosureNeed";
+import { Itinerary } from "./Itinerary";
 
 class Species extends Model<
   InferAttributes<Species>,
@@ -69,6 +70,7 @@ class Species extends Model<
   declare customers?: Customer[];
   declare animals?: Animal[];
   declare feedingPlans?: FeedingPlan[];
+  declare itineraries?: Itinerary[];
 
   declare getSpeciesEnclosureNeed: HasOneGetAssociationMixin<SpeciesEnclosureNeed>;
   declare setSpeciesEnclosureNeed: HasOneSetAssociationMixin<
@@ -129,6 +131,11 @@ class Species extends Model<
   declare addFeedingPlan: HasManyAddAssociationMixin<FeedingPlan, number>;
   declare setFeedingPlans: HasManySetAssociationsMixin<FeedingPlan, number>;
   declare removeFeedingPlan: HasManyRemoveAssociationMixin<FeedingPlan, number>;
+
+  declare getItineraries: HasManyGetAssociationsMixin<Itinerary>;
+  declare addItinerary: HasManyAddAssociationMixin<Itinerary, number>;
+  declare setItineraries: HasManySetAssociationsMixin<Itinerary, number>;
+  declare removeItinerary: HasManyRemoveAssociationMixin<Itinerary, number>;
 
   static async getNextSpeciesCode() {
     try {

@@ -603,9 +603,6 @@ export async function getPublicEventById(req: Request, res: Response) {
             required: true
           }]
         }, {
-          association: "employee",
-          required: false,
-        }, {
           association: "keepers",
           required: false,
           include: [{

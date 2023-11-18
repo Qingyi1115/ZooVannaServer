@@ -583,7 +583,7 @@ export async function generateMonthlyZooEventForFeedingPlanSession(
       return createFeedingPlanSessionDetailZooEvent(
         feedingPlanSessionDetail.feedingPlanSessionDetailId,
         date,
-        feedingPlanSessionDetail.durationInMinutes,
+        feedingPlanSessionDetail.durationInMinutes / 60,
         feedingPlanSessionDetail.eventTimingType,
         feedingPlan.feedingPlanDesc,
         feedingPlanSessionDetail.isPublic,
@@ -867,7 +867,7 @@ export async function updateZooEventIncludeFuture(
   zooEvent.eventIsPublic = eventIsPublic;
   zooEvent.eventType = eventType;
   zooEvent.requiredNumberOfKeeper = requiredNumberOfKeeper;
-  const originalStartDateTime = zooEvent.eventStartDateTime;
+  const originalStartDateTime = new Date(zooEvent.eventStartDateTime.getTime());
   const deltaStartDateTime =
     eventStartDateTime - zooEvent.eventStartDateTime.getTime();
   const iKeepMyPromises: Promise<any>[] = [];
@@ -1633,15 +1633,20 @@ export async function updatePublicEventById(
     const zooEvents = [];
     const promises = [];
 
-    if (animalCodes || keeperEmployeeIds || inHouseId) {
-      for (const session of (await publicEvent.getPublicEventSessions())) {
-        for (const ze of (await session.getZooEvents())) {
-          if (compareDates(ze.eventStartDateTime, new Date()) >= 0) {
+    for (const session of (await publicEvent.getPublicEventSessions())) {
+      for (const ze of (await session.getZooEvents())) {
+        if (compareDates(ze.eventStartDateTime, new Date()) >= 0) {
+          if (endDate && ze.eventEndDateTime && compareDates(endDate, ze.eventEndDateTime) <= 0) {
+            await ze.destroy();
+          } else {
             zooEvents.push(ze);
           }
         }
       }
+
+      await generateMonthlyZooEventForPublicEventSession(session);
     }
+    
 
 
     if (animalCodes) {
@@ -1651,7 +1656,7 @@ export async function updatePublicEventById(
       }
       await publicEvent.setAnimals(animals);
       for (const ze of zooEvents) {
-        ze.setAnimals(animals);
+        await ze.setAnimals(animals);
         promises.push(ze.save());
       }
     }
@@ -1663,7 +1668,7 @@ export async function updatePublicEventById(
       }
       await publicEvent.setKeepers(keepers);
       for (const ze of zooEvents) {
-        ze.setKeepers(keepers);
+        await ze.setKeepers(keepers);
         promises.push(ze.save());
       }
     }
@@ -1673,7 +1678,7 @@ export async function updatePublicEventById(
         await AssetFacilityService.getInHouseByFacilityId(inHouseId);
       await publicEvent.setInHouse(inHouse);
       for (const ze of zooEvents) {
-        ze.setInHouse(inHouse);
+        await ze.setInHouse(inHouse);
         promises.push(ze.save());
       }
     }
@@ -1713,6 +1718,11 @@ export async function disablePublicEventById(
     promises.push(publicEvent.save());
     for (const session of (await publicEvent.getPublicEventSessions())) {
       if (session.recurringPattern == RecurringPattern.NON_RECURRING) {
+        const p2 = [];
+        for (const ze of (await session.getZooEvents())) {
+          p2.push(ze.destroy());
+        }
+        for (const p2p of p2) await p2p;
         promises.push(session.destroy());
       } else {
         for (const ze of (await session.getZooEvents())) {
@@ -1846,9 +1856,7 @@ export async function updatePublicEventSessionById(
 
       const promises = [];
       for (const ze of await publicEventsession.getZooEvents()) {
-        if (compareDates(new Date(), ze.eventStartDateTime) <= 0) {
           promises.push(ze.destroy());
-        }
       }
       for (const p of promises) await p;
     }
