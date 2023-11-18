@@ -20,7 +20,6 @@ import {
   getEnclosureTerrainDistributionRecommendation,
   updateEnclosureClimateDesign,
   deleteEnclosureClimateDesign,
-  getClimateDesignRecommendation,
   getAllPlantations,
   addPlantationToEnclosure,
   removePlantationFromEnclosure,
@@ -38,9 +37,12 @@ import {
   getEnclosureEnrichmentItems,
   removeEnrichmentItemFromEnclosure,
   addEnrichmentItemToEnclosure,
+  getAllEnclosuresFacility,
 } from "../controllers/enclosureController";
 
 const router = express.Router();
+
+router.get("/getAllEnclosuresFacility", getAllEnclosuresFacility);
 
 router.use(authMiddleware);
 
@@ -84,10 +86,10 @@ router.put(
   "/deleteEnclosureClimateDesign/:enclosureId",
   deleteEnclosureClimateDesign,
 );
-router.get(
-  "/getClimateDesignRecommendation/:enclosureId",
-  getClimateDesignRecommendation,
-);
+// router.get(
+//   "/getClimateDesignRecommendation/:enclosureId",
+//   getClimateDesignRecommendation,
+// );
 
 //Plantation
 router.get(

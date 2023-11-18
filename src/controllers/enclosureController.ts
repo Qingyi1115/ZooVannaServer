@@ -11,6 +11,16 @@ export async function getAllEnclosures(req: Request, res: Response) {
   }
 }
 
+export async function getAllEnclosuresFacility(req: Request, res: Response) {
+  try {
+    const allEnclosures = await EnclosureService.getAllEnclosures();
+    const facilities = allEnclosures.map((enclosure) => enclosure.facility); // Assuming each enclosure has a 'facility' property
+    return res.status(200).json({ facilities: facilities });
+  } catch (error: any) {
+    res.status(400).json({ error: error.message });
+  }
+}
+
 export async function getEnclosureById(req: Request, res: Response) {
   const { enclosureId } = req.params;
 
@@ -579,31 +589,31 @@ export async function deleteEnclosureClimateDesign(
   }
 }
 
-export async function getClimateDesignRecommendation(
-  req: Request,
-  res: Response,
-) {
-  try {
-    const { enclosureId } = req.params;
+// export async function getClimateDesignRecommendation(
+//   req: Request,
+//   res: Response,
+// ) {
+//   try {
+//     const { enclosureId } = req.params;
 
-    if (enclosureId == undefined) {
-      console.log("Missing field(s): ", {
-        enclosureId,
-      });
-      return res.status(400).json({ error: "Missing information!" });
-    }
+//     if (enclosureId == undefined) {
+//       console.log("Missing field(s): ", {
+//         enclosureId,
+//       });
+//       return res.status(400).json({ error: "Missing information!" });
+//     }
 
-    // have to pass in req for image uploading
-    let enclosureClimateDesignReco =
-      await EnclosureService.getClimateDesignRecommendation(
-        Number(enclosureId),
-      );
+//     // have to pass in req for image uploading
+//     let enclosureClimateDesignReco =
+//       await EnclosureService.getClimateDesignRecommendation(
+//         Number(enclosureId),
+//       );
 
-    return res.status(200).json({ enclosureClimateDesignReco });
-  } catch (error: any) {
-    res.status(400).json({ error: error.message });
-  }
-}
+//     return res.status(200).json({ enclosureClimateDesignReco });
+//   } catch (error: any) {
+//     res.status(400).json({ error: error.message });
+//   }
+// }
 
 export async function getAllPlantations(req: Request, res: Response) {
   try {

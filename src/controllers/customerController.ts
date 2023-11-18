@@ -42,7 +42,6 @@ export const createCustomer = async (req: Request, res: Response) => {
       lastName,
       contactNo,
       birthday,
-      address,
       nationality,
     } = req.body;
 
@@ -53,7 +52,6 @@ export const createCustomer = async (req: Request, res: Response) => {
         lastName,
         contactNo,
         birthday,
-        address,
         nationality,
         token,
       ].includes(undefined)
@@ -64,7 +62,6 @@ export const createCustomer = async (req: Request, res: Response) => {
         lastName,
         contactNo,
         birthday,
-        address,
         nationality,
         token,
       });
@@ -77,7 +74,6 @@ export const createCustomer = async (req: Request, res: Response) => {
       lastName,
       contactNo,
       birthday,
-      address,
       nationality,
       token,
     );
@@ -187,26 +183,13 @@ export async function updateCustomer(req: Request, res: Response) {
   try {
     const customerIdInt = parseInt(customerId);
     if (!isNaN(customerIdInt)) {
-      const {
-        firstName,
-        lastName,
-        email,
-        contactNo,
-        birthday,
-        address,
-        nationality,
-      } = req.body;
+      const { firstName, lastName, email, contactNo, birthday, nationality } =
+        req.body;
 
       if (
-        [
-          firstName,
-          lastName,
-          email,
-          contactNo,
-          birthday,
-          address,
-          nationality,
-        ].includes(undefined)
+        [firstName, lastName, email, contactNo, birthday, nationality].includes(
+          undefined,
+        )
       ) {
         console.log("Missing field(s): ", {
           firstName,
@@ -214,7 +197,7 @@ export async function updateCustomer(req: Request, res: Response) {
           email,
           contactNo,
           birthday,
-          address,
+
           nationality,
         });
         return res.status(400).json({ error: "Missing information!" });
@@ -227,7 +210,6 @@ export async function updateCustomer(req: Request, res: Response) {
         email,
         contactNo,
         birthday,
-        address,
         nationality,
       );
 

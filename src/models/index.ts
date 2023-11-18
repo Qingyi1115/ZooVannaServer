@@ -3521,7 +3521,7 @@ export const enclosureSeed = async () => {
     standOffBarrierDist: 5,
     facilityName: "Panda Paradise",
     isSheltered: false,
-    imageUrl: "img/facility/EnclosurePandaParadise.png",
+    imageUrl: "img/facility/EnclosureGiantPanda.jpg",
   } as any;
   let enclosure1Object = await EnclosureService.createNewEnclosure(
     enclosure1Template.name,
@@ -3613,7 +3613,7 @@ export const enclosureSeed = async () => {
     standOffBarrierDist: 3,
     facilityName: "Capybara Cove",
     isSheltered: false,
-    imageUrl: "img/facility/EnclosureCapybaraCove.png",
+    imageUrl: "img/facility/EnclosureCapybara.jpg",
   } as any;
   let enclosure2Object = await EnclosureService.createNewEnclosure(
     enclosure2Template.name,
@@ -3667,7 +3667,7 @@ export const enclosureSeed = async () => {
     standOffBarrierDist: 3,
     facilityName: "Rustic Red Retreat",
     isSheltered: false,
-    imageUrl: "img/facility/EnclosureRusticRedRetreat.png",
+    imageUrl: "img/facility/EnclosureRusticRedRetreat.jpg",
   } as any;
   let enclosure3Object = await EnclosureService.createNewEnclosure(
     enclosure3Template.name,
@@ -3689,7 +3689,7 @@ export const enclosureSeed = async () => {
   );
   // set x y coordinate
   await Facility.update(
-    { xCoordinate: 103.7746, yCoordinate: 1.297 },
+    { xCoordinate: 103.7746, yCoordinate: 1.2962 },
     {
       where: { facilityId: enclosure3Object.newFacility.facilityId },
     },
@@ -4282,9 +4282,9 @@ export const facilityAssetsSeed = async () => {
   ]) {
     _day = new Date(
       _day.getTime() -
-      days * 1000 * 60 * 60 * 24 +
-      Math.random() * 1000 * 60 * 60 * 24 * 4 -
-      1000 * 60 * 60 * 24 * 2,
+        days * 1000 * 60 * 60 * 24 +
+        Math.random() * 1000 * 60 * 60 * 24 * 4 -
+        1000 * 60 * 60 * 24 * 2,
     );
     sensor.addMaintenanceLog(
       await MaintenanceLog.create({
