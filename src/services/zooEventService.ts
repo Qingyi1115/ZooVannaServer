@@ -742,7 +742,10 @@ export async function getZooEventById(zooEventId: number) {
               required: false,
             },
           ],
-        },
+        }, {
+          association: "employee",
+          required: false,
+        }
       ],
     });
 
