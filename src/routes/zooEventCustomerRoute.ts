@@ -19,7 +19,7 @@ router.get(
 router.get("/getAllPublicEvents", getAllPublicEvents);
 router.get("/getPublicEventById/:publicEventId", getPublicEventById);
 
-router.get(
+router.post(
   "/getAllUniquePublicZooEventsToday",
   getAllUniquePublicZooEventsToday,
 );
