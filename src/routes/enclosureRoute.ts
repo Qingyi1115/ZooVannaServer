@@ -25,9 +25,12 @@ import {
   addPlantationToEnclosure,
   removePlantationFromEnclosure,
   getEnvironmentSensorsData,
+  getAllEnclosuresFacility,
 } from "../controllers/enclosureController";
 
 const router = express.Router();
+
+router.get("/getAllEnclosuresFacility", getAllEnclosuresFacility);
 
 router.use(authMiddleware);
 
@@ -82,5 +85,8 @@ router.put("/addPlantationToEnclosure", addPlantationToEnclosure);
 router.put("/removePlantationFromEnclosure", removePlantationFromEnclosure);
 
 //Sensors
-router.get("/getEnvironmentSensorsData/:enclosureId", getEnvironmentSensorsData);
+router.get(
+  "/getEnvironmentSensorsData/:enclosureId",
+  getEnvironmentSensorsData,
+);
 export default router;

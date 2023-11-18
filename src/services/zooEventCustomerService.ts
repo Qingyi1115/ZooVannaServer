@@ -20,6 +20,31 @@ export async function getAllPublishedPublicZooEvents(include: any[] = []) {
   }
 }
 
+export async function getAllUniquePublicZooEventsToday(include: any[] = []) {
+  try {
+    console.log("inside service");
+    const today = new Date(Date.now());
+    console.log(today);
+    const endToday = new Date(Date.now());
+    endToday.setHours(23, 59, 59);
+    console.log(endToday);
+    const todayEvents = await ZooEvent.findAll({
+      include: include,
+      where: {
+        eventNotificationDate: { [Op.lte]: today },
+        eventStartDateTime: { [Op.gte]: today },
+        eventEndDateTime: { [Op.lte]: endToday },
+        eventIsPublic: true,
+      },
+      order: [["eventStartDateTime", "ASC"]],
+    });
+
+    return todayEvents;
+  } catch (error: any) {
+    throw validationErrorHandler(error);
+  }
+}
+
 export async function getPublishedPublicZooEvent(
   zooEventId: number,
   include: any[] = [],

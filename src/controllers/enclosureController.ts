@@ -11,6 +11,16 @@ export async function getAllEnclosures(req: Request, res: Response) {
   }
 }
 
+export async function getAllEnclosuresFacility(req: Request, res: Response) {
+  try {
+    const allEnclosures = await EnclosureService.getAllEnclosures();
+    const facilities = allEnclosures.map((enclosure) => enclosure.facility); // Assuming each enclosure has a 'facility' property
+    return res.status(200).json({ facilities: facilities });
+  } catch (error: any) {
+    res.status(400).json({ error: error.message });
+  }
+}
+
 export async function getEnclosureById(req: Request, res: Response) {
   const { enclosureId } = req.params;
 
@@ -650,14 +660,11 @@ export async function removePlantationFromEnclosure(
   }
 }
 
-export async function getEnvironmentSensorsData(
-  req: Request,
-  res: Response,
-) {
+export async function getEnvironmentSensorsData(req: Request, res: Response) {
   try {
     const { enclosureId } = req.params;
 
-    if ([enclosureId ].includes("")) {
+    if ([enclosureId].includes("")) {
       console.log("Missing field(s): ", {
         enclosureId,
       });
@@ -674,5 +681,3 @@ export async function getEnvironmentSensorsData(
     res.status(400).json({ error: error.message });
   }
 }
-
-
