@@ -1145,8 +1145,10 @@ export async function getAllZooEvents(
               required: false,
             },
           ],
-        },
-        {
+        }, {
+          association: "employee",
+          required:false
+        }, {
           association: "keepers",
           required: false,
           include: [
