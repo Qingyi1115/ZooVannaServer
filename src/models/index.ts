@@ -747,6 +747,7 @@ export const seedDatabase = async () => {
     await customerSeed();
     await publicEventSeed();
     await announcementSeed();
+    await enclosureKeeperSeed();
   } catch (err) {
     console.log("error", err);
     throw err;
@@ -5295,3 +5296,7 @@ export const publicEventSeed = async () => {
     new Date(Date.now() + 0.05 * DAY_IN_MILLISECONDS),
   );
 };
+
+export const enclosureKeeperSeed = async () => {
+  await EnclosureService.assignKeepersToEnclosure(1, [2, 5])
+}
