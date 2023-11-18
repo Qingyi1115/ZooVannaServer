@@ -1839,6 +1839,139 @@ export const speciesSeed = async () => {
   let clownFish = await Species.create(clownFishTemplate);
   console.log(clownFish.toJSON());
 
+  let lionTemplate = {
+    speciesCode: await Species.getNextSpeciesCode(),
+    commonName: "Lion",
+    scientificName: "Panthera leo",
+    aliasName: "King of the Jungle",
+    conservationStatus: ConservationStatus.VULNERABLE,
+    domain: "Eukarya",
+    kingdom: "Animalia",
+    phylum: "Chordata",
+    speciesClass: "Mammalia",
+    order: "Carnivora",
+    family: "Felidae",
+    genus: "Panthera",
+    educationalDescription:
+      "The Lion, also known as the King of the Jungle, is a large carnivorous mammal belonging to the family Felidae. Lions are iconic for their majestic mane and social behavior in prides.",
+    educationalFunFact:
+      "Lions are the only truly social cats, forming prides that consist of related females and their offspring, led by a dominant male.",
+    nativeContinent: Continent.AFRICA,
+    nativeBiomes: "Savannas, Grasslands",
+    groupSexualDynamic: GroupSexualDynamic.POLYGYNOUS,
+    habitatOrExhibit: "Savannas, Grasslands",
+    generalDietPreference: "Carnivore",
+    imageUrl: "img/species/lion.jpg",
+    lifeExpectancyYears: 15,
+    ageToJuvenile: 2,
+    ageToAdolescent: 3,
+    ageToAdult: 4,
+    ageToElder: 12,
+    // foodRemark: "Food remark...",
+  } as any;
+let lion = await Species.create(lionTemplate);
+console.log(lion.toJSON());
+
+  let penguinTemplate = {
+    speciesCode: await Species.getNextSpeciesCode(),
+    commonName: "Penguin",
+    scientificName: "Spheniscidae",
+    aliasName: "Flippered Birds",
+    conservationStatus: ConservationStatus.NEAR_THREATENED,
+    domain: "Eukarya",
+    kingdom: "Animalia",
+    phylum: "Chordata",
+    speciesClass: "Aves",
+    order: "Sphenisciformes",
+    family: "Spheniscidae",
+    genus: "Spheniscus",
+    educationalDescription:
+      "The Penguin, also known as Flippered Birds, is a group of flightless birds belonging to the family Spheniscidae. Penguins are well-adapted to aquatic life and are excellent swimmers.",
+    educationalFunFact:
+      "Penguins are skilled swimmers, using their flippers for propulsion and their feet for steering while hunting for fish in the ocean.",
+    nativeContinent: Continent.NORTH_AMERICA,
+    nativeBiomes: "Coastal Areas, Ice Floes",
+    groupSexualDynamic: GroupSexualDynamic.MONOGAMOUS,
+    habitatOrExhibit: "Coastal Areas, Ice Floes",
+    generalDietPreference: "Carnivore (Fish)",
+    imageUrl: "img/species/penguin.jpeg",
+    lifeExpectancyYears: 20,
+    ageToJuvenile: 1,
+    ageToAdolescent: 2,
+    ageToAdult: 3,
+    ageToElder: 15,
+    // foodRemark: "Food remark...",
+  } as any;
+let penguin = await Species.create(penguinTemplate);
+console.log(penguin.toJSON());
+
+  let orangutanTemplate = {
+    speciesCode: await Species.getNextSpeciesCode(),
+    commonName: "Orangutan",
+    scientificName: "Pongo",
+    aliasName: "Red Ape",
+    conservationStatus: ConservationStatus.CRITICALLY_ENDANGERED,
+    domain: "Eukarya",
+    kingdom: "Animalia",
+    phylum: "Chordata",
+    speciesClass: "Mammalia",
+    order: "Primates",
+    family: "Hominidae",
+    genus: "Pongo",
+    educationalDescription:
+      "The Orangutan, also known as the Red Ape, is a large arboreal mammal belonging to the family Hominidae. Orangutans are known for their distinctive reddish-brown fur and remarkable intelligence.",
+    educationalFunFact:
+      "Orangutans are highly intelligent and share about 97% of their DNA with humans, making them one of our closest living relatives.",
+    nativeContinent: Continent.ASIA,
+    nativeBiomes: "Tropical Rainforests",
+    groupSexualDynamic: GroupSexualDynamic.MONOGAMOUS,
+    habitatOrExhibit: "Tropical Rainforests",
+    generalDietPreference: "Frugivore",
+    imageUrl: "img/species/orangutan.jpg",
+    lifeExpectancyYears: 40,
+    ageToJuvenile: 3,
+    ageToAdolescent: 6,
+    ageToAdult: 10,
+    ageToElder: 30,
+    // foodRemark: "Food remark...",
+  } as any;
+let orangutan = await Species.create(orangutanTemplate);
+console.log(orangutan.toJSON());
+
+let giraffeTemplate = {
+    speciesCode: await Species.getNextSpeciesCode(),
+    commonName: "Giraffe",
+    scientificName: "Giraffa camelopardalis",
+    aliasName: "Tallest Mammal",
+    conservationStatus: ConservationStatus.VULNERABLE,
+    domain: "Eukarya",
+    kingdom: "Animalia",
+    phylum: "Chordata",
+    speciesClass: "Mammalia",
+    order: "Artiodactyla",
+    family: "Giraffidae",
+    genus: "Giraffa",
+    educationalDescription:
+      "The Giraffe, also known as the Tallest Mammal, is an iconic, long-necked herbivorous mammal belonging to the family Giraffidae. Giraffes are known for their distinctive spotted coat patterns.",
+    educationalFunFact:
+      "Giraffes have extremely long necks, allowing them to reach leaves high in the trees. Despite their height, they have only seven neck vertebrae, the same as most mammals.",
+    nativeContinent: Continent.AFRICA,
+    nativeBiomes: "Savannas, Grasslands",
+    groupSexualDynamic: GroupSexualDynamic.POLYGYNOUS,
+    habitatOrExhibit: "Savannas, Grasslands",
+    generalDietPreference: "Herbivore",
+    imageUrl: "img/species/giraffe.jpg",
+    lifeExpectancyYears: 25,
+    ageToJuvenile: 2,
+    ageToAdolescent: 4,
+    ageToAdult: 6,
+    ageToElder: 20,
+    // foodRemark: "Food remark...",
+  } as any;
+let giraffe = await Species.create(giraffeTemplate);
+console.log(giraffe.toJSON());
+
+  
   let compatibility1 = await SpeciesService.createCompatibility(
     "SPE001",
     "SPE002",
