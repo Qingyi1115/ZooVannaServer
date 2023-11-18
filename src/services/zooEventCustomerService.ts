@@ -2,6 +2,7 @@ import { ZooEvent } from "../models/ZooEvent";
 import { Op, Sequelize } from "Sequelize";
 import { validationErrorHandler } from "../helpers/errorHandler";
 import { PublicEvent } from "../models/PublicEvent";
+import { EventType } from "../models/Enumerated";
 
 export async function getAllPublishedPublicZooEvents(include: any[] = []) {
   try {
@@ -20,9 +21,12 @@ export async function getAllPublishedPublicZooEvents(include: any[] = []) {
   }
 }
 
-export async function getAllUniquePublicZooEventsToday(include: any[] = []) {
+export async function getAllUniquePublicZooEventsToday(
+  include: any[] = [],
+  type: EventType,
+) {
   try {
-    console.log("inside service");
+    console.log("-------inside service-------");
     const today = new Date(Date.now());
     console.log(today);
     const endToday = new Date(Date.now());
@@ -35,11 +39,28 @@ export async function getAllUniquePublicZooEventsToday(include: any[] = []) {
         eventStartDateTime: { [Op.gte]: today },
         eventEndDateTime: { [Op.lte]: endToday },
         eventIsPublic: true,
+        eventType: type,
       },
       order: [["eventStartDateTime", "ASC"]],
     });
 
-    return todayEvents;
+    // Process the results to get the earliest event for each publicEvent
+    const uniqueEvents = todayEvents.reduce(
+      (acc: Record<string, ZooEvent>, event) => {
+        const publicEventId =
+          event.publicEventSession!.publicEvent!.publicEventId;
+        if (
+          !acc[publicEventId] ||
+          event.eventStartDateTime < acc[publicEventId].eventStartDateTime
+        ) {
+          acc[publicEventId] = event;
+        }
+        return acc;
+      },
+      {},
+    );
+
+    return Object.values(uniqueEvents);
   } catch (error: any) {
     throw validationErrorHandler(error);
   }

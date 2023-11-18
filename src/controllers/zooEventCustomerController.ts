@@ -162,6 +162,22 @@ export async function getAllUniquePublicZooEventsToday(
 ) {
   try {
     console.log("inside controller");
+
+    const {
+      type
+    } = req.body;
+
+    if (
+      [
+        type
+      ].includes(undefined)
+    ) {
+      console.log("Missing field(s): ", {
+        type
+      });
+      return res.status(400).json({ error: "Missing information!" });
+    }
+
     const publicEvents =
       await ZooEventCustomerService.getAllUniquePublicZooEventsToday([
         {
@@ -196,13 +212,13 @@ export async function getAllUniquePublicZooEventsToday(
         },
         {
           association: "publicEventSession",
-          required: false,
+          required: true,
           include: [{
             association: "publicEvent",
-            required: false
+            required: true
           }]
         },
-      ]);
+      ], type);
 
     console.log(publicEvents);
     return res
