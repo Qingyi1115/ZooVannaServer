@@ -8,6 +8,7 @@ import { createCustomerOrderForSeeding } from "../services/customerService";
 import * as EnclosureService from "../services/enclosureService";
 import * as SpeciesService from "../services/speciesService";
 import * as ZooEventService from "../services/zooEventService";
+import { AccessPoint } from "./AccessPoint";
 import { Animal } from "./Animal";
 import { AnimalActivity } from "./AnimalActivity";
 import { AnimalActivityLog } from "./AnimalActivityLog";
@@ -16,12 +17,14 @@ import { AnimalFeed } from "./AnimalFeed";
 import { AnimalFeedingLog } from "./AnimalFeedingLog";
 import { AnimalObservationLog } from "./AnimalObservationLog";
 import { AnimalWeight } from "./AnimalWeight";
+import { Announcement } from "./Announcement";
 import { Compatibility } from "./Compatibility";
 import { Customer } from "./Customer";
 import { CustomerOrder } from "./CustomerOrder";
 import { CustomerReportLog } from "./CustomerReportLog";
 import { Employee } from "./Employee";
 import { Enclosure } from "./Enclosure";
+import { EnclosureBarrier } from "./EnclosureBarrier";
 import { EnrichmentItem } from "./EnrichmentItem";
 import {
   AcquisitionMethod,
@@ -33,7 +36,6 @@ import {
   Continent,
   Country,
   DayOfWeek,
-  EnclosureStatus,
   EventTimingType,
   EventType,
   FacilityLogType,
@@ -53,7 +55,7 @@ import {
   PresentationMethod,
   RecurringPattern,
   SensorType,
-  Specialization,
+  Specialization
 } from "./Enumerated";
 import { Facility } from "./Facility";
 import { FacilityLog } from "./FacilityLog";
@@ -63,6 +65,8 @@ import { FeedingPlanSessionDetail } from "./FeedingPlanSessionDetail";
 import { GeneralStaff } from "./GeneralStaff";
 import { HubProcessor } from "./HubProcessor";
 import { InHouse } from "./InHouse";
+import { Itinerary } from "./Itinerary";
+import { ItineraryItem } from "./ItineraryItem";
 import { Keeper } from "./Keeper";
 import { Listing } from "./Listing";
 import { MaintenanceLog } from "./MaintenanceLog";
@@ -83,10 +87,6 @@ import { SpeciesEnclosureNeed } from "./SpeciesEnclosureNeed";
 import { ThirdParty } from "./ThirdParty";
 import { Zone } from "./Zone";
 import { ZooEvent } from "./ZooEvent";
-import { EnclosureBarrier } from "./EnclosureBarrier";
-import { AccessPoint } from "./AccessPoint";
-import { Itinerary } from "./Itinerary";
-import { ItineraryItem } from "./ItineraryItem";
 
 function addCascadeOptions(options: object) {
   return { ...options, onDelete: "CASCADE", onUpdate: "CASCADE" };
@@ -746,6 +746,7 @@ export const seedDatabase = async () => {
     await promotionSeed();
     await customerSeed();
     await publicEventSeed();
+    await announcementSeed();
   } catch (err) {
     console.log("error", err);
     throw err;
@@ -800,7 +801,7 @@ export const promotionSeed = async () => {
     description:
       "Tired of WFH? Enjoy 20% off admission tickets to celebrate the end of circuit breaker. \n\n Terms and conditions: \nValid for minimum purchase of S$100 \n Valid for purchase date from 20 July 2021 to 20 August 2023",
     publishDate: new Date("2023-07-07"),
-    startDate: new Date("202-07-20"),
+    startDate: new Date("2020-07-20"),
     endDate: new Date("2024-08-20"),
     percentage: 20,
     minimumSpending: 200,
@@ -808,6 +809,43 @@ export const promotionSeed = async () => {
     maxRedeemNum: 1000,
     currentRedeemNum: 1000,
     imageUrl: "img/promotion/elephant.jpg",
+  });
+};
+
+export const announcementSeed = async () => {
+  let announcement1 = await Announcement.create({
+    title: "Habitat Renovation Underway",
+    content:
+      "Our habitat renovation will be in progress from November 1, 2023, to January 31, 2024. During this time, certain areas may be temporarily closed as we enhance our animals' living spaces.",
+    isPublished: true,
+    scheduledStartPublish: new Date("2023-10-10"),
+    scheduledEndPublish: new Date("2024-01-31"),
+  });
+
+  let announcement2 = await Announcement.create({
+    title: "Temporary Closure of 'African Savannah' Exhibit",
+    content:
+      "The 'African Savannah' exhibit will be temporarily closed for maintenance and improvements from December 15, 2023, to January 15, 2024.",
+    isPublished: true,
+    scheduledStartPublish: new Date("2023-12-01"),
+    scheduledEndPublish: new Date("2024-01-15"),
+  });
+
+  let announcement3 = await Announcement.create({
+    title: "Walkway Repairs in Progress",
+    content:
+      "We are currently repairing and upgrading certain walkways throughout the zoo. These improvements are scheduled from November 1, 2023, to November 5, 2023. We apologize for any inconvenience during this period.",
+    isPublished: true,
+    scheduledStartPublish: new Date("2023-10-01"),
+    scheduledEndPublish: new Date("2023-11-05"),
+  });
+
+  let announcement4 = await Announcement.create({
+    title: "Test Announcement",
+    content: "This is a test announcement. Do not publish.",
+    isPublished: false,
+    scheduledStartPublish: new Date("2023-10-10"),
+    scheduledEndPublish: new Date("2023-11-31"),
   });
 };
 
@@ -1805,6 +1843,139 @@ export const speciesSeed = async () => {
   let clownFish = await Species.create(clownFishTemplate);
   console.log(clownFish.toJSON());
 
+  let lionTemplate = {
+    speciesCode: await Species.getNextSpeciesCode(),
+    commonName: "Lion",
+    scientificName: "Panthera leo",
+    aliasName: "King of the Jungle",
+    conservationStatus: ConservationStatus.VULNERABLE,
+    domain: "Eukarya",
+    kingdom: "Animalia",
+    phylum: "Chordata",
+    speciesClass: "Mammalia",
+    order: "Carnivora",
+    family: "Felidae",
+    genus: "Panthera",
+    educationalDescription:
+      "The Lion, also known as the King of the Jungle, is a large carnivorous mammal belonging to the family Felidae. Lions are iconic for their majestic mane and social behavior in prides.",
+    educationalFunFact:
+      "Lions are the only truly social cats, forming prides that consist of related females and their offspring, led by a dominant male.",
+    nativeContinent: Continent.AFRICA,
+    nativeBiomes: "Savannas, Grasslands",
+    groupSexualDynamic: GroupSexualDynamic.POLYGYNOUS,
+    habitatOrExhibit: "Savannas, Grasslands",
+    generalDietPreference: "Carnivore",
+    imageUrl: "img/species/lion.jpg",
+    lifeExpectancyYears: 15,
+    ageToJuvenile: 2,
+    ageToAdolescent: 3,
+    ageToAdult: 4,
+    ageToElder: 12,
+    // foodRemark: "Food remark...",
+  } as any;
+let lion = await Species.create(lionTemplate);
+console.log(lion.toJSON());
+
+  let penguinTemplate = {
+    speciesCode: await Species.getNextSpeciesCode(),
+    commonName: "Penguin",
+    scientificName: "Spheniscidae",
+    aliasName: "Flippered Birds",
+    conservationStatus: ConservationStatus.NEAR_THREATENED,
+    domain: "Eukarya",
+    kingdom: "Animalia",
+    phylum: "Chordata",
+    speciesClass: "Aves",
+    order: "Sphenisciformes",
+    family: "Spheniscidae",
+    genus: "Spheniscus",
+    educationalDescription:
+      "The Penguin, also known as Flippered Birds, is a group of flightless birds belonging to the family Spheniscidae. Penguins are well-adapted to aquatic life and are excellent swimmers.",
+    educationalFunFact:
+      "Penguins are skilled swimmers, using their flippers for propulsion and their feet for steering while hunting for fish in the ocean.",
+    nativeContinent: Continent.NORTH_AMERICA,
+    nativeBiomes: "Coastal Areas, Ice Floes",
+    groupSexualDynamic: GroupSexualDynamic.MONOGAMOUS,
+    habitatOrExhibit: "Coastal Areas, Ice Floes",
+    generalDietPreference: "Carnivore (Fish)",
+    imageUrl: "img/species/penguin.jpeg",
+    lifeExpectancyYears: 20,
+    ageToJuvenile: 1,
+    ageToAdolescent: 2,
+    ageToAdult: 3,
+    ageToElder: 15,
+    // foodRemark: "Food remark...",
+  } as any;
+let penguin = await Species.create(penguinTemplate);
+console.log(penguin.toJSON());
+
+  let orangutanTemplate = {
+    speciesCode: await Species.getNextSpeciesCode(),
+    commonName: "Orangutan",
+    scientificName: "Pongo",
+    aliasName: "Red Ape",
+    conservationStatus: ConservationStatus.CRITICALLY_ENDANGERED,
+    domain: "Eukarya",
+    kingdom: "Animalia",
+    phylum: "Chordata",
+    speciesClass: "Mammalia",
+    order: "Primates",
+    family: "Hominidae",
+    genus: "Pongo",
+    educationalDescription:
+      "The Orangutan, also known as the Red Ape, is a large arboreal mammal belonging to the family Hominidae. Orangutans are known for their distinctive reddish-brown fur and remarkable intelligence.",
+    educationalFunFact:
+      "Orangutans are highly intelligent and share about 97% of their DNA with humans, making them one of our closest living relatives.",
+    nativeContinent: Continent.ASIA,
+    nativeBiomes: "Tropical Rainforests",
+    groupSexualDynamic: GroupSexualDynamic.MONOGAMOUS,
+    habitatOrExhibit: "Tropical Rainforests",
+    generalDietPreference: "Frugivore",
+    imageUrl: "img/species/orangutan.jpg",
+    lifeExpectancyYears: 40,
+    ageToJuvenile: 3,
+    ageToAdolescent: 6,
+    ageToAdult: 10,
+    ageToElder: 30,
+    // foodRemark: "Food remark...",
+  } as any;
+let orangutan = await Species.create(orangutanTemplate);
+console.log(orangutan.toJSON());
+
+let giraffeTemplate = {
+    speciesCode: await Species.getNextSpeciesCode(),
+    commonName: "Giraffe",
+    scientificName: "Giraffa camelopardalis",
+    aliasName: "Tallest Mammal",
+    conservationStatus: ConservationStatus.VULNERABLE,
+    domain: "Eukarya",
+    kingdom: "Animalia",
+    phylum: "Chordata",
+    speciesClass: "Mammalia",
+    order: "Artiodactyla",
+    family: "Giraffidae",
+    genus: "Giraffa",
+    educationalDescription:
+      "The Giraffe, also known as the Tallest Mammal, is an iconic, long-necked herbivorous mammal belonging to the family Giraffidae. Giraffes are known for their distinctive spotted coat patterns.",
+    educationalFunFact:
+      "Giraffes have extremely long necks, allowing them to reach leaves high in the trees. Despite their height, they have only seven neck vertebrae, the same as most mammals.",
+    nativeContinent: Continent.AFRICA,
+    nativeBiomes: "Savannas, Grasslands",
+    groupSexualDynamic: GroupSexualDynamic.POLYGYNOUS,
+    habitatOrExhibit: "Savannas, Grasslands",
+    generalDietPreference: "Herbivore",
+    imageUrl: "img/species/giraffe.jpg",
+    lifeExpectancyYears: 25,
+    ageToJuvenile: 2,
+    ageToAdolescent: 4,
+    ageToAdult: 6,
+    ageToElder: 20,
+    // foodRemark: "Food remark...",
+  } as any;
+let giraffe = await Species.create(giraffeTemplate);
+console.log(giraffe.toJSON());
+
+  
   let compatibility1 = await SpeciesService.createCompatibility(
     "SPE001",
     "SPE002",
@@ -2314,7 +2485,7 @@ export const animalSeed = async () => {
     ["ANM00001", "ANM00002", "ANM00003", "ANM00004"],
     "General Summer Feeding Plan...",
     new Date("2023-10-18"),
-    new Date("2023-10-27"),
+    new Date(Date.now() + DAY_IN_MILLISECONDS * 21),
     [
       {
         dayOfTheWeek: DayOfWeek.MONDAY,
@@ -3726,7 +3897,7 @@ export const enclosureSeed = async () => {
     standOffBarrierDist: 3,
     facilityName: "Ivory Oasis",
     isSheltered: false,
-    imageUrl: "img/facility/EnclosureIvoryOasis.png",
+    imageUrl: "img/facility/EnclosureElephant.jpg",
   } as any;
   let enclosure4Object = await EnclosureService.createNewEnclosure(
     enclosure4Template.name,
@@ -3764,7 +3935,7 @@ export const enclosureSeed = async () => {
     standOffBarrierDist: 3,
     facilityName: "Nemo's Nook",
     isSheltered: false,
-    imageUrl: "img/facility/EnclosureNemosNook.png",
+    imageUrl: "img/facility/EnclosureNemo.jpg",
   } as any;
   let enclosure5Object = await EnclosureService.createNewEnclosure(
     enclosure5Template.name,
@@ -3801,23 +3972,186 @@ export const enclosureSeed = async () => {
   await EnclosureService.assignAnimalToEnclosure(4, "ANM00014");
   await EnclosureService.assignAnimalToEnclosure(5, "ANM00011");
 
-  let planation1Template = {
-    name: "Tree 1",
-    biome: "TEMPERATE",
-  } as any;
-  await Plantation.create(planation1Template);
+  let plantation1Template = {
+  name: "African Daisy",
+  biome: "TEMPERATE",
+} as any;
+await Plantation.create(plantation1Template);
 
-  let planation2Template = {
-    name: "Tree 2",
-    biome: "TEMPERATE",
-  } as any;
-  await Plantation.create(planation1Template);
+let plantation2Template = {
+  name: "Baobab Tree",
+  biome: "TROPICAL",
+} as any;
+await Plantation.create(plantation2Template);
 
-  let planation3Template = {
-    name: "Tree 3",
-    biome: "GRASSLAND",
-  } as any;
-  await Plantation.create(planation1Template);
+let plantation3Template = {
+  name: "Cactus",
+  biome: "DESERT",
+} as any;
+await Plantation.create(plantation3Template);
+
+let plantation4Template = {
+  name: "Douglas Fir Pine",
+  biome: "TAIGA",
+} as any;
+await Plantation.create(plantation4Template);
+
+let plantation5Template = {
+  name: "Fern Tree",
+  biome: "AQUATIC",
+} as any;
+await Plantation.create(plantation5Template);
+
+let plantation6Template = {
+  name: "Goldenrod",
+  biome: "GRASSLAND",
+} as any;
+await Plantation.create(plantation6Template);
+
+let plantation7Template = {
+  name: "Himalayan Pine",
+  biome: "TEMPERATE",
+} as any;
+await Plantation.create(plantation7Template);
+
+let plantation8Template = {
+  name: "Ivy",
+  biome: "TUNDRA",
+} as any;
+await Plantation.create(plantation8Template);
+
+let plantation9Template = {
+  name: "Joshua Tree",
+  biome: "DESERT",
+} as any;
+await Plantation.create(plantation9Template);
+
+let plantation10Template = {
+  name: "Kapok Tree",
+  biome: "TROPICAL",
+} as any;
+await Plantation.create(plantation10Template);
+
+let plantation11Template = {
+  name: "Lobster Claw",
+  biome: "TROPICAL",
+} as any;
+await Plantation.create(plantation11Template);
+
+let plantation12Template = {
+  name: "Mangrove Apple",
+  biome: "AQUATIC",
+} as any;
+await Plantation.create(plantation12Template);
+
+let plantation13Template = {
+  name: "Nettle",
+  biome: "TEMPERATE",
+} as any;
+await Plantation.create(plantation13Template);
+
+let plantation14Template = {
+  name: "Olive Tree",
+  biome: "TUNDRA",
+} as any;
+await Plantation.create(plantation14Template);
+
+let plantation15Template = {
+  name: "Papyrus Sedge",
+  biome: "AQUATIC",
+} as any;
+await Plantation.create(plantation15Template);
+
+let plantation16Template = {
+  name: "Quaking Aspen Tree",
+  biome: "TAIGA",
+} as any;
+await Plantation.create(plantation16Template);
+
+let plantation17Template = {
+  name: "Rainbow Eucalyptus Tree",
+  biome: "TROPICAL",
+} as any;
+await Plantation.create(plantation17Template);
+
+let plantation18Template = {
+  name: "Saguaro Cactus",
+  biome: "DESERT",
+} as any;
+await Plantation.create(plantation18Template);
+
+let plantation19Template = {
+  name: "Tundra Moss",
+  biome: "TUNDRA",
+} as any;
+await Plantation.create(plantation19Template);
+
+let plantation20Template = {
+  name: "Umbrella Thorn Acacia",
+  biome: "GRASSLAND",
+} as any;
+await Plantation.create(plantation20Template);
+
+let plantation21Template = {
+  name: "Variegated Ivy",
+  biome: "TEMPERATE",
+} as any;
+await Plantation.create(plantation21Template);
+
+let plantation22Template = {
+  name: "Water Hyacinth",
+  biome: "AQUATIC",
+} as any;
+await Plantation.create(plantation22Template);
+
+let plantation23Template = {
+  name: "Xerophyte",
+  biome: "DESERT",
+} as any;
+await Plantation.create(plantation23Template);
+
+let plantation24Template = {
+  name: "Yellow Poplar",
+  biome: "TEMPERATE",
+} as any;
+await Plantation.create(plantation24Template);
+
+let plantation25Template = {
+  name: "Zebra Grass",
+  biome: "GRASSLAND",
+} as any;
+await Plantation.create(plantation25Template);
+
+let plantation26Template = {
+  name: "Quiver Tree",
+  biome: "DESERT",
+} as any;
+await Plantation.create(plantation26Template);
+
+let plantation27Template = {
+  name: "Siberian Peashrub",
+  biome: "TAIGA",
+} as any;
+await Plantation.create(plantation27Template);
+
+let plantation28Template = {
+  name: "Sugar Maple Tree",
+  biome: "TEMPERATE",
+} as any;
+await Plantation.create(plantation28Template);
+
+let plantation29Template = {
+  name: "Blue Lotus Plant",
+  biome: "AQUATIC",
+} as any;
+await Plantation.create(plantation29Template);
+
+let plantation30Template = {
+  name: "Red Oat Grass",
+  biome: "GRASSLAND",
+} as any;
+await Plantation.create(plantation30Template);
+
 };
 
 export const facilityAssetsSeed = async () => {
@@ -3931,7 +4265,7 @@ export const facilityAssetsSeed = async () => {
   }
 
   let facility7 = {
-    facilityName: "Amphitheatre",
+    facilityName: "Harvey Norman Amphitheatre",
     isSheltered: true,
     showOnMap: true,
     xCoordinate: 103.77511596679688,
@@ -3985,7 +4319,7 @@ export const facilityAssetsSeed = async () => {
   let f9h: InHouse = await f9.getFacilityDetail();
 
   let facility10 = {
-    facilityName: "Gazebo",
+    facilityName: "Gazebo 1",
     isSheltered: true,
     showOnMap: true,
     xCoordinate: 103.7840576171875,
@@ -4019,6 +4353,42 @@ export const facilityAssetsSeed = async () => {
   } as any;
   let f11 = await Facility.create(facility11, { include: ["inHouse"] });
   let f11h: InHouse = await f11.getFacilityDetail();
+
+  let facility12 = {
+    facilityName: "The Boardwalk Amphitheatre ",
+    isSheltered: true,
+    showOnMap: true,
+    xCoordinate: 103.7702,
+    yCoordinate: 1.2967,
+    imageUrl: "img/facility/Amphi2.jpg",
+    inHouse: {
+      lastMaintained: new Date(),
+      isPaid: false,
+      maxAccommodationSize: 5,
+      hasAirCon: false,
+      facilityType: FacilityType.AMPHITHEATRE,
+    } as any,
+  } as any;
+  let f12 = await Facility.create(facility12, { include: ["inHouse"] });
+  let f12h: InHouse = await f12.getFacilityDetail();
+
+  let facility13 = {
+    facilityName: "Gazebo 2",
+    isSheltered: true,
+    showOnMap: true,
+    xCoordinate: 103.7781,
+    yCoordinate: 1.2976,
+    imageUrl: "img/facility/gazebo2.jpg",
+    inHouse: {
+      lastMaintained: new Date(),
+      isPaid: false,
+      maxAccommodationSize: 5,
+      hasAirCon: false,
+      facilityType: FacilityType.GAZEBO,
+    } as any,
+  } as any;
+  let f13 = await Facility.create(facility13, { include: ["inHouse"] });
+  let f13h: InHouse = await f13.getFacilityDetail();
 
   let toiletTemplate = {
     facilityName: "Toilet",
@@ -4499,14 +4869,14 @@ export const publicEventSeed = async () => {
 
   const pubEvent = await ZooEventService.createPublicEvent(
     EventType.CUSTOMER_FEEDING,
-    "Homo sapiens feeding",
-    "do not feed them fast food",
-    "img/species/elephant.jpg",
+    "Elephant Feeding",
+    "Join us for an unforgettable encounter with our gentle giants! The Elephant Feeding Experience allows you to get up close and personal with our magnificent elephants as you assist in feeding them their favorite treats!",
+    "img/event/elephant.jpg",
     today,
-    new Date(today.getTime() + 60 * DAY_IN_MILLISECONDS),
+    new Date(today.getTime()),
     [],
     [1],
-    8,
+    5,
   );
 
   const pubEventSession = await ZooEventService.createPublicEventSession(
@@ -4514,19 +4884,19 @@ export const publicEventSeed = async () => {
     RecurringPattern.NON_RECURRING,
     null,
     null,
-    60,
-    "16:00",
-    30,
-    new Date(today.getTime() + DAY_IN_MILLISECONDS * 5),
+    10,
+    "23:00",
+    5,
+    new Date(Date.now() + 0.05 * DAY_IN_MILLISECONDS),
   );
 
   const pubEvent2 = await ZooEventService.createPublicEvent(
-    EventType.SHOW,
-    "Pandas dance",
-    "Watch our ambassador put on a show",
-    "img/animal/ANM00001.jpg",
+    EventType.CUSTOMER_FEEDING,
+    "Red Panda Feeding",
+    "Feed our red pandas? Where else can you do this?",
+    "img/event/pandafeeding.jpg",
     today,
-    new Date(today.getTime() + 90 * DAY_IN_MILLISECONDS),
+    new Date(today.getTime() + 60 * DAY_IN_MILLISECONDS),
     (await AnimalService.getAllAnimalsBySpeciesCode("SPE001")).map(
       (animal) => animal.animalCode,
     ),
@@ -4540,7 +4910,7 @@ export const publicEventSeed = async () => {
     DayOfWeek.THURSDAY,
     null,
     60,
-    "16:00",
+    "15:00",
     7,
     null,
   );
@@ -4551,14 +4921,14 @@ export const publicEventSeed = async () => {
     DayOfWeek.FRIDAY,
     null,
     60,
-    "14:00",
+    "12:00",
     7,
     null,
   );
 
   const pubEvent3 = await ZooEventService.createPublicEvent(
     EventType.TALK,
-    "Clown Fish Talk",
+    "Clown Fish Keeper Talk",
     "Find out more about the lifestyles and managements of these sea creatures",
     "img/species/clownfish.jpg",
     today,
@@ -4579,5 +4949,147 @@ export const publicEventSeed = async () => {
     "15:00",
     7,
     null,
+  );
+
+  const pubEvent4 = await ZooEventService.createPublicEvent(
+    EventType.SHOW,
+    "Bird Show",
+    "Watch our aerial ambassadors put on a show",
+    "img/event/animalshow.jpg",
+    today,
+    new Date(today.getTime()),
+    (await AnimalService.getAllAnimalsBySpeciesCode("SPE001")).map(
+      (animal) => animal.animalCode,
+    ),
+    [1],
+    5,
+  );
+
+  const pubEventSession5 = await ZooEventService.createPublicEventSession(
+    pubEvent4.publicEventId,
+    RecurringPattern.NON_RECURRING,
+    null,
+    null,
+    10,
+    "22:00",
+    5,
+    new Date(Date.now() + 0.05 * DAY_IN_MILLISECONDS),
+  );
+
+  const pubEvent5 = await ZooEventService.createPublicEvent(
+    EventType.TALK,
+    "Elephant Keeper Talk",
+    "Find out more about the lifestyles and managements of these majestic creatures",
+    "img/event/keepertalk.jpg",
+    today,
+    null,
+    (await AnimalService.getAllAnimalsBySpeciesCode("SPE001")).map(
+      (animal) => animal.animalCode,
+    ),
+    [1],
+    8,
+  );
+
+  const pubEventSession6 = await ZooEventService.createPublicEventSession(
+    pubEvent5.publicEventId,
+    RecurringPattern.NON_RECURRING,
+    null,
+    null,
+    10,
+    "23:00",
+    5,
+    new Date(Date.now() + 0.05 * DAY_IN_MILLISECONDS),
+  );
+
+  const pubEvent7 = await ZooEventService.createPublicEvent(
+    EventType.CUSTOMER_FEEDING,
+    "Red Panda Feeding",
+    "Join us for an unforgettable encounter with our gentle giants! The Elephant Feeding Experience allows you to get up close and personal with our magnificent elephants as you assist in feeding them their favorite treats!",
+    "img/event/pandafeeding.jpg",
+    today,
+    new Date(today.getTime()),
+    [],
+    [1],
+    11,
+  );
+
+  const pubEventSession7 = await ZooEventService.createPublicEventSession(
+    pubEvent7.publicEventId,
+    RecurringPattern.NON_RECURRING,
+    null,
+    null,
+    10,
+    "11:00",
+    5,
+    new Date(Date.now() + 0.05 * DAY_IN_MILLISECONDS),
+  );
+
+  const pubEvent8 = await ZooEventService.createPublicEvent(
+    EventType.SHOW,
+    "Capybara Show",
+    "Join us for an unforgettable encounter with our cute big rodents!",
+    "img/event/animalshow3.png",
+    today,
+    new Date(today.getTime()),
+    [],
+    [1],
+    10,
+  );
+
+  const pubEventSession8 = await ZooEventService.createPublicEventSession(
+    pubEvent8.publicEventId,
+    RecurringPattern.NON_RECURRING,
+    null,
+    null,
+    10,
+    "15:00",
+    5,
+    new Date(Date.now() + 0.05 * DAY_IN_MILLISECONDS),
+  );
+
+  const pubEvent10 = await ZooEventService.createPublicEvent(
+    EventType.SHOW,
+    "Seal Show",
+    "Join us for an unforgettable encounter with our slimy adorable seals!",
+    "img/event/animalshow2.jpg",
+    today,
+    new Date(today.getTime()),
+    [],
+    [1],
+    11,
+  );
+
+  const pubEventSession10 = await ZooEventService.createPublicEventSession(
+    pubEvent10.publicEventId,
+    RecurringPattern.NON_RECURRING,
+    null,
+    null,
+    10,
+    "15:00",
+    5,
+    new Date(Date.now() + 0.05 * DAY_IN_MILLISECONDS),
+  );
+
+  const pubEvent11 = await ZooEventService.createPublicEvent(
+    EventType.TALK,
+    "Parrot Keeper Talk",
+    "Join us for an insightful education about parrots and their quirks!",
+    "img/event/keepertalk2.jpg",
+    today,
+    new Date(today.getTime()),
+    [],
+    [1],
+    11,
+  );
+
+  const pubEventSession11 = await ZooEventService.createPublicEventSession(
+    pubEvent11.publicEventId,
+    RecurringPattern.NON_RECURRING,
+    null,
+    null,
+    10,
+    "15:00",
+    5,
+    new Date(Date.now() + 0.05 * DAY_IN_MILLISECONDS),
   );
 };

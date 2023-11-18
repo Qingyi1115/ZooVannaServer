@@ -602,8 +602,7 @@ export async function getPublicEventById(req: Request, res: Response) {
             association: "species",
             required: true
           }]
-        },
-        {
+        }, {
           association: "keepers",
           required: false,
           include: [{
@@ -1058,12 +1057,18 @@ export async function updatePublicEventSessionById(req: Request, res: Response) 
 
     if ([
       recurringPattern,
-      dayOfWeek,
-      dayOfMonth,
       durationInMinutes,
       time,
       daysInAdvanceNotification
     ].includes(undefined) || publicEventSessionId == "") {
+      console.log({
+        recurringPattern,
+        dayOfWeek,
+        dayOfMonth,
+        durationInMinutes,
+        time,
+        daysInAdvanceNotification
+      })
       return res.status(400).json({ error: "Missing information!" });
     }
 
