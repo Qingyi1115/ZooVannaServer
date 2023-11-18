@@ -197,6 +197,10 @@ export async function getAllUniquePublicZooEventsToday(
         {
           association: "publicEventSession",
           required: false,
+          include: [{
+            association: "publicEvent",
+            required: false
+          }]
         },
       ]);
 

@@ -20,7 +20,6 @@ import {
   getEnclosureTerrainDistributionRecommendation,
   updateEnclosureClimateDesign,
   deleteEnclosureClimateDesign,
-  getClimateDesignRecommendation,
   getAllPlantations,
   addPlantationToEnclosure,
   removePlantationFromEnclosure,
@@ -87,10 +86,10 @@ router.put(
   "/deleteEnclosureClimateDesign/:enclosureId",
   deleteEnclosureClimateDesign,
 );
-router.get(
-  "/getClimateDesignRecommendation/:enclosureId",
-  getClimateDesignRecommendation,
-);
+// router.get(
+//   "/getClimateDesignRecommendation/:enclosureId",
+//   getClimateDesignRecommendation,
+// );
 
 //Plantation
 router.get(
