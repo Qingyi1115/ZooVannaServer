@@ -8,6 +8,7 @@ import { createCustomerOrderForSeeding } from "../services/customerService";
 import * as EnclosureService from "../services/enclosureService";
 import * as SpeciesService from "../services/speciesService";
 import * as ZooEventService from "../services/zooEventService";
+import { AccessPoint } from "./AccessPoint";
 import { Animal } from "./Animal";
 import { AnimalActivity } from "./AnimalActivity";
 import { AnimalActivityLog } from "./AnimalActivityLog";
@@ -16,12 +17,14 @@ import { AnimalFeed } from "./AnimalFeed";
 import { AnimalFeedingLog } from "./AnimalFeedingLog";
 import { AnimalObservationLog } from "./AnimalObservationLog";
 import { AnimalWeight } from "./AnimalWeight";
+import { Announcement } from "./Announcement";
 import { Compatibility } from "./Compatibility";
 import { Customer } from "./Customer";
 import { CustomerOrder } from "./CustomerOrder";
 import { CustomerReportLog } from "./CustomerReportLog";
 import { Employee } from "./Employee";
 import { Enclosure } from "./Enclosure";
+import { EnclosureBarrier } from "./EnclosureBarrier";
 import { EnrichmentItem } from "./EnrichmentItem";
 import {
   AcquisitionMethod,
@@ -33,7 +36,6 @@ import {
   Continent,
   Country,
   DayOfWeek,
-  EnclosureStatus,
   EventTimingType,
   EventType,
   FacilityLogType,
@@ -53,7 +55,7 @@ import {
   PresentationMethod,
   RecurringPattern,
   SensorType,
-  Specialization,
+  Specialization
 } from "./Enumerated";
 import { Facility } from "./Facility";
 import { FacilityLog } from "./FacilityLog";
@@ -63,6 +65,8 @@ import { FeedingPlanSessionDetail } from "./FeedingPlanSessionDetail";
 import { GeneralStaff } from "./GeneralStaff";
 import { HubProcessor } from "./HubProcessor";
 import { InHouse } from "./InHouse";
+import { Itinerary } from "./Itinerary";
+import { ItineraryItem } from "./ItineraryItem";
 import { Keeper } from "./Keeper";
 import { Listing } from "./Listing";
 import { MaintenanceLog } from "./MaintenanceLog";
@@ -83,11 +87,6 @@ import { SpeciesEnclosureNeed } from "./SpeciesEnclosureNeed";
 import { ThirdParty } from "./ThirdParty";
 import { Zone } from "./Zone";
 import { ZooEvent } from "./ZooEvent";
-import { EnclosureBarrier } from "./EnclosureBarrier";
-import { AccessPoint } from "./AccessPoint";
-import { Itinerary } from "./Itinerary";
-import { ItineraryItem } from "./ItineraryItem";
-import { Announcement } from "./Announcement";
 
 function addCascadeOptions(options: object) {
   return { ...options, onDelete: "CASCADE", onUpdate: "CASCADE" };
@@ -3836,23 +3835,186 @@ export const enclosureSeed = async () => {
   await EnclosureService.assignAnimalToEnclosure(4, "ANM00014");
   await EnclosureService.assignAnimalToEnclosure(5, "ANM00011");
 
-  let planation1Template = {
-    name: "Tree 1",
-    biome: "TEMPERATE",
-  } as any;
-  await Plantation.create(planation1Template);
+  let plantation1Template = {
+  name: "African Daisy",
+  biome: "TEMPERATE",
+} as any;
+await Plantation.create(plantation1Template);
 
-  let planation2Template = {
-    name: "Tree 2",
-    biome: "TEMPERATE",
-  } as any;
-  await Plantation.create(planation1Template);
+let plantation2Template = {
+  name: "Baobab Tree",
+  biome: "TROPICAL",
+} as any;
+await Plantation.create(plantation2Template);
 
-  let planation3Template = {
-    name: "Tree 3",
-    biome: "GRASSLAND",
-  } as any;
-  await Plantation.create(planation1Template);
+let plantation3Template = {
+  name: "Cactus",
+  biome: "DESERT",
+} as any;
+await Plantation.create(plantation3Template);
+
+let plantation4Template = {
+  name: "Douglas Fir Pine",
+  biome: "TAIGA",
+} as any;
+await Plantation.create(plantation4Template);
+
+let plantation5Template = {
+  name: "Fern Tree",
+  biome: "AQUATIC",
+} as any;
+await Plantation.create(plantation5Template);
+
+let plantation6Template = {
+  name: "Goldenrod",
+  biome: "GRASSLAND",
+} as any;
+await Plantation.create(plantation6Template);
+
+let plantation7Template = {
+  name: "Himalayan Pine",
+  biome: "TEMPERATE",
+} as any;
+await Plantation.create(plantation7Template);
+
+let plantation8Template = {
+  name: "Ivy",
+  biome: "TUNDRA",
+} as any;
+await Plantation.create(plantation8Template);
+
+let plantation9Template = {
+  name: "Joshua Tree",
+  biome: "DESERT",
+} as any;
+await Plantation.create(plantation9Template);
+
+let plantation10Template = {
+  name: "Kapok Tree",
+  biome: "TROPICAL",
+} as any;
+await Plantation.create(plantation10Template);
+
+let plantation11Template = {
+  name: "Lobster Claw",
+  biome: "TROPICAL",
+} as any;
+await Plantation.create(plantation11Template);
+
+let plantation12Template = {
+  name: "Mangrove Apple",
+  biome: "AQUATIC",
+} as any;
+await Plantation.create(plantation12Template);
+
+let plantation13Template = {
+  name: "Nettle",
+  biome: "TEMPERATE",
+} as any;
+await Plantation.create(plantation13Template);
+
+let plantation14Template = {
+  name: "Olive Tree",
+  biome: "TUNDRA",
+} as any;
+await Plantation.create(plantation14Template);
+
+let plantation15Template = {
+  name: "Papyrus Sedge",
+  biome: "AQUATIC",
+} as any;
+await Plantation.create(plantation15Template);
+
+let plantation16Template = {
+  name: "Quaking Aspen Tree",
+  biome: "TAIGA",
+} as any;
+await Plantation.create(plantation16Template);
+
+let plantation17Template = {
+  name: "Rainbow Eucalyptus Tree",
+  biome: "TROPICAL",
+} as any;
+await Plantation.create(plantation17Template);
+
+let plantation18Template = {
+  name: "Saguaro Cactus",
+  biome: "DESERT",
+} as any;
+await Plantation.create(plantation18Template);
+
+let plantation19Template = {
+  name: "Tundra Moss",
+  biome: "TUNDRA",
+} as any;
+await Plantation.create(plantation19Template);
+
+let plantation20Template = {
+  name: "Umbrella Thorn Acacia",
+  biome: "GRASSLAND",
+} as any;
+await Plantation.create(plantation20Template);
+
+let plantation21Template = {
+  name: "Variegated Ivy",
+  biome: "TEMPERATE",
+} as any;
+await Plantation.create(plantation21Template);
+
+let plantation22Template = {
+  name: "Water Hyacinth",
+  biome: "AQUATIC",
+} as any;
+await Plantation.create(plantation22Template);
+
+let plantation23Template = {
+  name: "Xerophyte",
+  biome: "DESERT",
+} as any;
+await Plantation.create(plantation23Template);
+
+let plantation24Template = {
+  name: "Yellow Poplar",
+  biome: "TEMPERATE",
+} as any;
+await Plantation.create(plantation24Template);
+
+let plantation25Template = {
+  name: "Zebra Grass",
+  biome: "GRASSLAND",
+} as any;
+await Plantation.create(plantation25Template);
+
+let plantation26Template = {
+  name: "Quiver Tree",
+  biome: "DESERT",
+} as any;
+await Plantation.create(plantation26Template);
+
+let plantation27Template = {
+  name: "Siberian Peashrub",
+  biome: "TAIGA",
+} as any;
+await Plantation.create(plantation27Template);
+
+let plantation28Template = {
+  name: "Sugar Maple Tree",
+  biome: "TEMPERATE",
+} as any;
+await Plantation.create(plantation28Template);
+
+let plantation29Template = {
+  name: "Blue Lotus Plant",
+  biome: "AQUATIC",
+} as any;
+await Plantation.create(plantation29Template);
+
+let plantation30Template = {
+  name: "Red Oat Grass",
+  biome: "GRASSLAND",
+} as any;
+await Plantation.create(plantation30Template);
+
 };
 
 export const facilityAssetsSeed = async () => {
