@@ -35,6 +35,7 @@ import {
   getSpeciesLovedByCustomer,
   getSpeciesNotLovedByCustomer,
   getFacilityForSpeciesLovedByCustomer,
+  getSpeciesLovedByAllCustomer,
 } from "../controllers/speciesController";
 
 const router = express.Router();
@@ -140,5 +141,6 @@ router.get(
   "/getFacilityForSpeciesLovedByCustomer",
   getFacilityForSpeciesLovedByCustomer,
 );
+router.get("/getSpeciesLovedByAllCustomer", getSpeciesLovedByAllCustomer);
 
 export default router;

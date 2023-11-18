@@ -9,6 +9,8 @@ import { SpeciesEnclosureNeed } from "../models/SpeciesEnclosureNeed";
 import * as CustomerService from "../services/customerService";
 import { Customer } from "../models/Customer";
 import { Facility } from "models/Facility";
+const Sequelize = require("sequelize");
+import { conn } from "../db";
 
 export async function getAllSpecies(includes: string[]) {
   try {
@@ -833,6 +835,43 @@ export async function getSpeciesLovedByCustomer(email: string) {
     } else {
       throw new Error("Missing information!");
     }
+  } catch (error: any) {
+    console.log("here???");
+    console.log("the error message is " + error.message);
+    throw { error: error.message };
+  }
+}
+
+export async function getSpeciesLovedByAllCustomer() {
+  try {
+    interface AggregatedSpecies {
+      [key: string]: {
+        speciesName: string;
+        speciesCode: string;
+        imageUrl: string;
+        customerCount: number;
+      };
+    }
+    const species = await Species.findAll({ include: ["customers"] });
+    const aggregatedSpecies = species.reduce((acc: AggregatedSpecies, curr) => {
+      const speciesCode: string = curr.speciesCode;
+      const customerCount = curr.customers ? curr.customers.length : 0; // Count customers for each species
+      const speciesName: string = curr.commonName;
+      const imageUrl: string = curr.imageUrl;
+
+      if (!acc[speciesCode]) {
+        acc[speciesCode] = {
+          speciesName,
+          imageUrl,
+          speciesCode,
+          customerCount,
+        };
+      } else {
+        acc[speciesCode].customerCount += customerCount;
+      }
+      return acc;
+    }, {});
+    return aggregatedSpecies;
   } catch (error: any) {
     console.log("here???");
     console.log("the error message is " + error.message);
