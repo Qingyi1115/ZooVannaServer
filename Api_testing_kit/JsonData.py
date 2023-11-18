@@ -88,7 +88,7 @@ newRepairTicketDetails = {
     "details":"bladhhh...",
     "remarks" : "remarksaaaa",
     "facilityLogType" : "ACTIVE_REPAIR_TICKET",
-    "employeeIds" : [8, 10]
+    "employeeIds" : [12, 14]
 }
 
 import json

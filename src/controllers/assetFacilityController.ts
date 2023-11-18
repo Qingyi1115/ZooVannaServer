@@ -888,7 +888,7 @@ export async function getFacilityLogById(
 
     // Removed
     const _includes: any[] = [];
-    for (const role of ["inHouse", "generalStaffs", "thirdParty", "enclosure"]) {
+    for (const role of ["inHouse", "generalStaffs"]) {
         if (role == "inHouse") {
           _includes.push({
             association: role,

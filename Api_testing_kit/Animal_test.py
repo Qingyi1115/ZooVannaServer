@@ -158,12 +158,18 @@ def deleteZooEvent(mockData, useAPI: UseAPI):
     assert("error" in response_json)
 
 @login_as_marry
-def autoAssignKeeperToZooEvent(useAPI: UseAPI):
-    res = useAPI.get("/api/zooEvent/autoAssignKeeperToZooEvent")
+def autoAssignKeeperToZooEvent_fail(useAPI: UseAPI):
+    res = useAPI.post("/api/zooEvent/autoAssignKeeperToZooEvent")
+    response_json = res.json()
+    assert "error" in response_json, "Not success!" + json.dumps(response_json)
+
+@login_as_marry
+def autoAssignKeeperToZooEvent_succeed(useAPI: UseAPI):
+    res = useAPI.post("/api/zooEvent/autoAssignKeeperToZooEvent",
+                      json={"endDate":time() * 1000 + 1000*60*60})
     response_json = res.json()
     assert "error" not in response_json, "Not success!" + json.dumps(response_json)
     
-
 ZOO_EVENTS_API_TESTS = [
     (createAnimalActivity, newAnimalActivityDetails),
     (getAnimalActivityById, newAnimalActivityDetails),
@@ -172,7 +178,8 @@ ZOO_EVENTS_API_TESTS = [
     (updateZooEventIncludeFuture, newAnimalActivityDetails),
     (deleteZooEvent, newAnimalActivityDetails),
     (deleteAnimalActivity, newAnimalActivityDetails),
-    (autoAssignKeeperToZooEvent,),
+    (autoAssignKeeperToZooEvent_fail,),
+    (autoAssignKeeperToZooEvent_succeed,),
 ]
 
 # Animal Activity Log API 

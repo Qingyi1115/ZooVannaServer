@@ -195,7 +195,7 @@ export async function removeItineraryById(itineraryId: number) {
   try {
     const itinerary = await Itinerary.findOne({
       where: { itineraryId: itineraryId },
-      include: ["facilities", "specieses"],
+      include: ["specieses"],
     });
 
     if (itinerary) {
