@@ -808,16 +808,6 @@ export const promotionSeed = async () => {
   });
 };
 
-title: string;
-declare;
-content: string;
-declare;
-isPublished: boolean;
-declare;
-scheduledStartPublish: Date;
-declare;
-scheduledEndPublish: Date;
-
 export const announcementSeed = async () => {
   let announcement1 = await Announcement.create({
     title: "Habitat Renovation Underway",
