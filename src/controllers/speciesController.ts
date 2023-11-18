@@ -1234,6 +1234,25 @@ export async function getSpeciesLovedByCustomer(req: Request, res: Response) {
   }
 }
 
+export async function getSpeciesLovedByAllCustomer(
+  req: Request,
+  res: Response,
+) {
+  try {
+    const { email } = (req as any).locals.jwtPayload;
+
+    if (email) {
+      const result = await SpeciesService.getSpeciesLovedByAllCustomer();
+
+      return res.status(200).json({ result: result });
+    } else {
+      return res.status(400).json({ error: "Access required" });
+    }
+  } catch (error: any) {
+    return res.status(400).json({ error: error.message });
+  }
+}
+
 export async function getSpeciesNotLovedByCustomer(
   req: Request,
   res: Response,
