@@ -83,11 +83,11 @@ export const getAllKeepers = async (
     const { email } = (req as any).locals.jwtPayload;
     const employee = await findEmployeeByEmail(email);
 
-    if (!employee.isAccountManager) {
-      return res
-        .status(403)
-        .json({ error: "Access Denied! Account managers only!" });
-    }
+    // if (!employee.isAccountManager) {
+    //   return res
+    //     .status(403)
+    //     .json({ error: "Access Denied! Account managers only!" });
+    // }
 
     const keepers = await KeeperService.getAllKeepers();
 

@@ -37,9 +37,12 @@ import {
   getEnclosureEnrichmentItems,
   removeEnrichmentItemFromEnclosure,
   addEnrichmentItemToEnclosure,
+  getAllEnclosuresFacility,
 } from "../controllers/enclosureController";
 
 const router = express.Router();
+
+router.get("/getAllEnclosuresFacility", getAllEnclosuresFacility);
 
 router.use(authMiddleware);
 
