@@ -4350,7 +4350,7 @@ export const enclosureSeed = async () => {
   );
   // set x y coordinate
   await Facility.update(
-    { xCoordinate: 103.7818, yCoordinate: 1.2987 },
+    { xCoordinate: 103.7737, yCoordinate: 1.2941 },
     {
       where: { facilityId: enclosure7Object.newFacility.facilityId },
     },
