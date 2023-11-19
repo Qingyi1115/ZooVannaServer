@@ -55,7 +55,7 @@ import {
   PresentationMethod,
   RecurringPattern,
   SensorType,
-  Specialization
+  Specialization,
 } from "./Enumerated";
 import { Facility } from "./Facility";
 import { FacilityLog } from "./FacilityLog";
@@ -747,10 +747,45 @@ export const seedDatabase = async () => {
     await customerSeed();
     await publicEventSeed();
     await announcementSeed();
+    await favouriteSeed();
   } catch (err) {
     console.log("error", err);
     throw err;
   }
+};
+
+export const favouriteSeed = async () => {
+  let speciesData = await Species.findAll();
+
+  let customer = await Customer.findAll();
+
+  customer[0].addSpecies(speciesData[0]);
+  customer[0].addSpecies(speciesData[1]);
+
+  customer[1].addSpecies(speciesData[0]);
+  customer[1].addSpecies(speciesData[3]);
+
+  customer[2].addSpecies(speciesData[0]);
+  customer[2].addSpecies(speciesData[1]);
+  customer[2].addSpecies(speciesData[3]);
+
+  customer[3].addSpecies(speciesData[0]);
+  customer[3].addSpecies(speciesData[1]);
+  customer[3].addSpecies(speciesData[3]);
+
+  customer[4].addSpecies(speciesData[0]);
+  customer[4].addSpecies(speciesData[2]);
+  customer[4].addSpecies(speciesData[5]);
+
+  customer[5].addSpecies(speciesData[0]);
+  customer[5].addSpecies(speciesData[1]);
+
+  customer[6].addSpecies(speciesData[0]);
+  customer[6].addSpecies(speciesData[5]);
+
+  customer[7].addSpecies(speciesData[0]);
+  customer[7].addSpecies(speciesData[6]);
+  customer[7].addSpecies(speciesData[7]);
 };
 
 export const promotionSeed = async () => {
@@ -876,6 +911,83 @@ export const customerSeed = async () => {
     firstName: "Qingyi",
     lastName: "Xiang",
     email: "xqy1115@gmail.com",
+    contactNo: "12345568",
+    birthday: new Date("2001-01-01"),
+    nationality: Country.Indonesia,
+    passwordHash: Customer.getHash("Hahaha123.", "hehe"),
+    salt: "hehe",
+  });
+
+  let customer4 = await Customer.create({
+    firstName: "customer4",
+    lastName: "gogo",
+    email: "customer4@gmail.com",
+    contactNo: "12345568",
+    birthday: new Date("2001-01-01"),
+    nationality: Country.Indonesia,
+    passwordHash: Customer.getHash("Hahaha123.", "hehe"),
+    salt: "hehe",
+  });
+
+  let customer5 = await Customer.create({
+    firstName: "customer5",
+    lastName: "gogo",
+    email: "customer5@gmail.com",
+    contactNo: "12345568",
+    birthday: new Date("2001-01-01"),
+    nationality: Country.Indonesia,
+    passwordHash: Customer.getHash("Hahaha123.", "hehe"),
+    salt: "hehe",
+  });
+
+  let customer6 = await Customer.create({
+    firstName: "customer6",
+    lastName: "gogo",
+    email: "customer6@gmail.com",
+    contactNo: "12345568",
+    birthday: new Date("2001-01-01"),
+    nationality: Country.Indonesia,
+    passwordHash: Customer.getHash("Hahaha123.", "hehe"),
+    salt: "hehe",
+  });
+
+  let customer7 = await Customer.create({
+    firstName: "customer7",
+    lastName: "gogo",
+    email: "customer7@gmail.com",
+    contactNo: "12345568",
+    birthday: new Date("2001-01-01"),
+    nationality: Country.Indonesia,
+    passwordHash: Customer.getHash("Hahaha123.", "hehe"),
+    salt: "hehe",
+  });
+
+  let customer8 = await Customer.create({
+    firstName: "customer8",
+    lastName: "gogo",
+    email: "customer8@gmail.com",
+    contactNo: "12345568",
+    birthday: new Date("2001-01-01"),
+    nationality: Country.Indonesia,
+    passwordHash: Customer.getHash("Hahaha123.", "hehe"),
+    salt: "hehe",
+  });
+
+  let customer9 = await Customer.create({
+    firstName: "customer9",
+    lastName: "gogo",
+    email: "customer9@gmail.com",
+    contactNo: "12345568",
+    birthday: new Date("2001-01-01"),
+    nationality: Country.Indonesia,
+    passwordHash: Customer.getHash("Hahaha123.", "hehe"),
+    salt: "hehe",
+  });
+
+  let customer10 = await Customer.create({
+    firstName: "customer10",
+    lastName: "gogo",
+    email: "customer10@gmail.com",
     contactNo: "12345568",
     birthday: new Date("2001-01-01"),
     nationality: Country.Indonesia,
@@ -1873,8 +1985,8 @@ export const speciesSeed = async () => {
     ageToElder: 12,
     // foodRemark: "Food remark...",
   } as any;
-let lion = await Species.create(lionTemplate);
-console.log(lion.toJSON());
+  let lion = await Species.create(lionTemplate);
+  console.log(lion.toJSON());
 
   let penguinTemplate = {
     speciesCode: await Species.getNextSpeciesCode(),
@@ -1906,8 +2018,8 @@ console.log(lion.toJSON());
     ageToElder: 15,
     // foodRemark: "Food remark...",
   } as any;
-let penguin = await Species.create(penguinTemplate);
-console.log(penguin.toJSON());
+  let penguin = await Species.create(penguinTemplate);
+  console.log(penguin.toJSON());
 
   let orangutanTemplate = {
     speciesCode: await Species.getNextSpeciesCode(),
@@ -1939,10 +2051,10 @@ console.log(penguin.toJSON());
     ageToElder: 30,
     // foodRemark: "Food remark...",
   } as any;
-let orangutan = await Species.create(orangutanTemplate);
-console.log(orangutan.toJSON());
+  let orangutan = await Species.create(orangutanTemplate);
+  console.log(orangutan.toJSON());
 
-let giraffeTemplate = {
+  let giraffeTemplate = {
     speciesCode: await Species.getNextSpeciesCode(),
     commonName: "Giraffe",
     scientificName: "Giraffa camelopardalis",
@@ -1972,10 +2084,9 @@ let giraffeTemplate = {
     ageToElder: 20,
     // foodRemark: "Food remark...",
   } as any;
-let giraffe = await Species.create(giraffeTemplate);
-console.log(giraffe.toJSON());
+  let giraffe = await Species.create(giraffeTemplate);
+  console.log(giraffe.toJSON());
 
-  
   let compatibility1 = await SpeciesService.createCompatibility(
     "SPE001",
     "SPE002",
@@ -3973,185 +4084,184 @@ export const enclosureSeed = async () => {
   await EnclosureService.assignAnimalToEnclosure(5, "ANM00011");
 
   let plantation1Template = {
-  name: "African Daisy",
-  biome: "TEMPERATE",
-} as any;
-await Plantation.create(plantation1Template);
+    name: "African Daisy",
+    biome: "TEMPERATE",
+  } as any;
+  await Plantation.create(plantation1Template);
 
-let plantation2Template = {
-  name: "Baobab Tree",
-  biome: "TROPICAL",
-} as any;
-await Plantation.create(plantation2Template);
+  let plantation2Template = {
+    name: "Baobab Tree",
+    biome: "TROPICAL",
+  } as any;
+  await Plantation.create(plantation2Template);
 
-let plantation3Template = {
-  name: "Cactus",
-  biome: "DESERT",
-} as any;
-await Plantation.create(plantation3Template);
+  let plantation3Template = {
+    name: "Cactus",
+    biome: "DESERT",
+  } as any;
+  await Plantation.create(plantation3Template);
 
-let plantation4Template = {
-  name: "Douglas Fir Pine",
-  biome: "TAIGA",
-} as any;
-await Plantation.create(plantation4Template);
+  let plantation4Template = {
+    name: "Douglas Fir Pine",
+    biome: "TAIGA",
+  } as any;
+  await Plantation.create(plantation4Template);
 
-let plantation5Template = {
-  name: "Fern Tree",
-  biome: "AQUATIC",
-} as any;
-await Plantation.create(plantation5Template);
+  let plantation5Template = {
+    name: "Fern Tree",
+    biome: "AQUATIC",
+  } as any;
+  await Plantation.create(plantation5Template);
 
-let plantation6Template = {
-  name: "Goldenrod",
-  biome: "GRASSLAND",
-} as any;
-await Plantation.create(plantation6Template);
+  let plantation6Template = {
+    name: "Goldenrod",
+    biome: "GRASSLAND",
+  } as any;
+  await Plantation.create(plantation6Template);
 
-let plantation7Template = {
-  name: "Himalayan Pine",
-  biome: "TEMPERATE",
-} as any;
-await Plantation.create(plantation7Template);
+  let plantation7Template = {
+    name: "Himalayan Pine",
+    biome: "TEMPERATE",
+  } as any;
+  await Plantation.create(plantation7Template);
 
-let plantation8Template = {
-  name: "Ivy",
-  biome: "TUNDRA",
-} as any;
-await Plantation.create(plantation8Template);
+  let plantation8Template = {
+    name: "Ivy",
+    biome: "TUNDRA",
+  } as any;
+  await Plantation.create(plantation8Template);
 
-let plantation9Template = {
-  name: "Joshua Tree",
-  biome: "DESERT",
-} as any;
-await Plantation.create(plantation9Template);
+  let plantation9Template = {
+    name: "Joshua Tree",
+    biome: "DESERT",
+  } as any;
+  await Plantation.create(plantation9Template);
 
-let plantation10Template = {
-  name: "Kapok Tree",
-  biome: "TROPICAL",
-} as any;
-await Plantation.create(plantation10Template);
+  let plantation10Template = {
+    name: "Kapok Tree",
+    biome: "TROPICAL",
+  } as any;
+  await Plantation.create(plantation10Template);
 
-let plantation11Template = {
-  name: "Lobster Claw",
-  biome: "TROPICAL",
-} as any;
-await Plantation.create(plantation11Template);
+  let plantation11Template = {
+    name: "Lobster Claw",
+    biome: "TROPICAL",
+  } as any;
+  await Plantation.create(plantation11Template);
 
-let plantation12Template = {
-  name: "Mangrove Apple",
-  biome: "AQUATIC",
-} as any;
-await Plantation.create(plantation12Template);
+  let plantation12Template = {
+    name: "Mangrove Apple",
+    biome: "AQUATIC",
+  } as any;
+  await Plantation.create(plantation12Template);
 
-let plantation13Template = {
-  name: "Nettle",
-  biome: "TEMPERATE",
-} as any;
-await Plantation.create(plantation13Template);
+  let plantation13Template = {
+    name: "Nettle",
+    biome: "TEMPERATE",
+  } as any;
+  await Plantation.create(plantation13Template);
 
-let plantation14Template = {
-  name: "Olive Tree",
-  biome: "TUNDRA",
-} as any;
-await Plantation.create(plantation14Template);
+  let plantation14Template = {
+    name: "Olive Tree",
+    biome: "TUNDRA",
+  } as any;
+  await Plantation.create(plantation14Template);
 
-let plantation15Template = {
-  name: "Papyrus Sedge",
-  biome: "AQUATIC",
-} as any;
-await Plantation.create(plantation15Template);
+  let plantation15Template = {
+    name: "Papyrus Sedge",
+    biome: "AQUATIC",
+  } as any;
+  await Plantation.create(plantation15Template);
 
-let plantation16Template = {
-  name: "Quaking Aspen Tree",
-  biome: "TAIGA",
-} as any;
-await Plantation.create(plantation16Template);
+  let plantation16Template = {
+    name: "Quaking Aspen Tree",
+    biome: "TAIGA",
+  } as any;
+  await Plantation.create(plantation16Template);
 
-let plantation17Template = {
-  name: "Rainbow Eucalyptus Tree",
-  biome: "TROPICAL",
-} as any;
-await Plantation.create(plantation17Template);
+  let plantation17Template = {
+    name: "Rainbow Eucalyptus Tree",
+    biome: "TROPICAL",
+  } as any;
+  await Plantation.create(plantation17Template);
 
-let plantation18Template = {
-  name: "Saguaro Cactus",
-  biome: "DESERT",
-} as any;
-await Plantation.create(plantation18Template);
+  let plantation18Template = {
+    name: "Saguaro Cactus",
+    biome: "DESERT",
+  } as any;
+  await Plantation.create(plantation18Template);
 
-let plantation19Template = {
-  name: "Tundra Moss",
-  biome: "TUNDRA",
-} as any;
-await Plantation.create(plantation19Template);
+  let plantation19Template = {
+    name: "Tundra Moss",
+    biome: "TUNDRA",
+  } as any;
+  await Plantation.create(plantation19Template);
 
-let plantation20Template = {
-  name: "Umbrella Thorn Acacia",
-  biome: "GRASSLAND",
-} as any;
-await Plantation.create(plantation20Template);
+  let plantation20Template = {
+    name: "Umbrella Thorn Acacia",
+    biome: "GRASSLAND",
+  } as any;
+  await Plantation.create(plantation20Template);
 
-let plantation21Template = {
-  name: "Variegated Ivy",
-  biome: "TEMPERATE",
-} as any;
-await Plantation.create(plantation21Template);
+  let plantation21Template = {
+    name: "Variegated Ivy",
+    biome: "TEMPERATE",
+  } as any;
+  await Plantation.create(plantation21Template);
 
-let plantation22Template = {
-  name: "Water Hyacinth",
-  biome: "AQUATIC",
-} as any;
-await Plantation.create(plantation22Template);
+  let plantation22Template = {
+    name: "Water Hyacinth",
+    biome: "AQUATIC",
+  } as any;
+  await Plantation.create(plantation22Template);
 
-let plantation23Template = {
-  name: "Xerophyte",
-  biome: "DESERT",
-} as any;
-await Plantation.create(plantation23Template);
+  let plantation23Template = {
+    name: "Xerophyte",
+    biome: "DESERT",
+  } as any;
+  await Plantation.create(plantation23Template);
 
-let plantation24Template = {
-  name: "Yellow Poplar",
-  biome: "TEMPERATE",
-} as any;
-await Plantation.create(plantation24Template);
+  let plantation24Template = {
+    name: "Yellow Poplar",
+    biome: "TEMPERATE",
+  } as any;
+  await Plantation.create(plantation24Template);
 
-let plantation25Template = {
-  name: "Zebra Grass",
-  biome: "GRASSLAND",
-} as any;
-await Plantation.create(plantation25Template);
+  let plantation25Template = {
+    name: "Zebra Grass",
+    biome: "GRASSLAND",
+  } as any;
+  await Plantation.create(plantation25Template);
 
-let plantation26Template = {
-  name: "Quiver Tree",
-  biome: "DESERT",
-} as any;
-await Plantation.create(plantation26Template);
+  let plantation26Template = {
+    name: "Quiver Tree",
+    biome: "DESERT",
+  } as any;
+  await Plantation.create(plantation26Template);
 
-let plantation27Template = {
-  name: "Siberian Peashrub",
-  biome: "TAIGA",
-} as any;
-await Plantation.create(plantation27Template);
+  let plantation27Template = {
+    name: "Siberian Peashrub",
+    biome: "TAIGA",
+  } as any;
+  await Plantation.create(plantation27Template);
 
-let plantation28Template = {
-  name: "Sugar Maple Tree",
-  biome: "TEMPERATE",
-} as any;
-await Plantation.create(plantation28Template);
+  let plantation28Template = {
+    name: "Sugar Maple Tree",
+    biome: "TEMPERATE",
+  } as any;
+  await Plantation.create(plantation28Template);
 
-let plantation29Template = {
-  name: "Blue Lotus Plant",
-  biome: "AQUATIC",
-} as any;
-await Plantation.create(plantation29Template);
+  let plantation29Template = {
+    name: "Blue Lotus Plant",
+    biome: "AQUATIC",
+  } as any;
+  await Plantation.create(plantation29Template);
 
-let plantation30Template = {
-  name: "Red Oat Grass",
-  biome: "GRASSLAND",
-} as any;
-await Plantation.create(plantation30Template);
-
+  let plantation30Template = {
+    name: "Red Oat Grass",
+    biome: "GRASSLAND",
+  } as any;
+  await Plantation.create(plantation30Template);
 };
 
 export const facilityAssetsSeed = async () => {
