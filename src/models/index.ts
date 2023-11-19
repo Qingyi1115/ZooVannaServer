@@ -4312,7 +4312,7 @@ export const enclosureSeed = async () => {
   );
   // set x y coordinate
   await Facility.update(
-    { xCoordinate: 103.7818, yCoordinate: 1.2987 },
+    { xCoordinate: 103.7726, yCoordinate: 1.2961 },
     {
       where: { facilityId: enclosure6Object.newFacility.facilityId },
     },
@@ -4388,7 +4388,7 @@ export const enclosureSeed = async () => {
   );
   // set x y coordinate
   await Facility.update(
-    { xCoordinate: 103.7818, yCoordinate: 1.2987 },
+    { xCoordinate: 103.7809, yCoordinate: 1.2954 },
     {
       where: { facilityId: enclosure8Object.newFacility.facilityId },
     },
@@ -4426,7 +4426,7 @@ export const enclosureSeed = async () => {
   );
   // set x y coordinate
   await Facility.update(
-    { xCoordinate: 103.7818, yCoordinate: 1.2987 },
+    { xCoordinate: 103.7704, yCoordinate: 1.2982 },
     {
       where: { facilityId: enclosure9Object.newFacility.facilityId },
     },
