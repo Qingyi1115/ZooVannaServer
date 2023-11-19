@@ -4440,6 +4440,14 @@ export const enclosureSeed = async () => {
   await EnclosureService.assignAnimalToEnclosure(4, "ANM00013");
   await EnclosureService.assignAnimalToEnclosure(4, "ANM00014");
   await EnclosureService.assignAnimalToEnclosure(5, "ANM00011");
+  await EnclosureService.assignAnimalToEnclosure(6, "ANM00017");
+  await EnclosureService.assignAnimalToEnclosure(6, "ANM00018");
+  await EnclosureService.assignAnimalToEnclosure(8, "ANM00021");
+  await EnclosureService.assignAnimalToEnclosure(8, "ANM00022");
+  await EnclosureService.assignAnimalToEnclosure(7, "ANM00019");
+  await EnclosureService.assignAnimalToEnclosure(7, "ANM00020");
+
+
 
   let plantation1Template = {
     name: "African Daisy",
@@ -5125,9 +5133,9 @@ export const facilityAssetsSeed = async () => {
   ]) {
     _day = new Date(
       _day.getTime() -
-        days * 1000 * 60 * 60 * 24 +
-        Math.random() * 1000 * 60 * 60 * 24 * 4 -
-        1000 * 60 * 60 * 24 * 2,
+      days * 1000 * 60 * 60 * 24 +
+      Math.random() * 1000 * 60 * 60 * 24 * 4 -
+      1000 * 60 * 60 * 24 * 2,
     );
     sensor.addMaintenanceLog(
       await MaintenanceLog.create({
