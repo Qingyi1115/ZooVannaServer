@@ -748,6 +748,7 @@ export const seedDatabase = async () => {
     await publicEventSeed();
     await announcementSeed();
     await favouriteSeed();
+    await enclosureKeeperSeed();
   } catch (err) {
     console.log("error", err);
     throw err;
@@ -2087,6 +2088,32 @@ export const speciesSeed = async () => {
   let giraffe = await Species.create(giraffeTemplate);
   console.log(giraffe.toJSON());
 
+  let giraffeEnclosureNeeds = await SpeciesService.createEnclosureNeeds(
+    "SPE009",
+    10,
+    300,
+    10,
+    20,
+    20,
+    30,
+    50,
+    15,
+    10,
+    60,
+    10,
+    40,
+    10,
+    50,
+    5,
+    10,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+  );
+
   let compatibility1 = await SpeciesService.createCompatibility(
     "SPE001",
     "SPE002",
@@ -2104,6 +2131,12 @@ export const speciesSeed = async () => {
     "SPE003",
   );
   console.log(compatibility3.toJSON());
+
+  let compatibility4 = await SpeciesService.createCompatibility(
+    "SPE002",
+    "SPE009",
+  );
+  console.log(compatibility4.toJSON());
 };
 
 export const animalSeed = async () => {
@@ -2441,6 +2474,174 @@ export const animalSeed = async () => {
     "img/animal/capybaraPeanut.jpg",
   );
 
+  let lion1Template = await AnimalService.createNewAnimal(
+    "SPE006",
+    false,
+    "Simba",
+    AnimalSex.MALE,
+    new Date("2018-05-12"),
+    "African Savanna",
+    IdentifierType.RFID_TAG,
+    "874512",
+    AcquisitionMethod.FROM_THE_WILD,
+    new Date("2018-05-01"),
+    "N.A.",
+    "Distinctive golden mane with darker tufts.",
+    "Majestic, confident",
+    null,
+    null,
+    null,
+    "NORMAL",
+    "img/animal/lionSimba.webp",
+  );
+
+  let lion2Template = await AnimalService.createNewAnimal(
+    "SPE006",
+    false,
+    "Nala",
+    AnimalSex.FEMALE,
+    new Date("2019-02-28"),
+    "African Savanna",
+    IdentifierType.RFID_TAG,
+    "965478",
+    AcquisitionMethod.INHOUSE_CAPTIVE_BRED,
+    new Date("2019-02-15"),
+    "N.A.",
+    "Unique pattern of spots on the hind legs.",
+    "Graceful, Social",
+    null,
+    null,
+    null,
+    "NORMAL",
+    "img/animal/lionNala.jpg",
+  );
+
+  let penguin1Template = await AnimalService.createNewAnimal(
+    "SPE007",
+    false,
+    "Chilly",
+    AnimalSex.MALE,
+    new Date("2017-11-20"),
+    "Antarctic Habitat",
+    IdentifierType.RFID_TAG,
+    "745896",
+    AcquisitionMethod.INHOUSE_CAPTIVE_BRED,
+    new Date("2017-11-10"),
+    "N.A.",
+    "Prominent heart-shaped pattern on the chest.",
+    "Adorable, Curious",
+    null,
+    null,
+    null,
+    "NORMAL",
+    "img/animal/penguinChilly.jpeg",
+  );
+
+  let penguin2Template = await AnimalService.createNewAnimal(
+    "SPE007",
+    false,
+    "Icy",
+    AnimalSex.FEMALE,
+    new Date("2018-04-15"),
+    "Antarctic Habitat",
+    IdentifierType.RFID_TAG,
+    "632541",
+    AcquisitionMethod.FROM_THE_WILD,
+    new Date("2018-04-01"),
+    "N.A.",
+    "Distinctive black and white plumage with a yellow-orange patch on the neck.",
+    "Graceful, Playful",
+    null,
+    null,
+    null,
+    "NORMAL",
+    "img/animal/penguinIcy.jpg",
+  );
+
+  let orangutan1Template = await AnimalService.createNewAnimal(
+    "SPE008",
+    false,
+    "Cheeky",
+    AnimalSex.MALE,
+    new Date("2016-08-10"),
+    "Borneo Rainforest",
+    IdentifierType.RFID_TAG,
+    "524789",
+    AcquisitionMethod.INHOUSE_CAPTIVE_BRED,
+    new Date("2016-08-01"),
+    "N.A.",
+    "Prominent cheek pads and long, strong arms.",
+    "Playful, Intelligent",
+    null,
+    null,
+    null,
+    "NORMAL",
+    "img/animal/orangutanCheeky.jpg",
+  );
+
+  let orangutan2Template = await AnimalService.createNewAnimal(
+    "SPE008",
+    false,
+    "Cherrie",
+    AnimalSex.FEMALE,
+    new Date("2017-02-25"),
+    "Borneo Rainforest",
+    IdentifierType.RFID_TAG,
+    "789654",
+    AcquisitionMethod.FROM_THE_WILD,
+    new Date("2017-02-15"),
+    "N.A.",
+    "Notable facial features, including expressive eyes.",
+    "Gentle, Caring",
+    null,
+    null,
+    null,
+    "NORMAL",
+    "img/animal/orangutanCherrie.jpg",
+  );
+
+  let giraffe1Template = await AnimalService.createNewAnimal(
+    "SPE009",
+    false,
+    "Longneck",
+    AnimalSex.MALE,
+    new Date("2015-12-05"),
+    "African Savanna",
+    IdentifierType.RFID_TAG,
+    "369874",
+    AcquisitionMethod.FROM_THE_WILD,
+    new Date("2015-12-01"),
+    "N.A.",
+    "Towering height with a distinct spotted coat pattern.",
+    "Graceful, Majestic",
+    null,
+    null,
+    null,
+    "NORMAL",
+    "img/animal/giraffeLongneck.jpg",
+  );
+
+  let giraffe2Template = await AnimalService.createNewAnimal(
+    "SPE009",
+    false,
+    "Spots",
+    AnimalSex.FEMALE,
+    new Date("2016-07-20"),
+    "African Savanna",
+    IdentifierType.RFID_TAG,
+    "258963",
+    AcquisitionMethod.INHOUSE_CAPTIVE_BRED,
+    new Date("2016-07-01"),
+    "N.A.",
+    "Identifiable by a heart-shaped spot on the left side.",
+    "Elegant, Sociable",
+    null,
+    null,
+    null,
+    "NORMAL",
+    "img/animal/giraffeSpots.jpg",
+  );
+
   // -- add lineage
   await AnimalService.addAnimalLineage("ANM00002", "ANM00001");
   await AnimalService.addAnimalLineage("ANM00002", "ANM00004");
@@ -2596,7 +2797,7 @@ export const animalSeed = async () => {
     ["ANM00001", "ANM00002", "ANM00003", "ANM00004"],
     "General Summer Feeding Plan...",
     new Date("2023-10-18"),
-    new Date(Date.now() + DAY_IN_MILLISECONDS * 21),
+    new Date("2023-10-18"),
     [
       {
         dayOfTheWeek: DayOfWeek.MONDAY,
@@ -3800,9 +4001,9 @@ export const enclosureSeed = async () => {
     // facilityId: 1,
     name: "Panda Paradise",
     remark: "NA",
-    length: 200,
-    width: 400,
-    height: 20,
+    length: 40,
+    width: 50,
+    height: 10,
     enclosureStatus: "CONSTRUCTING",
     standOffBarrierDist: 5,
     facilityName: "Panda Paradise",
@@ -3861,7 +4062,12 @@ export const enclosureSeed = async () => {
   pandaSensor.save();
 
   await Enclosure.update(
-    { designDiagramJsonUrl: "enclosureDiagramJson/Panda Paradise.json" },
+    {
+      designDiagramJsonUrl: "enclosureDiagramJson/Panda Paradise.json",
+      landArea: 931.41,
+      waterArea: 35.63,
+      plantationCoveragePercent: 23.2,
+    },
     {
       where: { enclosureId: enclosure1Object.newEnclosure.enclosureId },
     },
@@ -4071,6 +4277,158 @@ export const enclosureSeed = async () => {
     { xCoordinate: 103.7818, yCoordinate: 1.2987 },
     {
       where: { facilityId: enclosure5Object.newFacility.facilityId },
+    },
+  );
+
+  let enclosure6Template = {
+    name: "Savanna Kingdom",
+    remark: "African Savanna-themed enclosure for lions.",
+    length: 400,
+    width: 600,
+    height: 30,
+    enclosureStatus: "ACTIVE",
+    standOffBarrierDist: 4,
+    facilityName: "Savanna Kingdom",
+    isSheltered: true,
+    imageUrl: "img/facility/lionEnclosure.webp",
+  } as any;
+  let enclosure6Object = await EnclosureService.createNewEnclosure(
+    enclosure6Template.name,
+    enclosure6Template.remark,
+    enclosure6Template.length,
+    enclosure6Template.width,
+    enclosure6Template.height,
+    enclosure6Template.enclosureStatus,
+    enclosure6Template.standOffBarrierDist,
+    enclosure6Template.facilityName,
+    enclosure6Template.isSheltered,
+    enclosure6Template.imageUrl,
+  );
+  await Enclosure.update(
+    { designDiagramJsonUrl: "enclosureDiagramJson/Savanna Kingdom.json" },
+    {
+      where: { enclosureId: enclosure6Object.newEnclosure.enclosureId },
+    },
+  );
+  // set x y coordinate
+  await Facility.update(
+    { xCoordinate: 103.7818, yCoordinate: 1.2987 },
+    {
+      where: { facilityId: enclosure6Object.newFacility.facilityId },
+    },
+  );
+
+  let enclosure7Template = {
+    name: "Antarctic Oasis",
+    remark: "Antarctic-themed enclosure for penguins.",
+    length: 200,
+    width: 400,
+    height: 15,
+    enclosureStatus: "ACTIVE",
+    standOffBarrierDist: 2,
+    facilityName: "Antarctic Oasis",
+    isSheltered: true,
+    imageUrl: "img/facility/penguinEnclosure.jpg",
+  } as any;
+  let enclosure7Object = await EnclosureService.createNewEnclosure(
+    enclosure7Template.name,
+    enclosure7Template.remark,
+    enclosure7Template.length,
+    enclosure7Template.width,
+    enclosure7Template.height,
+    enclosure7Template.enclosureStatus,
+    enclosure7Template.standOffBarrierDist,
+    enclosure7Template.facilityName,
+    enclosure7Template.isSheltered,
+    enclosure7Template.imageUrl,
+  );
+  await Enclosure.update(
+    { designDiagramJsonUrl: "enclosureDiagramJson/Antarctic Oasis.json" },
+    {
+      where: { enclosureId: enclosure7Object.newEnclosure.enclosureId },
+    },
+  );
+  // set x y coordinate
+  await Facility.update(
+    { xCoordinate: 103.7818, yCoordinate: 1.2987 },
+    {
+      where: { facilityId: enclosure7Object.newFacility.facilityId },
+    },
+  );
+
+  let enclosure8Template = {
+    name: "Rainforest Haven",
+    remark: "Borneo Rainforest-themed enclosure for orangutans.",
+    length: 300,
+    width: 500,
+    height: 20,
+    enclosureStatus: "ACTIVE",
+    standOffBarrierDist: 3,
+    facilityName: "Rainforest Haven",
+    isSheltered: true,
+    imageUrl: "img/facility/orangutanEnclosure.jpg",
+  } as any;
+  let enclosure8Object = await EnclosureService.createNewEnclosure(
+    enclosure8Template.name,
+    enclosure8Template.remark,
+    enclosure8Template.length,
+    enclosure8Template.width,
+    enclosure8Template.height,
+    enclosure8Template.enclosureStatus,
+    enclosure8Template.standOffBarrierDist,
+    enclosure8Template.facilityName,
+    enclosure8Template.isSheltered,
+    enclosure8Template.imageUrl,
+  );
+  await Enclosure.update(
+    { designDiagramJsonUrl: "enclosureDiagramJson/Rainforest Haven.json" },
+    {
+      where: { enclosureId: enclosure8Object.newEnclosure.enclosureId },
+    },
+  );
+  // set x y coordinate
+  await Facility.update(
+    { xCoordinate: 103.7818, yCoordinate: 1.2987 },
+    {
+      where: { facilityId: enclosure8Object.newFacility.facilityId },
+    },
+  );
+
+  let enclosure9Template = {
+    name: "Savanna Heights",
+    remark: "African Savanna-themed enclosure for giraffes.",
+    length: 500,
+    width: 800,
+    height: 35,
+    enclosureStatus: "ACTIVE",
+    standOffBarrierDist: 5,
+    facilityName: "Savanna Heights",
+    isSheltered: true,
+    imageUrl: "img/facility/giraffeEnclosure.jpg",
+  } as any;
+  let enclosure9Object = await EnclosureService.createNewEnclosure(
+    enclosure9Template.name,
+    enclosure9Template.remark,
+    enclosure9Template.length,
+    enclosure9Template.width,
+    enclosure9Template.height,
+    enclosure9Template.enclosureStatus,
+    enclosure9Template.standOffBarrierDist,
+    enclosure9Template.facilityName,
+    enclosure9Template.isSheltered,
+    enclosure9Template.imageUrl,
+  );
+  await Enclosure.update(
+    { designDiagramJsonUrl: "enclosureDiagramJson/Savanna Heights.json" },
+    {
+      where: { enclosureId: enclosure9Object.newEnclosure.enclosureId },
+    },
+  );
+  // set x y coordinate
+  await Facility.update(
+    { xCoordinate: 103.7818, yCoordinate: 1.2987 },
+    {
+      where: { facilityId: enclosure9Object.newFacility.facilityId },
     },
   );
 
@@ -5202,4 +5560,8 @@ export const publicEventSeed = async () => {
     5,
     new Date(Date.now() + 0.05 * DAY_IN_MILLISECONDS),
   );
+};
+
+export const enclosureKeeperSeed = async () => {
+  await EnclosureService.assignKeepersToEnclosure(1, [2, 5]);
 };

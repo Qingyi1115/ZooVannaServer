@@ -290,20 +290,24 @@ export async function updateDesignDiagram(
     // console.log(designDiagramJson)
     const filePath = `enclosureDiagramJson/${enclosure.name}.json`;
 
+    console.log("landArea" + landArea)
+    console.log("waterArea" + waterArea)
+    console.log("plantationCoveragePercent" + plantationCoveragePercent)
+
     await writeFile(filePath, designDiagramJson);
-    if (enclosure.designDiagramJsonUrl == null) {
-      await Enclosure.update(
-        {
-          designDiagramJsonUrl: filePath,
-          landArea: landArea,
-          waterArea: waterArea,
-          plantationCoveragePercent: plantationCoveragePercent,
-        },
-        {
-          where: { enclosureId: enclosureId },
-        },
-      );
-    }
+    // if (enclosure.designDiagramJsonUrl == null) {
+    await Enclosure.update(
+      {
+        designDiagramJsonUrl: filePath,
+        landArea: landArea,
+        waterArea: waterArea,
+        plantationCoveragePercent: plantationCoveragePercent,
+      },
+      {
+        where: { enclosureId: enclosureId },
+      },
+    );
+    // }
   } catch (error: any) {
     throw validationErrorHandler(error);
   }
